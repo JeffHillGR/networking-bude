@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Networking BudE - Professional Networking Made Easy</title>
+  <meta name="description" content="Connect with professionals in Grand Rapids through Networking BudE. Discover events, make meaningful connections, and grow your professional network." />
+  
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#22c55e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Networking BudE" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://networkingbude.com/" />
+  <meta property="og:title" content="Networking BudE - Professional Networking Made Easy" />
+  <meta property="og:description" content="Connect with professionals in Grand Rapids through Networking BudE. Discover events, make meaningful connections, and grow your professional network." />
+  <meta property="og:image" content="/og-image.png" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://networkingbude.com/" />
+  <meta property="twitter:title" content="Networking BudE - Professional Networking Made Easy" />
+  <meta property="twitter:description" content="Connect with professionals in Grand Rapids through Networking BudE. Discover events, make meaningful connections, and grow your professional network." />
+  <meta property="twitter:image" content="/og-image.png" />
+
+  <!-- Preload critical resources -->
+  <link rel="preload" href="/styles/globals.css" as="style" />
+  
+  <!-- Manifest for PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  
+  <!-- Load critical CSS -->
+  <style>
+    /* Critical loading styles */
+    #root {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+    }
+    
+    .loading-spinner {
+      width: 2rem;
+      height: 2rem;
+      border: 2px solid #e5e7eb;
+      border-top: 2px solid #22c55e;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      margin-top: 1rem;
+      color: #6b7280;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      #root {
+        background: #030213;
+      }
+      .loading-text {
+        color: #d1d5db;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <!-- Loading fallback -->
+    <div style="text-align: center;">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading Networking BudE...</div>
+    </div>
+  </div>
+  
+  <!-- Main app script -->
+  <script type="module" src="/main.tsx"></script>
+  
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('SW registered: ', registration);
+          })
+          .catch((registrationError) => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+  </script>
+</body>
+</html>

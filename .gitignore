@@ -1,0 +1,15 @@
+node_modules/
+.env
+.env.local
+.env.production
+.env.staging
+dist/
+build/
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
