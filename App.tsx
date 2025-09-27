@@ -1,11 +1,11 @@
-// Networking BudE - Production Version v13.3 - Vercel Build Fix
-// Static Imports with Error Boundaries - Component Resolution Fixed
+// Networking BudE - Production Version v13.4 - Import Resolution Fixed
+// Static Imports without .tsx extensions - Vercel Build Compatible
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect, Suspense, useCallback, memo } from 'react';
 import { UserData } from './types';
 
-// Core components - static imports
+// Core components - static imports (no file extensions needed)
 import { LinkedInOnboarding } from './components/LinkedInOnboarding';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { MobileBottomNav } from './components/MobileBottomNav';
