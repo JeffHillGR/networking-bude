@@ -1,12 +1,12 @@
-// Networking BudE - Production Version v13.5 - Component Resolution Fixed
-// All Components Recreated and Verified - Vercel Build Ready
+// Networking BudE - Production Version v13.7 - Final Deployment Fix
+// Using clean Onboarding component - Vercel Build Ready
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect, Suspense, useCallback, memo } from 'react';
 import { UserData } from './types';
 
 // Core components - static imports (no file extensions needed)
-import { LinkedInOnboarding } from './components/LinkedInOnboarding';
+import { Onboarding } from './components/Onboarding';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { MobileHeader } from './components/MobileHeader';
@@ -180,7 +180,7 @@ function AppContent() {
         fallbackDescription="Get started with Networking BudE"
         fallbackIcon="🚀"
       >
-        <LinkedInOnboarding onComplete={handleOnboardingComplete} />
+        <Onboarding onComplete={handleOnboardingComplete} />
       </SafeComponent>
     );
   }
