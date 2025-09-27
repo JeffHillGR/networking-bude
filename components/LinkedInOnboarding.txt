@@ -1,0 +1,109 @@
+import { useState } from 'react';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { toast } from 'sonner@2.0.3';
+
+interface OnboardingProps {
+  onComplete: (data: any) => void;
+}
+
+export function LinkedInOnboarding({ onComplete }: OnboardingProps) {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: ''
+  });
+
+  const handleSubmit = () => {
+    const userData = {
+      id: `user_${Date.now()}`,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      name: `${formData.firstName} ${formData.lastName}`.trim(),
+      email: formData.email,
+      title: '',
+      company: '',
+      location: '',
+      bio: '',
+      avatar: '',
+      skills: [],
+      interests: [],
+      goals: [],
+      experience: '',
+      lookingFor: [],
+      onboardingCompleted: true,
+      profileComplete: true,
+      createdAt: new Date().toISOString(),
+      lastActive: new Date().toISOString(),
+      subscriptionStatus: 'preview',
+      termsAccepted: false
+    };
+    
+    toast.success('Welcome to Networking BudE!');
+    onComplete(userData);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+      <Card className="w-full max-w-lg">
+        <CardHeader className="text-center">
+          <div className="h-16 w-16 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">
+            NB
+          </div>
+          <CardTitle className="text-3xl font-bold">Welcome to Networking BudE</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
+                />
+              </div>
+            </div>
+            
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+              />
+            </div>
+
+            <Button onClick={handleSubmit} className="w-full bg-green-600 text-white hover:bg-green-700">
+              Get Started
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export default LinkedInOnboarding;
