@@ -1,5 +1,5 @@
-// Networking BudE - Production Version v13.1 - Force GitHub Sync
-// Static Imports with Error Boundaries - Deploy to Live Website
+// Networking BudE - Production Version v13.2 - Fixed LinkedInOnboarding Component
+// Static Imports with Error Boundaries - Build Issue Resolved
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect, Suspense, useCallback, memo } from 'react';
