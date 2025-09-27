@@ -1,5 +1,5 @@
-// Networking BudE - Production Version v13.2 - Fixed LinkedInOnboarding Component
-// Static Imports with Error Boundaries - Build Issue Resolved
+// Networking BudE - Production Version v13.3 - Vercel Build Fix
+// Static Imports with Error Boundaries - Component Resolution Fixed
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect, Suspense, useCallback, memo } from 'react';
