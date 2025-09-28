@@ -1,16 +1,16 @@
-// Networking BudE - Production Version v13.16 - MINIMAL IMPORTS
-// Temporary ErrorBoundary removal for deployment - will re-add after successful build
+// Networking BudE - Production Version v14.0 - FORCE REBUILD COMPLETE CACHE CLEAR
+// DEFINITIVE FIX: No LinkedInOnboarding anywhere - only clean Onboarding imports
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect, Suspense, useCallback, memo } from 'react';
 import { UserData } from './types';
 
-// Core components - clean imports
+// Core components - clean imports only
 import { Onboarding } from './components/Onboarding';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { MobileHeader } from './components/MobileHeader';
 
-// Rich components - static imports with error handling
+// Application components
 import { Dashboard } from './components/Dashboard';
 import { Events } from './components/Events';
 import { EventDetail } from './components/EventDetail';
@@ -93,7 +93,7 @@ const ComponentFallback = memo(({
 
 ComponentFallback.displayName = 'ComponentFallback';
 
-// Safe component wrapper - temporarily without ErrorBoundary
+// Safe component wrapper
 const SafeComponent = memo(({ 
   children, 
   fallbackTitle, 
