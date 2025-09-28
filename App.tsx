@@ -1,11 +1,11 @@
-// Networking BudE - Production Version v13.7 - Final Deployment Fix
-// Using clean Onboarding component - Vercel Build Ready
+// Networking BudE - Production Version v13.12 - Final Clean Build
+// Clean Onboarding component imports - Vercel Ready
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect, Suspense, useCallback, memo } from 'react';
 import { UserData } from './types';
 
-// Core components - static imports (no file extensions needed)
+// Core components - clean imports
 import { Onboarding } from './components/Onboarding';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { MobileBottomNav } from './components/MobileBottomNav';
