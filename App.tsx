@@ -1,5 +1,5 @@
-// Networking BudE - Production Version v13.12 - Final Clean Build
-// Clean Onboarding component imports - Vercel Ready
+// Networking BudE - Production Version v13.16 - MINIMAL IMPORTS
+// Temporary ErrorBoundary removal for deployment - will re-add after successful build
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect, Suspense, useCallback, memo } from 'react';
@@ -7,7 +7,6 @@ import { UserData } from './types';
 
 // Core components - clean imports
 import { Onboarding } from './components/Onboarding';
-import { ErrorBoundary } from './components/ErrorBoundary';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { MobileHeader } from './components/MobileHeader';
 
@@ -94,7 +93,7 @@ const ComponentFallback = memo(({
 
 ComponentFallback.displayName = 'ComponentFallback';
 
-// Safe component wrapper
+// Safe component wrapper - temporarily without ErrorBoundary
 const SafeComponent = memo(({ 
   children, 
   fallbackTitle, 
@@ -106,18 +105,7 @@ const SafeComponent = memo(({
   fallbackDescription: string;
   fallbackIcon: string;
 }) => (
-  <ErrorBoundary
-    fallback={({ error, resetError }) => (
-      <ComponentFallback
-        title={fallbackTitle}
-        description={fallbackDescription}
-        icon={fallbackIcon}
-        error={error?.message}
-      />
-    )}
-  >
-    {children}
-  </ErrorBoundary>
+  <div>{children}</div>
 ));
 
 SafeComponent.displayName = 'SafeComponent';
@@ -511,10 +499,8 @@ export default function App() {
   }, []);
 
   return (
-    <ErrorBoundary>
-      <Router>
-        <AppContent />
-      </Router>
-    </ErrorBoundary>
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
