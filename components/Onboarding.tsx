@@ -1,312 +1,191 @@
 import { useState } from 'react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
-import { X, MapPin, Linkedin } from 'lucide-react';
-import { toast } from 'sonner';
 
-const INTERESTS = [
-  'Technology', 'Marketing', 'Finance', 'Design', 'Sales', 'HR',
-  'Product Management', 'Data Science', 'Engineering', 'Consulting',
-  'Healthcare', 'Education', 'Real Estate', 'Legal', 'Media',
-  'Startup', 'AI/ML', 'Blockchain', 'Sustainability', 'Leadership'
-];
-
-const INDUSTRIES = [
-  'Technology & Software', 'Healthcare & Medical', 'Financial Services', 'Education',
-  'Manufacturing', 'Retail & E-commerce', 'Consulting', 'Real Estate',
-  'Media & Entertainment', 'Non-profit', 'Government', 'Energy & Utilities',
-  'Transportation & Logistics', 'Hospitality & Tourism', 'Legal Services',
-  'Construction', 'Agriculture', 'Telecommunications', 'Automotive', 'Other'
-];
-
-interface OnboardingFormData {
-  firstName: string;
-  lastName: string;
-  preferredUsername: string;
-  email: string;
-  password: string;
-  jobTitle?: string;
-  bio?: string;
-  interests: string[];
-  industry?: string;
-  zipCode?: string;
-}
-
-interface OnboardingProps {
-  onComplete: (data: any) => void;
-}
-
-export const Onboarding = ({ onComplete }: OnboardingProps) => {
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState<OnboardingFormData>({
+export const Onboarding = () => {
+  const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    preferredUsername: '',
-    email: '',
-    password: '',
-    jobTitle: '',
-    bio: '',
-    interests: [],
-    industry: '',
-    zipCode: ''
+    username: '',
+    email: ''
   });
 
-  const handleInterestToggle = (interest: string) => {
-    setFormData(prev => ({
-      ...prev,
-      interests: prev.interests.includes(interest)
-        ? prev.interests.filter(i => i !== interest)
-        : [...prev.interests, interest]
-    }));
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
-  const handleSubmit = () => {
-    const userData = {
-      id: `user_${Date.now()}`,
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      name: `${formData.firstName} ${formData.lastName}`.trim(),
-      email: formData.email,
-      title: formData.jobTitle || '',
-      company: '',
-      location: formData.zipCode || '',
-      bio: formData.bio || '',
-      avatar: '',
-      skills: [],
-      interests: formData.interests || [],
-      goals: [],
-      experience: '',
-      lookingFor: [],
-      onboardingCompleted: true,
-      profileComplete: true,
-      createdAt: new Date().toISOString(),
-      lastActive: new Date().toISOString(),
-      subscriptionStatus: 'preview',
-      termsAccepted: false
-    };
-    
-    toast.success('Welcome to Networking BudE!');
-    onComplete(userData);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Form submitted:', formData);
+    // Handle form submission
   };
 
-  const handleLinkedInConnect = () => {
-    toast.success('Connected to LinkedIn!');
-    
-    const linkedInData = {
-      firstName: 'Sarah',
-      lastName: 'Johnson',
-      preferredUsername: 'sarah.johnson',
-      email: 'sarah.johnson@email.com',
-      jobTitle: 'Senior Product Manager',
-      bio: 'Experienced Product Manager with a passion for building innovative digital solutions.',
-      industry: 'Technology & Software',
-      interests: ['Product Management', 'Technology', 'Leadership', 'Design']
-    };
-    
-    setFormData(prev => ({ ...prev, ...linkedInData }));
-  };
-
-  const renderStep = () => {
-    switch (step) {
-      case 1:
-        return (
-          <div className="space-y-4">
-            <div className="border rounded-lg p-6 bg-blue-50 border-blue-200 mb-4">
-              <div className="text-center space-y-3">
-                <h4 className="font-medium text-blue-900">Quick Setup</h4>
-                <p className="text-sm text-blue-700">
-                  Import your professional information from LinkedIn
-                </p>
-                <Button onClick={handleLinkedInConnect} className="bg-blue-600 hover:bg-blue-700 text-white">
-                  <Linkedin className="h-4 w-4 mr-2" />
-                  Import From LinkedIn
-                </Button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="firstName">First Name</Label>
-                <Input
-                  id="firstName"
-                  value={formData.firstName}
-                  onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  value={formData.lastName}
-                  onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
-                />
-              </div>
-            </div>
-            
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={formData.password}
-                onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-              />
-            </div>
-          </div>
-        );
-
-      case 2:
-        return (
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="jobTitle">Job Title</Label>
-              <Input
-                id="jobTitle"
-                value={formData.jobTitle || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, jobTitle: e.target.value }))}
-                placeholder="e.g., Senior Marketing Manager"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                value={formData.bio}
-                onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-                placeholder="Tell us about yourself..."
-              />
-            </div>
-            
-            <div>
-              <Label>Industry</Label>
-              <Select value={formData.industry} onValueChange={(value) => setFormData(prev => ({ ...prev, industry: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select your industry" />
-                </SelectTrigger>
-                <SelectContent>
-                  {INDUSTRIES.map((industry) => (
-                    <SelectItem key={industry} value={industry}>
-                      {industry}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="zipCode">
-                <MapPin className="h-4 w-4 inline mr-1" />
-                Zip Code
-              </Label>
-              <Input
-                id="zipCode"
-                value={formData.zipCode}
-                onChange={(e) => setFormData(prev => ({ ...prev, zipCode: e.target.value }))}
-                placeholder="Enter zip code"
-                maxLength={5}
-              />
-            </div>
-          </div>
-        );
-
-      case 3:
-        return (
-          <div className="space-y-4">
-            <div>
-              <Label>Professional Interests</Label>
-              <p className="text-sm text-muted-foreground mb-4">
-                Select topics that interest you professionally
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {INTERESTS.map((interest) => (
-                  <Badge
-                    key={interest}
-                    variant={formData.interests.includes(interest) ? "default" : "outline"}
-                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                    onClick={() => handleInterestToggle(interest)}
-                  >
-                    {interest}
-                    {formData.interests.includes(interest) && (
-                      <X className="h-3 w-3 ml-1" />
-                    )}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-
-      default:
-        return null;
-    }
+  const handleLinkedInImport = () => {
+    console.log('LinkedIn import clicked');
+    // Handle LinkedIn import
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-lg">
-        <CardHeader className="text-center">
-          <div className="h-16 w-16 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">
-            NB
+    <div className="min-h-screen flex flex-col md:flex-row">
+      {/* Left side - Image and collage */}
+      <div className="w-full md:w-1/2 bg-gray-100 p-8 flex items-center justify-center relative">
+        <div className="relative w-full max-w-md">
+          {/* Main phone image placeholder */}
+          <div className="bg-gradient-to-br from-amber-100 to-amber-200 rounded-3xl p-8 shadow-2xl">
+            <div className="bg-white rounded-2xl p-4 shadow-lg transform -rotate-2">
+              <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-8 flex items-center justify-center">
+                <div className="text-white text-4xl font-bold">BudE</div>
+              </div>
+            </div>
           </div>
-          <CardTitle className="text-3xl font-bold">Welcome to Networking BudE</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            {/* Progress indicator */}
-            <div className="flex space-x-2">
-              {[1, 2, 3].map((num) => (
-                <div
-                  key={num}
-                  className={`flex-1 h-2 rounded-full ${
-                    num <= step ? 'bg-primary' : 'bg-muted'
-                  }`}
+          
+          {/* Small image collage on the right */}
+          <div className="absolute right-0 top-12 space-y-4">
+            <div className="w-32 h-32 bg-gray-300 rounded-2xl shadow-lg overflow-hidden">
+              <div className="w-full h-full bg-gradient-to-br from-blue-200 to-blue-300" />
+            </div>
+            <div className="w-32 h-32 bg-gray-300 rounded-2xl shadow-lg overflow-hidden">
+              <div className="w-full h-full bg-gradient-to-br from-purple-200 to-purple-300" />
+            </div>
+            <div className="w-32 h-32 bg-gray-300 rounded-2xl shadow-lg overflow-hidden">
+              <div className="w-full h-full bg-gradient-to-br from-pink-200 to-pink-300" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right side - Form */}
+      <div className="w-full md:w-1/2 bg-white p-8 md:p-12 flex flex-col justify-center overflow-y-auto">
+        <div className="max-w-md mx-auto w-full">
+          {/* Logo */}
+          <div className="mb-8 flex justify-center">
+            <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl px-6 py-3 shadow-lg">
+              <span className="text-white text-2xl font-bold">B BudE</span>
+            </div>
+          </div>
+
+          {/* Welcome text */}
+          <h1 className="text-3xl font-bold text-gray-900 mb-4 text-center">
+            Welcome to Networking BudE
+          </h1>
+
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-3 text-center">
+              What's this all about?
+            </h2>
+            <p className="text-gray-600 text-center mb-4">
+              Networking BudE offers the ability to connect with others and attend
+              events with people who share your networking goals:
+            </p>
+            
+            {/* Testimonial */}
+            <div className="border-l-4 border-gray-300 pl-4 py-2 mb-6">
+              <p className="text-gray-600 italic text-sm">
+                "I no longer feel awkward at events alone anymore. Thanks BudE!" - Meghan a Satisfied BudE User
+              </p>
+            </div>
+
+            <p className="text-center font-semibold text-gray-900 mb-6">
+              Ready to jump in? Let's go!
+            </p>
+
+            {/* Progress bar */}
+            <div className="w-full bg-gray-200 rounded-full h-2 mb-8">
+              <div className="bg-black h-2 rounded-full" style={{ width: '33%' }}></div>
+            </div>
+          </div>
+
+          {/* Quick Setup Box */}
+          <div className="bg-blue-50 rounded-xl p-6 mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2 text-center">
+              Quick Setup
+            </h3>
+            <p className="text-sm text-blue-700 text-center mb-4">
+              Import your professional information from LinkedIn to get started faster
+            </p>
+            <button
+              onClick={handleLinkedInImport}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              </svg>
+              Import From LinkedIn
+            </button>
+            <p className="text-center text-sm text-blue-600 mt-3">
+              Or fill out the form manually below
+            </p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-gray-100 border-0 rounded-lg focus:ring-2 focus:ring-green-500 focus:bg-white transition"
+                  required
                 />
-              ))}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-2">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 bg-gray-100 border-0 rounded-lg focus:ring-2 focus:ring-green-500 focus:bg-white transition"
+                  required
+                />
+              </div>
             </div>
 
-            {renderStep()}
-
-            {/* Navigation */}
-            <div className="flex justify-between">
-              <Button
-                variant="outline"
-                onClick={() => setStep(prev => Math.max(1, prev - 1))}
-                disabled={step === 1}
-              >
-                Previous
-              </Button>
-              
-              {step < 3 ? (
-                <Button onClick={() => setStep(prev => Math.min(3, prev + 1))}>
-                  Continue
-                </Button>
-              ) : (
-                <Button onClick={handleSubmit} className="bg-green-600 text-white hover:bg-green-700">
-                  Let's Go!
-                </Button>
-              )}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                Preferred Username
+              </label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-gray-100 border-0 rounded-lg focus:ring-2 focus:ring-green-500 focus:bg-white transition"
+                required
+              />
             </div>
-          </div>
-        </CardContent>
-      </Card>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-gray-100 border-0 rounded-lg focus:ring-2 focus:ring-green-500 focus:bg-white transition"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-4 px-6 rounded-lg transition shadow-lg mt-6"
+            >
+              Continue
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };
-
-export default Onboarding;
