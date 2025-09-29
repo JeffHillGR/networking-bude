@@ -217,7 +217,8 @@ function AppContent() {
       {/* Main content */}
       <main className="flex-1">
         <Suspense fallback={<RouteLoader />}>
-          <Routes>{/* <Route path="/" element={<Navigate to="/dashboard" replace />} /> */}
+          <Routes>
+<Route path="/" element={<Onboarding />} />
 
 {/* Dashboard */}
 <Route path="/dashboard" element={
