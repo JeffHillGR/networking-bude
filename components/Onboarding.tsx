@@ -1,14 +1,7 @@
 import { useState } from 'react';
 
 export const Onboarding = () => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    username: '',
-    email: ''
-  });
-
-  const handleChange = (e: any) => {
+  const [formData, setFormData] = useState({firstName: '',lastName: '', username: '', email: '' });  const handleChange = (e: any) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -36,20 +29,32 @@ export const Onboarding = () => {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'row' }}>
       {/* Left side */}
-      <div style={{ width: '50%', backgroundColor: '#f3f4f6', padding: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: '50%', backgroundColor: '#f3f4f6', padding: '32px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
         <div style={{ position: 'relative', width: '100%', maxWidth: '28rem' }}>
-          <div style={{ background: 'linear-gradient(to bottom right, #fef3c7, #fde68a)', borderRadius: '24px', padding: '32px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: '16px', padding: '16px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', transform: 'rotate(-2deg)' }}>
-              <div style={{ background: 'linear-gradient(to right, #10b981, #059669)', borderRadius: '12px', padding: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ color: 'white', fontSize: '36px', fontWeight: 'bold' }}>BudE</div>
-              </div>
-            </div>
-          </div>
+          {/* Main phone image */}
+          <img 
+            src="/My phone.jpg" 
+            alt="BudE App on Phone"
+            style={{ width: '100%', height: 'auto', borderRadius: '24px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}
+          />
           
-          <div style={{ position: 'absolute', right: 0, top: '48px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ width: '128px', height: '128px', background: 'linear-gradient(to bottom right, #bfdbfe, #93c5fd)', borderRadius: '16px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }} />
-            <div style={{ width: '128px', height: '128px', background: 'linear-gradient(to bottom right, #ddd6fe, #c4b5fd)', borderRadius: '16px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }} />
-            <div style={{ width: '128px', height: '128px', background: 'linear-gradient(to bottom right, #fbcfe8, #f9a8d4)', borderRadius: '16px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }} />
+          {/* Small image collage on the right */}
+          <div style={{ position: 'absolute', right: '20px', top: '160px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <img 
+              src="/People networking 1.png" 
+              alt="Networking Event"
+              style={{ width: '128px', height: '128px', borderRadius: '16px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', objectFit: 'cover' }}
+            />
+            <img 
+              src="/People networking 2.png" 
+              alt="Networking Event"
+              style={{ width: '128px', height: '128px', borderRadius: '16px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', objectFit: 'cover' }}
+            />
+            <img 
+              src="/People networking 3.png" 
+              alt="Networking Event"
+              style={{ width: '128px', height: '128px', borderRadius: '16px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', objectFit: 'cover' }}
+            />
           </div>
         </div>
       </div>
@@ -59,9 +64,11 @@ export const Onboarding = () => {
         <div style={{ maxWidth: '28rem', margin: '0 auto', width: '100%' }}>
           {/* Logo */}
           <div style={{ marginBottom: '32px', display: 'flex', justifyContent: 'center' }}>
-            <div style={{ background: 'linear-gradient(to right, #10b981, #059669)', borderRadius: '16px', padding: '12px 24px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}>
-              <span style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>B BudE</span>
-            </div>
+            <img 
+              src="/BudE Logo Final.png" 
+              alt="BudE Logo" 
+              style={{ height: '125px', width: 'auto' }}
+            />
           </div>
 
           <h1 style={{ fontSize: '30px', fontWeight: 'bold', color: '#111827', marginBottom: '16px', textAlign: 'center' }}>
@@ -92,8 +99,7 @@ export const Onboarding = () => {
           </div>
 
           {/* Quick Setup Box */}
-          <div style={{ backgroundColor: '#eff6ff', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', marginBottom: '8px', textAlign: 'center' }}>
+<div style={{ backgroundColor: '#eff6ff', borderRadius: '12px', padding: '24px 40px', marginBottom: '24px' }}>            <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#111827', marginBottom: '8px', textAlign: 'center' }}>
               Quick Setup
             </h3>
             <p style={{ fontSize: '14px', color: '#1e40af', textAlign: 'center', marginBottom: '16px' }}>
@@ -111,8 +117,8 @@ export const Onboarding = () => {
           </div>
 
           {/* Form fields */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '0 40px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '28px' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', color: '#111827', marginBottom: '8px' }}>
                   First Name
@@ -167,7 +173,7 @@ export const Onboarding = () => {
 
             <button
               onClick={handleSubmit}
-              style={{ width: '100%', background: 'linear-gradient(to right, #10b981, #059669)', color: 'white', fontWeight: '600', padding: '16px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', marginTop: '24px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+              style={{ width: '70%', background: 'linear-gradient(to right, #10b981, #059669)', color: 'white', fontWeight: '600', padding: '16px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', marginTop: '24px auto 0 auto', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
             >
               Continue
             </button>
