@@ -7,11 +7,12 @@ import { UserData } from './types';
 
 // Core components - clean imports only
 import { Onboarding } from './components/Onboarding';
-import { MobileBottomNav } from './components/MobileBottomNav';
-import { MobileHeader } from './components/MobileHeader';
+import { MobileHeader } from "./components/MobileHeader";
+
 
 // Application components
 import { Dashboard } from './components/Dashboard';
+import { MobileBottomNav } from "./components/MobileBottomNav";
 import { Events } from './components/Events';
 import { EventDetail } from './components/EventDetail';
 import { Matches } from './components/Matches';
@@ -76,10 +77,10 @@ const ComponentFallback = memo(({
           Enable Developer Mode
         </button>
         <button
-          onClick={() => window.location.href = '/dashboard'}
+          // onClick={() => window.location.href = '/dashboard'}
           className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors w-full"
         >
-          Back to Dashboard
+          // Back to Dashboard
         </button>
       </div>
       {error && (
@@ -209,26 +210,26 @@ function AppContent() {
           fallbackDescription="Navigation header"
           fallbackIcon="📱"
         >
-          <MobileHeader userData={userData} onLogout={clearSession} />
+        <MobileHeader userData={userData} onLogout={clearSession} />
         </SafeComponent>
       </div>
       
       {/* Main content */}
       <main className="flex-1">
         <Suspense fallback={<RouteLoader />}>
-          <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            
-            {/* Dashboard */}
-            <Route path="/dashboard" element={
-              <SafeComponent
-                fallbackTitle="Dashboard"
-                fallbackDescription="Your networking overview"
-                fallbackIcon="🏠"
-              >
-                <Dashboard userData={userData} />
-              </SafeComponent>
-            } />
+          <Routes>{/* <Route path="/" element={<Navigate to="/dashboard" replace />} /> */}
+
+{/* Dashboard */}
+<Route path="/dashboard" element={
+  <SafeComponent
+    fallbackTitle="Dashboard"
+    fallbackDescription="Your networking overview"
+    fallbackIcon="🏠"
+  >
+    <Dashboard userData={userData} />
+  </SafeComponent>
+} />
+        
             
             {/* Events */}
             <Route path="/events" element={
