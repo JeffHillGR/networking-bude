@@ -1,7 +1,7 @@
-import OnboardingFlow from './components/OnboardingFlow'
+import Dashboard from './components/Dashboard.jsx';
 
 function App() {
-  return <OnboardingFlow />
+  return <Dashboard />
 }
 
-export default App; //Export as default
+export default App
