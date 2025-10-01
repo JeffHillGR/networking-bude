@@ -59,9 +59,11 @@ export default function BudEOnboarding() {
   };
 
   const BudELogo = () => (
-    <div className="bg-gray-100 border-2 border-gray-300 rounded-2xl px-8 py-3 inline-flex items-center justify-center">
-      <p className="text-gray-600 font-medium">BudE Logo Final</p>
-    </div>
+  <img 
+  src="/BudE-Logo-Final.png"
+  alt="BudE Logo" 
+  className="h-16 w-auto"
+/>
   );
 
   const renderWelcome = () => (
@@ -70,20 +72,25 @@ export default function BudEOnboarding() {
         <div className="w-80 h-96 bg-white rounded-3xl shadow-2xl flex items-center justify-center border-8 border-white">
           <div className="text-center p-6">
             <p className="text-gray-500 font-semibold mb-2">Large image:</p>
-            <p className="text-gray-700 font-bold text-lg">Cell phone with BudE app displayed</p>
-          </div>
+<div className="w-80 h-96 bg-white rounded-3xl shadow-2xl overflow-hidden border-8 border-white">
+  <img 
+    src="/My-phone-2.jpg"
+    alt="Phone with BudE app"
+    className="w-full h-full object-cover"
+  />
+</div>        </div>
         </div>
         <div className="flex gap-4">
-          <div className="w-32 h-32 bg-white rounded-2xl shadow-lg flex items-center justify-center">
-            <p className="text-gray-600 font-medium text-sm text-center px-2">Networking Image 1</p>
-          </div>
-          <div className="w-32 h-32 bg-white rounded-2xl shadow-lg flex items-center justify-center">
-            <p className="text-gray-600 font-medium text-sm text-center px-2">Networking Image 2</p>
-          </div>
-          <div className="w-32 h-32 bg-white rounded-2xl shadow-lg flex items-center justify-center">
-            <p className="text-gray-600 font-medium text-sm text-center px-2">Networking Image 3</p>
-          </div>
-        </div>
+  <div className="w-32 h-32 bg-white rounded-2xl shadow-lg overflow-hidden">
+    <img src="/People-networking-1.png" alt="Networking" className="w-full h-full object-cover" />
+  </div>
+  <div className="w-32 h-32 bg-white rounded-2xl shadow-lg overflow-hidden">
+    <img src="/People-networking-3.png" alt="Networking" className="w-full h-full object-cover" />
+  </div>
+  <div className="w-32 h-32 bg-white rounded-2xl shadow-lg overflow-hidden">
+    <img src="/People-networking-2.png" alt="Networking" className="w-full h-full object-cover" />
+  </div>
+</div>
       </div>
       
       <div className="w-1/2 p-12 flex items-center justify-center bg-white">
