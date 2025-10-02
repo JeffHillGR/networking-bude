@@ -4,6 +4,7 @@ import Events from './Events';
 import Connections from './Connections';
 import Messages from './Messages';
 import Profile from './Profile';
+import PaymentPortal from './PaymentPortal';
 function Dashboard() {
     const [activeTab, setActiveTab] = useState('dashboard');
 
@@ -167,7 +168,9 @@ function Dashboard() {
       case 'messages':
   return <Messages />;
       case 'profile':
-  return <Profile />;      
+  return <Profile />;
+      case 'payment':
+  return <PaymentPortal />;      
 
       default:
         return (
@@ -215,16 +218,24 @@ function Dashboard() {
   </button>
 ))}
 
+
               <div className="pt-6 mt-6 border-t border-gray-200">
                 <p className="text-xs text-gray-500 uppercase font-semibold mb-2 px-4">Account</p>
                 <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100">
                   <Settings className="w-5 h-5" />
                   <span className="font-medium">Settings</span>
                 </button>
-                <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100">
-                  <CreditCard className="w-5 h-5" />
-                  <span className="font-medium">Payment Portal</span>
-                </button>
+                <button 
+  onClick={() => setActiveTab('payment')}
+  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+    activeTab === 'payment'
+      ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
+      : 'text-gray-700 hover:bg-gray-100'
+  }`}
+>
+  <CreditCard className="w-5 h-5" />
+  <span className="font-medium">Payment Portal</span>
+</button>
                 <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100">
                   <Archive className="w-5 h-5" />
                   <span className="font-medium">Content Archive</span>
