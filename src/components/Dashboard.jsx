@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Home, Calendar, Heart, MessageCircle, User, Settings, CreditCard, Archive, ChevronLeft, ChevronRight, Users } from 'lucide-react';
-
+import Events from './Events';
+import Connections from './Connections';
+import Messages from './Messages';
+import Profile from './Profile';
 function Dashboard() {
     const [activeTab, setActiveTab] = useState('dashboard');
 
@@ -158,25 +161,13 @@ function Dashboard() {
         );
       
       case 'events':
-        return (
-          <div className="space-y-6">
-            <h1 className="text-2xl font-bold text-gray-900">Events</h1>
-            <div className="space-y-3">
-              {events.map((event, index) => (
-                <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-                  <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2">In-Person</span>
-                  <h4 className="font-bold text-gray-900 mb-2">{event.title}</h4>
-                  <div className="space-y-1 text-sm text-gray-600">
-                    <p>📅 {event.date}</p>
-                    <p>🕐 {event.time}</p>
-                    <p>📍 {event.location}</p>
-                    <p>👥 {event.attendees}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
+  return <Events />;
+      case 'connections':
+  return <Connections />;
+      case 'messages':
+  return <Messages />;
+      case 'profile':
+  return <Profile />;      
 
       default:
         return (
@@ -199,29 +190,30 @@ function Dashboard() {
       <div className="md:flex md:h-screen">
         <aside className="hidden md:block w-64 bg-white border-r border-gray-200 flex-shrink-0">
           <div className="p-6">
-            <div className="flex items-center gap-3 mb-8">
-              <img 
-                src="/BudE-Logo-Final.png"
-                alt="BudE Logo" 
-                className="h-12 w-auto"
-              />
-            </div>
+            <div className="flex flex-col items-center mb-8">
+  <img 
+    src="/BudE-Logo-Final.png"
+    alt="BudE Logo" 
+    className="h-20 w-auto"
+  />
+  <span className="text-gray-900 font-semibold text-xl mt-2">Networking BudE</span>
+</div>
 
             <nav className="space-y-2">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    activeTab === item.id
-                      ? 'bg-green-500 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <item.icon className="w-5 h-5" />
-                  <span className="font-medium">{item.label}</span>
-                </button>
-              ))}
+          {navItems.map((item) => (
+  <button
+    key={item.id}
+    onClick={() => setActiveTab(item.id)}
+    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+      activeTab === item.id
+        ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
+        : 'text-gray-700 hover:bg-gray-100'
+    }`}
+  >
+    <item.icon className="h-5 w-5 flex-shrink-0" />
+    <span className="font-medium">{item.label}</span>
+  </button>
+))}
 
               <div className="pt-6 mt-6 border-t border-gray-200">
                 <p className="text-xs text-gray-500 uppercase font-semibold mb-2 px-4">Account</p>
