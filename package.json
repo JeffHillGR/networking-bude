@@ -8,6 +8,9 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "overrides": {
+    "rollup": "npm:@rollup/wasm-node"
+  },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.14",
     "lucide-react": "^0.263.1",
