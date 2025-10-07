@@ -154,7 +154,7 @@ function DashboardSetupTab() {
         <p className="text-gray-600 mb-4">
           Upload a banner image that will display at the top of user dashboards. You can geotag this to show location-specific content.
         </p>
-        <div className="max-w-3xl">
+        <div>
   <div className="mb-4">
     <label className="block text-sm font-medium mb-2">Banner Image</label>
     <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 bg-gray-50">
@@ -219,15 +219,36 @@ function DashboardSetupTab() {
         </div>
       </div>
 
-      {/* Dashboard Bottom Ad */}
+       {/* Dashboard Bottom Ad */}
       <div className="bg-white rounded-lg p-6 border border-gray-200">
         <h3 className="text-xl font-semibold mb-4">Dashboard Bottom Ad</h3>
         <p className="text-gray-600 mb-4">
           Advertisement that appears at the bottom of the user dashboard
         </p>
-        <div className="bg-gray-100 p-4 rounded border-2 border-dashed border-gray-300 text-center">
-          <p className="text-gray-500">Dashboard Ad Upload - Coming Soon</p>
-          <p className="text-sm text-gray-400 mt-2">Recommended size: 728x90px</p>
+        
+        <div>
+          <InlineAdEditor
+            title="Dashboard Bottom Banner"
+            slot="dashboardBottom"
+            ad={JSON.parse(localStorage.getItem('ad_dashboardBottom') || 'null')}
+            onImageUpload={(slot, file) => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const currentAd = JSON.parse(localStorage.getItem(`ad_${slot}`) || '{}');
+                const newAd = { ...currentAd, image: reader.result };
+                localStorage.setItem(`ad_${slot}`, JSON.stringify(newAd));
+              };
+              if (file) reader.readAsDataURL(file);
+            }}
+            onUrlChange={(slot, url) => {
+              const currentAd = JSON.parse(localStorage.getItem(`ad_${slot}`) || '{}');
+              localStorage.setItem(`ad_${slot}`, JSON.stringify({ ...currentAd, url }));
+            }}
+            onRemove={(slot) => localStorage.removeItem(`ad_${slot}`)}
+            dimensions="1200x300px"
+            description="Appears at bottom of user dashboard"
+            aspectRatio="1200/300"
+          />
         </div>
       </div>
     </div>

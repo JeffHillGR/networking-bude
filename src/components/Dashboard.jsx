@@ -334,15 +334,15 @@ default:
       {isDevMode && (
         <>
           <span className="mx-2">•</span>
-          <button 
-            onClick={() => {
-              localStorage.removeItem('onboardingCompleted');
-              window.location.reload();
-            }}
-            className="underline hover:no-underline font-medium"
-          >
-            Reset to Onboarding
-          </button>
+         <button 
+  onClick={() => {
+    localStorage.removeItem('onboardingCompleted');
+    window.location.href = '/';
+  }}
+  className="underline hover:no-underline font-medium"
+>
+  Reset to Onboarding
+</button>
         </>
       )}
     </div>
