@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { User, MapPin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function BudEOnboarding() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
     firstName: '',
@@ -62,148 +64,157 @@ export default function BudEOnboarding() {
   <img 
   src="/BudE-Logo-Final.png"
   alt="BudE Logo" 
-  className="h-16 w-auto"
+  className="h-16.5 w-auto"
 />
   );
 
-  const renderWelcome = () => (
-    <div className="min-h-screen flex">
-      <div className="w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 p-12 flex flex-col items-center justify-center gap-8">
-        <div className="w-80 h-96 bg-white rounded-3xl shadow-2xl flex items-center justify-center border-8 border-white">
-          <div className="text-center p-6">
-            <p className="text-gray-500 font-semibold mb-2">Large image:</p>
-<div className="w-80 h-96 bg-white rounded-3xl shadow-2xl overflow-hidden border-8 border-white">
-  <img 
-    src="/My-phone-2.jpg"
-    alt="Phone with BudE app"
-    className="w-full h-full object-cover"
-  />
-</div>        </div>
-        </div>
-        <div className="flex gap-4">
-  <div className="w-32 h-32 bg-white rounded-2xl shadow-lg overflow-hidden">
-    <img src="/People-networking-1.png" alt="Networking" className="w-full h-full object-cover" />
-  </div>
-  <div className="w-32 h-32 bg-white rounded-2xl shadow-lg overflow-hidden">
-    <img src="/People-networking-3.png" alt="Networking" className="w-full h-full object-cover" />
-  </div>
-  <div className="w-32 h-32 bg-white rounded-2xl shadow-lg overflow-hidden">
-    <img src="/People-networking-2.png" alt="Networking" className="w-full h-full object-cover" />
-  </div>
-</div>
-      </div>
-      
-      <div className="w-1/2 p-12 flex items-center justify-center bg-white">
-        <div className="max-w-lg w-full">
-          <div className="flex justify-center mb-8">
-            <BudELogo />
+
+ const renderWelcome = () => (
+  <div className="min-h-screen flex">
+    {/* Left side - Images */}
+    <div className="w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 p-12 flex items-start justify-end pt-16">
+      <div className="relative">
+        {/* Large phone image */}
+        <div className="w-[500px] h-[620px] rounded-3xl overflow-hidden shadow-2xl relative">
+          <img 
+            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/My-phone.jpg"
+            alt="BudE app on phone"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute top-6 left-6 text-white text-3xl font-bold drop-shadow-lg">
           </div>
-
-          <h1 className="text-4xl font-bold text-center mb-8">Welcome to Networking BudE</h1>
-
-          <div className="bg-gray-50 rounded-xl p-8 mb-8">
-            <h2 className="text-2xl font-semibold mb-4 text-center">What's this all about?</h2>
-            <p className="text-gray-700 mb-6">
-              Networking BudE offers the ability to connect with others and attend events with people who share your networking goals:
-            </p>
-            <blockquote className="border-l-4 border-green-600 pl-4 italic text-gray-600">
-              "I no longer feel awkward at events alone anymore. Thanks BudE!" - Meghan a Satisfied BudE User
-            </blockquote>
-          </div>
-
-          <h3 className="text-xl font-semibold text-center mb-6">Ready to jump in? Let's go!</h3>
-
-          <div className="w-full h-2 bg-gray-200 rounded-full mb-8">
-            <div className="w-1/3 h-full bg-black rounded-full"></div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold mb-2">First Name</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value={formData.firstName}
-                  onChange={(e) => handleChange('firstName', e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-2">Last Name</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value={formData.lastName}
-                  onChange={(e) => handleChange('lastName', e.target.value)}
-                />
-              </div>
+          
+          {/* Three small images stacked at bottom right inside phone */}
+          <div className="absolute right-6 bottom-6 space-y-3">
+            <div className="w-24 h-24 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+             <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-1.png" alt="Networking" className="w-full h-full object-cover" />
             </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-2">Preferred Username</label>
-              <input
-                type="text"
-                className="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={formData.username}
-                onChange={(e) => handleChange('username', e.target.value)}
-              />
+            <div className="w-24 h-24 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+             <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-3.png" alt="Networking" className="w-full h-full object-cover" />
             </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-2">Email</label>
-              <input
-                type="email"
-                className="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={formData.email}
-                onChange={(e) => handleChange('email', e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-2">Password</label>
-              <input
-                type="password"
-                className="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={formData.password}
-                onChange={(e) => handleChange('password', e.target.value)}
-              />
+            <div className="w-24 h-24 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+              <img src="/People-networking-2.png" alt="Networking" className="w-full h-full object-cover" />
             </div>
           </div>
-
-          <div className="flex justify-end mt-8">
-            <button
-              onClick={() => setStep(1)}
-              className="bg-black text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
-            >
-              Continue
-            </button>
-          </div>
-
-          <p className="text-center text-sm text-gray-600 mt-6">
-            Already have an account? <a href="#" className="text-blue-600 hover:underline">Sign in</a>
-          </p>
         </div>
       </div>
     </div>
-  );
+    
+    {/* Right side - Form - keeping your existing form code */}
+    <div className="w-1/2 p-8 flex items-center justify-center bg-white overflow-y-auto">
+      <div className="max-w-lg w-full">
+        <div className="flex justify-center mb-6">
+          <BudELogo />
+        </div>
+        <h1 className="text-3xl font-bold text-center mb-6">Welcome to Networking BudE</h1>
+        <div className="bg-gray-50 rounded-xl p-5 mb-6">
+          <h2 className="text-lg font-semibold mb-2 text-center">What's this all about?</h2>
+          <p className="text-gray-700 mb-3 text-sm">
+            Networking BudE offers the ability to connect with others and attend events with people who share your networking goals:
+          </p>
+          <blockquote className="border-l-4 border-green-600 pl-3 italic text-gray-600 text-sm">
+            "I no longer feel awkward at events alone anymore. Thanks BudE!" - Meghan a Satisfied BudE User
+          </blockquote>
+        </div>
+
+        <h3 className="text-base font-semibold text-center mb-4">Ready to jump in? Let's go!</h3>
+
+        <div className="w-full h-2 bg-gray-200 rounded-full mb-6">
+          <div className="w-1/3 h-full bg-black rounded-full"></div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-semibold mb-1">First Name</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                value={formData.firstName}
+                onChange={(e) => handleChange('firstName', e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold mb-1">Last Name</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                value={formData.lastName}
+                onChange={(e) => handleChange('lastName', e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold mb-1">Preferred Username</label>
+            <input
+              type="text"
+              className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+              value={formData.username}
+              onChange={(e) => handleChange('username', e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold mb-1">Email</label>
+            <input
+              type="email"
+              className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+              value={formData.email}
+              onChange={(e) => handleChange('email', e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold mb-1">Password</label>
+            <input
+              type="password"
+              className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+              value={formData.password}
+              onChange={(e) => handleChange('password', e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end mt-6">
+          <button
+            onClick={() => setStep(1)}
+            className="bg-black text-white px-8 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors text-sm"
+          >
+            Continue
+          </button>
+        </div>
+
+        <p className="text-center text-xs text-gray-600 mt-4">
+          Already have an account? <a href="#" className="text-blue-600 hover:underline">Sign in</a>
+        </p>
+      </div>
+    </div>
+  </div>
+);
+
+
 
   const renderStep1 = () => (
     <div className="min-h-screen flex">
-      <div className="w-1/2 bg-gradient-to-br from-yellow-50 via-green-50 to-yellow-50 p-12 flex items-center justify-center">
-        <div className="grid grid-cols-2 gap-6 max-w-md">
-          <div className="w-48 h-48 bg-white rounded-2xl shadow-lg flex items-center justify-center">
-            <User className="w-20 h-20 text-green-600" />
-          </div>
-          <div className="w-48 h-48 bg-white rounded-2xl shadow-lg flex items-center justify-center">
-            <MapPin className="w-20 h-20 text-yellow-500" />
-          </div>
-          <div className="w-48 h-48 bg-white rounded-2xl shadow-lg flex items-center justify-center col-span-2">
-            <div className="text-center p-4">
-              <p className="text-gray-600 font-medium">Connecting professionals with shared goals</p>
-            </div>
-          </div>
-        </div>
-      </div>
+   <div className="w-1/2 relative p-12 flex items-start justify-end pt-16 overflow-hidden">
+  <div className="absolute inset-0">
+    <img 
+      src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry.jpg"
+      alt="Background"
+      className="w-full h-full object-cover opacity-30"
+    />
+  </div>
+  
+  {/* Main image on top */}
+  <div className="rounded-3xl overflow-hidden shadow-2xl relative z-10">
+    <img 
+      src="/People-networking-1.png"
+      alt="People networking"
+      className="w-[500px] h-auto"
+    />
+  </div>
+</div>
 
       <div className="w-1/2 p-12 flex items-center justify-center bg-white overflow-y-auto">
         <div className="max-w-lg w-full">
@@ -233,6 +244,17 @@ export default function BudEOnboarding() {
                   <option value="healthcare">Healthcare</option>
                   <option value="finance">Finance</option>
                   <option value="education">Education</option>
+                  <option value="manufacturing">Manufacturing</option>
+                  <option value="real estate">Real Estate</option>
+                  <option value="law">Law</option>
+                  <option value="non-profit">Non-Profit</option>
+                  <option value="government">Government</option>
+                  <option value="accounting">Accounting</option>
+                  <option value="consulting">Consulting</option>
+                  <option value="professional development">Professional Development</option>
+                  <option value="recruiting">Recruiting</option>
+                  <option value="entrepreneur">Entrepreneur/Business Owner</option>
+                  <option value="startup">Startup/Founder</option>
                   <option value="other">Other</option>
                 </select>
               </div>
@@ -244,9 +266,9 @@ export default function BudEOnboarding() {
                   onChange={(e) => handleChange('sameIndustry', e.target.value)}
                 >
                   <option value="">Choose preference</option>
-                  <option value="yes">Yes, same industry</option>
-                  <option value="no">No, different industries</option>
-                  <option value="either">Either is fine</option>
+                  <option value="Yes">Yes, Same Industry As Mine</option>
+                  <option value="No">No, Different Industry As Mine</option>
+                  <option value="Either">My Industry or Other Industries</option>
                 </select>
               </div>
             </div>
@@ -299,10 +321,10 @@ export default function BudEOnboarding() {
                   onChange={(e) => handleChange('dobPreference', e.target.value)}
                 >
                   <option value="">Select age preference</option>
-                  <option value="similar">Similar age (±5 years)</option>
-                  <option value="younger">Younger connections</option>
-                  <option value="older">Older connections</option>
-                  <option value="any">Any age</option>
+                  <option value="similar">Similar Age (+-10 Years</option>
+                  <option value="Mentor">Older - Mentor</option>
+                  <option value="Mentee">Younger - Mentee</option>
+                  <option value="No Preference">No Preference</option>
                 </select>
               </div>
             </div>
@@ -329,11 +351,10 @@ export default function BudEOnboarding() {
                   onChange={(e) => handleChange('radius', e.target.value)}
                 >
                   <option value="">How far to connect?</option>
-                  <option value="5">5 miles</option>
-                  <option value="10">10 miles</option>
-                  <option value="25">25 miles</option>
-                  <option value="50">50 miles</option>
-                  <option value="100">100+ miles</option>
+                  <option value="50">Less than 50 Miles</option>
+                  <option value="100">Less than 100 Miles</option>
+                  <option value="Same State">Same State</option>
+                  <option value="No Preference">No Preference</option>
                 </select>
               </div>
             </div>
@@ -391,12 +412,15 @@ export default function BudEOnboarding() {
             >
               Previous
             </button>
-            <button
-              onClick={() => setStep(2)}
-              className="bg-black text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
-            >
-              Continue
-            </button>
+           <button
+              onClick={() => {
+                       setStep(2);
+                      window.scrollTo(0, 0);
+  }}
+  className="bg-black text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
+>
+  Continue
+</button>
           </div>
 
           <p className="text-center text-sm text-gray-600 mt-6">
@@ -407,19 +431,40 @@ export default function BudEOnboarding() {
     </div>
   );
 
-  const renderStep2 = () => (
-    <div className="min-h-screen bg-white p-12 flex items-center justify-center">
-      <div className="max-w-4xl w-full">
+const renderStep2 = () => (
+  <div className="min-h-screen flex">
+    {/* Left side - Image with blurred background */}
+    <div className="w-1/2 relative p-12 flex items-start justify-end pt-16 overflow-hidden">
+      <div className="absolute inset-0">
+        <img 
+          src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry.jpg"
+          alt="Background"
+          className="w-full h-full object-cover opacity-30"
+        />
+      </div>
+      
+      <div className="rounded-3xl overflow-hidden shadow-2xl relative z-10">
+        <img 
+          src="/People-networking-2.png"
+          alt="People networking"
+          className="w-[500px] h-auto"
+        />
+      </div>
+    </div>
+
+    {/* Right side - Form */}
+    <div className="w-1/2 p-12 flex items-center justify-center bg-white overflow-y-auto">
+      <div className="max-w-lg w-full">
         <div className="flex justify-center mb-6">
           <BudELogo />
         </div>
 
-        <p className="text-center text-gray-600 mb-8">Step 3 of 3 • Creating Your Professional Profile</p>
+        <h1 className="text-3xl font-bold text-center mb-8">Welcome to Networking BudE</h1>
 
-        <div className="flex gap-4 mb-12">
-          <div className="flex-1 h-2 bg-green-600 rounded-full"></div>
-          <div className="flex-1 h-2 bg-green-600 rounded-full"></div>
-          <div className="flex-1 h-2 bg-gray-200 rounded-full"></div>
+        <div className="flex gap-2 mb-8">
+          <div className="flex-1 h-2 bg-black rounded-full"></div>
+          <div className="flex-1 h-2 bg-black rounded-full"></div>
+          <div className="flex-1 h-2 bg-black rounded-full"></div>
         </div>
 
         <div className="space-y-8">
@@ -460,7 +505,7 @@ export default function BudEOnboarding() {
           </div>
         </div>
 
-        <div className="flex justify-between mt-12">
+        <div className="flex justify-between mt-8">
           <button
             onClick={() => setStep(1)}
             className="px-8 py-3 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
@@ -468,19 +513,23 @@ export default function BudEOnboarding() {
             Previous
           </button>
           <button
-            onClick={() => alert('Setup Complete! Redirecting to dashboard...')}
-            className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+            onClick={() => {
+              localStorage.setItem('onboardingCompleted', 'true');
+              navigate('/dashboard');
+            }}
+            className="bg-[#009900] text-white px-6 py-3 rounded-lg border-[3px] border-[#D0ED00] hover:bg-green-700"
           >
             Complete Setup
           </button>
         </div>
 
-        <p className="text-center text-sm text-gray-600 mt-8">
+        <p className="text-center text-sm text-gray-600 mt-6">
           By continuing, you agree to our Terms of Service and Privacy Policy
         </p>
       </div>
     </div>
-  );
+  </div>
+);
 
   const steps = [renderWelcome, renderStep1, renderStep2];
   

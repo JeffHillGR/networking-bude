@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, MapPin, Calendar, Users, ExternalLink } from 'lucide-react';
 
 function Events() {
@@ -6,6 +6,20 @@ function Events() {
   const [selectedType, setSelectedType] = useState('All Types');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [selectedOrg, setSelectedOrg] = useState('All Organizations');
+  const [ads, setAds] = useState({
+    eventsSidebar1: null,
+    eventsSidebar2: null,
+    eventsBottom: null
+  });
+
+  useEffect(() => {
+    // Load ads from localStorage
+    setAds({
+      eventsSidebar1: JSON.parse(localStorage.getItem('ad_eventsSidebar1') || 'null'),
+      eventsSidebar2: JSON.parse(localStorage.getItem('ad_eventsSidebar2') || 'null'),
+      eventsBottom: JSON.parse(localStorage.getItem('ad_eventsBottom') || 'null')
+    });
+  }, []);
 
   const featuredEvents = [
     {
@@ -27,7 +41,7 @@ function Events() {
       time: '6:30 PM - 9:00 PM',
       location: 'Innovation Hub',
       attendees: '80/100',
-      image: 'https://images.unsplash.com/photo-1559223607-9a43e633d6a0?w=800',
+      image: 'https://images.unsplash.com/photo-1571645163064-77faa9676a46?w=800',
       badge: 'In-Person'
     },
     {
@@ -150,119 +164,199 @@ function Events() {
           </div>
         </div>
 
-        {/* Featured Events */}
-        <div className="mb-12">
-          <div className="flex items-center gap-2 mb-6">
-            <span className="text-yellow-500 text-2xl">⭐</span>
-            <h2 className="text-2xl font-bold text-gray-900">Featured Events</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {featuredEvents.map((event) => (
-              <div key={event.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                {event.isSponsored ? (
-                  <div className="h-64 bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center p-8">
-                    <div className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
-                      {event.badge}
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 text-center mb-2">{event.title}</h3>
-                    <p className="text-gray-600 text-center">{event.description}</p>
-                  </div>
-                ) : (
-                  <>
-                    <div className="relative h-48">
-                      <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
-                      <div className="absolute top-4 left-4 bg-black text-white px-3 py-1 rounded-full text-sm font-medium">
-                        {event.badge}
-                      </div>
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>
-                      <p className="text-gray-600 mb-4">{event.description}</p>
-                      <div className="space-y-2 text-sm text-gray-600">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          <span>{event.date} • {event.time}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4" />
-                          <span>{event.location}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4" />
-                          <span>{event.attendees} attending</span>
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* More Events with Side Ad */}
+        {/* Main content with sidebar */}
         <div className="flex gap-6">
-          {/* Events List */}
+          {/* Main Events Content */}
           <div className="flex-1">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">More Events</h2>
-            <div className="space-y-4">
-              {moreEvents.map((event) => (
-                <div key={event.id} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
-                  <div className="flex gap-6">
-                    <img src={event.image} alt={event.title} className="w-48 h-32 object-cover rounded-lg flex-shrink-0" />
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h3 className="text-xl font-bold text-gray-900">{event.title}</h3>
-                          <p className="text-gray-600 mt-1">{event.description}</p>
+            {/* Featured Events */}
+            <div className="mb-12">
+              <div className="flex items-center gap-2 mb-6">
+                <span className="text-yellow-500 text-2xl">⭐</span>
+                <h2 className="text-2xl font-bold text-gray-900">Featured Events</h2>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {featuredEvents.map((event) => (
+                  <div key={event.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    {event.isSponsored ? (
+                      <div className="h-64 bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center p-8">
+                        <div className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
+                          {event.badge}
                         </div>
-                        <div className="flex gap-2 flex-shrink-0 ml-4">
-                          <span className="bg-black text-white px-3 py-1 rounded-full text-xs font-medium">
+                        <h3 className="text-xl font-bold text-gray-900 text-center mb-2">{event.title}</h3>
+                        <p className="text-gray-600 text-center">{event.description}</p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="relative h-48">
+                          <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+                          <div className="absolute top-4 left-4 bg-black text-white px-3 py-1 rounded-full text-sm font-medium">
                             {event.badge}
-                          </span>
-                          {event.price === 'Free' && (
-                            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
-                              Free
+                          </div>
+                        </div>
+                        <div className="p-6">
+                          <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>
+                          <p className="text-gray-600 mb-4">{event.description}</p>
+                          <div className="space-y-2 text-sm text-gray-600">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-4 w-4" />
+                              <span>{event.date} • {event.time}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <MapPin className="h-4 w-4" />
+                              <span>{event.location}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4" />
+                              <span>{event.attendees} attending</span>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* More Events */}
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">More Events</h2>
+              <div className="space-y-4">
+                {moreEvents.map((event) => (
+                  <div key={event.id} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+                    <div className="flex gap-6">
+                      <img src={event.image} alt={event.title} className="w-48 h-32 object-cover rounded-lg flex-shrink-0" />
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-900">{event.title}</h3>
+                            <p className="text-gray-600 mt-1">{event.description}</p>
+                          </div>
+                          <div className="flex gap-2 flex-shrink-0 ml-4">
+                            <span className="bg-black text-white px-3 py-1 rounded-full text-xs font-medium">
+                              {event.badge}
                             </span>
-                          )}
+                            {event.price === 'Free' && (
+                              <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
+                                Free
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-sm text-gray-600 mt-4">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          <span>{event.date}</span>
+                        <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-sm text-gray-600 mt-4">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4" />
+                            <span>{event.date}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4" />
+                            <span>{event.location}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4" />
+                            <span>{event.attendees} attending</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4" />
-                          <span>{event.location}</span>
+                        <div className="flex items-center justify-between mt-4">
+                          <span className="text-sm text-gray-600">by {event.organizer} {event.price !== 'Free' && `• ${event.price}`}</span>
+                          <button className="flex items-center gap-2 text-[#009900] font-medium hover:text-[#007700]">
+                            View Details
+                            <ExternalLink className="h-4 w-4" />
+                          </button>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4" />
-                          <span>{event.attendees} attending</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between mt-4">
-                        <span className="text-sm text-gray-600">by {event.organizer} {event.price !== 'Free' && `• ${event.price}`}</span>
-                        <button className="flex items-center gap-2 text-[#009900] font-medium hover:text-[#007700]">
-                          View Details
-                          <ExternalLink className="h-4 w-4" />
-                        </button>
                       </div>
                     </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Submit Events Button */}
+            <div className="mt-8 text-center">
+              <button className="bg-[#D0ED00] text-black px-6 py-3 rounded-lg font-bold hover:bg-[#bfd400] transition-colors inline-flex items-center gap-2">
+                <span className="text-xl">+</span>
+                Submit Events to BudE
+              </button>
+            </div>
+
+            {/* Bottom Banner Ad */}
+            <div className="mt-12">
+              {ads.eventsBottom?.image && ads.eventsBottom?.url ? (
+                <a
+                  href={ads.eventsBottom.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  <img
+                    src={ads.eventsBottom.image}
+                    alt="Advertisement"
+                    className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                    style={{ aspectRatio: '728/160' }}
+                  />
+                </a>
+              ) : (
+                <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg p-6 flex items-center justify-center border-2 border-dashed border-gray-300" style={{ aspectRatio: '728/160' }}>
+                  <div className="text-center">
+                    <p className="text-gray-600 font-medium">Sample Bottom Banner</p>
+                    <p className="text-sm text-gray-500 mt-2">728 x 160</p>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
           </div>
 
-          {/* Side Banner Ad */}
-          <div className="hidden lg:block w-64 flex-shrink-0">
-            <div className="sticky top-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg p-6 h-96 flex items-center justify-center border-2 border-dashed border-gray-300">
-              <div className="text-center">
-                <p className="text-gray-600 font-medium">Sample Banner Ad</p>
-                <p className="text-sm text-gray-500 mt-2">300 x 600</p>
-              </div>
+          {/* Sidebar Ads */}
+          <div className="hidden lg:block w-44 flex-shrink-0">
+            <div className="sticky top-6 space-y-6">
+              {/* Sidebar Ad 1 */}
+              {ads.eventsSidebar1?.image && ads.eventsSidebar1?.url ? (
+                <a
+                  href={ads.eventsSidebar1.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  <img
+                    src={ads.eventsSidebar1.image}
+                    alt="Advertisement"
+                    className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                    style={{ aspectRatio: '160/600' }}
+                  />
+                </a>
+              ) : (
+                <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300" style={{ aspectRatio: '160/600' }}>
+                  <div className="text-center">
+                    <p className="text-gray-600 font-medium text-sm">Banner Ad</p>
+                    <p className="text-xs text-gray-500 mt-2">160 x 600</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Sidebar Ad 2 */}
+              {ads.eventsSidebar2?.image && ads.eventsSidebar2?.url ? (
+                <a
+                  href={ads.eventsSidebar2.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  <img
+                    src={ads.eventsSidebar2.image}
+                    alt="Advertisement"
+                    className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                    style={{ aspectRatio: '160/600' }}
+                  />
+                </a>
+              ) : (
+                <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300" style={{ aspectRatio: '160/600' }}>
+                  <div className="text-center">
+                    <p className="text-gray-600 font-medium text-sm">Banner Ad</p>
+                    <p className="text-xs text-gray-500 mt-2">160 x 600</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

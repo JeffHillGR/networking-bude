@@ -1,13 +1,29 @@
 import React, { useState } from 'react';
-import { Home, Calendar, Heart, MessageCircle, User, Settings, CreditCard, Archive, ChevronLeft, ChevronRight, Users } from 'lucide-react';
+import { Home, Calendar, Heart, MessageCircle, User, CreditCard, Archive, ChevronLeft, ChevronRight, Users } from 'lucide-react';
+import Sidebar from './Sidebar.jsx';
 import Events from './Events';
 import Connections from './Connections';
 import Messages from './Messages';
 import Profile from './Profile';
+import { Settings as SettingsIcon } from 'lucide-react';
+import Settings from './Settings';
+import Subscription from './Subscription';
+import UpgradeModal from './UpgradeModal';
 import PaymentPortal from './PaymentPortal';
+import TermsPage from './TermsPage';
+import PrivacyPage from './PrivacyPage';
+import ArchivePage from './ArchivePage';
 function Dashboard() {
-    const [activeTab, setActiveTab] = useState('dashboard');
-
+  const [showUpgradePopup, setShowUpgradePopup] = useState(false);
+  const [isDevMode, setIsDevMode] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+const [selectedPlan, setSelectedPlan] = useState(null);
+const [showStats, setShowStats] = useState(false);
+const shouldShowUpgradePrompt = (feature) => {
+  if (isDevMode) return false; // Dev mode bypasses all gates
+  return true; // Preview mode shows upgrade prompts
+};
   const stats = [
     { icon: Users, label: 'New Connections', value: '47', change: '+24% this week', color: 'text-green-600' },
     { icon: Calendar, label: 'Upcoming Events', value: '8', change: '3 this week', color: 'text-blue-600' },
@@ -36,6 +52,9 @@ function Dashboard() {
   ];
 
   const renderContent = () => {
+
+  console.log('Current activeTab:', activeTab);
+  
     switch(activeTab) {
       case 'dashboard':
         return (
@@ -60,18 +79,31 @@ function Dashboard() {
               <p className="text-gray-600 mt-1">Here's what's happening in your professional network today.</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              {stats.map((stat, index) => (
-                <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-                  <div className="flex items-center gap-3 mb-2">
-                    <stat.icon className={`w-5 h-5 ${stat.color}`} />
-                    <span className="text-2xl font-bold text-gray-900">{stat.value}</span>
-                  </div>
-                  <p className="text-xs text-gray-600 mb-1">{stat.label}</p>
-                  <p className="text-xs text-green-600 font-medium">{stat.change}</p>
-                </div>
-              ))}
-            </div>
+            {/* Stats Toggle Button */}
+<div className="mb-6">
+  <button
+    onClick={() => setShowStats(!showStats)}
+    className="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-medium"
+  >
+    {showStats ? '▼' : '▶'} My Activity
+  </button>
+</div>
+
+{/* Collapsible Stats Grid */}
+{showStats && (
+  <div className="grid grid-cols-2 gap-4 mb-6">
+    {stats.map((stat, index) => (
+      <div key={index} className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
+        <div className="flex items-center gap-3 mb-2">
+          <stat.icon className={`w-4 h-4 ${stat.color}`} />
+          <span className="text-xl font-bold text-gray-900">{stat.value}</span>
+        </div>
+        <p className="text-xs text-gray-600 mb-1">{stat.label}</p>
+        <p className="text-xs text-green-600 font-medium">{stat.change}</p>
+      </div>
+    ))}
+  </div>
+)}
 
             <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between mb-4">
@@ -107,9 +139,20 @@ function Dashboard() {
                   <h3 className="font-bold text-gray-900">Check Out Your Potential Connections</h3>
                   <p className="text-sm text-gray-600">People you might want to connect with</p>
                 </div>
-                <button className="text-sm text-green-600 font-medium hover:underline">View All</button>
+                <button 
+  onClick={() => {
+  if (shouldShowUpgradePrompt('connections')) {
+    setShowUpgradePopup(true);
+  } else {
+    setActiveTab('connections');
+  }
+}}
+  className="text-sm text-green-600 font-medium hover:underline"
+>
+  View All
+</button>
               </div>
-              <div className="space-y-3">
+              <div className="grid grid-cols-3 gap-4">
                 {connections.map((person, index) => (
                   <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 flex items-center gap-4">
                     <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-2xl flex-shrink-0">
@@ -137,9 +180,19 @@ function Dashboard() {
                   <h3 className="font-bold text-gray-900">See What Events Are Coming Up</h3>
                   <p className="text-sm text-gray-600">Networking events happening near you</p>
                 </div>
-                <button className="text-sm text-green-600 font-medium hover:underline">View All Events</button>
-              </div>
-              <div className="space-y-3">
+<button 
+  onClick={() => {
+    if (shouldShowUpgradePrompt('events')) {
+      setShowUpgradePopup(true);
+    } else {
+      setActiveTab('events');
+    }
+  }}
+  className="text-sm text-green-600 font-medium hover:underline"
+>
+  View All Events
+</button>              </div>
+              <div className="grid grid-cols-3 gap-4">
                 {events.map((event, index) => (
                   <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
                     <div className="flex items-start justify-between mb-2">
@@ -157,22 +210,104 @@ function Dashboard() {
                   </div>
                 ))}
               </div>
+                    {/* Bottom Banner Ad */}
+            <div className="mt-12">
+              {(() => {
+                const dashboardAd = JSON.parse(localStorage.getItem('ad_dashboardBottom') || 'null');
+                return dashboardAd?.image && dashboardAd?.url ? (<a
+                  
+                    href={dashboardAd.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <img
+                      src={dashboardAd.image}
+                      alt="Advertisement"
+                      className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                      style={{ aspectRatio: '1200/300' }}
+                    />
+                  </a>
+                ) : (
+                  <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg p-12 flex items-center justify-center border-2 border-dashed border-gray-300" style={{ aspectRatio: '1200/300' }}>
+                    <div className="text-center">
+                      <p className="text-gray-600 font-medium">Dashboard Bottom Banner</p>
+                      <p className="text-sm text-gray-500 mt-2">1200 x 300 • Add via Admin Panel</p>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
             </div>
           </div>
         );
       
-      case 'events':
+  case 'events':
   return <Events />;
-      case 'connections':
-  return <Connections />;
-      case 'messages':
-  return <Messages />;
-      case 'profile':
-  return <Profile />;
-      case 'payment':
-  return <PaymentPortal />;      
 
-      default:
+ case 'connections':
+  if (shouldShowUpgradePrompt('connections')) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Premium Feature</h2>
+          <p className="text-gray-600 mb-6">Upgrade to BudE+ to access Connections</p>
+          <button 
+            onClick={() => setActiveTab('subscription')}
+        className="bg-[#009900] text-white px-6 py-3 rounded-lg border-[3px] border-[#D0ED00] hover:bg-green-700"
+          >
+            Upgrade Now
+          </button>
+        </div>
+      </div>
+    );
+  }
+  return <Connections />;
+
+  case 'messages':
+  if (shouldShowUpgradePrompt('messages')) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Premium Feature</h2>
+          <p className="text-gray-600 mb-6">Upgrade to BudE+ to access Messages</p>
+          <button 
+            onClick={() => setActiveTab('subscription')}
+           className="bg-[#009900] text-white px-6 py-3 rounded-lg border-[3px] border-[#D0ED00] hover:bg-green-700"
+          >
+            Upgrade Now
+          </button>
+        </div>
+      </div>
+    );
+  }
+  return <Messages />;
+
+  case 'profile':
+  return <Profile />;
+
+  case 'settings':
+  return <Settings />;
+
+  case 'subscription':
+  return <Subscription onSelectPlan={(planId, isYearly) => {
+    setSelectedPlan({ planId, isYearly });
+      setActiveTab('payment');
+  }} />;
+
+  case 'payment':
+  return <PaymentPortal />;
+
+  case 'terms':
+  return <TermsPage />;
+
+  case 'privacy':
+  return <PrivacyPage />;
+
+  case 'archive':
+  return <ArchivePage />;
+
+default:
         return (
           <div className="flex items-center justify-center h-64">
             <p className="text-gray-500">Content for {activeTab} coming soon...</p>
@@ -183,89 +318,39 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
-      <div className="bg-gradient-to-r from-green-600 via-lime-400 to-yellow-400 text-white px-4 py-2 text-center text-sm md:text-base">
-        <span className="font-medium">🎨 Preview Mode</span>
-        <span className="mx-2">•</span>
-        <span>Upgrade $9.99/month to unlock features</span>
-        <span className="mx-2">•</span>
-        <button className="underline hover:no-underline font-medium">Dev Mode</button>
-      </div>
-      <div className="md:flex md:h-screen">
-        <aside className="hidden md:block w-64 bg-white border-r border-gray-200 flex-shrink-0">
-          <div className="p-6">
-            <div className="flex flex-col items-center mb-8">
-  <img 
-    src="/BudE-Logo-Final.png"
-    alt="BudE Logo" 
-    className="h-20 w-auto"
-  />
-  <span className="text-gray-900 font-semibold text-xl mt-2">Networking BudE</span>
-</div>
-
-            <nav className="space-y-2">
-          {navItems.map((item) => (
-  <button
-    key={item.id}
-    onClick={() => setActiveTab(item.id)}
-    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-      activeTab === item.id
-        ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
-        : 'text-gray-700 hover:bg-gray-100'
-    }`}
-  >
-    <item.icon className="h-5 w-5 flex-shrink-0" />
-    <span className="font-medium">{item.label}</span>
-  </button>
-))}
-
-
-              <div className="pt-6 mt-6 border-t border-gray-200">
-                <p className="text-xs text-gray-500 uppercase font-semibold mb-2 px-4">Account</p>
-                <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100">
-                  <Settings className="w-5 h-5" />
-                  <span className="font-medium">Settings</span>
-                </button>
-                <button 
-  onClick={() => setActiveTab('payment')}
-  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-    activeTab === 'payment'
-      ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
-      : 'text-gray-700 hover:bg-gray-100'
-  }`}
->
-  <CreditCard className="w-5 h-5" />
-  <span className="font-medium">Payment Portal</span>
-</button>
-                <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100">
-                  <Archive className="w-5 h-5" />
-                  <span className="font-medium">Content Archive</span>
-                </button>
-              </div>
-            </nav>
-
-            <div className="absolute bottom-6 left-6 right-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center">
-                  <User className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <p className="font-medium text-gray-900">User</p>
-                  <p className="text-sm text-gray-600">Professional</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-500">
-                <button className="hover:underline">Terms</button>
-                <span>•</span>
-                <button className="hover:underline">Privacy</button>
-                <span>•</span>
-                <button className="hover:underline">Archive</button>
-              </div>
-              <p className="text-xs text-gray-500 mt-1">© 2025 The BudE System™</p>
-            </div>
-          </div>
-        </aside>
-
-        <main className="flex-1 md:overflow-y-auto">
+    <div className="bg-gradient-to-r from-green-600 via-lime-400 to-yellow-400 text-white px-4 py-2 text-center text-sm md:text-base">
+      <span className="font-medium">
+        {isDevMode ? '🔧 Dev Mode' : '🎨 Preview Mode'}
+      </span>
+      <span className="mx-2">•</span>
+      <span>Upgrade $9.99/month to unlock features</span>
+      <span className="mx-2">•</span>
+      <button 
+        onClick={() => setIsDevMode(!isDevMode)} 
+        className="underline hover:no-underline font-medium"
+      >
+        {isDevMode ? 'Switch to Preview' : 'Enter Dev Mode'}
+      </button>
+      {isDevMode && (
+        <>
+          <span className="mx-2">•</span>
+          <button 
+            onClick={() => {
+              localStorage.removeItem('onboardingCompleted');
+              window.location.reload();
+            }}
+            className="underline hover:no-underline font-medium"
+          >
+            Reset to Onboarding
+          </button>
+        </>
+      )}
+    </div>
+    <div className="md:flex md:h-screen">
+  
+    <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        
+          <main className="flex-1 md:overflow-y-auto">
           <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
             <div className="flex items-center justify-center">
               <img 
@@ -279,14 +364,15 @@ function Dashboard() {
           <div className="p-4 md:p-8 max-w-6xl mx-auto">
             {renderContent()}
           </div>
- </main>
+        </main>
       </div>
 
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-2 py-2 z-20">
         <div className="flex items-center justify-around">
           {navItems.map((item) => (
             <button
-              key={item.id}
+              key
+              ={item.id}
               onClick={() => setActiveTab(item.id)}
               className={`flex flex-col items-center px-3 py-2 rounded-lg transition-colors ${
                 activeTab === item.id
@@ -295,13 +381,39 @@ function Dashboard() {
               }`}
             >
               <item.icon className="h-5 w-5" />
-              <span className="text-xs mt-1">{item.name}</span>
+              <span className="text-xs mt-1">{item.label}</span>
             </button>
           ))}
         </div>
       </nav>
+      {showUpgradePopup && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowUpgradePopup(false)}>
+    <div className="bg-white rounded-lg p-8 max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">Premium Feature</h2>
+      <p className="text-gray-600 mb-6">Upgrade to a paid BudE Subscriber to access this feature</p>
+      <div className="flex gap-3">
+        <button 
+          onClick={() => {
+            setShowUpgradePopup(false);
+            setActiveTab('subscription');
+          }}
+          className="flex-1 bg-[#009900] text-white px-6 py-3 rounded-lg border-[3px] border-[#D0ED00] hover:bg-green-700"        >
+          Upgrade Now
+        </button>
+        <button 
+          onClick={() => setShowUpgradePopup(false)}
+          className="flex-1 border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50"
+        >
+          Maybe Later
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }
+
+
 
 export default Dashboard;

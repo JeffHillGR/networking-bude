@@ -85,9 +85,7 @@ function PaymentPortal() {
       {/* Header */}
       <div className="max-w-6xl mx-auto mb-8">
         <div className="flex items-center gap-4 mb-2">
-          <button className="p-2 hover:bg-gray-100 rounded-lg">
-            <ArrowLeft className="w-5 h-5" />
-          </button>
+        
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Subscription & Billing</h1>
             <p className="text-gray-600 mt-1">Manage your subscription, payment methods, and billing</p>
@@ -155,7 +153,7 @@ function PaymentPortal() {
 
               <button
                 onClick={() => setActiveTab('plans')}
-                className="px-6 py-2 bg-[#009900] text-white rounded-lg hover:bg-[#007700] transition-colors"
+          className="px-6 py-2 bg-[#009900] text-white rounded-lg border-[3px] border-[#D0ED00] hover:bg-[#007700] transition-colors"
               >
                 Upgrade Plan
               </button>
@@ -174,7 +172,7 @@ function PaymentPortal() {
                 <p className="text-sm text-gray-600">Events Attended</p>
               </div>
               <div className="bg-white rounded-lg shadow-sm p-6">
-                <Star className="w-8 h-8 text-purple-600 mb-2" />
+                <CheckCircle className="w-8 h-8 text-purple-600 mb-2" />
                 <p className="text-2xl font-bold">94%</p>
                 <p className="text-sm text-gray-600">Profile Strength</p>
               </div>
@@ -190,7 +188,7 @@ function PaymentPortal() {
               <button
                 onClick={() => setIsYearly(false)}
                 className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                  !isYearly ? 'bg-[#009900] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                 !isYearly ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
                 Monthly
@@ -198,7 +196,7 @@ function PaymentPortal() {
               <button
                 onClick={() => setIsYearly(true)}
                 className={`px-6 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-                  isYearly ? 'bg-[#009900] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  isYearly ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
                 Yearly
@@ -226,9 +224,21 @@ function PaymentPortal() {
                   )}
 
                   <div className="text-center mb-6">
-                    {plan.id === 'free' && <Users className="w-12 h-12 mx-auto mb-4 text-gray-600" />}
-                    {plan.id === 'bude' && <Star className="w-12 h-12 mx-auto mb-4 text-[#009900]" />}
-                    {plan.id === 'bude-plus' && <Crown className="w-12 h-12 mx-auto mb-4 text-purple-600" />}
+                   {plan.id === 'free' && <Users className="w-12 h-12 mx-auto mb-4 text-gray-600" />}
+{plan.id === 'bude' && (
+  <img 
+    src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/BudE-favicon.png" 
+    alt="BudE Plan" 
+    className="w-20 h-20 mx-auto mb-4"
+  />
+)}
+{plan.id === 'bude-plus' && (
+  <img 
+    src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/BudE-plus-favicon.png" 
+    alt="BudE Plus" 
+    className="w-20 h-20 mx-auto mb-4"
+  />
+)}
                     
                     <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
                     <div className="text-3xl font-bold text-gray-900">
@@ -265,7 +275,7 @@ function PaymentPortal() {
                     className={`w-full py-2 rounded-lg font-medium transition-colors ${
                       plan.id === 'free'
                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-[#009900] text-white hover:bg-[#007700]'
+                        : 'bg-[#009900] text-white border-[3px] border-[#D0ED00] hover:bg-[#007700]'
                     }`}
                     disabled={plan.id === 'free'}
                   >
@@ -320,7 +330,7 @@ function PaymentPortal() {
                       />
                       <button
                         onClick={handleApplyPromo}
-                        className="px-6 py-2 bg-[#009900] text-white rounded-lg hover:bg-[#007700] transition-colors"
+                        className="px-6 py-2 bg-[#009900] text-white rounded-lg border-[3px] border-[#D0ED00] hover:bg-[#007700] transition-colors"
                       >
                         Apply
                       </button>
@@ -412,7 +422,7 @@ function PaymentPortal() {
                       <span className="text-sm text-gray-600">Your payment information is encrypted and secure</span>
                     </div>
 
-                    <button className="w-full py-3 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors">
+                    <button className="w-full py-3 bg-[#009900] text-white rounded-lg border-[3px] border-[#D0ED00] font-medium hover:bg-[#007700] transition-colors">
                       Complete Payment
                     </button>
                   </div>
@@ -423,7 +433,7 @@ function PaymentPortal() {
                 <p className="text-gray-600 mb-4">Please select a plan to continue with payment.</p>
                 <button
                   onClick={() => setActiveTab('plans')}
-                  className="px-6 py-2 bg-[#009900] text-white rounded-lg hover:bg-[#007700] transition-colors"
+                  className="px-6 py-2 bg-[#009900] text-white rounded-lg border-[3px] border-[#D0ED00] hover:bg-[#007700] transition-colors"
                 >
                   View Plans
                 </button>
@@ -438,7 +448,7 @@ function PaymentPortal() {
             <h2 className="text-xl font-bold mb-4">Billing History</h2>
             <div className="space-y-3">
               {billingHistory.map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div key={item.id} className="px-6 py-2 bg-[#009900] text-white rounded-lg border-[3px] border-[#D0ED00] hover:bg-[#007700] transition-colors">
                   <div>
                     <p className="font-medium">{item.description}</p>
                     <p className="text-sm text-gray-600">{item.date}</p>
