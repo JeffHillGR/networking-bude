@@ -3,9 +3,6 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "overrides": {
-  "rollup": "^4.0.0"
-}
   "scripts": {
     "dev": "vite",
     "build": "vite build",
