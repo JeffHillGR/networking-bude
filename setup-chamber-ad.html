@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Chamber Ad</title>
+</head>
+<body>
+    <h1>Grand Rapids Chamber of Commerce Ad Setup</h1>
+    <p>Click the button below to set up the dashboard bottom banner ad.</p>
+    <button onclick="setupAd()">Setup Ad</button>
+    <p id="status"></p>
+
+    <script>
+        function setupAd() {
+            // Create SVG banner for Grand Rapids Chamber of Commerce
+            const svg = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300">
+                    <!-- Background gradient -->
+                    <defs>
+                        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Background -->
+                    <rect width="1200" height="300" fill="url(#grad)"/>
+
+                    <!-- Decorative elements -->
+                    <circle cx="1050" cy="150" r="120" fill="rgba(255,255,255,0.1)"/>
+                    <circle cx="150" cy="150" r="80" fill="rgba(255,255,255,0.08)"/>
+
+                    <!-- Text content -->
+                    <text x="600" y="100" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#ffffff" text-anchor="middle">
+                        Grand Rapids Chamber of Commerce
+                    </text>
+
+                    <text x="600" y="150" font-family="Arial, sans-serif" font-size="32" fill="#e0e7ff" text-anchor="middle">
+                        Building Business. Building Community.
+                    </text>
+
+                    <text x="600" y="200" font-family="Arial, sans-serif" font-size="24" fill="#ffffff" text-anchor="middle">
+                        Join 1,800+ member businesses growing together
+                    </text>
+
+                    <!-- Call to action -->
+                    <rect x="475" y="220" width="250" height="50" rx="25" fill="#ffffff"/>
+                    <text x="600" y="253" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#1e3a8a" text-anchor="middle">
+                        Learn More →
+                    </text>
+                </svg>
+            `;
+
+            // Convert SVG to data URI
+            const svgBlob = new Blob([svg], { type: 'image/svg+xml' });
+            const reader = new FileReader();
+
+            reader.onloadend = function() {
+                const adData = {
+                    image: reader.result,
+                    url: 'https://grandrapids.org/'
+                };
+
+                localStorage.setItem('ad_dashboardBottom', JSON.stringify(adData));
+                document.getElementById('status').innerHTML = '<strong style="color: green;">✓ Ad successfully set up!</strong><br>You can now close this page and view your dashboard.';
+            };
+
+            reader.readAsDataURL(svgBlob);
+        }
+    </script>
+</body>
+</html>

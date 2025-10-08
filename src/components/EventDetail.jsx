@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Calendar, MapPin, Heart, ExternalLink, Share2, User } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Heart, ExternalLink, Share2, User, Home } from 'lucide-react';
+import Sidebar from './Sidebar.jsx';
 
 function EventDetail() {
   const navigate = useNavigate();
@@ -119,23 +120,28 @@ function EventDetail() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back to Events</span>
-          </button>
-          <h1 className="text-2xl font-bold text-gray-900">Event Details</h1>
-          <p className="text-gray-600 mt-1">Everything you need to know about this event</p>
-        </div>
-      </div>
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar activeTab="events" setActiveTab={() => navigate('/dashboard')} />
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="flex-1 ml-64">
+        {/* Header with green top bar */}
+        <div className="bg-[#009900] h-2"></div>
+
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-6 py-4">
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span>Back to Dashboard</span>
+            </button>
+            <h1 className="text-2xl font-bold text-gray-900">Event Details</h1>
+            <p className="text-gray-600 mt-1">Everything you need to know about this event</p>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content - Left Column */}
           <div className="lg:col-span-2 space-y-6">
@@ -295,6 +301,7 @@ function EventDetail() {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>
