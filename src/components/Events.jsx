@@ -15,6 +15,9 @@ function Events() {
   });
 
   useEffect(() => {
+    // Scroll to top when component loads
+    window.scrollTo(0, 0);
+
     // Load ads from localStorage
     setAds({
       eventsSidebar1: JSON.parse(localStorage.getItem('ad_eventsSidebar1') || 'null'),

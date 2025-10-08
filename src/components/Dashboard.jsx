@@ -21,7 +21,6 @@ function Dashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 const [selectedPlan, setSelectedPlan] = useState(null);
-const [showStats, setShowStats] = useState(false);
 const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
 
 // Get user's first name and time-based greeting
@@ -36,12 +35,6 @@ const shouldShowUpgradePrompt = (feature) => {
   if (isDevMode) return false; // Dev mode bypasses all gates
   return true; // Preview mode shows upgrade prompts
 };
-  const stats = [
-    { icon: Users, label: 'New Connections', value: '47', change: '+24% this week', color: 'text-green-600' },
-    { icon: Calendar, label: 'Upcoming Events', value: '8', change: '3 this week', color: 'text-blue-600' },
-    { icon: MessageCircle, label: 'Active Conversations', value: '12', change: '89% response rate', color: 'text-purple-600' },
-    { icon: User, label: 'Profile Views', value: '342', change: '+67% this month', color: 'text-orange-600' }
-  ];
 
   const featuredContent = [
     {
@@ -129,32 +122,6 @@ const shouldShowUpgradePrompt = (feature) => {
               <h1 className="text-2xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
               <p className="text-gray-600 mt-1">Here's what's happening in your professional network today.</p>
             </div>
-
-            {/* Stats Toggle Button */}
-<div className="mb-6">
-  <button
-    onClick={() => setShowStats(!showStats)}
-    className="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-medium"
-  >
-    {showStats ? '▼' : '▶'} My Activity
-  </button>
-</div>
-
-{/* Collapsible Stats Grid */}
-{showStats && (
-  <div className="grid grid-cols-2 gap-4 mb-6">
-    {stats.map((stat, index) => (
-      <div key={index} className="bg-white rounded-lg p-3 shadow-sm border border-gray-200">
-        <div className="flex items-center gap-3 mb-2">
-          <stat.icon className={`w-4 h-4 ${stat.color}`} />
-          <span className="text-xl font-bold text-gray-900">{stat.value}</span>
-        </div>
-        <p className="text-xs text-gray-600 mb-1">{stat.label}</p>
-        <p className="text-xs text-green-600 font-medium">{stat.change}</p>
-      </div>
-    ))}
-  </div>
-)}
 
             <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between mb-4">

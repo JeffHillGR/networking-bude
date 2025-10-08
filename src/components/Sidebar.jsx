@@ -1,4 +1,5 @@
-import { Home, Calendar, Heart, MessageCircle, User, Settings as SettingsIcon, CreditCard, Archive } from 'lucide-react';
+import { useState } from 'react';
+import { Home, Calendar, Heart, MessageCircle, User, Settings as SettingsIcon, CreditCard, Archive, Activity } from 'lucide-react';
 
 function Sidebar({ activeTab, setActiveTab }) {
   // Get user data from localStorage
@@ -6,6 +7,8 @@ function Sidebar({ activeTab, setActiveTab }) {
   const lastName = localStorage.getItem('userLastName') || 'Name';
   const jobTitle = localStorage.getItem('userJobTitle') || 'Job Title';
   const fullName = `${firstName} ${lastName}`;
+
+  const [showActivity, setShowActivity] = useState(false);
 
   const navItems = [
     { id: 'dashboard', icon: Home, label: 'Dashboard' },
@@ -50,6 +53,29 @@ function Sidebar({ activeTab, setActiveTab }) {
               {/* Account Section */}
               <div className="border-t border-gray-200 my-4 pt-4">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-4">ACCOUNT</p>
+
+                {/* My Activity */}
+                <button
+                  onClick={() => setShowActivity(!showActivity)}
+                  className="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors text-gray-500 hover:bg-gray-100"
+                >
+                  <Activity className="w-4 h-4" />
+                  <span className="flex-1 text-left">My Activity</span>
+                  <span className="text-xs">{showActivity ? '▼' : '▶'}</span>
+                </button>
+
+                {showActivity && (
+                  <div className="ml-4 mt-2 space-y-2 px-4">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-gray-600">Profile Views</span>
+                      <span className="font-bold text-gray-900">342</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-gray-600">Upcoming Events</span>
+                      <span className="font-bold text-gray-900">8</span>
+                    </div>
+                  </div>
+                )}
 
                 <button
                   onClick={() => setActiveTab('settings')}
