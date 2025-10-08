@@ -27,7 +27,7 @@ export default function BudEOnboarding() {
 
   const organizations = [
     'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
-    'Economics Club', 'Create Great Leaders', 'Right Place', 'Bamboo',
+    'Econ Club of GR', 'Create Great Leaders', 'Right Place', 'Bamboo',
     'Hello West Michigan', 'GRAR', 'CARWM', 'Creative Mornings'
   ];
 
