@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Home, Calendar, Heart, MessageCircle, User, CreditCard, Archive, ChevronLeft, ChevronRight, Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Home, Calendar, Heart, MessageCircle, User, CreditCard, Archive, ChevronLeft, ChevronRight, Users, ExternalLink } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
 import Events from './Events';
 import Connections from './Connections';
@@ -14,12 +15,23 @@ import TermsPage from './TermsPage';
 import PrivacyPage from './PrivacyPage';
 import ArchivePage from './ArchivePage';
 function Dashboard() {
+  const navigate = useNavigate();
   const [showUpgradePopup, setShowUpgradePopup] = useState(false);
   const [isDevMode, setIsDevMode] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 const [selectedPlan, setSelectedPlan] = useState(null);
 const [showStats, setShowStats] = useState(false);
+const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
+
+// Get user's first name and time-based greeting
+const userFirstName = localStorage.getItem('userFirstName') || 'there';
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+};
 const shouldShowUpgradePrompt = (feature) => {
   if (isDevMode) return false; // Dev mode bypasses all gates
   return true; // Preview mode shows upgrade prompts
@@ -31,16 +43,43 @@ const shouldShowUpgradePrompt = (feature) => {
     { icon: User, label: 'Profile Views', value: '342', change: '+67% this month', color: 'text-orange-600' }
   ];
 
+  const featuredContent = [
+    {
+      image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=200&h=200&fit=crop',
+      title: 'Building Meaningful Professional Networks',
+      description: 'Learn strategies for authentic networking that leads to lasting professional relationships.',
+      type: 'Career Growth Podcast',
+      duration: '32 min',
+      sponsor: { name: 'Lake Michigan Credit Union', logo: 'LMCU' }
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=200&h=200&fit=crop',
+      title: 'Leadership in the Modern Workplace',
+      description: 'Discover how to lead effectively in hybrid work environments and build resilient teams.',
+      type: 'Video Course',
+      duration: '45 min',
+      sponsor: { name: 'Mercantile Bank', logo: 'MB' }
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=200&h=200&fit=crop',
+      title: 'Personal Branding for Professionals',
+      description: 'Master the art of showcasing your unique value and building your professional reputation.',
+      type: 'Article Series',
+      duration: '15 min read',
+      sponsor: { name: 'First National Bank', logo: 'FNB' }
+    }
+  ];
+
   const connections = [
-    { name: 'Alex Chen', title: 'Senior Developer at Google', match: '95% match', mutuals: '3 mutual connections', image: '👨‍💼' },
-    { name: 'Maria Rodriguez', title: 'Marketing Director at Spotify', match: '88% match', mutuals: '5 mutual connections', image: '👩‍💼' },
-    { name: 'David Kim', title: 'Product Manager at Meta', match: '92% match', mutuals: '2 mutual connections', image: '👨‍💻' }
+    { name: 'Maria Rodriguez', title: 'Marketing Director at Spotify', match: '88% match', mutuals: '5 mutual connections', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=faces' },
+    { name: 'Alex Chen', title: 'Senior Developer at Google', match: '95% match', mutuals: '3 mutual connections', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=faces' },
+    { name: 'David Kim', title: 'Product Manager at Meta', match: '92% match', mutuals: '2 mutual connections', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&h=200&fit=crop&crop=faces' }
   ];
 
   const events = [
-    { title: 'Creative Mornings Design Session', date: '9/19/2025', time: '8:00 AM - 10:00 AM', location: 'Bamboo Grand Rapids', attendees: '45 attending' },
-    { title: 'StartGarden Entrepreneur Pitch', date: '9/24/2025', time: '6:30 PM - 9:00 PM', location: 'StartGarden', attendees: '80 attending' },
-    { title: 'Athena Leadership Workshop', date: '9/27/2025', time: '9:00 AM - 5:00 PM', location: 'Grand Rapids Art Museum', attendees: '150 attending' }
+    { id: 1, title: 'Creative Mornings Design Session', date: '9/19/2025', time: '8:00 AM - 10:00 AM', location: 'Bamboo Grand Rapids', attendees: '45 attending', image: 'https://images.unsplash.com/photo-1558403194-611308249627?w=400&h=300&fit=crop' },
+    { id: 2, title: 'StartGarden Entrepreneur Pitch', date: '9/24/2025', time: '6:30 PM - 9:00 PM', location: 'StartGarden', attendees: '80 attending', image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=300&fit=crop' },
+    { id: 3, title: 'Athena Leadership Workshop', date: '9/27/2025', time: '9:00 AM - 5:00 PM', location: 'Grand Rapids Art Museum', attendees: '150 attending', image: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=400&h=300&fit=crop' }
   ];
 
   const navItems = [
@@ -75,7 +114,7 @@ const shouldShowUpgradePrompt = (feature) => {
             </div>
 
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Good evening, there!</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
               <p className="text-gray-600 mt-1">Here's what's happening in your professional network today.</p>
             </div>
 
@@ -112,23 +151,37 @@ const shouldShowUpgradePrompt = (feature) => {
                   <p className="text-sm text-gray-600">Curated content to help you grow professionally</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button className="p-1 hover:bg-gray-100 rounded">
+                  <button
+                    onClick={() => setFeaturedContentIndex((featuredContentIndex - 1 + featuredContent.length) % featuredContent.length)}
+                    className="p-1 hover:bg-gray-100 rounded"
+                  >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
-                  <span className="text-sm text-gray-600">1 of 3</span>
-                  <button className="p-1 hover:bg-gray-100 rounded">
+                  <span className="text-sm text-gray-600">{featuredContentIndex + 1} of {featuredContent.length}</span>
+                  <button
+                    onClick={() => setFeaturedContentIndex((featuredContentIndex + 1) % featuredContent.length)}
+                    className="p-1 hover:bg-gray-100 rounded"
+                  >
                     <ChevronRight className="w-5 h-5" />
                   </button>
                 </div>
               </div>
               <div className="flex gap-4">
-                <div className="w-24 h-24 bg-gray-900 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <div className="w-12 h-12 border-4 border-white rounded-full"></div>
-                </div>
+                <img
+                  src={featuredContent[featuredContentIndex].image}
+                  alt={featuredContent[featuredContentIndex].title}
+                  className="w-24 h-24 rounded-lg object-cover flex-shrink-0"
+                />
                 <div className="flex-1">
-                  <h4 className="font-bold text-gray-900 mb-2">Building Meaningful Professional Networks</h4>
-                  <p className="text-sm text-gray-600 mb-3">Learn strategies for authentic networking that leads to lasting professional relationships.</p>
-                  <p className="text-xs text-gray-500">Career Growth Podcast • 32 min</p>
+                  <h4 className="font-bold text-gray-900 mb-2">{featuredContent[featuredContentIndex].title}</h4>
+                  <p className="text-sm text-gray-600 mb-3">{featuredContent[featuredContentIndex].description}</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-gray-500">{featuredContent[featuredContentIndex].type} • {featuredContent[featuredContentIndex].duration}</p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-gray-400">Sponsored by</span>
+                      <span className="text-xs font-medium text-gray-700">{featuredContent[featuredContentIndex].sponsor.name}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -154,20 +207,22 @@ const shouldShowUpgradePrompt = (feature) => {
               </div>
               <div className="grid grid-cols-3 gap-4">
                 {connections.map((person, index) => (
-                  <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-2xl flex-shrink-0">
-                      {person.image}
-                    </div>
+                  <div key={index} className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 flex items-center gap-4">
+                    <img
+                      src={person.image}
+                      alt={person.name}
+                      className="w-16 h-16 rounded-full object-cover flex-shrink-0"
+                    />
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-gray-900">{person.name}</h4>
+                      <h4 className="font-bold text-gray-900 text-base">{person.name}</h4>
                       <p className="text-sm text-gray-600 truncate">{person.title}</p>
-                      <div className="flex items-center gap-3 mt-1">
+                      <div className="flex items-center gap-3 mt-2">
                         <span className="text-xs text-red-500">❤️ {person.match}</span>
                         <span className="text-xs text-blue-500">👥 {person.mutuals}</span>
                       </div>
                     </div>
                     <button className="p-2 hover:bg-gray-100 rounded-full flex-shrink-0">
-                      <User className="w-5 h-5 text-gray-600" />
+                      <User className="w-6 h-6 text-gray-600" />
                     </button>
                   </div>
                 ))}
@@ -192,20 +247,38 @@ const shouldShowUpgradePrompt = (feature) => {
 >
   View All Events
 </button>              </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-3">
                 {events.map((event, index) => (
-                  <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex-1">
-                        <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-2">In-Person</span>
-                        <h4 className="font-bold text-gray-900">{event.title}</h4>
+                  <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    {event.image && (
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        className="w-full h-32 object-cover"
+                      />
+                    )}
+                    <div className="p-3">
+                      <div className="flex items-start justify-between mb-1">
+                        <div className="flex-1">
+                          <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-1">In-Person</span>
+                          <h4 className="font-bold text-gray-900 text-sm">{event.title}</h4>
+                        </div>
                       </div>
-                    </div>
-                    <div className="space-y-1 text-sm text-gray-600">
-                      <p>📅 {event.date}</p>
-                      <p>🕐 {event.time}</p>
-                      <p>📍 {event.location}</p>
-                      <p>👥 {event.attendees}</p>
+                      <div className="space-y-0.5 text-xs text-gray-600 mb-2">
+                        <p>📅 {event.date}</p>
+                        <p>🕐 {event.time}</p>
+                        <p>📍 {event.location}</p>
+                        <p>👥 {event.attendees}</p>
+                      </div>
+                      <div className="flex justify-end">
+                        <button
+                          onClick={() => navigate(`/events/${event.id}`)}
+                          className="text-[#009900] font-medium hover:text-[#007700] flex items-center gap-1 text-xs"
+                        >
+                          View Details
+                          <ExternalLink className="h-3 w-3" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}

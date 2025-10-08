@@ -8,7 +8,8 @@ function AdminPanel() {
   const [ads, setAds] = useState({
     eventsSidebar1: JSON.parse(localStorage.getItem('ad_eventsSidebar1') || 'null'),
     eventsSidebar2: JSON.parse(localStorage.getItem('ad_eventsSidebar2') || 'null'),
-    eventsBottom: JSON.parse(localStorage.getItem('ad_eventsBottom') || 'null')
+    eventsBottom: JSON.parse(localStorage.getItem('ad_eventsBottom') || 'null'),
+    dashboardBottom: JSON.parse(localStorage.getItem('ad_dashboardBottom') || 'null')
   });
 
   const handleLogin = (e) => {
@@ -128,7 +129,14 @@ function AdminPanel() {
 
       {/* Tab Content */}
       <div className="max-w-7xl mx-auto p-8">
-        {activeTab === 'dashboard' && <DashboardSetupTab />}
+        {activeTab === 'dashboard' && (
+          <DashboardSetupTab
+            ads={ads}
+            handleImageUpload={handleImageUpload}
+            handleUrlChange={handleUrlChange}
+            removeAd={removeAd}
+          />
+        )}
         {activeTab === 'events' && (
           <EventsAdsTab
             ads={ads}
@@ -143,7 +151,7 @@ function AdminPanel() {
   );
 }
 
-function DashboardSetupTab() {
+function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold mb-6">Dashboard Layout Setup</h2>
@@ -225,26 +233,15 @@ function DashboardSetupTab() {
         <p className="text-gray-600 mb-4">
           Advertisement that appears at the bottom of the user dashboard
         </p>
-        
+
         <div>
           <InlineAdEditor
             title="Dashboard Bottom Banner"
             slot="dashboardBottom"
-            ad={JSON.parse(localStorage.getItem('ad_dashboardBottom') || 'null')}
-            onImageUpload={(slot, file) => {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                const currentAd = JSON.parse(localStorage.getItem(`ad_${slot}`) || '{}');
-                const newAd = { ...currentAd, image: reader.result };
-                localStorage.setItem(`ad_${slot}`, JSON.stringify(newAd));
-              };
-              if (file) reader.readAsDataURL(file);
-            }}
-            onUrlChange={(slot, url) => {
-              const currentAd = JSON.parse(localStorage.getItem(`ad_${slot}`) || '{}');
-              localStorage.setItem(`ad_${slot}`, JSON.stringify({ ...currentAd, url }));
-            }}
-            onRemove={(slot) => localStorage.removeItem(`ad_${slot}`)}
+            ad={ads.dashboardBottom}
+            onImageUpload={handleImageUpload}
+            onUrlChange={handleUrlChange}
+            onRemove={removeAd}
             dimensions="1200x300px"
             description="Appears at bottom of user dashboard"
             aspectRatio="1200/300"
@@ -258,13 +255,13 @@ function DashboardSetupTab() {
 function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Events Page Banner Ad Placement</h2>
-      
+      <h2 className="text-2xl font-bold mb-6">Events Page Content and Ads</h2>
+
       <div className="flex gap-6">
         {/* Main Content Area */}
-        <div className="flex-1">
+        <div className="flex-1 flex flex-col">
           <div className="bg-white rounded-lg p-8 border border-gray-200 mb-6">
-            <h3 className="text-xl font-semibold mb-4">Events Page Content</h3>
+            <h3 className="text-xl font-semibold mb-4">Events Page Listings</h3>
             <div className="space-y-4 text-gray-500">
               <p>Your events listing displays here...</p>
               <div className="h-32 bg-gray-100 rounded"></div>
@@ -273,8 +270,8 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
             </div>
           </div>
 
-          {/* Bottom Banner Ad */}
-          <div className="mt-8">
+          {/* Bottom Banner Ad - pushed to bottom */}
+          <div className="mt-auto">
             <InlineAdEditor
               title="Events - Bottom Banner"
               slot="eventsBottom"

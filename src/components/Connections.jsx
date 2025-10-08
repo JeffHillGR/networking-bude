@@ -8,19 +8,6 @@ function Connections() {
   const connections = [
     {
       id: 1,
-      name: 'Alex Chen',
-      title: 'Senior Software Engineer',
-      company: 'Google',
-      location: 'San Francisco, CA',
-      connectionScore: 95,
-      mutualConnections: 3,
-      tags: ['Technology', 'AI/ML'],
-      bio: 'Passionate about building scalable systems and leading engineering teams. Always interested in discussing the latest in cloud architecture and AI applications.',
-      initials: 'AC',
-      isOnline: true
-    },
-    {
-      id: 2,
       name: 'Maria Rodriguez',
       title: 'Marketing Director',
       company: 'Spotify',
@@ -29,8 +16,21 @@ function Connections() {
       mutualConnections: 5,
       tags: ['Marketing', 'Media'],
       bio: 'Experienced marketing leader focused on brand strategy and digital transformation. Love connecting with creative professionals.',
-      initials: 'MR',
+      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=faces',
       isOnline: false
+    },
+    {
+      id: 2,
+      name: 'Alex Chen',
+      title: 'Senior Software Engineer',
+      company: 'Google',
+      location: 'San Francisco, CA',
+      connectionScore: 95,
+      mutualConnections: 3,
+      tags: ['Technology', 'AI/ML'],
+      bio: 'Passionate about building scalable systems and leading engineering teams. Always interested in discussing the latest in cloud architecture and AI applications.',
+      image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=faces',
+      isOnline: true
     },
     {
       id: 3,
@@ -42,7 +42,7 @@ function Connections() {
       mutualConnections: 2,
       tags: ['Product Management', 'Design'],
       bio: 'Product leader with 10+ years experience building user-centric products. Passionate about mentoring aspiring PMs.',
-      initials: 'DK',
+      image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&h=200&fit=crop&crop=faces',
       isOnline: true
     },
     {
@@ -55,7 +55,7 @@ function Connections() {
       mutualConnections: 4,
       tags: ['Sales', 'Leadership'],
       bio: 'Sales executive specializing in enterprise SaaS. Always happy to share insights on building high-performing sales teams.',
-      initials: 'JW',
+      image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=faces',
       isOnline: false
     }
   ];
@@ -134,9 +134,11 @@ function Connections() {
                 )}
                 
                 <div className="flex flex-col items-center">
-                  <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-4xl font-bold mb-4 shadow-lg">
-                    {currentCard.initials}
-                  </div>
+                  <img
+                    src={currentCard.image}
+                    alt={currentCard.name}
+                    className="w-32 h-32 rounded-full object-cover mb-4 shadow-lg border-4 border-white"
+                  />
                   <h3 className="text-2xl font-bold text-gray-900">{currentCard.name}</h3>
                   <p className="text-gray-600 mt-1">{currentCard.title}</p>
                   <p className="text-gray-500 text-sm">{currentCard.company}</p>
@@ -211,9 +213,11 @@ function Connections() {
                 <div key={person.id} className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-start gap-3 mb-3">
                     <div className="relative">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
-                        {person.initials}
-                      </div>
+                      <img
+                        src={person.image}
+                        alt={person.name}
+                        className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                      />
                       {person.isOnline && (
                         <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                       )}

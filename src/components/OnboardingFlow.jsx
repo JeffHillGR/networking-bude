@@ -76,8 +76,8 @@ export default function BudEOnboarding() {
       <div className="relative">
         {/* Large phone image */}
         <div className="w-[500px] h-[620px] rounded-3xl overflow-hidden shadow-2xl relative">
-          <img 
-            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/My-phone.jpg"
+          <img
+            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/My-phone-2.jpg"
             alt="BudE app on phone"
             className="w-full h-full object-cover"
           />
@@ -515,6 +515,7 @@ const renderStep2 = () => (
           <button
             onClick={() => {
               localStorage.setItem('onboardingCompleted', 'true');
+              localStorage.setItem('userFirstName', formData.firstName);
               navigate('/dashboard');
             }}
             className="bg-[#009900] text-white px-6 py-3 rounded-lg border-[3px] border-[#D0ED00] hover:bg-green-700"

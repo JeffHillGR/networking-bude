@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Calendar, Users, ExternalLink } from 'lucide-react';
 
 function Events() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState('All Types');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
@@ -24,35 +26,35 @@ function Events() {
   const featuredEvents = [
     {
       id: 1,
-      title: 'Tech Leaders Breakfast Meetup',
-      description: 'Join fellow tech leaders for an informal breakfast networking session.',
+      title: 'Creative Mornings Design Session',
+      description: 'Join fellow creatives for an inspiring morning session.',
       date: '9/19/2025',
       time: '8:00 AM - 10:00 AM',
-      location: 'Downtown Conference Center',
+      location: 'Bamboo Grand Rapids',
       attendees: '45/60',
-      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
+      image: 'https://images.unsplash.com/photo-1558403194-611308249627?w=800&h=600&fit=crop',
       badge: 'In-Person'
     },
     {
       id: 2,
-      title: 'Startup Pitch Night',
-      description: 'Watch promising startups pitch to investors and network.',
+      title: 'StartGarden Entrepreneur Pitch',
+      description: 'Watch promising West Michigan startups pitch their ideas.',
       date: '9/24/2025',
       time: '6:30 PM - 9:00 PM',
-      location: 'Innovation Hub',
+      location: 'StartGarden',
       attendees: '80/100',
-      image: 'https://images.unsplash.com/photo-1571645163064-77faa9676a46?w=800',
+      image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&h=600&fit=crop',
       badge: 'In-Person'
     },
     {
       id: 3,
-      title: 'Product Management Workshop',
-      description: 'Learn advanced PM strategies from industry experts.',
+      title: 'Athena Leadership Workshop',
+      description: 'Develop your leadership skills in this full-day workshop.',
       date: '9/27/2025',
       time: '9:00 AM - 5:00 PM',
-      location: 'Tech Campus',
+      location: 'Grand Rapids Art Museum',
       attendees: '150/200',
-      image: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800',
+      image: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&h=600&fit=crop',
       badge: 'In-Person'
     },
     {
@@ -197,7 +199,7 @@ function Events() {
                         <div className="p-6">
                           <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>
                           <p className="text-gray-600 mb-4">{event.description}</p>
-                          <div className="space-y-2 text-sm text-gray-600">
+                          <div className="space-y-2 text-sm text-gray-600 mb-4">
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4" />
                               <span>{event.date} • {event.time}</span>
@@ -210,6 +212,15 @@ function Events() {
                               <Users className="h-4 w-4" />
                               <span>{event.attendees} attending</span>
                             </div>
+                          </div>
+                          <div className="flex justify-end">
+                            <button
+                              onClick={() => navigate(`/events/${event.id}`)}
+                              className="text-[#009900] font-medium hover:text-[#007700] flex items-center gap-1"
+                            >
+                              View Details
+                              <ExternalLink className="h-4 w-4" />
+                            </button>
                           </div>
                         </div>
                       </>
