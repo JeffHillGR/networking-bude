@@ -79,13 +79,14 @@ const shouldShowUpgradePrompt = (feature) => {
   // Load admin-created events from localStorage
   const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
 
-  // Mock events for slots 2 and 3 (always shown for demo)
+  // Mock events for slots 2, 3, and 4 (always shown for demo)
   const mockEvents = [
     { id: 2, title: 'StartGarden Entrepreneur Pitch', date: '9/24/2025', time: '6:30 PM - 9:00 PM', location: 'StartGarden', image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=300&fit=crop', badge: 'In-Person' },
-    { id: 3, title: 'Athena Leadership Workshop', date: '9/27/2025', time: '9:00 AM - 5:00 PM', location: 'Grand Rapids Art Museum', image: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=400&h=300&fit=crop', badge: 'In-Person' }
+    { id: 3, title: 'Athena Leadership Workshop', date: '9/27/2025', time: '9:00 AM - 5:00 PM', location: 'Grand Rapids Art Museum', image: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=400&h=300&fit=crop', badge: 'In-Person' },
+    { id: 4, title: 'Sponsored Event', date: 'Coming Soon', time: 'TBA', location: 'Your Event Here', image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop', badge: 'Sponsored', isSponsored: true }
   ];
 
-  // First event from admin (if exists), then always show mock events in slots 2 & 3
+  // First event from admin (if exists), then always show mock events in slots 2, 3, & 4
   const events = adminEvents.length > 0
     ? [adminEvents[0], ...mockEvents]
     : [
@@ -258,7 +259,7 @@ const shouldShowUpgradePrompt = (feature) => {
 >
   View All Events
 </button>              </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {events.map((event, index) => (
                   <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                     {event.image && (
