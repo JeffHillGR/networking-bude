@@ -123,7 +123,7 @@ function EventDetail() {
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar activeTab="events" setActiveTab={() => navigate('/dashboard')} />
 
-      <div className="flex-1 ml-64">
+      <div className="flex-1">
         {/* Header with BudE gradient top bar */}
         <div className="bg-gradient-to-r from-green-600 via-lime-400 to-yellow-400 h-2"></div>
 
