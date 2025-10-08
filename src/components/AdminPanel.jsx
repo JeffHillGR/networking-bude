@@ -338,6 +338,42 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
                 </div>
 
                 <div className="space-y-2 bg-white p-3 rounded">
+                  {/* Event Image - First */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-0.5">Event Image *</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={newEvent.image}
+                        onChange={(e) => handleEventInputChange('image', e.target.value)}
+                        className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs"
+                        placeholder="Image URL or upload below"
+                      />
+                      <label className="px-3 py-1 bg-gray-200 text-gray-700 rounded text-xs font-medium hover:bg-gray-300 cursor-pointer flex items-center gap-1">
+                        <Upload className="w-3 h-3" />
+                        Upload
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onloadend = () => {
+                                handleEventInputChange('image', reader.result);
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
+                    {newEvent.image && (
+                      <img src={newEvent.image} alt="Preview" className="mt-1 w-full h-24 object-cover rounded" />
+                    )}
+                  </div>
+
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-0.5">Event Title *</label>
@@ -431,7 +467,7 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-0.5">Attendees *</label>
                       <input
@@ -450,16 +486,6 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
                         onChange={(e) => handleEventInputChange('price', e.target.value)}
                         className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
                         placeholder="e.g., Free or $25"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-0.5">Image URL *</label>
-                      <input
-                        type="text"
-                        value={newEvent.image}
-                        onChange={(e) => handleEventInputChange('image', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                        placeholder="https://..."
                       />
                     </div>
                   </div>
