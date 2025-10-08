@@ -76,11 +76,17 @@ const shouldShowUpgradePrompt = (feature) => {
     { name: 'David Kim', title: 'Product Manager at Meta', match: '92% match', mutuals: '2 mutual connections', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&h=200&fit=crop&crop=faces' }
   ];
 
-  const events = [
-    { id: 1, title: 'Creative Mornings Design Session', date: '9/19/2025', time: '8:00 AM - 10:00 AM', location: 'Bamboo Grand Rapids', attendees: '45 attending', image: 'https://images.unsplash.com/photo-1558403194-611308249627?w=400&h=300&fit=crop' },
-    { id: 2, title: 'StartGarden Entrepreneur Pitch', date: '9/24/2025', time: '6:30 PM - 9:00 PM', location: 'StartGarden', attendees: '80 attending', image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=300&fit=crop' },
-    { id: 3, title: 'Athena Leadership Workshop', date: '9/27/2025', time: '9:00 AM - 5:00 PM', location: 'Grand Rapids Art Museum', attendees: '150 attending', image: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=400&h=300&fit=crop' }
+  // Load admin-created events from localStorage, fallback to default events
+  const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
+
+  const defaultEvents = [
+    { id: 1, title: 'Creative Mornings Design Session', date: '9/19/2025', time: '8:00 AM - 10:00 AM', location: 'Bamboo Grand Rapids', attendees: '45 attending', image: 'https://images.unsplash.com/photo-1558403194-611308249627?w=400&h=300&fit=crop', badge: 'In-Person' },
+    { id: 2, title: 'StartGarden Entrepreneur Pitch', date: '9/24/2025', time: '6:30 PM - 9:00 PM', location: 'StartGarden', attendees: '80 attending', image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=300&fit=crop', badge: 'In-Person' },
+    { id: 3, title: 'Athena Leadership Workshop', date: '9/27/2025', time: '9:00 AM - 5:00 PM', location: 'Grand Rapids Art Museum', attendees: '150 attending', image: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=400&h=300&fit=crop', badge: 'In-Person' }
   ];
+
+  // Use admin events if available, otherwise use defaults (up to 3 events)
+  const events = adminEvents.length > 0 ? adminEvents.slice(0, 3) : defaultEvents;
 
   const navItems = [
     { id: 'dashboard', icon: Home, label: 'Dashboard' },
@@ -260,7 +266,7 @@ const shouldShowUpgradePrompt = (feature) => {
                     <div className="p-3">
                       <div className="flex items-start justify-between mb-1">
                         <div className="flex-1">
-                          <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-1">In-Person</span>
+                          <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-1">{event.badge || 'In-Person'}</span>
                           <h4 className="font-bold text-gray-900 text-sm">{event.title}</h4>
                         </div>
                       </div>
