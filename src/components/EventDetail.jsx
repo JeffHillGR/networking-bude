@@ -7,8 +7,11 @@ function EventDetail() {
   const { eventId } = useParams();
   const [isFavorited, setIsFavorited] = useState(false);
 
+  // Load admin-created events from localStorage
+  const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
+
   // Mock event data - Grand Rapids events
-  const eventData = {
+  const defaultEventData = {
     1: {
       id: 1,
       title: 'Creative Mornings Design Session',
@@ -74,7 +77,24 @@ function EventDetail() {
     }
   };
 
-  const event = eventData[eventId] || eventData[1];
+  // Find admin event by ID first, fall back to default events
+  const adminEvent = adminEvents.find(e => String(e.id) === String(eventId));
+
+  // If admin event exists, format it with proper structure
+  let event;
+  if (adminEvent) {
+    event = {
+      ...adminEvent,
+      organizer: {
+        name: adminEvent.organizerName || 'Event Organizer',
+        avatar: adminEvent.organizerName ? adminEvent.organizerName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : 'EO',
+        description: adminEvent.organizerDescription || 'Event organization details'
+      },
+      tags: adminEvent.tags ? adminEvent.tags.split(',').map(t => t.trim()) : []
+    };
+  } else {
+    event = defaultEventData[eventId] || defaultEventData[1];
+  }
 
   // Mock suggested connections
   const suggestedConnections = [

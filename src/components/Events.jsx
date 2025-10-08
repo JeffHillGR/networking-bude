@@ -23,7 +23,10 @@ function Events() {
     });
   }, []);
 
-  const featuredEvents = [
+  // Load admin-created events from localStorage
+  const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
+
+  const defaultFeaturedEvents = [
     {
       id: 1,
       title: 'Creative Mornings Design Session',
@@ -65,6 +68,9 @@ function Events() {
       badge: 'Sponsored'
     }
   ];
+
+  // Use admin events if available, otherwise use defaults
+  const featuredEvents = adminEvents.length > 0 ? [...adminEvents, ...defaultFeaturedEvents].slice(0, 4) : defaultFeaturedEvents;
 
   const moreEvents = [
     {
