@@ -233,7 +233,7 @@ const shouldShowUpgradePrompt = (feature) => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex flex-col gap-1">
-                        <span className="text-xs text-gray-600">{person.similarity} similar</span>
+                        <span className="text-xs text-gray-600">{person.similarity} compatible</span>
                         <span className="text-xs text-blue-500">👥 {person.mutuals}</span>
                       </div>
                       <button className="px-3 py-1.5 bg-[#009900] text-white text-xs rounded hover:bg-[#007700] flex-shrink-0">

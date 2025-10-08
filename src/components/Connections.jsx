@@ -154,7 +154,7 @@ function Connections() {
                       <TrendingUp className="w-5 h-5" />
                       <span className="text-2xl font-bold">{currentCard.connectionScore}%</span>
                     </div>
-                    <p className="text-xs text-gray-600">connection score</p>
+                    <p className="text-xs text-gray-600">BudE Compatibility</p>
                   </div>
                   <div className="w-px h-12 bg-gray-200"></div>
                   <div className="text-center">
@@ -243,7 +243,7 @@ function Connections() {
                   <div className="flex items-center justify-between text-xs text-gray-600 mb-3">
                     <span className="flex items-center gap-1">
                       <TrendingUp className="w-3 h-3 text-green-600" />
-                      {person.connectionScore}% score
+                      {person.connectionScore}% compatible
                     </span>
                     <span className="flex items-center gap-1">
                       <Users className="w-3 h-3 text-blue-500" />
