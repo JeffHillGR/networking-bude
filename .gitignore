@@ -1,3 +1,20 @@
+<<<<<<< HEAD
+node_modules/
+.env
+.env.local
+.env.production
+.env.staging
+dist/
+build/
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+=======
 # Logs
 logs
 *.log
@@ -22,3 +39,4 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+>>>>>>> 96bbbf8 (Working onboarding flow with Tailwind styling)

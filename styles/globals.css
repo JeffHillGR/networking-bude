@@ -1,0 +1,30 @@
+```css
+/* Networking BudE - Basic Styles */
+:root {
+  --background: #ffffff;
+  --foreground: #000000;
+  --primary: #22c55e;
+  --primary-foreground: #ffffff;
+  --muted: #f5f5f5;
+  --muted-foreground: #6b7280;
+  --border: #e5e7eb;
+  --bude-green: #22c55e;
+  --bude-yellow: #d0ed00;
+}
+
+{
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.bg-bude-brand-gradient {
+  background: linear-gradient(135deg, #009900 0%, #009900 40%, #d0ed00 75%, #ffe600 100%);
+}
+```
