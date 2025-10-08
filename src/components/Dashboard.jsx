@@ -76,17 +76,22 @@ const shouldShowUpgradePrompt = (feature) => {
     { name: 'David Kim', title: 'Product Manager at Meta', match: '92% match', mutuals: '2 mutual connections', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&h=200&fit=crop&crop=faces' }
   ];
 
-  // Load admin-created events from localStorage, fallback to default events
+  // Load admin-created events from localStorage
   const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
 
-  const defaultEvents = [
-    { id: 1, title: 'Creative Mornings Design Session', date: '9/19/2025', time: '8:00 AM - 10:00 AM', location: 'Bamboo Grand Rapids', attendees: '45 attending', image: 'https://images.unsplash.com/photo-1558403194-611308249627?w=400&h=300&fit=crop', badge: 'In-Person' },
-    { id: 2, title: 'StartGarden Entrepreneur Pitch', date: '9/24/2025', time: '6:30 PM - 9:00 PM', location: 'StartGarden', attendees: '80 attending', image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=300&fit=crop', badge: 'In-Person' },
-    { id: 3, title: 'Athena Leadership Workshop', date: '9/27/2025', time: '9:00 AM - 5:00 PM', location: 'Grand Rapids Art Museum', attendees: '150 attending', image: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=400&h=300&fit=crop', badge: 'In-Person' }
+  // Mock events for slots 2 and 3 (always shown for demo)
+  const mockEvents = [
+    { id: 2, title: 'StartGarden Entrepreneur Pitch', date: '9/24/2025', time: '6:30 PM - 9:00 PM', location: 'StartGarden', image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=300&fit=crop', badge: 'In-Person' },
+    { id: 3, title: 'Athena Leadership Workshop', date: '9/27/2025', time: '9:00 AM - 5:00 PM', location: 'Grand Rapids Art Museum', image: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=400&h=300&fit=crop', badge: 'In-Person' }
   ];
 
-  // Use admin events if available, otherwise use defaults (up to 3 events)
-  const events = adminEvents.length > 0 ? adminEvents.slice(0, 3) : defaultEvents;
+  // First event from admin (if exists), then always show mock events in slots 2 & 3
+  const events = adminEvents.length > 0
+    ? [adminEvents[0], ...mockEvents]
+    : [
+        { id: 1, title: 'Creative Mornings Design Session', date: '9/19/2025', time: '8:00 AM - 10:00 AM', location: 'Bamboo Grand Rapids', image: 'https://images.unsplash.com/photo-1558403194-611308249627?w=400&h=300&fit=crop', badge: 'In-Person' },
+        ...mockEvents
+      ];
 
   const navItems = [
     { id: 'dashboard', icon: Home, label: 'Dashboard' },
@@ -274,7 +279,6 @@ const shouldShowUpgradePrompt = (feature) => {
                         <p>📅 {event.date}</p>
                         <p>🕐 {event.time}</p>
                         <p>📍 {event.location}</p>
-                        <p>👥 {event.attendees}</p>
                       </div>
                       <div className="flex justify-end">
                         <button

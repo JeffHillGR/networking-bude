@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Calendar, MapPin, Users, Heart, ExternalLink, Share2, User } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Heart, ExternalLink, Share2, User } from 'lucide-react';
 
 function EventDetail() {
   const navigate = useNavigate();
@@ -21,8 +21,6 @@ function EventDetail() {
       time: '8:00 AM - 10:00 AM',
       location: 'Bamboo Grand Rapids',
       fullAddress: '33 Commerce Ave SW, Grand Rapids, MI 49503',
-      attendees: '45/60',
-      price: 'Free',
       image: 'https://images.unsplash.com/photo-1558403194-611308249627?w=800&h=600&fit=crop',
       badge: 'In-Person',
       organizer: {
@@ -42,8 +40,6 @@ function EventDetail() {
       time: '6:30 PM - 9:00 PM',
       location: 'StartGarden',
       fullAddress: '38 Commerce Ave SW, Grand Rapids, MI 49503',
-      attendees: '80/100',
-      price: '$10',
       image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&h=600&fit=crop',
       badge: 'In-Person',
       organizer: {
@@ -63,8 +59,6 @@ function EventDetail() {
       time: '9:00 AM - 5:00 PM',
       location: 'Grand Rapids Art Museum',
       fullAddress: '101 Monroe Center St NW, Grand Rapids, MI 49503',
-      attendees: '150/200',
-      price: '$75',
       image: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&h=600&fit=crop',
       badge: 'In-Person',
       organizer: {
@@ -256,10 +250,6 @@ function EventDetail() {
             <div className="sticky top-6 space-y-6">
               {/* Registration Card */}
               <div className="bg-white rounded-lg shadow-sm p-6 border-2 border-gray-200">
-                <div className="text-center mb-6">
-                  <div className="text-4xl font-bold text-gray-900 mb-2">{event.price}</div>
-                  <div className="text-sm text-gray-600">per person</div>
-                </div>
                 <a
                   href={event.registrationUrl}
                   target="_blank"
@@ -269,7 +259,7 @@ function EventDetail() {
                   Register Now
                 </a>
                 <p className="text-xs text-gray-500 text-center">
-                  Redirects to organization's registration site
+                  Redirects to organization's registration site for pricing and details
                 </p>
               </div>
 
@@ -299,19 +289,6 @@ function EventDetail() {
                         View on Map
                         <ExternalLink className="w-3 h-3" />
                       </a>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <Users className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <div className="font-semibold text-gray-900">{event.attendees} attending</div>
-                      <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                        <div
-                          className="bg-green-600 h-2 rounded-full"
-                          style={{ width: `${(parseInt(event.attendees.split('/')[0]) / parseInt(event.attendees.split('/')[1])) * 100}%` }}
-                        ></div>
-                      </div>
                     </div>
                   </div>
                 </div>

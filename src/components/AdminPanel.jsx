@@ -271,8 +271,6 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
     time: '',
     location: '',
     fullAddress: '',
-    attendees: '',
-    price: '',
     image: '',
     badge: 'In-Person',
     organizerName: '',
@@ -302,8 +300,6 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
       time: '',
       location: '',
       fullAddress: '',
-      attendees: '',
-      price: '',
       image: '',
       badge: 'In-Person',
       organizerName: '',
@@ -463,29 +459,6 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
                         onChange={(e) => handleEventInputChange('fullAddress', e.target.value)}
                         className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
                         placeholder="e.g., 33 Commerce Ave SW, Grand Rapids, MI 49503"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-0.5">Attendees *</label>
-                      <input
-                        type="text"
-                        value={newEvent.attendees}
-                        onChange={(e) => handleEventInputChange('attendees', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                        placeholder="e.g., 45/60"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-0.5">Price *</label>
-                      <input
-                        type="text"
-                        value={newEvent.price}
-                        onChange={(e) => handleEventInputChange('price', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                        placeholder="e.g., Free or $25"
                       />
                     </div>
                   </div>

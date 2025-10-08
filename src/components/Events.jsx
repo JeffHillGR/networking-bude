@@ -69,8 +69,17 @@ function Events() {
     }
   ];
 
-  // Use admin events if available, otherwise use defaults
-  const featuredEvents = adminEvents.length > 0 ? [...adminEvents, ...defaultFeaturedEvents].slice(0, 4) : defaultFeaturedEvents;
+  // Mock events for slots 2 and 3 (always shown for demo)
+  const mockFeaturedEvents = [
+    defaultFeaturedEvents[1], // StartGarden
+    defaultFeaturedEvents[2], // Athena
+    defaultFeaturedEvents[3]  // Sponsored slot
+  ];
+
+  // First event from admin (if exists), then always show mock events
+  const featuredEvents = adminEvents.length > 0
+    ? [adminEvents[0], ...mockFeaturedEvents]
+    : defaultFeaturedEvents;
 
   const moreEvents = [
     {
