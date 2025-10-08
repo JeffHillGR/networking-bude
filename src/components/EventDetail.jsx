@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Calendar, MapPin, Heart, ExternalLink, Share2, User, Home } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Heart, ExternalLink, Share2, User, Home, TrendingUp, Users } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
 
 function EventDetail() {
@@ -96,24 +96,24 @@ function EventDetail() {
     {
       name: 'Sarah Chen',
       title: 'VP Engineering at Stripe',
-      match: '92% match',
-      mutuals: '4 mutual connections',
+      compatibility: '92%',
+      mutualConnections: 4,
       image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=faces',
       attending: true
     },
     {
       name: 'Michael Torres',
       title: 'CTO at Airbnb',
-      match: '88% match',
-      mutuals: '6 mutual connections',
+      compatibility: '88%',
+      mutualConnections: 6,
       image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=faces',
       attending: true
     },
     {
       name: 'Emily Rodriguez',
       title: 'Product Director at Google',
-      match: '85% match',
-      mutuals: '3 mutual connections',
+      compatibility: '85%',
+      mutualConnections: 3,
       image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=faces',
       attending: true
     }
@@ -233,8 +233,8 @@ function EventDetail() {
                       <h4 className="font-bold text-gray-900">{person.name}</h4>
                       <p className="text-sm text-gray-600 truncate">{person.title}</p>
                       <div className="flex items-center gap-3 mt-1">
-                        <span className="text-xs text-red-500">d {person.match}</span>
-                        <span className="text-xs text-blue-500">=e {person.mutuals}</span>
+                        <span className="text-xs text-green-600 flex items-center gap-1"><TrendingUp className="w-3 h-3" />{person.compatibility} compatible</span>
+                        <span className="text-xs text-blue-500 flex items-center gap-1"><Users className="w-3 h-3" />{person.mutualConnections} mutual</span>
                         {person.attending && (
                           <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
                             Attending
