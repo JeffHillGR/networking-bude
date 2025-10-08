@@ -288,6 +288,9 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
   };
 
   const [newEvent, setNewEvent] = useState(loadMostRecentEvent());
+  const [scrapeUrl, setScrapeUrl] = useState('');
+  const [isScraping, setIsScraping] = useState(false);
+  const [scrapeError, setScrapeError] = useState('');
 
   const organizations = [
     'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
@@ -298,6 +301,118 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
 
   const handleEventInputChange = (field, value) => {
     setNewEvent({ ...newEvent, [field]: value });
+  };
+
+  const handleScrapeEvent = async () => {
+    if (!scrapeUrl) {
+      setScrapeError('Please enter a URL');
+      return;
+    }
+
+    setIsScraping(true);
+    setScrapeError('');
+
+    try {
+      // Use CORS proxy for demo purposes
+      const proxyUrl = 'https://api.allorigins.win/raw?url=';
+      const response = await fetch(proxyUrl + encodeURIComponent(scrapeUrl));
+      const html = await response.text();
+
+      // Create a DOM parser
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      // Try to extract event data using common patterns
+      let scrapedData = {
+        registrationUrl: scrapeUrl
+      };
+
+      // Try Schema.org structured data first (most reliable)
+      const jsonLdScripts = doc.querySelectorAll('script[type="application/ld+json"]');
+      let eventData = null;
+
+      jsonLdScripts.forEach(script => {
+        try {
+          const data = JSON.parse(script.textContent);
+          if (data['@type'] === 'Event' || (Array.isArray(data) && data.find(item => item['@type'] === 'Event'))) {
+            eventData = Array.isArray(data) ? data.find(item => item['@type'] === 'Event') : data;
+          }
+        } catch (e) {
+          // Ignore JSON parse errors
+        }
+      });
+
+      if (eventData) {
+        // Extract from Schema.org Event data
+        scrapedData.title = eventData.name || '';
+        scrapedData.description = eventData.description || '';
+        scrapedData.fullDescription = eventData.description || '';
+        scrapedData.image = eventData.image || '';
+
+        if (eventData.startDate) {
+          const startDate = new Date(eventData.startDate);
+          scrapedData.date = startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+          scrapedData.time = startDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        if (eventData.location) {
+          if (typeof eventData.location === 'string') {
+            scrapedData.location = eventData.location;
+            scrapedData.fullAddress = eventData.location;
+          } else if (eventData.location.name) {
+            scrapedData.location = eventData.location.name;
+            scrapedData.fullAddress = eventData.location.address?.streetAddress
+              ? `${eventData.location.address.streetAddress}, ${eventData.location.address.addressLocality}, ${eventData.location.address.addressRegion}`
+              : eventData.location.name;
+          }
+        }
+
+        if (eventData.organizer) {
+          scrapedData.organizerName = typeof eventData.organizer === 'string' ? eventData.organizer : eventData.organizer.name;
+        }
+      } else {
+        // Fallback: Try common HTML patterns
+        const title = doc.querySelector('h1')?.textContent?.trim() ||
+                     doc.querySelector('[class*="title"]')?.textContent?.trim() ||
+                     doc.querySelector('title')?.textContent?.trim() || '';
+        scrapedData.title = title;
+
+        // Try to find description
+        const metaDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content');
+        if (metaDesc) {
+          scrapedData.description = metaDesc.substring(0, 200);
+          scrapedData.fullDescription = metaDesc;
+        }
+
+        // Try to find image
+        const ogImage = doc.querySelector('meta[property="og:image"]')?.getAttribute('content');
+        if (ogImage) {
+          scrapedData.image = ogImage.startsWith('http') ? ogImage : new URL(ogImage, scrapeUrl).href;
+        }
+      }
+
+      // Merge scraped data with existing form data (don't overwrite existing values)
+      setNewEvent(prev => ({
+        ...prev,
+        title: scrapedData.title || prev.title,
+        description: scrapedData.description || prev.description,
+        fullDescription: scrapedData.fullDescription || prev.fullDescription,
+        date: scrapedData.date || prev.date,
+        time: scrapedData.time || prev.time,
+        location: scrapedData.location || prev.location,
+        fullAddress: scrapedData.fullAddress || prev.fullAddress,
+        image: scrapedData.image || prev.image,
+        organizerName: scrapedData.organizerName || prev.organizerName,
+        registrationUrl: scrapedData.registrationUrl || prev.registrationUrl
+      }));
+
+      alert('Event data scraped! Please review and edit any missing details.');
+    } catch (error) {
+      console.error('Scraping error:', error);
+      setScrapeError('Unable to scrape this URL. Please enter details manually or try a different URL.');
+    } finally {
+      setIsScraping(false);
+    }
   };
 
   const handleSaveEvent = () => {
@@ -342,6 +457,34 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
                 </div>
 
                 <div className="space-y-2 bg-white p-3 rounded">
+                  {/* URL Scraper - Optional */}
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-3 rounded border border-blue-200 mb-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-sm font-semibold text-gray-900">✨ Quick Add from URL (Optional)</span>
+                    </div>
+                    <p className="text-xs text-gray-600 mb-2">Paste an event page URL to automatically fill in details. Works with Eventbrite, Meetup, and many organization websites.</p>
+                    <div className="flex gap-2">
+                      <input
+                        type="url"
+                        value={scrapeUrl}
+                        onChange={(e) => setScrapeUrl(e.target.value)}
+                        placeholder="https://example.com/event-page"
+                        className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs"
+                        disabled={isScraping}
+                      />
+                      <button
+                        onClick={handleScrapeEvent}
+                        disabled={isScraping}
+                        className="px-3 py-1 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                      >
+                        {isScraping ? 'Scraping...' : 'Scrape Event'}
+                      </button>
+                    </div>
+                    {scrapeError && (
+                      <p className="text-xs text-red-600 mt-1">{scrapeError}</p>
+                    )}
+                  </div>
+
                   {/* Event Image - First */}
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-0.5">Event Image *</label>
