@@ -34,6 +34,7 @@ function Events() {
       date: '9/19/2025',
       time: '8:00 AM - 10:00 AM',
       location: 'Bamboo Grand Rapids',
+      organizerName: 'Creative Mornings GR',
       attendees: '45/60',
       image: 'https://images.unsplash.com/photo-1558403194-611308249627?w=800&h=600&fit=crop',
       badge: 'In-Person'
@@ -45,6 +46,7 @@ function Events() {
       date: '9/24/2025',
       time: '6:30 PM - 9:00 PM',
       location: 'StartGarden',
+      organizerName: 'Start Garden',
       attendees: '80/100',
       image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&h=600&fit=crop',
       badge: 'In-Person'
@@ -56,6 +58,7 @@ function Events() {
       date: '9/27/2025',
       time: '9:00 AM - 5:00 PM',
       location: 'Grand Rapids Art Museum',
+      organizerName: 'Athena',
       attendees: '150/200',
       image: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&h=600&fit=crop',
       badge: 'In-Person'
@@ -65,6 +68,7 @@ function Events() {
       isSponsored: true,
       title: 'Sponsored Event Slot',
       description: 'Your premium event can appear here',
+      organizerName: 'Your Organization',
       badge: 'Sponsored'
     }
   ];
@@ -215,6 +219,7 @@ function Events() {
                           <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>
                           <p className="text-gray-600 mb-4">{event.description}</p>
                           <div className="space-y-2 text-sm text-gray-600 mb-4">
+                            <p className="font-semibold text-gray-700">🏢 {event.organizerName || 'Event Organizer'}</p>
                             <div className="flex items-center gap-2">
                               <Calendar className="h-4 w-4" />
                               <span>{event.date} • {event.time}</span>
