@@ -11,6 +11,7 @@ export default function BudEOnboarding() {
     username: '',
     email: '',
     password: '',
+    jobTitle: '',
     industry: '',
     sameIndustry: '',
     gender: '',
@@ -232,6 +233,17 @@ export default function BudEOnboarding() {
           </div>
 
           <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold mb-2">Job Title or what are you known for?</label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder="e.g., Marketing Director, Software Engineer, Entrepreneur"
+                value={formData.jobTitle}
+                onChange={(e) => handleChange('jobTitle', e.target.value)}
+              />
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold mb-2">Industry (optional)</label>
@@ -518,6 +530,7 @@ const renderStep2 = () => (
               localStorage.setItem('onboardingCompleted', 'true');
               localStorage.setItem('userFirstName', formData.firstName);
               localStorage.setItem('userLastName', formData.lastName);
+              localStorage.setItem('userJobTitle', formData.jobTitle);
               localStorage.setItem('userIndustry', formData.industry);
               navigate('/dashboard');
             }}

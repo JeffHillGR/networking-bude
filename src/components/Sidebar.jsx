@@ -4,7 +4,7 @@ function Sidebar({ activeTab, setActiveTab }) {
   // Get user data from localStorage
   const firstName = localStorage.getItem('userFirstName') || 'User';
   const lastName = localStorage.getItem('userLastName') || 'Name';
-  const industry = localStorage.getItem('userIndustry') || 'Job Title';
+  const jobTitle = localStorage.getItem('userJobTitle') || 'Job Title';
   const fullName = `${firstName} ${lastName}`;
 
   const navItems = [
@@ -99,7 +99,7 @@ function Sidebar({ activeTab, setActiveTab }) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-gray-900 truncate">{fullName}</p>
-              <p className="text-sm text-gray-600 truncate">{industry}</p>
+              <p className="text-sm text-gray-600 truncate">{jobTitle}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 text-xs text-gray-500">
