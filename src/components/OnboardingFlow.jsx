@@ -517,6 +517,8 @@ const renderStep2 = () => (
             onClick={() => {
               localStorage.setItem('onboardingCompleted', 'true');
               localStorage.setItem('userFirstName', formData.firstName);
+              localStorage.setItem('userLastName', formData.lastName);
+              localStorage.setItem('userIndustry', formData.industry);
               navigate('/dashboard');
             }}
             className="bg-[#009900] text-white px-6 py-3 rounded-lg border-[3px] border-[#D0ED00] hover:bg-green-700"

@@ -1,6 +1,12 @@
 import { Home, Calendar, Heart, MessageCircle, User, Settings as SettingsIcon, CreditCard, Archive } from 'lucide-react';
 
 function Sidebar({ activeTab, setActiveTab }) {
+  // Get user data from localStorage
+  const firstName = localStorage.getItem('userFirstName') || 'User';
+  const lastName = localStorage.getItem('userLastName') || 'Name';
+  const industry = localStorage.getItem('userIndustry') || 'Job Title';
+  const fullName = `${firstName} ${lastName}`;
+
   const navItems = [
     { id: 'dashboard', icon: Home, label: 'Dashboard' },
     { id: 'events', icon: Calendar, label: 'Events' },
@@ -92,8 +98,8 @@ function Sidebar({ activeTab, setActiveTab }) {
               <User className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-gray-900 truncate">User Name</p>
-              <p className="text-sm text-gray-600 truncate">Job Title</p>
+              <p className="font-medium text-gray-900 truncate">{fullName}</p>
+              <p className="text-sm text-gray-600 truncate">{industry}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 text-xs text-gray-500">
