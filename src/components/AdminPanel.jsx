@@ -263,36 +263,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 }
 
 function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
-  const [newEvent, setNewEvent] = useState({
-    title: '',
-    description: '',
-    fullDescription: '',
-    date: '',
-    time: '',
-    location: '',
-    fullAddress: '',
-    image: '',
-    badge: 'In-Person',
-    organizerName: '',
-    organizerDescription: '',
-    organizerGeotag: '',
-    tags: '',
-    registrationUrl: ''
-  });
-
-  const handleEventInputChange = (field, value) => {
-    setNewEvent({ ...newEvent, [field]: value });
-  };
-
-  const handleSaveEvent = () => {
-    // Save event to localStorage
+  // Load most recent event from localStorage if exists
+  const loadMostRecentEvent = () => {
     const events = JSON.parse(localStorage.getItem('adminEvents') || '[]');
-    const eventWithId = { ...newEvent, id: Date.now() };
-    events.push(eventWithId);
-    localStorage.setItem('adminEvents', JSON.stringify(events));
-    alert('Event saved successfully!');
-    // Reset form
-    setNewEvent({
+    if (events.length > 0) {
+      return events[0]; // Most recent event
+    }
+    return {
       title: '',
       description: '',
       fullDescription: '',
@@ -307,7 +284,38 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
       organizerGeotag: '',
       tags: '',
       registrationUrl: ''
-    });
+    };
+  };
+
+  const [newEvent, setNewEvent] = useState(loadMostRecentEvent());
+
+  const organizations = [
+    'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
+    'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo',
+    'Hello West Michigan', 'CARWM', 'Creative Mornings', 'Athena',
+    'Inforum', 'Start Garden'
+  ];
+
+  const handleEventInputChange = (field, value) => {
+    setNewEvent({ ...newEvent, [field]: value });
+  };
+
+  const handleSaveEvent = () => {
+    // Update or save event to localStorage
+    const events = JSON.parse(localStorage.getItem('adminEvents') || '[]');
+
+    // If event already has an ID, update it; otherwise create new
+    if (newEvent.id) {
+      const updatedEvents = [newEvent, ...events.filter(e => e.id !== newEvent.id)];
+      localStorage.setItem('adminEvents', JSON.stringify(updatedEvents));
+    } else {
+      const eventWithId = { ...newEvent, id: Date.now() };
+      events.unshift(eventWithId); // Add to beginning
+      localStorage.setItem('adminEvents', JSON.stringify(events));
+      setNewEvent(eventWithId); // Update form with ID
+    }
+
+    alert('Event saved successfully!');
   };
 
   return (
@@ -478,14 +486,17 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-gray-700 mb-0.5">Organizer Geotag *</label>
-                          <input
-                            type="text"
+                          <label className="block text-xs font-medium text-gray-700 mb-0.5">Organization *</label>
+                          <select
                             value={newEvent.organizerGeotag}
                             onChange={(e) => handleEventInputChange('organizerGeotag', e.target.value)}
                             className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                            placeholder="e.g., GR Chamber, Athena, Start Garden"
-                          />
+                          >
+                            <option value="">Select organization...</option>
+                            {organizations.map((org, index) => (
+                              <option key={index} value={org}>{org}</option>
+                            ))}
+                          </select>
                         </div>
                       </div>
                       <div>
