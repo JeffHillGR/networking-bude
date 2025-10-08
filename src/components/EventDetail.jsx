@@ -128,7 +128,7 @@ function EventDetail() {
         <div className="bg-gradient-to-r from-green-600 via-lime-400 to-yellow-400 h-2"></div>
 
         <div className="bg-white border-b border-gray-200">
-          <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="px-8 py-4">
             <button
               onClick={() => navigate('/dashboard')}
               className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
@@ -141,7 +141,7 @@ function EventDetail() {
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content - Left Column */}
           <div className="lg:col-span-2 space-y-6">
