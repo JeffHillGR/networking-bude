@@ -448,13 +448,13 @@ function PaymentPortal() {
             <h2 className="text-xl font-bold mb-4">Billing History</h2>
             <div className="space-y-3">
               {billingHistory.map((item) => (
-                <div key={item.id} className="px-6 py-2 bg-[#009900] text-white rounded-lg border-[3px] border-[#D0ED00] hover:bg-[#007700] transition-colors">
+                <div key={item.id} className="flex items-center justify-between px-6 py-4 bg-white rounded-lg border-2 border-[#D0ED00]">
                   <div>
-                    <p className="font-medium">{item.description}</p>
+                    <p className="font-medium text-gray-900">{item.description}</p>
                     <p className="text-sm text-gray-600">{item.date}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold">${item.amount}</p>
+                    <p className="font-bold text-gray-900">${item.amount}</p>
                     <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">
                       {item.status}
                     </span>

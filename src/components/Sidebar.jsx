@@ -44,41 +44,41 @@ function Sidebar({ activeTab, setActiveTab }) {
               {/* Account Section */}
               <div className="border-t border-gray-200 my-4 pt-4">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-4">ACCOUNT</p>
-                
-                <button 
+
+                <button
                   onClick={() => setActiveTab('settings')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${
+                  className={`w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors ${
                     activeTab === 'settings'
                      ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      : 'text-gray-500 hover:bg-gray-100'
                   }`}
                 >
-                <SettingsIcon className="w-5 h-5" />
-                  <span className="font-medium">Settings</span>
+                <SettingsIcon className="w-4 h-4" />
+                  <span>Settings</span>
                 </button>
-                
-                <button 
+
+                <button
                   onClick={() => setActiveTab('payment')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${
+                  className={`w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors ${
                     activeTab === 'payment'
                       ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      : 'text-gray-500 hover:bg-gray-100'
                   }`}
                 >
-                  <CreditCard className="w-5 h-5" />
-                  <span className="font-medium">Payment Portal</span>
+                  <CreditCard className="w-4 h-4" />
+                  <span>Payment Portal</span>
                 </button>
-                
-                <button 
+
+                <button
                   onClick={() => setActiveTab('archive')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${
+                  className={`w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors ${
                     activeTab === 'archive'
-                      ? 'bg-[#009900] text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
+                      : 'text-gray-500 hover:bg-gray-100'
                   }`}
                 >
-                  <Archive className="w-5 h-5" />
-                  <span className="font-medium">Content Archive</span>
+                  <Archive className="w-4 h-4" />
+                  <span>Content Archive</span>
                 </button>
               </div>
             </nav>

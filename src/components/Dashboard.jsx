@@ -71,9 +71,9 @@ const shouldShowUpgradePrompt = (feature) => {
   ];
 
   const connections = [
-    { name: 'Maria Rodriguez', title: 'Marketing Director at Spotify', match: '88% match', mutuals: '5 mutual connections', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=faces' },
-    { name: 'Alex Chen', title: 'Senior Developer at Google', match: '95% match', mutuals: '3 mutual connections', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=faces' },
-    { name: 'David Kim', title: 'Product Manager at Meta', match: '92% match', mutuals: '2 mutual connections', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&h=200&fit=crop&crop=faces' }
+    { name: 'Maria Rodriguez', title: 'Marketing Director at Spotify', similarity: '88%', mutuals: '5 mutual connections', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=faces' },
+    { name: 'Alex Chen', title: 'Senior Developer at Google', similarity: '95%', mutuals: '3 mutual connections', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=faces' },
+    { name: 'David Kim', title: 'Product Manager at Meta', similarity: '92%', mutuals: '2 mutual connections', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&h=200&fit=crop&crop=faces' }
   ];
 
   // Load admin-created events from localStorage
@@ -219,23 +219,27 @@ const shouldShowUpgradePrompt = (feature) => {
               </div>
               <div className="grid grid-cols-3 gap-4">
                 {connections.map((person, index) => (
-                  <div key={index} className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 flex items-center gap-4">
-                    <img
-                      src={person.image}
-                      alt={person.name}
-                      className="w-16 h-16 rounded-full object-cover flex-shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-gray-900 text-base">{person.name}</h4>
-                      <p className="text-sm text-gray-600 truncate">{person.title}</p>
-                      <div className="flex items-center gap-3 mt-2">
-                        <span className="text-xs text-red-500">❤️ {person.match}</span>
-                        <span className="text-xs text-blue-500">👥 {person.mutuals}</span>
+                  <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 flex flex-col">
+                    <div className="flex items-start gap-3 mb-3">
+                      <img
+                        src={person.image}
+                        alt={person.name}
+                        className="w-14 h-14 rounded-full object-cover flex-shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-gray-900 text-sm">{person.name}</h4>
+                        <p className="text-xs text-gray-600 line-clamp-2">{person.title}</p>
                       </div>
                     </div>
-                    <button className="p-2 hover:bg-gray-100 rounded-full flex-shrink-0">
-                      <User className="w-6 h-6 text-gray-600" />
-                    </button>
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-xs text-gray-600">{person.similarity} similar</span>
+                        <span className="text-xs text-blue-500">👥 {person.mutuals}</span>
+                      </div>
+                      <button className="px-3 py-1.5 bg-[#009900] text-white text-xs rounded hover:bg-[#007700] flex-shrink-0">
+                        Connect
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
