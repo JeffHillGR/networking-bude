@@ -263,6 +263,57 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 }
 
 function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
+  const [newEvent, setNewEvent] = useState({
+    title: '',
+    description: '',
+    fullDescription: '',
+    date: '',
+    time: '',
+    location: '',
+    fullAddress: '',
+    attendees: '',
+    price: '',
+    image: '',
+    badge: 'In-Person',
+    organizerName: '',
+    organizerDescription: '',
+    organizerGeotag: '',
+    tags: '',
+    registrationUrl: ''
+  });
+
+  const handleEventInputChange = (field, value) => {
+    setNewEvent({ ...newEvent, [field]: value });
+  };
+
+  const handleSaveEvent = () => {
+    // Save event to localStorage
+    const events = JSON.parse(localStorage.getItem('adminEvents') || '[]');
+    const eventWithId = { ...newEvent, id: Date.now() };
+    events.push(eventWithId);
+    localStorage.setItem('adminEvents', JSON.stringify(events));
+    alert('Event saved successfully!');
+    // Reset form
+    setNewEvent({
+      title: '',
+      description: '',
+      fullDescription: '',
+      date: '',
+      time: '',
+      location: '',
+      fullAddress: '',
+      attendees: '',
+      price: '',
+      image: '',
+      badge: 'In-Person',
+      organizerName: '',
+      organizerDescription: '',
+      organizerGeotag: '',
+      tags: '',
+      registrationUrl: ''
+    });
+  };
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6">Events Page Content and Ads</h2>
@@ -272,11 +323,219 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
         <div className="flex-1 flex flex-col">
           <div className="bg-white rounded-lg p-8 border border-gray-200 mb-6">
             <h3 className="text-xl font-semibold mb-4">Events Page Listings</h3>
-            <div className="space-y-4 text-gray-500">
-              <p>Your events listing displays here...</p>
-              <div className="h-32 bg-gray-100 rounded"></div>
-              <div className="h-32 bg-gray-100 rounded"></div>
-              <div className="h-32 bg-gray-100 rounded"></div>
+
+            <div className="space-y-6">
+              {/* Event 1 - Input Form */}
+              <div className="border-2 border-blue-300 rounded-lg p-6 bg-blue-50">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-bold text-lg text-gray-900">Event Slot 1 - Create New Event</h4>
+                  <button
+                    onClick={handleSaveEvent}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700"
+                  >
+                    Save Event
+                  </button>
+                </div>
+
+                <div className="space-y-4 bg-white p-4 rounded-lg">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Event Title *</label>
+                      <input
+                        type="text"
+                        value={newEvent.title}
+                        onChange={(e) => handleEventInputChange('title', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        placeholder="e.g., Tech Leaders Breakfast"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Event Badge</label>
+                      <select
+                        value={newEvent.badge}
+                        onChange={(e) => handleEventInputChange('badge', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      >
+                        <option>In-Person</option>
+                        <option>Virtual</option>
+                        <option>Hybrid</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Short Description *</label>
+                    <textarea
+                      value={newEvent.description}
+                      onChange={(e) => handleEventInputChange('description', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      rows="2"
+                      placeholder="Brief description for event listings"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Description *</label>
+                    <textarea
+                      value={newEvent.fullDescription}
+                      onChange={(e) => handleEventInputChange('fullDescription', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      rows="4"
+                      placeholder="Detailed description for event detail page"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+                      <input
+                        type="text"
+                        value={newEvent.date}
+                        onChange={(e) => handleEventInputChange('date', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        placeholder="e.g., Thursday, September 19, 2025"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Time *</label>
+                      <input
+                        type="text"
+                        value={newEvent.time}
+                        onChange={(e) => handleEventInputChange('time', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        placeholder="e.g., 8:00 AM - 10:00 AM"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Location Name *</label>
+                      <input
+                        type="text"
+                        value={newEvent.location}
+                        onChange={(e) => handleEventInputChange('location', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        placeholder="e.g., Bamboo Grand Rapids"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Full Address *</label>
+                      <input
+                        type="text"
+                        value={newEvent.fullAddress}
+                        onChange={(e) => handleEventInputChange('fullAddress', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        placeholder="e.g., 33 Commerce Ave SW, Grand Rapids, MI 49503"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Attendees *</label>
+                      <input
+                        type="text"
+                        value={newEvent.attendees}
+                        onChange={(e) => handleEventInputChange('attendees', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        placeholder="e.g., 45/60"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Price *</label>
+                      <input
+                        type="text"
+                        value={newEvent.price}
+                        onChange={(e) => handleEventInputChange('price', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        placeholder="e.g., Free or $25"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Image URL *</label>
+                      <input
+                        type="text"
+                        value={newEvent.image}
+                        onChange={(e) => handleEventInputChange('image', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                        placeholder="https://..."
+                      />
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <h5 className="font-semibold text-gray-900 mb-3">Organizer Information</h5>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Organizer Name *</label>
+                        <input
+                          type="text"
+                          value={newEvent.organizerName}
+                          onChange={(e) => handleEventInputChange('organizerName', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                          placeholder="e.g., Creative Mornings GR"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Organizer Description</label>
+                        <textarea
+                          value={newEvent.organizerDescription}
+                          onChange={(e) => handleEventInputChange('organizerDescription', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                          rows="2"
+                          placeholder="Brief description of the organizing entity"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Organizer Geotag (Organization)</label>
+                        <input
+                          type="text"
+                          value={newEvent.organizerGeotag}
+                          onChange={(e) => handleEventInputChange('organizerGeotag', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                          placeholder="e.g., GR Chamber of Commerce, Athena, Start Garden"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Select from organizations list for filtering</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
+                    <input
+                      type="text"
+                      value={newEvent.tags}
+                      onChange={(e) => handleEventInputChange('tags', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      placeholder="e.g., Design, Creativity, Networking, Breakfast"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Registration URL *</label>
+                    <input
+                      type="text"
+                      value={newEvent.registrationUrl}
+                      onChange={(e) => handleEventInputChange('registrationUrl', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                      placeholder="https://..."
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Event 2 - Placeholder */}
+              <div className="border-2 border-gray-300 rounded-lg p-6 bg-gray-50">
+                <h4 className="font-bold text-lg text-gray-900 mb-2">Event Slot 2</h4>
+                <p className="text-gray-500 text-sm">Available for future event creation</p>
+              </div>
+
+              {/* Event 3 - Placeholder */}
+              <div className="border-2 border-gray-300 rounded-lg p-6 bg-gray-50">
+                <h4 className="font-bold text-lg text-gray-900 mb-2">Event Slot 3</h4>
+                <p className="text-gray-500 text-sm">Available for future event creation</p>
+              </div>
             </div>
           </div>
 
