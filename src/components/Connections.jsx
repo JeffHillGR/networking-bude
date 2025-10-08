@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Clock, Heart, User, Users } from 'lucide-react';
+import { X, Clock, User, Users, TrendingUp } from 'lucide-react';
 
 function Connections() {
   const [activeTab, setActiveTab] = useState('recommended');
@@ -150,8 +150,8 @@ function Connections() {
               <div className="p-6">
                 <div className="flex items-center justify-center gap-6 mb-6 pb-6 border-b border-gray-200">
                   <div className="text-center">
-                    <div className="flex items-center gap-2 text-red-500 mb-1">
-                      <Heart className="w-5 h-5 fill-current" />
+                    <div className="flex items-center gap-2 text-green-600 mb-1">
+                      <TrendingUp className="w-5 h-5" />
                       <span className="text-2xl font-bold">{currentCard.connectionScore}%</span>
                     </div>
                     <p className="text-xs text-gray-600">connection score</p>
@@ -197,7 +197,7 @@ function Connections() {
                     onClick={handleConnect}
                     className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#009900] border-2 border-[#D0ED00] text-white rounded-lg hover:bg-[#007700] transition-colors font-medium"
                   >
-                    <Heart className="w-5 h-5" />
+                    <User className="w-5 h-5" />
                     Connect
                   </button>
                 </div>
@@ -242,7 +242,7 @@ function Connections() {
 
                   <div className="flex items-center justify-between text-xs text-gray-600 mb-3">
                     <span className="flex items-center gap-1">
-                      <Heart className="w-3 h-3 fill-red-500 text-red-500" />
+                      <TrendingUp className="w-3 h-3 text-green-600" />
                       {person.connectionScore}% score
                     </span>
                     <span className="flex items-center gap-1">
