@@ -277,14 +277,10 @@ const shouldShowUpgradePrompt = (feature) => {
                         </div>
                       </div>
                       <div className="space-y-0.5 text-xs text-gray-600 mb-2">
+                        <p className="font-semibold text-gray-700">🏢 {event.organizerName || 'Event Organizer'}</p>
                         <p>📅 {event.date}</p>
                         <p>🕐 {event.time}</p>
                         <p>📍 {event.fullAddress || event.location}</p>
-                      </div>
-                      <div className="border-t pt-2 mb-2">
-                        <p className="text-xs font-semibold text-gray-700">
-                          {event.organizerName || 'Event Organizer'}
-                        </p>
                       </div>
                       <div className="flex justify-end">
                         <button
