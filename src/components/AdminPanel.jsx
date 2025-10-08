@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Upload, X, Link2 } from 'lucide-react';
+import { Upload, X, Link2, Eye, EyeOff } from 'lucide-react';
 
 function AdminPanel() {
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [ads, setAds] = useState({
     eventsSidebar1: JSON.parse(localStorage.getItem('ad_eventsSidebar1') || 'null'),
@@ -53,13 +54,22 @@ function AdminPanel() {
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 max-w-md w-full">
           <h1 className="text-2xl font-bold mb-6">Admin Login</h1>
           <div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter admin password"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4"
-            />
+            <div className="relative mb-4">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter admin password"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
             <button
               onClick={handleLogin}
               className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
