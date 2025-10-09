@@ -36,32 +36,41 @@ const shouldShowUpgradePrompt = (feature) => {
   return true; // Preview mode shows upgrade prompts
 };
 
-  const featuredContent = [
+  // Load admin-created featured content from localStorage
+  const adminContent = localStorage.getItem('featuredContent1');
+  const adminFeaturedContent = adminContent ? JSON.parse(adminContent) : null;
+
+  const defaultFeaturedContent = [
     {
       image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=200&h=200&fit=crop',
       title: 'Building Meaningful Professional Networks',
       description: 'Learn strategies for authentic networking that leads to lasting professional relationships.',
-      type: 'Career Growth Podcast',
-      duration: '32 min',
-      sponsor: { name: 'Lake Michigan Credit Union', logo: 'LMCU' }
+      url: 'https://example.com',
+      tags: 'Leadership, Networking',
+      sponsoredBy: ''
     },
     {
       image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=200&h=200&fit=crop',
       title: 'Leadership in the Modern Workplace',
       description: 'Discover how to lead effectively in hybrid work environments and build resilient teams.',
-      type: 'Video Course',
-      duration: '45 min',
-      sponsor: { name: 'Mercantile Bank', logo: 'MB' }
+      url: 'https://example.com',
+      tags: 'Leadership, Management',
+      sponsoredBy: ''
     },
     {
       image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=200&h=200&fit=crop',
       title: 'Personal Branding for Professionals',
       description: 'Master the art of showcasing your unique value and building your professional reputation.',
-      type: 'Article Series',
-      duration: '15 min read',
-      sponsor: { name: 'First National Bank', logo: 'FNB' }
+      url: 'https://example.com',
+      tags: 'Marketing, Career Growth',
+      sponsoredBy: ''
     }
   ];
+
+  // Use admin content for slot 1 if available, otherwise use defaults
+  const featuredContent = adminFeaturedContent && adminFeaturedContent.title
+    ? [adminFeaturedContent, defaultFeaturedContent[1], defaultFeaturedContent[2]]
+    : defaultFeaturedContent;
 
   const connections = [
     { name: 'Maria Rodriguez', title: 'Marketing Director at Spotify', similarity: '88%', mutuals: '5 mutual connections', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=faces' },
@@ -145,7 +154,12 @@ const shouldShowUpgradePrompt = (feature) => {
                   </button>
                 </div>
               </div>
-              <div className="flex gap-4">
+              <a
+                href={featuredContent[featuredContentIndex].url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex gap-4 hover:bg-gray-50 p-2 rounded-lg transition-colors -m-2"
+              >
                 <img
                   src={featuredContent[featuredContentIndex].image}
                   alt={featuredContent[featuredContentIndex].title}
@@ -155,14 +169,24 @@ const shouldShowUpgradePrompt = (feature) => {
                   <h4 className="font-bold text-gray-900 mb-2">{featuredContent[featuredContentIndex].title}</h4>
                   <p className="text-sm text-gray-600 mb-3">{featuredContent[featuredContentIndex].description}</p>
                   <div className="flex items-center justify-between">
-                    <p className="text-xs text-gray-500">{featuredContent[featuredContentIndex].type} • {featuredContent[featuredContentIndex].duration}</p>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs text-gray-400">Sponsored by</span>
-                      <span className="text-xs font-medium text-gray-700">{featuredContent[featuredContentIndex].sponsor.name}</span>
-                    </div>
+                    {featuredContent[featuredContentIndex].tags && (
+                      <div className="flex gap-1">
+                        {featuredContent[featuredContentIndex].tags.split(',').slice(0, 2).map((tag, i) => (
+                          <span key={i} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                            {tag.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    {featuredContent[featuredContentIndex].sponsoredBy && (
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs text-gray-400">Sponsored by</span>
+                        <span className="text-xs font-medium text-gray-700">{featuredContent[featuredContentIndex].sponsoredBy}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
+              </a>
             </div>
 
             <div>

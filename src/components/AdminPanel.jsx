@@ -162,6 +162,92 @@ function AdminPanel() {
 }
 
 function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
+  // Load most recent featured content from localStorage if exists
+  const loadFeaturedContent = () => {
+    const saved = localStorage.getItem('featuredContent1');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return {
+      title: '',
+      description: '',
+      image: '',
+      url: '',
+      tags: '',
+      sponsoredBy: ''
+    };
+  };
+
+  const [featuredContent, setFeaturedContent] = useState(loadFeaturedContent());
+  const [scrapeUrl, setScrapeUrl] = useState('');
+  const [isScraping, setIsScraping] = useState(false);
+  const [scrapeError, setScrapeError] = useState('');
+
+  const handleContentChange = (field, value) => {
+    setFeaturedContent({ ...featuredContent, [field]: value });
+  };
+
+  const handleScrapeContent = async () => {
+    if (!scrapeUrl) {
+      setScrapeError('Please enter a URL');
+      return;
+    }
+
+    setIsScraping(true);
+    setScrapeError('');
+
+    try {
+      const proxyUrl = 'https://api.allorigins.win/raw?url=';
+      const response = await fetch(proxyUrl + encodeURIComponent(scrapeUrl));
+      const html = await response.text();
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      let scrapedData = { url: scrapeUrl };
+
+      // Try to find title
+      const title = doc.querySelector('h1')?.textContent?.trim() ||
+                   doc.querySelector('meta[property="og:title"]')?.getAttribute('content') ||
+                   doc.querySelector('title')?.textContent?.trim() || '';
+      scrapedData.title = title;
+
+      // Try to find description
+      const metaDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content') ||
+                      doc.querySelector('meta[property="og:description"]')?.getAttribute('content');
+      if (metaDesc) {
+        scrapedData.description = metaDesc;
+      }
+
+      // Try to find image
+      const ogImage = doc.querySelector('meta[property="og:image"]')?.getAttribute('content');
+      if (ogImage) {
+        scrapedData.image = ogImage.startsWith('http') ? ogImage : new URL(ogImage, scrapeUrl).href;
+      }
+
+      // Merge scraped data
+      setFeaturedContent(prev => ({
+        ...prev,
+        title: scrapedData.title || prev.title,
+        description: scrapedData.description || prev.description,
+        image: scrapedData.image || prev.image,
+        url: scrapedData.url || prev.url
+      }));
+
+      alert('Content scraped! Please review and edit as needed.');
+    } catch (error) {
+      console.error('Scraping error:', error);
+      setScrapeError('Unable to scrape this URL. Please enter details manually.');
+    } finally {
+      setIsScraping(false);
+    }
+  };
+
+  const handleSaveContent = () => {
+    localStorage.setItem('featuredContent1', JSON.stringify(featuredContent));
+    alert('Featured Content saved successfully!');
+  };
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold mb-6">Dashboard Layout Setup</h2>
@@ -212,17 +298,157 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
       {/* Featured Content Section */}
       <div className="bg-white rounded-lg p-6 border border-gray-200">
-        <h3 className="text-xl font-semibold mb-4">Featured Content (3 items)</h3>
+        <h3 className="text-xl font-semibold mb-4">Featured Content</h3>
         <p className="text-gray-600 mb-4">
-          Add up to 3 featured pieces of content (podcasts, blogs, articles, etc.)
+          Create featured content that appears on the dashboard
         </p>
-        <div className="space-y-4">
-          {[1, 2, 3].map((num) => (
-            <div key={num} className="bg-gray-50 p-4 rounded border border-gray-300">
-              <h4 className="font-semibold mb-2">Featured Item {num}</h4>
-              <p className="text-sm text-gray-500">Content editor coming soon...</p>
+
+        {/* Featured Item #1 - Editable */}
+        <div className="border-2 border-blue-300 rounded-lg p-4 bg-blue-50 mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-bold text-gray-900">Featured Item #1</h4>
+            <button
+              onClick={handleSaveContent}
+              className="px-3 py-1 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700"
+            >
+              Save Content
+            </button>
+          </div>
+
+          <div className="space-y-3 bg-white p-3 rounded">
+            {/* URL Scraper */}
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-3 rounded border border-blue-200">
+              <p className="text-xs font-semibold text-gray-900 mb-2">✨ Quick Add from URL (Optional)</p>
+              <p className="text-xs text-gray-600 mb-2">Paste a URL to auto-fill title, description, and image</p>
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  value={scrapeUrl}
+                  onChange={(e) => setScrapeUrl(e.target.value)}
+                  placeholder="https://example.com/article"
+                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs"
+                  disabled={isScraping}
+                />
+                <button
+                  onClick={handleScrapeContent}
+                  disabled={isScraping}
+                  className="px-3 py-1 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 disabled:bg-gray-400"
+                >
+                  {isScraping ? 'Scraping...' : 'Scrape'}
+                </button>
+              </div>
+              {scrapeError && <p className="text-xs text-red-600 mt-1">{scrapeError}</p>}
             </div>
-          ))}
+
+            {/* Title */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Title *</label>
+              <input
+                type="text"
+                value={featuredContent.title}
+                onChange={(e) => handleContentChange('title', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                placeholder="e.g., Building Meaningful Professional Networks"
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Description *</label>
+              <textarea
+                value={featuredContent.description}
+                onChange={(e) => handleContentChange('description', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                rows="3"
+                placeholder="Brief description of the content..."
+              />
+            </div>
+
+            {/* Image */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Image *</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={featuredContent.image}
+                  onChange={(e) => handleContentChange('image', e.target.value)}
+                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs"
+                  placeholder="Image URL or upload below"
+                />
+                <label className="px-3 py-1 bg-gray-200 text-gray-700 rounded text-xs font-medium hover:bg-gray-300 cursor-pointer flex items-center gap-1">
+                  <Upload className="w-3 h-3" />
+                  Upload
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          handleContentChange('image', reader.result);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+              {featuredContent.image && (
+                <img src={featuredContent.image} alt="Preview" className="mt-1 w-full h-24 object-cover rounded" />
+              )}
+            </div>
+
+            {/* URL Link */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Content URL *</label>
+              <input
+                type="url"
+                value={featuredContent.url}
+                onChange={(e) => handleContentChange('url', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                placeholder="https://example.com/article"
+              />
+            </div>
+
+            {/* Professional Interest Tags */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Professional Interest Tags</label>
+              <input
+                type="text"
+                value={featuredContent.tags}
+                onChange={(e) => handleContentChange('tags', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                placeholder="e.g., Leadership, Marketing, Technology (comma separated)"
+              />
+            </div>
+
+            {/* Sponsored By */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Sponsored By (optional)</label>
+              <input
+                type="text"
+                value={featuredContent.sponsoredBy}
+                onChange={(e) => handleContentChange('sponsoredBy', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                placeholder="e.g., Lake Michigan Credit Union"
+              />
+              <p className="text-xs text-gray-500 mt-1">Only displays on dashboard if filled in</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Featured Items #2 and #3 - Mock Placeholders */}
+        <div className="space-y-3">
+          <div className="bg-gray-50 p-4 rounded border border-gray-300">
+            <h4 className="font-semibold mb-2 text-sm">Featured Item #2</h4>
+            <p className="text-xs text-gray-500">Mock content for demo purposes</p>
+          </div>
+          <div className="bg-gray-50 p-4 rounded border border-gray-300">
+            <h4 className="font-semibold mb-2 text-sm">Featured Item #3</h4>
+            <p className="text-xs text-gray-500">Mock content for demo purposes</p>
+          </div>
         </div>
       </div>
 
