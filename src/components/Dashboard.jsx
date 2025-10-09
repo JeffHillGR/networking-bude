@@ -159,11 +159,14 @@ const shouldShowUpgradePrompt = (feature) => {
                   </button>
                 </div>
               </div>
-              <a
-                href={featuredContent[featuredContentIndex].url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex gap-4 hover:bg-gray-50 p-2 rounded-lg transition-colors -m-2"
+              <div
+                onClick={() => {
+                  if (shouldShowUpgradePrompt('featuredContent')) {
+                    setShowUpgradeModal(true);
+                    setSelectedPlan(null);
+                  }
+                }}
+                className="flex gap-4 hover:bg-gray-50 p-2 rounded-lg transition-colors -m-2 cursor-pointer"
               >
                 <img
                   src={featuredContent[featuredContentIndex].image}
@@ -191,7 +194,7 @@ const shouldShowUpgradePrompt = (feature) => {
                     )}
                   </div>
                 </div>
-              </a>
+              </div>
             </div>
 
             <div>
