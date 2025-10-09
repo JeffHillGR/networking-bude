@@ -79,11 +79,7 @@ function Sidebar({ activeTab, setActiveTab }) {
 
                 <button
                   onClick={() => setActiveTab('settings')}
-                  className={`w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors ${
-                    activeTab === 'settings'
-                     ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
-                      : 'text-gray-500 hover:bg-gray-100'
-                  }`}
+                  className="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors text-gray-500 hover:bg-gray-100"
                 >
                 <SettingsIcon className="w-4 h-4" />
                   <span>Settings</span>
@@ -91,11 +87,7 @@ function Sidebar({ activeTab, setActiveTab }) {
 
                 <button
                   onClick={() => setActiveTab('payment')}
-                  className={`w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors ${
-                    activeTab === 'payment'
-                      ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
-                      : 'text-gray-500 hover:bg-gray-100'
-                  }`}
+                  className="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors text-gray-500 hover:bg-gray-100"
                 >
                   <CreditCard className="w-4 h-4" />
                   <span>Payment Portal</span>
@@ -103,11 +95,7 @@ function Sidebar({ activeTab, setActiveTab }) {
 
                 <button
                   onClick={() => setActiveTab('archive')}
-                  className={`w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors ${
-                    activeTab === 'archive'
-                      ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
-                      : 'text-gray-500 hover:bg-gray-100'
-                  }`}
+                  className="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors text-gray-500 hover:bg-gray-100"
                 >
                   <Archive className="w-4 h-4" />
                   <span>Content Archive</span>
