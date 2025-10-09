@@ -245,7 +245,89 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
   const handleSaveContent = () => {
     localStorage.setItem('featuredContent1', JSON.stringify(featuredContent));
-    alert('Featured Content saved successfully!');
+    alert('Featured Content #1 saved successfully!');
+  };
+
+  // Featured Content #2 handlers
+  const loadFeaturedContent2 = () => {
+    const saved = localStorage.getItem('featuredContent2');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return {
+      title: '',
+      description: '',
+      image: '',
+      url: '',
+      tags: '',
+      sponsoredBy: ''
+    };
+  };
+
+  const [featuredContent2, setFeaturedContent2] = useState(loadFeaturedContent2());
+  const [scrapeUrl2, setScrapeUrl2] = useState('');
+  const [isScraping2, setIsScraping2] = useState(false);
+  const [scrapeError2, setScrapeError2] = useState('');
+
+  const handleContentChange2 = (field, value) => {
+    setFeaturedContent2({ ...featuredContent2, [field]: value });
+  };
+
+  const handleScrapeContent2 = async () => {
+    if (!scrapeUrl2) {
+      setScrapeError2('Please enter a URL');
+      return;
+    }
+
+    setIsScraping2(true);
+    setScrapeError2('');
+
+    try {
+      const proxyUrl = 'https://api.allorigins.win/raw?url=';
+      const response = await fetch(proxyUrl + encodeURIComponent(scrapeUrl2));
+      const html = await response.text();
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      let scrapedData = { url: scrapeUrl2 };
+
+      const title = doc.querySelector('h1')?.textContent?.trim() ||
+                   doc.querySelector('meta[property="og:title"]')?.getAttribute('content') ||
+                   doc.querySelector('title')?.textContent?.trim() || '';
+      scrapedData.title = title;
+
+      const metaDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content') ||
+                      doc.querySelector('meta[property="og:description"]')?.getAttribute('content');
+      if (metaDesc) {
+        scrapedData.description = metaDesc;
+      }
+
+      const ogImage = doc.querySelector('meta[property="og:image"]')?.getAttribute('content');
+      if (ogImage) {
+        scrapedData.image = ogImage.startsWith('http') ? ogImage : new URL(ogImage, scrapeUrl2).href;
+      }
+
+      setFeaturedContent2(prev => ({
+        ...prev,
+        title: scrapedData.title || prev.title,
+        description: scrapedData.description || prev.description,
+        image: scrapedData.image || prev.image,
+        url: scrapedData.url || prev.url
+      }));
+
+      alert('Content scraped! Please review and edit as needed.');
+    } catch (error) {
+      console.error('Scraping error:', error);
+      setScrapeError2('Unable to scrape this URL. Please enter details manually.');
+    } finally {
+      setIsScraping2(false);
+    }
+  };
+
+  const handleSaveContent2 = () => {
+    localStorage.setItem('featuredContent2', JSON.stringify(featuredContent2));
+    alert('Featured Content #2 saved successfully!');
   };
 
   return (
@@ -439,16 +521,146 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
           </div>
         </div>
 
-        {/* Featured Items #2 and #3 - Mock Placeholders */}
-        <div className="space-y-3">
-          <div className="bg-gray-50 p-4 rounded border border-gray-300">
-            <h4 className="font-semibold mb-2 text-sm">Featured Item #2</h4>
-            <p className="text-xs text-gray-500">Mock content for demo purposes</p>
+        {/* Featured Item #2 - Editable */}
+        <div className="border-2 border-green-300 rounded-lg p-4 bg-green-50 mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-bold text-gray-900">Featured Item #2</h4>
+            <button
+              onClick={handleSaveContent2}
+              className="px-3 py-1 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700"
+            >
+              Save Content
+            </button>
           </div>
-          <div className="bg-gray-50 p-4 rounded border border-gray-300">
-            <h4 className="font-semibold mb-2 text-sm">Featured Item #3</h4>
-            <p className="text-xs text-gray-500">Mock content for demo purposes</p>
+
+          <div className="space-y-3 bg-white p-3 rounded">
+            {/* URL Scraper */}
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-3 rounded border border-blue-200">
+              <p className="text-xs font-semibold text-gray-900 mb-2">✨ Quick Add from URL (Optional)</p>
+              <p className="text-xs text-gray-600 mb-2">Paste a URL to auto-fill title, description, and image</p>
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  value={scrapeUrl2}
+                  onChange={(e) => setScrapeUrl2(e.target.value)}
+                  placeholder="https://example.com/article"
+                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs"
+                  disabled={isScraping2}
+                />
+                <button
+                  onClick={handleScrapeContent2}
+                  disabled={isScraping2}
+                  className="px-3 py-1 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 disabled:bg-gray-400"
+                >
+                  {isScraping2 ? 'Scraping...' : 'Scrape'}
+                </button>
+              </div>
+              {scrapeError2 && <p className="text-xs text-red-600 mt-1">{scrapeError2}</p>}
+            </div>
+
+            {/* Title */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Title *</label>
+              <input
+                type="text"
+                value={featuredContent2.title}
+                onChange={(e) => handleContentChange2('title', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                placeholder="e.g., Leadership in the Modern Workplace"
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Description *</label>
+              <textarea
+                value={featuredContent2.description}
+                onChange={(e) => handleContentChange2('description', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                rows="3"
+                placeholder="Brief description of the content..."
+              />
+            </div>
+
+            {/* Image */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Image *</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={featuredContent2.image}
+                  onChange={(e) => handleContentChange2('image', e.target.value)}
+                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs"
+                  placeholder="Image URL or upload below"
+                />
+                <label className="px-3 py-1 bg-gray-200 text-gray-700 rounded text-xs font-medium hover:bg-gray-300 cursor-pointer flex items-center gap-1">
+                  <Upload className="w-3 h-3" />
+                  Upload
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          handleContentChange2('image', reader.result);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+              {featuredContent2.image && (
+                <img src={featuredContent2.image} alt="Preview" className="mt-1 w-full h-24 object-cover rounded" />
+              )}
+            </div>
+
+            {/* URL Link */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Content URL *</label>
+              <input
+                type="url"
+                value={featuredContent2.url}
+                onChange={(e) => handleContentChange2('url', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                placeholder="https://example.com/article"
+              />
+            </div>
+
+            {/* Professional Interest Tags */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Professional Interest Tags</label>
+              <input
+                type="text"
+                value={featuredContent2.tags}
+                onChange={(e) => handleContentChange2('tags', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                placeholder="e.g., Leadership, Marketing, Technology (comma separated)"
+              />
+            </div>
+
+            {/* Sponsored By */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Sponsored By (optional)</label>
+              <input
+                type="text"
+                value={featuredContent2.sponsoredBy}
+                onChange={(e) => handleContentChange2('sponsoredBy', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                placeholder="e.g., Mercantile Bank"
+              />
+              <p className="text-xs text-gray-500 mt-1">Only displays on dashboard if filled in</p>
+            </div>
           </div>
+        </div>
+
+        {/* Featured Item #3 - Mock Placeholder */}
+        <div className="bg-gray-50 p-4 rounded border border-gray-300">
+          <h4 className="font-semibold mb-2 text-sm">Featured Item #3</h4>
+          <p className="text-xs text-gray-500">Mock content for demo purposes</p>
         </div>
       </div>
 

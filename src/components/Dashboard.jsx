@@ -37,8 +37,11 @@ const shouldShowUpgradePrompt = (feature) => {
 };
 
   // Load admin-created featured content from localStorage
-  const adminContent = localStorage.getItem('featuredContent1');
-  const adminFeaturedContent = adminContent ? JSON.parse(adminContent) : null;
+  const adminContent1 = localStorage.getItem('featuredContent1');
+  const adminFeaturedContent1 = adminContent1 ? JSON.parse(adminContent1) : null;
+
+  const adminContent2 = localStorage.getItem('featuredContent2');
+  const adminFeaturedContent2 = adminContent2 ? JSON.parse(adminContent2) : null;
 
   const defaultFeaturedContent = [
     {
@@ -67,10 +70,12 @@ const shouldShowUpgradePrompt = (feature) => {
     }
   ];
 
-  // Use admin content for slot 1 if available, otherwise use defaults
-  const featuredContent = adminFeaturedContent && adminFeaturedContent.title
-    ? [adminFeaturedContent, defaultFeaturedContent[1], defaultFeaturedContent[2]]
-    : defaultFeaturedContent;
+  // Build featured content array: use admin content where available, otherwise use defaults
+  const slot1 = (adminFeaturedContent1 && adminFeaturedContent1.title) ? adminFeaturedContent1 : defaultFeaturedContent[0];
+  const slot2 = (adminFeaturedContent2 && adminFeaturedContent2.title) ? adminFeaturedContent2 : defaultFeaturedContent[1];
+  const slot3 = defaultFeaturedContent[2]; // Always mock for demo
+
+  const featuredContent = [slot1, slot2, slot3];
 
   const connections = [
     { name: 'Maria Rodriguez', title: 'Marketing Director at Spotify', similarity: '88%', mutuals: '5 mutual connections', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=faces' },
