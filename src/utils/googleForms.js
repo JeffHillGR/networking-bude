@@ -35,7 +35,8 @@ const FORM_CONFIG = {
     organizationsToCheckOutOther: 'entry.2000810861.other_option_response',
     professionalInterests: 'entry.860860201',
     professionalInterestsOther: 'entry.860860201.other_option_response',
-    personalInterests: 'entry.910288519'
+    personalInterests: 'entry.910288519',
+    networkingGoals: 'entry.643686832'
   }
 };
 

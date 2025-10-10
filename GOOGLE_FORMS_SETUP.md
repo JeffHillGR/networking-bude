@@ -261,8 +261,9 @@ Here's a suggested structure for your Google Form:
 - Organizations That I've Wanted to Check Out (with "Other" option)
 
 **Section 6: Interests**
-- Professional Interests (with "Other" option)
-- Personal Interests
+- Professional Interests (Checkboxes with "Other" option)
+- Personal Interests (Paragraph)
+- Networking Goals (Paragraph - optional)
 
 ## Security Considerations
 

@@ -34,7 +34,8 @@ export default function BudEOnboarding() {
     organizationsToCheckOutOther: '',
     professionalInterests: [],
     professionalInterestsOther: '',
-    personalInterests: ''
+    personalInterests: '',
+    networkingGoals: ''
   });
 
   const organizations = [
@@ -159,10 +160,10 @@ export default function BudEOnboarding() {
       // Show success popup
       setShowSuccessPopup(true);
 
-      // Navigate to dashboard after 2 seconds
+      // Navigate to dashboard after 3 seconds
       setTimeout(() => {
         navigate('/dashboard');
-      }, 2000);
+      }, 3000);
     } catch (error) {
       console.error('Error during submission:', error);
       // Continue to dashboard even if Google Forms fails
@@ -723,6 +724,21 @@ const renderStep2 = () => (
               maxLength={500}
             />
             <p className="text-sm text-gray-500 mt-2">{formData.personalInterests.length}/500 characters</p>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold mb-3">Networking Goals</h2>
+            <p className="text-gray-600 mb-4">
+              What are your goals and frustrations with traditional networking?
+            </p>
+            <textarea
+              className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-32"
+              placeholder="Tell us what you're looking for..."
+              value={formData.networkingGoals}
+              onChange={(e) => handleChange('networkingGoals', e.target.value)}
+              maxLength={500}
+            />
+            <p className="text-sm text-gray-500 mt-2">{formData.networkingGoals.length}/500 characters</p>
           </div>
         </div>
 
