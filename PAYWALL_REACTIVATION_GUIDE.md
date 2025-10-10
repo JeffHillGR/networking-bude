@@ -36,6 +36,10 @@ This guide shows you how to re-enable the paywall/upgrade prompts that were remo
 - `showUpgradeModal` state variable
 - `shouldShowUpgradePrompt()` function
 
+### 4. Components Removed
+- **Upgrade Popup Modal** - The modal that appeared when clicking gated features
+- **UpgradeModal import** - Removed from imports (was unused)
+
 ---
 
 ## How to Re-enable Paywalls
@@ -84,7 +88,41 @@ const shouldShowUpgradePrompt = (feature) => {
 };
 ```
 
-### Step 3: Restore Top Gradient Bar
+### Step 3: Restore Upgrade Popup Modal
+
+At the end of the render function (just before the closing `</div>` and `);` around line 419), add back the upgrade popup modal:
+
+```javascript
+{showUpgradePopup && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowUpgradePopup(false)}>
+    <div className="bg-white rounded-lg p-8 max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">Premium Feature</h2>
+      <p className="text-gray-600 mb-6">Upgrade to a paid BudE Subscriber to access this feature</p>
+      <div className="flex gap-3">
+        <button
+          onClick={() => {
+            setShowUpgradePopup(false);
+            setActiveTab('subscription');
+          }}
+          className="flex-1 bg-[#009900] text-white px-6 py-3 rounded-lg border-[3px] border-[#D0ED00] hover:bg-green-700"
+        >
+          Upgrade Now
+        </button>
+        <button
+          onClick={() => setShowUpgradePopup(false)}
+          className="flex-1 border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50"
+        >
+          Maybe Later
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+```
+
+**Location:** This goes at the very end of the return statement, after the mobile navigation but before the final `</div>` that closes the main dashboard container.
+
+### Step 4: Restore Top Gradient Bar
 
 Around line 421, replace:
 
