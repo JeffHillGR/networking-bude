@@ -207,7 +207,7 @@ function Connections() {
               <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-lg flex items-center justify-center z-10">
                 <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 md:p-8 max-w-md mx-4 text-center shadow-2xl border-4 border-[#D0ED00]">
                   <img
-                    src="/favicon.ico"
+                    src="/BudE-favicon.png"
                     alt="BudE"
                     className="h-16 w-16 md:h-20 md:w-20 mx-auto mb-4 object-contain"
                   />
@@ -286,7 +286,7 @@ function Connections() {
               <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-lg flex items-center justify-center z-10">
                 <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-4 md:p-6 mx-4 text-center shadow-2xl border-4 border-[#D0ED00]">
                   <img
-                    src="/favicon.ico"
+                    src="/BudE-favicon.png"
                     alt="BudE"
                     className="h-12 w-12 md:h-16 md:w-16 mx-auto mb-3 object-contain"
                   />
