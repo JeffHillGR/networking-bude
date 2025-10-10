@@ -132,7 +132,11 @@ function Messages() {
           {/* Beta Testing Blur Overlay for Conversations */}
           <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10">
             <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 md:p-8 mx-4 text-center shadow-2xl border-4 border-[#D0ED00] max-w-xs">
-              <div className="text-4xl md:text-5xl mb-4">🔬</div>
+              <img
+                src="/favicon.ico"
+                alt="BudE"
+                className="h-16 w-16 md:h-20 md:w-20 mx-auto mb-4 object-contain"
+              />
               <p className="text-green-800 font-bold text-lg md:text-xl mb-2">
                 Beta Version
               </p>
@@ -239,7 +243,11 @@ function Messages() {
           {/* Beta Testing Blur Overlay for Chat */}
           <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10">
             <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 md:p-8 mx-4 text-center shadow-2xl border-4 border-[#D0ED00] max-w-md">
-              <div className="text-4xl md:text-5xl mb-4">🔬</div>
+              <img
+                src="/favicon.ico"
+                alt="BudE"
+                className="h-16 w-16 md:h-20 md:w-20 mx-auto mb-4 object-contain"
+              />
               <p className="text-green-800 font-bold text-lg md:text-xl mb-2">
                 Beta Version
               </p>

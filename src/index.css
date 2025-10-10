@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  /* Fix mobile viewport jumping when keyboard appears */
+  .min-h-screen-stable {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  @supports (height: 100dvh) {
+    .min-h-screen-stable {
+      min-height: 100dvh;
+    }
+  }
+}

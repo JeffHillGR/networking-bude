@@ -209,7 +209,7 @@ export default function BudEOnboarding() {
 
 
  const renderWelcome = () => (
-  <div className="min-h-screen flex flex-col md:flex-row">
+  <div className="min-h-screen-stable flex flex-col md:flex-row">
     {/* Left side - Images - Hidden on mobile */}
     <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 p-12 items-start justify-end pt-16">
       <div className="relative">
@@ -368,7 +368,7 @@ export default function BudEOnboarding() {
 
 
   const renderStep1 = () => (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-screen-stable flex flex-col md:flex-row">
    {/* Left side - Images - Hidden on mobile */}
    <div className="hidden md:flex md:w-1/2 relative p-12 items-start justify-end pt-16 overflow-hidden">
   <div className="absolute inset-0">
@@ -646,7 +646,7 @@ export default function BudEOnboarding() {
   );
 
 const renderStep2 = () => (
-  <div className="min-h-screen flex flex-col md:flex-row">
+  <div className="min-h-screen-stable flex flex-col md:flex-row">
     {/* Left side - Image with blurred background - Hidden on mobile */}
     <div className="hidden md:flex md:w-1/2 relative p-12 items-start justify-end pt-16 overflow-hidden">
       <div className="absolute inset-0">
