@@ -14,18 +14,19 @@ This guide will help you connect your BudE onboarding form to Google Forms so al
 - **Username** (Short answer)
 - **Email** (Short answer)
 - **Job Title** (Short answer)
-- **Industry** (Dropdown)
-- **Same Industry Preference** (Multiple choice)
-- **Gender** (Multiple choice - optional)
-- **Gender Preference** (Multiple choice)
-- **Date of Birth** (Date - optional)
-- **DOB Preference** (Multiple choice)
+- **Company** (Short answer - optional)
 - **Zip Code** (Short answer)
-- **Connection Radius** (Multiple choice)
-- **Organizations I Attend** (Checkboxes)
-- **Organizations to Check Out** (Checkboxes)
-- **Professional Interests** (Checkboxes)
 - **Personal Interests** (Paragraph)
+- **Industry** (Dropdown - optional)
+- **Date of Birth** (Date - optional)
+- **Same Industry Connect** (Multiple choice)
+- **Gender** (Multiple choice - optional)
+- **Gender Preference Connect** (Multiple choice)
+- **DOB Connect** (Multiple choice)
+- **Connecting Radius** (Multiple choice)
+- **Organizations That Have Events I Like To Attend** (Checkboxes with "Other" option enabled)
+- **Organizations That I've Wanted to Check Out** (Checkboxes with "Other" option enabled)
+- **Professional Interests** (Checkboxes with "Other" option enabled)
 
 ## Step 2: Get Your Form ID
 
@@ -33,7 +34,116 @@ This guide will help you connect your BudE onboarding form to Google Forms so al
 2. Or copy from the URL when editing: `https://docs.google.com/forms/d/YOUR_FORM_ID_HERE/edit`
 3. The Form ID is the long string between `/d/` and `/edit`
 
-## Step 3: Get Entry IDs for Each Field
+## Step 3: Add Dropdown and Checkbox Options
+
+For questions with predefined choices, you'll need to add all the options:
+
+### Industry (Dropdown):
+```
+Technology
+Healthcare
+Finance
+Education
+Manufacturing
+Marketing
+Real Estate
+Law
+Non-Profit
+Government
+Accounting
+Consulting
+Professional Development
+Recruiting
+Entrepreneur/Business Owner
+Startup/Founder
+Other
+```
+
+### Same Industry Connect (Multiple Choice):
+```
+Yes, Same Industry As Mine
+No, Different Industry As Mine
+My Industry or Other Industries
+```
+
+### Gender (Multiple Choice):
+```
+Male
+Female
+Non-binary
+Prefer not to say
+```
+
+### Gender Preference Connect (Multiple Choice):
+```
+Same gender
+Different gender
+Any gender
+```
+
+### DOB Connect (Multiple Choice):
+```
+Similar Age (+/- 5 Years)
+Similar Age (+/- 10 Years)
+Older - Mentor
+Younger - Mentee
+No Preference
+```
+
+### Connecting Radius (Multiple Choice):
+```
+Less than 25 Miles
+Less than 50 Miles
+Less than 100 Miles
+Same State
+No Preference
+```
+
+### Organizations (Checkboxes - for both "Attend" and "Check Out" questions):
+```
+GR Chamber of Commerce
+Rotary Club
+CREW
+GRYP
+Economic Club of Grand Rapids
+Create Great Leaders
+Right Place
+Bamboo
+Hello West Michigan
+CARWM
+Creative Mornings
+Athena
+Inforum
+Start Garden
+```
+**Enable "Add 'Other' option" for this question**
+
+### Professional Interests (Checkboxes):
+```
+Technology
+Marketing
+Finance
+Design
+Sales
+HR
+Product Management
+Data Science
+Engineering
+Consulting
+Healthcare
+Education
+Real Estate
+Legal
+Media
+Startup
+AI/ML
+Blockchain
+Sustainability
+Leadership
+```
+**Enable "Add 'Other' option" for this question**
+
+## Step 4: Get Entry IDs for Each Field
 
 1. Click the **Preview** button (eye icon) in your Google Form
 2. Right-click anywhere on the preview page → **Inspect Element**
@@ -52,7 +162,7 @@ Email: entry.222222222
 ... (continue for all fields)
 ```
 
-## Step 4: Configure the Integration
+## Step 5: Configure the Integration
 
 1. Open `src/utils/googleForms.js`
 2. Replace `YOUR_FORM_ID_HERE` with your actual Form ID from Step 2
@@ -73,14 +183,14 @@ const FORM_CONFIG = {
 };
 ```
 
-## Step 5: Test the Integration
+## Step 6: Test the Integration
 
 1. Run your development server: `npm run dev`
 2. Go through the onboarding flow
 3. Fill out all fields and submit
 4. Check your Google Form responses to verify the data was received
 
-## Step 6: Connect to Google Sheets (Optional)
+## Step 7: Connect to Google Sheets (Optional)
 
 1. In your Google Form, click the **Responses** tab
 2. Click the Google Sheets icon (green with white cross)
@@ -91,6 +201,12 @@ const FORM_CONFIG = {
 
 - **No CORS Response**: The integration uses `mode: 'no-cors'`, which means you won't receive a confirmation response from Google Forms. This is normal and the data will still be submitted successfully.
 
+- **"Other" Options**: For checkbox questions (Organizations and Professional Interests), make sure to enable the "Add 'Other' option" feature:
+  1. Click the ⋮ (three dots) in the bottom right of the checkbox question
+  2. Select "Add 'Other' option"
+  3. This allows users to specify custom values not in your predefined list
+  4. The integration automatically handles `.other_option_response` fields
+
 - **Privacy**: Make sure your Google Form privacy settings align with your app's privacy policy.
 
 - **Form Fields**: The form fields in Google Forms don't need to be in the same order as your onboarding flow, but the names should match for better organization.
@@ -98,6 +214,8 @@ const FORM_CONFIG = {
 - **Optional Fields**: Some fields in your onboarding are optional. Users who skip these fields won't have data submitted for those entries.
 
 - **Arrays**: Fields like organizations and professional interests are arrays. They will be joined with commas when submitted to Google Forms.
+
+- **Password Security**: Passwords are NOT sent to Google Forms for security reasons. Only profile information is submitted.
 
 ## Troubleshooting
 
@@ -124,25 +242,26 @@ Here's a suggested structure for your Google Form:
 
 **Section 2: Professional Details**
 - Job Title
-- Industry
-- Same Industry Preference
+- Company (optional)
+- Industry (optional)
+- Same Industry Connect
 
 **Section 3: Demographics (Optional)**
-- Gender
-- Gender Preference
-- Date of Birth
-- DOB Preference
+- Gender (optional)
+- Gender Preference Connect
+- Date of Birth (optional)
+- DOB Connect
 
 **Section 4: Location**
 - Zip Code
-- Connection Radius
+- Connecting Radius
 
 **Section 5: Organizations**
-- Organizations I Attend
-- Organizations to Check Out
+- Organizations That Have Events I Like To Attend (with "Other" option)
+- Organizations That I've Wanted to Check Out (with "Other" option)
 
 **Section 6: Interests**
-- Professional Interests
+- Professional Interests (with "Other" option)
 - Personal Interests
 
 ## Security Considerations
