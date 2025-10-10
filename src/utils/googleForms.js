@@ -47,6 +47,12 @@ const FORM_CONFIG = {
  */
 export const submitToGoogleForms = async (formData) => {
   try {
+    // Store submission data as backup in localStorage
+    const timestamp = new Date().toISOString();
+    const backupData = { ...formData, submittedAt: timestamp };
+    localStorage.setItem('lastFormSubmission', JSON.stringify(backupData));
+    console.log('📦 Backup stored in localStorage');
+
     const formUrl = `https://docs.google.com/forms/d/${FORM_CONFIG.formId}/formResponse`;
 
     // Create URLSearchParams for form data
@@ -81,6 +87,13 @@ export const submitToGoogleForms = async (formData) => {
     console.log('Form ID:', FORM_CONFIG.formId);
     console.log('Submitting data:', formData);
     console.log('URL length:', getUrl.length);
+
+    // Check if URL is too long (browsers have ~2048 char limit for GET requests)
+    if (getUrl.length > 2000) {
+      console.warn('⚠️ URL length exceeds 2000 characters! This may cause submission failure.');
+      console.warn('Consider shortening textarea responses or switching to POST method.');
+    }
+
     console.log('Full URL:', getUrl);
     console.log('===============================');
 
@@ -89,7 +102,7 @@ export const submitToGoogleForms = async (formData) => {
       mode: 'no-cors'
     });
 
-    console.log('Form submitted to Google Forms successfully');
+    console.log('✅ Form submitted to Google Forms successfully');
     return true;
 
   } catch (error) {
