@@ -16,10 +16,7 @@ import PrivacyPage from './PrivacyPage';
 import ArchivePage from './ArchivePage';
 function Dashboard() {
   const navigate = useNavigate();
-  const [showUpgradePopup, setShowUpgradePopup] = useState(false);
-  const [isDevMode, setIsDevMode] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 const [selectedPlan, setSelectedPlan] = useState(null);
 const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
 
@@ -35,10 +32,6 @@ const getGreeting = () => {
   if (hour < 12) return 'Good morning';
   if (hour < 18) return 'Good afternoon';
   return 'Good evening';
-};
-const shouldShowUpgradePrompt = (feature) => {
-  if (isDevMode) return false; // Dev mode bypasses all gates
-  return true; // Preview mode shows upgrade prompts
 };
 
   // Load admin-created featured content from localStorage
@@ -209,14 +202,8 @@ const shouldShowUpgradePrompt = (feature) => {
                   <h3 className="font-bold text-gray-900">Check Out Your Potential Connections</h3>
                   <p className="text-xs text-gray-600">People you might want to connect with</p>
                 </div>
-                <button 
-  onClick={() => {
-  if (shouldShowUpgradePrompt('connections')) {
-    setShowUpgradePopup(true);
-  } else {
-    setActiveTab('connections');
-  }
-}}
+                <button
+  onClick={() => setActiveTab('connections')}
   className="text-sm text-green-600 font-medium hover:underline"
 >
   View All
@@ -256,14 +243,8 @@ const shouldShowUpgradePrompt = (feature) => {
                   <h3 className="font-bold text-gray-900">See What Events Are Coming Up</h3>
                   <p className="text-sm text-gray-600">Networking events happening near you</p>
                 </div>
-<button 
-  onClick={() => {
-    if (shouldShowUpgradePrompt('events')) {
-      setShowUpgradePopup(true);
-    } else {
-      setActiveTab('events');
-    }
-  }}
+<button
+  onClick={() => setActiveTab('events')}
   className="text-sm text-green-600 font-medium hover:underline"
 >
   View All Events
@@ -293,13 +274,7 @@ const shouldShowUpgradePrompt = (feature) => {
                       </div>
                       <div className="flex justify-end">
                         <button
-                          onClick={() => {
-                            if (shouldShowUpgradePrompt('eventDetails')) {
-                              setShowUpgradePopup(true);
-                            } else {
-                              navigate(`/events/${event.id}`);
-                            }
-                          }}
+                          onClick={() => navigate(`/events/${event.id}`)}
                           className="text-[#009900] font-medium hover:text-[#007700] flex items-center gap-1 text-xs"
                         >
                           View Details
@@ -346,41 +321,9 @@ const shouldShowUpgradePrompt = (feature) => {
   return <Events />;
 
  case 'connections':
-  if (shouldShowUpgradePrompt('connections')) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Premium Feature</h2>
-          <p className="text-gray-600 mb-6">Upgrade to BudE+ to access Connections</p>
-          <button 
-            onClick={() => setActiveTab('subscription')}
-        className="bg-[#009900] text-white px-6 py-3 rounded-lg border-[3px] border-[#D0ED00] hover:bg-green-700"
-          >
-            Upgrade Now
-          </button>
-        </div>
-      </div>
-    );
-  }
   return <Connections />;
 
   case 'messages':
-  if (shouldShowUpgradePrompt('messages')) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Premium Feature</h2>
-          <p className="text-gray-600 mb-6">Upgrade to BudE+ to access Messages</p>
-          <button 
-            onClick={() => setActiveTab('subscription')}
-           className="bg-[#009900] text-white px-6 py-3 rounded-lg border-[3px] border-[#D0ED00] hover:bg-green-700"
-          >
-            Upgrade Now
-          </button>
-        </div>
-      </div>
-    );
-  }
   return <Messages />;
 
   case 'profile':
@@ -420,31 +363,18 @@ default:
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
     <div className="bg-gradient-to-r from-green-600 via-lime-400 to-yellow-400 text-white px-4 py-2 text-center text-sm md:text-base">
       <span className="font-medium">
-        {isDevMode ? '🔧 Dev Mode' : '🎨 Preview Mode'}
+        Beta Testing - All Features Unlocked
       </span>
       <span className="mx-2">•</span>
-      <span>Upgrade $9.99/month to unlock features</span>
-      <span className="mx-2">•</span>
-      <button 
-        onClick={() => setIsDevMode(!isDevMode)} 
+      <button
+        onClick={() => {
+          localStorage.removeItem('onboardingCompleted');
+          window.location.href = '/';
+        }}
         className="underline hover:no-underline font-medium"
       >
-        {isDevMode ? 'Switch to Preview' : 'Enter Dev Mode'}
+        Reset to Onboarding
       </button>
-      {isDevMode && (
-        <>
-          <span className="mx-2">•</span>
-         <button 
-  onClick={() => {
-    localStorage.removeItem('onboardingCompleted');
-    window.location.href = '/';
-  }}
-  className="underline hover:no-underline font-medium"
->
-  Reset to Onboarding
-</button>
-        </>
-      )}
     </div>
     <div className="md:flex md:h-screen">
   

@@ -78,26 +78,25 @@ export const submitToGoogleForms = async (formData) => {
       }
     });
 
-    // Submit using GET request (Google Forms accepts GET submissions)
-    const getUrl = `https://docs.google.com/forms/d/${FORM_CONFIG.formId}/formResponse?${params.toString()}`;
+    // Convert URLSearchParams to FormData for POST request
+    const formDataToSend = new FormData();
+    params.forEach((value, key) => {
+      formDataToSend.append(key, value);
+    });
+
+    const postUrl = `https://docs.google.com/forms/d/${FORM_CONFIG.formId}/formResponse`;
 
     // Log submission details for debugging
-    console.log('=== Google Forms Submission ===');
+    console.log('=== Google Forms Submission (POST) ===');
     console.log('Form ID:', FORM_CONFIG.formId);
     console.log('Submitting data:', formData);
-    console.log('URL length:', getUrl.length);
-
-    // Check if URL is too long (browsers have ~2048 char limit for GET requests)
-    if (getUrl.length > 2000) {
-      console.warn('⚠️ URL length exceeds 2000 characters! This may cause submission failure.');
-      console.warn('Consider shortening textarea responses or switching to POST method.');
-    }
-
-    console.log('Full URL:', getUrl);
+    console.log('POST URL:', postUrl);
+    console.log('Form entries:', Array.from(formDataToSend.entries()));
     console.log('===============================');
 
-    await fetch(getUrl, {
-      method: 'GET',
+    await fetch(postUrl, {
+      method: 'POST',
+      body: formDataToSend,
       mode: 'no-cors'
     });
 
