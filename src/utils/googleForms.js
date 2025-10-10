@@ -84,7 +84,8 @@ export const submitToGoogleForms = async (formData) => {
       formDataToSend.append(key, value);
     });
 
-    const postUrl = `https://docs.google.com/forms/d/${FORM_CONFIG.formId}/formResponse`;
+    // Use the proper submit URL format (not preview URL)
+    const postUrl = `https://docs.google.com/forms/d/e/${FORM_CONFIG.formId}/formResponse`;
 
     // Log submission details for debugging
     console.log('=== Google Forms Submission (POST) ===');
