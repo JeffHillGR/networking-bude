@@ -195,7 +195,7 @@ const getGreeting = () => {
               </div>
             </div>
 
-            <div>
+            <div className="relative group">
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <h3 className="font-bold text-gray-900 text-sm md:text-base">Check Out Your Potential Connections</h3>
@@ -233,6 +233,20 @@ const getGreeting = () => {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* Beta Testing Hover Message */}
+              <div className="absolute inset-0 bg-black/60 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+                <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 max-w-2xl mx-4 flex items-center gap-4 shadow-2xl border-3 border-[#D0ED00]">
+                  <img
+                    src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
+                    alt="Scientist at work"
+                    className="h-24 w-auto flex-shrink-0 rounded-lg object-cover"
+                  />
+                  <p className="text-green-800 font-medium text-base md:text-lg">
+                    Our scientists are hard at work finding connections for you. Look for an email from us!
+                  </p>
+                </div>
               </div>
             </div>
 
