@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { User, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { submitToGoogleForms, isFormConfigured } from '../utils/googleForms';
 
 export default function BudEOnboarding() {
   const navigate = useNavigate();
@@ -142,13 +141,24 @@ export default function BudEOnboarding() {
     setIsSubmitting(true);
 
     try {
-      // Submit to Google Forms if configured
-      if (isFormConfigured()) {
-        await submitToGoogleForms(formData);
-        console.log('Data sent to Google Forms');
-      } else {
-        console.warn('Google Forms not configured. Skipping submission.');
+      // Submit to Google Sheets via Vercel serverless function
+      console.log('📤 Submitting form data to Google Sheets API...');
+
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to submit form');
       }
+
+      const result = await response.json();
+      console.log('✅ Form submitted successfully:', result);
 
       // Save to localStorage (existing behavior)
       localStorage.setItem('onboardingCompleted', 'true');
@@ -165,8 +175,24 @@ export default function BudEOnboarding() {
         navigate('/dashboard');
       }, 3000);
     } catch (error) {
-      console.error('Error during submission:', error);
-      // Continue to dashboard even if Google Forms fails
+      console.error('❌ Error submitting to Google Sheets:', error);
+
+      // Store form data in localStorage as backup
+      localStorage.setItem('lastFormSubmission', JSON.stringify({
+        ...formData,
+        submittedAt: new Date().toISOString(),
+        error: error.message
+      }));
+
+      // Still save user data to localStorage for dashboard access
+      localStorage.setItem('onboardingCompleted', 'true');
+      localStorage.setItem('userFirstName', formData.firstName);
+      localStorage.setItem('userLastName', formData.lastName);
+      localStorage.setItem('userJobTitle', formData.jobTitle);
+      localStorage.setItem('userIndustry', formData.industry);
+
+      // Continue to dashboard even if submission fails
+      // User data is backed up in localStorage
       navigate('/dashboard');
     } finally {
       setIsSubmitting(false);
