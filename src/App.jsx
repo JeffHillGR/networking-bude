@@ -5,6 +5,7 @@ import AdminPanel from './components/AdminPanel.jsx';
 import Events from './components/Events.jsx';
 import EventDetail from './components/EventDetail.jsx';
 import Settings from './components/Settings.jsx';
+import ScrollToTop from './components/ScrollToTop.jsx';
 
 function App() {
   // Check if user completed onboarding
@@ -12,6 +13,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/admin" element={<AdminPanel />} />
         <Route
