@@ -8,25 +8,26 @@ This guide will help you connect your BudE onboarding form to Google Forms so al
 2. Create a new form
 3. Add questions matching each field in your onboarding flow:
 
-### Required Fields to Add:
+### Required Fields to Add (in this order):
 - **First Name** (Short answer)
 - **Last Name** (Short answer)
 - **Username** (Short answer)
 - **Email** (Short answer)
 - **Job Title** (Short answer)
 - **Company** (Short answer - optional)
-- **Zip Code** (Short answer)
-- **Personal Interests** (Paragraph)
 - **Industry** (Dropdown - optional)
-- **Date of Birth** (Date - optional)
 - **Same Industry Connect** (Multiple choice)
 - **Gender** (Multiple choice - optional)
 - **Gender Preference Connect** (Multiple choice)
+- **Date of Birth** (Date - optional)
 - **DOB Connect** (Multiple choice)
-- **Connecting Radius** (Multiple choice)
 - **Organizations That Have Events I Like To Attend** (Checkboxes with "Other" option enabled)
 - **Organizations That I've Wanted to Check Out** (Checkboxes with "Other" option enabled)
 - **Professional Interests** (Checkboxes with "Other" option enabled)
+- **Personal Interests** (Paragraph)
+- **Networking Goals** (Paragraph - optional)
+
+**Note:** Zip Code and Connecting Radius have been removed for Grand Rapids beta focus.
 
 ## Step 2: Get Your Form ID
 
@@ -87,15 +88,6 @@ Similar Age (+/- 5 Years)
 Similar Age (+/- 10 Years)
 Older - Mentor
 Younger - Mentee
-No Preference
-```
-
-### Connecting Radius (Multiple Choice):
-```
-Less than 25 Miles
-Less than 50 Miles
-Less than 100 Miles
-Same State
 No Preference
 ```
 
@@ -252,15 +244,11 @@ Here's a suggested structure for your Google Form:
 - Date of Birth (optional)
 - DOB Connect
 
-**Section 4: Location**
-- Zip Code
-- Connecting Radius
-
-**Section 5: Organizations**
+**Section 4: Organizations**
 - Organizations That Have Events I Like To Attend (with "Other" option)
 - Organizations That I've Wanted to Check Out (with "Other" option)
 
-**Section 6: Interests**
+**Section 5: Interests**
 - Professional Interests (Checkboxes with "Other" option)
 - Personal Interests (Paragraph)
 - Networking Goals (Paragraph - optional)
