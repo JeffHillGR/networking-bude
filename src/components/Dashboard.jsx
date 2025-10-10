@@ -236,8 +236,8 @@ const getGreeting = () => {
               </div>
 
               {/* Beta Testing Hover Message */}
-              <div className="absolute inset-0 bg-black/60 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
-                <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 max-w-2xl mx-4 flex items-center gap-4 shadow-2xl border-3 border-[#D0ED00]">
+              <div className="absolute inset-0 bg-black/60 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none z-10">
+                <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 max-w-2xl mx-4 flex items-center gap-4 shadow-2xl border-4 border-[#D0ED00]">
                   <img
                     src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
                     alt="Scientist at work"
