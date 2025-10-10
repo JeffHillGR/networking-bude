@@ -26,8 +26,11 @@ export default function BudEOnboarding() {
     zipCode: '',
     radius: '',
     organizations: [],
+    organizationsOther: '',
     organizationsToCheckOut: [],
+    organizationsToCheckOutOther: '',
     professionalInterests: [],
+    professionalInterestsOther: '',
     personalInterests: ''
   });
 
@@ -539,6 +542,15 @@ export default function BudEOnboarding() {
                   </button>
                 ))}
               </div>
+              <div className="mt-3">
+                <input
+                  type="text"
+                  placeholder="Other organization (please specify)"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                  value={formData.organizationsOther}
+                  onChange={(e) => handleChange('organizationsOther', e.target.value)}
+                />
+              </div>
             </div>
 
             <div>
@@ -564,6 +576,15 @@ export default function BudEOnboarding() {
                     {org}
                   </button>
                 ))}
+              </div>
+              <div className="mt-3">
+                <input
+                  type="text"
+                  placeholder="Other organization (please specify)"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                  value={formData.organizationsToCheckOutOther}
+                  onChange={(e) => handleChange('organizationsToCheckOutOther', e.target.value)}
+                />
               </div>
             </div>
           </div>
@@ -648,6 +669,15 @@ const renderStep2 = () => (
                   {interest}
                 </button>
               ))}
+            </div>
+            <div className="mt-4">
+              <input
+                type="text"
+                placeholder="Other professional interest (please specify)"
+                className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                value={formData.professionalInterestsOther}
+                onChange={(e) => handleChange('professionalInterestsOther', e.target.value)}
+              />
             </div>
           </div>
 

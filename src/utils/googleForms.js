@@ -30,9 +30,12 @@ const FORM_CONFIG = {
     dobPreference: 'entry.999999999',  // Replace with actual entry ID
     zipCode: 'entry.000000000',        // Replace with actual entry ID
     radius: 'entry.111111112',         // Replace with actual entry ID
-    organizations: 'entry.222222223',  // Replace with actual entry ID
-    organizationsToCheckOut: 'entry.333333334', // Replace with actual entry ID
-    professionalInterests: 'entry.444444445',   // Replace with actual entry ID
+    organizations: 'entry.222222223',  // Replace with actual entry ID (checkboxes)
+    organizationsOther: 'entry.222222223.other_option_response', // "Other" text field for organizations
+    organizationsToCheckOut: 'entry.333333334', // Replace with actual entry ID (checkboxes)
+    organizationsToCheckOutOther: 'entry.333333334.other_option_response', // "Other" text field
+    professionalInterests: 'entry.444444445',   // Replace with actual entry ID (checkboxes)
+    professionalInterestsOther: 'entry.444444445.other_option_response', // "Other" text field
     personalInterests: 'entry.555555556'        // Replace with actual entry ID
   }
 };
