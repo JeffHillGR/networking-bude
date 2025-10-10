@@ -57,43 +57,43 @@ function Profile() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-8">
-        <h1 className="text-3xl font-bold text-gray-900">Your Profile</h1>
-        <p className="text-gray-600 mt-2">Manage your professional profile</p>
+      <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-6 md:py-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Your Profile</h1>
+        <p className="text-sm md:text-base text-gray-600 mt-2">Manage your professional profile</p>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Profile Card */}
           <div className="lg:col-span-2 space-y-6">
             {/* Main Profile Card */}
-            <div className="bg-white rounded-lg shadow-sm p-8">
-              <div className="flex items-start gap-6 mb-6">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-3xl font-bold flex-shrink-0">
+            <div className="bg-white rounded-lg shadow-sm p-4 md:p-8">
+              <div className="flex flex-col md:flex-row items-start gap-4 md:gap-6 mb-6">
+                <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-2xl md:text-3xl font-bold flex-shrink-0">
                   {profileData.initials}
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900">{profileData.name}</h2>
-                      <div className="flex items-center gap-2 text-gray-600 mt-1">
-                        <Briefcase className="w-4 h-4" />
-                        <span>{profileData.title}</span>
+                <div className="flex-1 w-full min-w-0">
+                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-0 mb-2">
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-xl md:text-2xl font-bold text-gray-900 break-words">{profileData.name}</h2>
+                      <div className="flex items-center gap-2 text-gray-600 mt-1 text-sm md:text-base">
+                        <Briefcase className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">{profileData.title}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-gray-600 mt-1">
-                        <Briefcase className="w-4 h-4" />
-                        <span>{profileData.company}</span>
+                      <div className="flex items-center gap-2 text-gray-600 mt-1 text-sm md:text-base">
+                        <Briefcase className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">{profileData.company}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-gray-600 mt-1">
-                        <MapPin className="w-4 h-4" />
-                        <span>{profileData.location}</span>
+                      <div className="flex items-center gap-2 text-gray-600 mt-1 text-sm md:text-base">
+                        <MapPin className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">{profileData.location}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-gray-600 mt-1">
-                        <GraduationCap className="w-4 h-4" />
-                        <span>{profileData.education}</span>
+                      <div className="flex items-center gap-2 text-gray-600 mt-1 text-sm md:text-base">
+                        <GraduationCap className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">{profileData.education}</span>
                       </div>
                     </div>
-                    <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                    <button className="w-full md:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm md:text-base whitespace-nowrap">
                       Edit Profile
                     </button>
                   </div>
@@ -151,61 +151,61 @@ function Profile() {
           {/* Right Column - Stats & Activity */}
           <div className="space-y-6">
             {/* Contact Information */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="font-bold text-gray-900 mb-4">Contact Information</h3>
+            <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+              <h3 className="font-bold text-gray-900 mb-4 text-base md:text-lg">Contact Information</h3>
               <div className="space-y-3 text-sm">
-                <div>
+                <div className="min-w-0">
                   <p className="text-gray-600">Email</p>
-                  <p className="text-gray-900 font-medium">{profileData.contactInfo.email}</p>
+                  <p className="text-gray-900 font-medium break-words">{profileData.contactInfo.email}</p>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-gray-600">Phone</p>
-                  <p className="text-gray-900 font-medium">{profileData.contactInfo.phone}</p>
+                  <p className="text-gray-900 font-medium break-words">{profileData.contactInfo.phone}</p>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-gray-600">Website</p>
-                  <p className="text-blue-600 font-medium">{profileData.contactInfo.website}</p>
+                  <p className="text-blue-600 font-medium break-words">{profileData.contactInfo.website}</p>
                 </div>
               </div>
             </div>
 
             {/* Profile Stats */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="font-bold text-gray-900 mb-4">Profile Stats</h3>
+            <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+              <h3 className="font-bold text-gray-900 mb-4 text-base md:text-lg">Profile Stats</h3>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <Users className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <p className="font-semibold text-gray-900">Connections</p>
-                    <p className="text-2xl font-bold text-gray-900">{profileData.stats.connections}</p>
+                  <Users className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="font-semibold text-gray-900 text-sm md:text-base">Connections</p>
+                    <p className="text-xl md:text-2xl font-bold text-gray-900">{profileData.stats.connections}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Calendar className="w-5 h-5 text-green-600" />
-                  <div>
-                    <p className="font-semibold text-gray-900">Member since</p>
-                    <p className="text-2xl font-bold text-gray-900">{profileData.stats.memberSince}</p>
+                  <Calendar className="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="font-semibold text-gray-900 text-sm md:text-base">Member since</p>
+                    <p className="text-xl md:text-2xl font-bold text-gray-900">{profileData.stats.memberSince}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Briefcase className="w-5 h-5 text-purple-600" />
-                  <div>
-                    <p className="font-semibold text-gray-900">Experience</p>
-                    <p className="text-2xl font-bold text-gray-900">{profileData.stats.experience}</p>
+                  <Briefcase className="w-5 h-5 text-purple-600 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="font-semibold text-gray-900 text-sm md:text-base">Experience</p>
+                    <p className="text-xl md:text-2xl font-bold text-gray-900">{profileData.stats.experience}</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Recent Activity */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="font-bold text-gray-900 mb-4">Recent Activity</h3>
+            <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+              <h3 className="font-bold text-gray-900 mb-4 text-base md:text-lg">Recent Activity</h3>
               <div className="space-y-3">
                 {profileData.recentActivity.map((activity, index) => (
                   <div key={index} className="flex items-start gap-2">
                     <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                    <div className="flex-1">
-                      <p className="text-sm text-gray-900">{activity.action}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-gray-900 break-words">{activity.action}</p>
                       <p className="text-xs text-gray-500">{activity.date}</p>
                     </div>
                   </div>

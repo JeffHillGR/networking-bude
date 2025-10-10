@@ -314,19 +314,19 @@ Contact Email: ${eventFormData.contactEmail}
 
             {/* More Events */}
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">More Events</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6">More Events</h2>
               <div className="space-y-4">
                 {moreEvents.map((event) => (
-                  <div key={event.id} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
-                    <div className="flex gap-6">
-                      <img src={event.image} alt={event.title} className="w-48 h-32 object-cover rounded-lg flex-shrink-0" />
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h3 className="text-xl font-bold text-gray-900">{event.title}</h3>
-                            <p className="text-gray-600 mt-1">{event.description}</p>
+                  <div key={event.id} className="bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md transition-shadow">
+                    <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                      <img src={event.image} alt={event.title} className="w-full md:w-48 h-48 md:h-32 object-cover rounded-lg flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-2 gap-2">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-lg md:text-xl font-bold text-gray-900">{event.title}</h3>
+                            <p className="text-sm md:text-base text-gray-600 mt-1">{event.description}</p>
                           </div>
-                          <div className="flex gap-2 flex-shrink-0 ml-4">
+                          <div className="flex gap-2 flex-shrink-0">
                             <span className="bg-black text-white px-3 py-1 rounded-full text-xs font-medium">
                               {event.badge}
                             </span>
@@ -337,23 +337,23 @@ Contact Email: ${eventFormData.contactEmail}
                             )}
                           </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-sm text-gray-600 mt-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-8 gap-y-1 text-xs md:text-sm text-gray-600 mt-3 md:mt-4">
                           <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
-                            <span>{event.date}</span>
+                            <Calendar className="h-4 w-4 flex-shrink-0" />
+                            <span className="truncate">{event.date}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4" />
-                            <span>{event.location}</span>
+                            <MapPin className="h-4 w-4 flex-shrink-0" />
+                            <span className="truncate">{event.location}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4" />
-                            <span>{event.attendees} attending</span>
+                            <Users className="h-4 w-4 flex-shrink-0" />
+                            <span className="truncate">{event.attendees} attending</span>
                           </div>
                         </div>
-                        <div className="flex items-center justify-between mt-4">
-                          <span className="text-sm text-gray-600">by {event.organizer} {event.price !== 'Free' && `• ${event.price}`}</span>
-                          <button className="flex items-center gap-2 text-[#009900] font-medium hover:text-[#007700]">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0 mt-3 md:mt-4">
+                          <span className="text-xs md:text-sm text-gray-600 truncate">by {event.organizer} {event.price !== 'Free' && `• ${event.price}`}</span>
+                          <button className="flex items-center gap-2 text-[#009900] font-medium hover:text-[#007700] text-sm md:text-base whitespace-nowrap">
                             View Details
                             <ExternalLink className="h-4 w-4" />
                           </button>
