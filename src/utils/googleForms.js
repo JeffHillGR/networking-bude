@@ -76,12 +76,20 @@ export const submitToGoogleForms = async (formData) => {
     // Submit using GET request (Google Forms accepts GET submissions)
     const getUrl = `https://docs.google.com/forms/d/${FORM_CONFIG.formId}/formResponse?${params.toString()}`;
 
+    // Log submission details for debugging
+    console.log('=== Google Forms Submission ===');
+    console.log('Form ID:', FORM_CONFIG.formId);
+    console.log('Submitting data:', formData);
+    console.log('URL length:', getUrl.length);
+    console.log('Full URL:', getUrl);
+    console.log('===============================');
+
     await fetch(getUrl, {
       method: 'GET',
       mode: 'no-cors'
     });
 
-    console.log('Form submitted to Google Forms');
+    console.log('Form submitted to Google Forms successfully');
     return true;
 
   } catch (error) {
