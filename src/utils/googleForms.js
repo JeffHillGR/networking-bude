@@ -46,36 +46,62 @@ const FORM_CONFIG = {
  */
 export const submitToGoogleForms = async (formData) => {
   try {
-    const formUrl = `https://docs.google.com/forms/d/e/${FORM_CONFIG.formId}/formResponse`;
+    const formUrl = `https://docs.google.com/forms/d/${FORM_CONFIG.formId}/formResponse`;
 
-    // Create FormData object for submission
-    const submitData = new FormData();
+    // Create hidden iframe and form for submission
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.name = 'hidden-form-iframe';
+    document.body.appendChild(iframe);
+
+    const form = document.createElement('form');
+    form.target = 'hidden-form-iframe';
+    form.method = 'POST';
+    form.action = formUrl;
 
     // Map form data to Google Form entries
     Object.keys(FORM_CONFIG.fields).forEach(key => {
       const entryId = FORM_CONFIG.fields[key];
       let value = formData[key];
 
-      // Handle arrays (organizations, interests) - join them as comma-separated
+      // Handle arrays (organizations, interests) - each checkbox needs separate entry
       if (Array.isArray(value)) {
-        value = value.join(', ');
+        value.forEach(item => {
+          if (item && item.toString().trim() !== '') {
+            console.log(`Adding field: ${key} (${entryId}) = ${item}`);
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = entryId;
+            input.value = item;
+            form.appendChild(input);
+          }
+        });
+        return;
       }
 
       // Only add non-empty values
       if (value && value.toString().trim() !== '') {
-        submitData.append(entryId, value);
+        console.log(`Adding field: ${key} (${entryId}) = ${value}`);
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = entryId;
+        input.value = value;
+        form.appendChild(input);
       }
     });
 
-    // Submit to Google Forms
-    // Note: Using 'no-cors' mode means we won't get a response, but the form will submit
-    await fetch(formUrl, {
-      method: 'POST',
-      body: submitData,
-      mode: 'no-cors' // Required for Google Forms - won't return response data
-    });
+    console.log('Submitting to:', formUrl);
 
-    // Since we can't verify the response with no-cors, we assume success
+    // Submit the form
+    document.body.appendChild(form);
+    form.submit();
+
+    // Clean up after submission
+    setTimeout(() => {
+      if (document.body.contains(form)) document.body.removeChild(form);
+      if (document.body.contains(iframe)) document.body.removeChild(iframe);
+    }, 1000);
+
     console.log('Form submitted to Google Forms');
     return true;
 

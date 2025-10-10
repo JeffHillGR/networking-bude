@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Home, Calendar, Heart, MessageCircle, User, CreditCard, Archive, ChevronLeft, ChevronRight, Users, ExternalLink } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
@@ -22,6 +22,11 @@ function Dashboard() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 const [selectedPlan, setSelectedPlan] = useState(null);
 const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
+
+// Scroll to top when dashboard loads
+useEffect(() => {
+  window.scrollTo(0, 0);
+}, []);
 
 // Get user's first name and time-based greeting
 const userFirstName = localStorage.getItem('userFirstName') || 'there';
