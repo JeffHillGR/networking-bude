@@ -18,6 +18,7 @@ export default function BudEOnboarding() {
     email: '',
     password: '',
     jobTitle: '',
+    company: '',
     industry: '',
     sameIndustry: '',
     gender: '',
@@ -402,6 +403,17 @@ export default function BudEOnboarding() {
                   ))}
                 </div>
               )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold mb-2">Company (optional)</label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder="e.g., Acme Corp, Self-employed, Freelance"
+                value={formData.company}
+                onChange={(e) => handleChange('company', e.target.value)}
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">

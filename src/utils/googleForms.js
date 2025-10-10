@@ -20,6 +20,7 @@ const FORM_CONFIG = {
     username: 'entry.1022375861',
     email: 'entry.881422099',
     jobTitle: 'entry.773169579',
+    company: 'entry.73698066',
     zipCode: 'entry.453454424',
     industry: 'entry.1791763719',
     sameIndustry: 'entry.725471228',
