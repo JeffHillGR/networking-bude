@@ -245,7 +245,9 @@ export default function BudEOnboarding() {
         <div className="flex justify-center mb-4 md:mb-6">
           <BudELogo />
         </div>
-        <h1 className="text-2xl md:text-3xl font-bold text-center mb-4 md:mb-6">Welcome to Networking BudE</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-center mb-4 md:mb-6">
+          Welcome to<br />Networking BudE
+        </h1>
         <div className="bg-gray-50 rounded-xl p-4 md:p-5 mb-4 md:mb-6">
           <h2 className="text-base md:text-lg font-semibold mb-2 text-center">What's this all about?</h2>
           <p className="text-gray-700 mb-3 text-sm">
@@ -394,7 +396,9 @@ export default function BudEOnboarding() {
             <BudELogo />
           </div>
 
-          <h1 className="text-3xl font-bold text-center mb-8">Welcome to Networking BudE</h1>
+          <h1 className="text-3xl font-bold text-center mb-8">
+            Welcome to<br />Networking BudE
+          </h1>
 
           <div className="flex gap-2 mb-8">
             <div className="flex-1 h-2 bg-black rounded-full"></div>
@@ -669,7 +673,9 @@ const renderStep2 = () => (
           <BudELogo />
         </div>
 
-        <h1 className="text-3xl font-bold text-center mb-8">Welcome to Networking BudE</h1>
+        <h1 className="text-3xl font-bold text-center mb-8">
+          Welcome to<br />Networking BudE
+        </h1>
 
         <div className="flex gap-2 mb-8">
           <div className="flex-1 h-2 bg-black rounded-full"></div>

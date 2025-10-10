@@ -396,10 +396,10 @@ default:
           <main className="flex-1 md:overflow-y-auto">
           <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
             <div className="flex items-center justify-center">
-              <img 
+              <img
                 src="/BudE-Logo-Final.png"
-                alt="BudE Logo" 
-                className="h-10 w-auto"
+                alt="BudE Logo"
+                className="h-16 w-auto"
               />
             </div>
           </div>
