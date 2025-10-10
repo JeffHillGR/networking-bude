@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, MapPin, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
+import { User, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { submitToGoogleForms, isFormConfigured } from '../utils/googleForms';
 
@@ -518,37 +518,6 @@ export default function BudEOnboarding() {
                   <option value="similar10">Similar Age (+/- 10 Years)</option>
                   <option value="Mentor">Older - Mentor</option>
                   <option value="Mentee">Younger - Mentee</option>
-                  <option value="No Preference">No Preference</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold mb-2 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  Zip Code
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter zip code"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value={formData.zipCode}
-                  onChange={(e) => handleChange('zipCode', e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-2">Connecting Radius</label>
-                <select
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value={formData.radius}
-                  onChange={(e) => handleChange('radius', e.target.value)}
-                >
-                  <option value="">How far to connect?</option>
-                  <option value="25">Less than 25 Miles</option>
-                  <option value="50">Less than 50 Miles</option>
-                  <option value="100">Less than 100 Miles</option>
-                  <option value="Same State">Same State</option>
                   <option value="No Preference">No Preference</option>
                 </select>
               </div>
