@@ -48,16 +48,8 @@ export const submitToGoogleForms = async (formData) => {
   try {
     const formUrl = `https://docs.google.com/forms/d/${FORM_CONFIG.formId}/formResponse`;
 
-    // Create hidden iframe and form for submission
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.name = 'hidden-form-iframe';
-    document.body.appendChild(iframe);
-
-    const form = document.createElement('form');
-    form.target = 'hidden-form-iframe';
-    form.method = 'POST';
-    form.action = formUrl;
+    // Create URLSearchParams for form data
+    const params = new URLSearchParams();
 
     // Map form data to Google Form entries
     Object.keys(FORM_CONFIG.fields).forEach(key => {
@@ -68,12 +60,7 @@ export const submitToGoogleForms = async (formData) => {
       if (Array.isArray(value)) {
         value.forEach(item => {
           if (item && item.toString().trim() !== '') {
-            console.log(`Adding field: ${key} (${entryId}) = ${item}`);
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = entryId;
-            input.value = item;
-            form.appendChild(input);
+            params.append(entryId, item);
           }
         });
         return;
@@ -81,33 +68,23 @@ export const submitToGoogleForms = async (formData) => {
 
       // Only add non-empty values
       if (value && value.toString().trim() !== '') {
-        console.log(`Adding field: ${key} (${entryId}) = ${value}`);
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = entryId;
-        input.value = value;
-        form.appendChild(input);
+        params.append(entryId, value);
       }
     });
 
-    console.log('Submitting to:', formUrl);
+    // Submit using GET request (Google Forms accepts GET submissions)
+    const getUrl = `https://docs.google.com/forms/d/${FORM_CONFIG.formId}/formResponse?${params.toString()}`;
 
-    // Submit the form
-    document.body.appendChild(form);
-    form.submit();
-
-    // Clean up after submission
-    setTimeout(() => {
-      if (document.body.contains(form)) document.body.removeChild(form);
-      if (document.body.contains(iframe)) document.body.removeChild(iframe);
-    }, 1000);
+    await fetch(getUrl, {
+      method: 'GET',
+      mode: 'no-cors'
+    });
 
     console.log('Form submitted to Google Forms');
     return true;
 
   } catch (error) {
     console.error('Error submitting to Google Forms:', error);
-    // Don't block user progress even if Google Forms fails
     return false;
   }
 };
