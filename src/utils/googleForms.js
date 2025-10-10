@@ -10,33 +10,31 @@
  */
 
 const FORM_CONFIG = {
-  // Replace with your Google Form ID (found in the form URL)
-  // Example URL: https://docs.google.com/forms/d/YOUR_FORM_ID_HERE/edit
-  formId: 'YOUR_FORM_ID_HERE',
+  // Google Form ID from your form URL
+  formId: '1kFhNVS4SibNh7lEmQ4Wa3nemcXjqTAipdZfjT3b9i5Q',
 
   // Map your form fields to Google Form entry IDs
-  // To find these: Preview form → Inspect → look for name="entry.XXXXXX" in input tags
   fields: {
-    firstName: 'entry.123456789',      // Replace with actual entry ID
-    lastName: 'entry.987654321',       // Replace with actual entry ID
-    username: 'entry.111111111',       // Replace with actual entry ID
-    email: 'entry.222222222',          // Replace with actual entry ID
-    jobTitle: 'entry.333333333',       // Replace with actual entry ID
-    industry: 'entry.444444444',       // Replace with actual entry ID
-    sameIndustry: 'entry.555555555',   // Replace with actual entry ID
-    gender: 'entry.666666666',         // Replace with actual entry ID
-    genderPreference: 'entry.777777777', // Replace with actual entry ID
-    dob: 'entry.888888888',            // Replace with actual entry ID
-    dobPreference: 'entry.999999999',  // Replace with actual entry ID
-    zipCode: 'entry.000000000',        // Replace with actual entry ID
-    radius: 'entry.111111112',         // Replace with actual entry ID
-    organizations: 'entry.222222223',  // Replace with actual entry ID (checkboxes)
-    organizationsOther: 'entry.222222223.other_option_response', // "Other" text field for organizations
-    organizationsToCheckOut: 'entry.333333334', // Replace with actual entry ID (checkboxes)
-    organizationsToCheckOutOther: 'entry.333333334.other_option_response', // "Other" text field
-    professionalInterests: 'entry.444444445',   // Replace with actual entry ID (checkboxes)
-    professionalInterestsOther: 'entry.444444445.other_option_response', // "Other" text field
-    personalInterests: 'entry.555555556'        // Replace with actual entry ID
+    firstName: 'entry.1117301043',
+    lastName: 'entry.1314103687',
+    username: 'entry.1022375861',
+    email: 'entry.881422099',
+    jobTitle: 'entry.773169579',
+    zipCode: 'entry.453454424',
+    industry: 'entry.1791763719',
+    sameIndustry: 'entry.725471228',
+    gender: 'entry.2116585712',
+    genderPreference: 'entry.1496804582',
+    dob: 'entry.541157477',
+    dobPreference: 'entry.728961157',
+    radius: 'entry.1756202424',
+    organizations: 'entry.1775764512',
+    organizationsOther: 'entry.1775764512.other_option_response',
+    organizationsToCheckOut: 'entry.2000810861',
+    organizationsToCheckOutOther: 'entry.2000810861.other_option_response',
+    professionalInterests: 'entry.860860201',
+    professionalInterestsOther: 'entry.860860201.other_option_response',
+    personalInterests: 'entry.910288519'
   }
 };
 
