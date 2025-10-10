@@ -366,19 +366,20 @@ export default function BudEOnboarding() {
 
 
   const renderStep1 = () => (
-    <div className="min-h-screen flex">
-   <div className="w-1/2 relative p-12 flex items-start justify-end pt-16 overflow-hidden">
+    <div className="min-h-screen flex flex-col md:flex-row">
+   {/* Left side - Images - Hidden on mobile */}
+   <div className="hidden md:flex md:w-1/2 relative p-12 items-start justify-end pt-16 overflow-hidden">
   <div className="absolute inset-0">
-    <img 
+    <img
       src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry.jpg"
       alt="Background"
       className="w-full h-full object-cover opacity-30"
     />
   </div>
-  
+
   {/* Main image on top */}
   <div className="rounded-3xl overflow-hidden shadow-2xl relative z-10">
-    <img 
+    <img
       src="/People-networking-1.png"
       alt="People networking"
       className="w-[500px] h-auto"
@@ -386,7 +387,8 @@ export default function BudEOnboarding() {
   </div>
 </div>
 
-      <div className="w-1/2 p-12 flex items-center justify-center bg-white overflow-y-auto">
+      {/* Right side - Form - Full width on mobile */}
+      <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto">
         <div className="max-w-lg w-full">
           <div className="flex justify-center mb-6">
             <BudELogo />
@@ -640,19 +642,19 @@ export default function BudEOnboarding() {
   );
 
 const renderStep2 = () => (
-  <div className="min-h-screen flex">
-    {/* Left side - Image with blurred background */}
-    <div className="w-1/2 relative p-12 flex items-start justify-end pt-16 overflow-hidden">
+  <div className="min-h-screen flex flex-col md:flex-row">
+    {/* Left side - Image with blurred background - Hidden on mobile */}
+    <div className="hidden md:flex md:w-1/2 relative p-12 items-start justify-end pt-16 overflow-hidden">
       <div className="absolute inset-0">
-        <img 
+        <img
           src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry.jpg"
           alt="Background"
           className="w-full h-full object-cover opacity-30"
         />
       </div>
-      
+
       <div className="rounded-3xl overflow-hidden shadow-2xl relative z-10">
-        <img 
+        <img
           src="/People-networking-2.png"
           alt="People networking"
           className="w-[500px] h-auto"
@@ -660,8 +662,8 @@ const renderStep2 = () => (
       </div>
     </div>
 
-    {/* Right side - Form */}
-    <div className="w-1/2 p-12 flex items-center justify-center bg-white overflow-y-auto">
+    {/* Right side - Form - Full width on mobile */}
+    <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto">
       <div className="max-w-lg w-full">
         <div className="flex justify-center mb-6">
           <BudELogo />

@@ -131,7 +131,7 @@ function EventDetail() {
           <div className="px-4 py-4">
             <button
               onClick={() => navigate('/dashboard')}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+              className="flex items-center gap-2 px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors mb-4"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>Back to Dashboard</span>
@@ -218,21 +218,21 @@ function EventDetail() {
             </div>
 
             {/* Suggested Connections */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Suggested Connections Attending</h3>
-              <p className="text-gray-600 text-sm mb-4">Connect with these professionals who are also attending this event</p>
-              <div className="space-y-4">
+            <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">Suggested Connections Attending</h3>
+              <p className="text-gray-600 text-xs md:text-sm mb-3 md:mb-4">Connect with these professionals who are also attending this event</p>
+              <div className="space-y-3 md:space-y-4">
                 {suggestedConnections.map((person, index) => (
-                  <div key={index} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                  <div key={index} className="flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                     <img
                       src={person.image}
                       alt={person.name}
-                      className="w-16 h-16 rounded-full object-cover flex-shrink-0"
+                      className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-gray-900">{person.name}</h4>
-                      <p className="text-sm text-gray-600 truncate">{person.title}</p>
-                      <div className="flex items-center gap-3 mt-1">
+                      <h4 className="font-bold text-gray-900 text-sm md:text-base">{person.name}</h4>
+                      <p className="text-xs md:text-sm text-gray-600 truncate">{person.title}</p>
+                      <div className="flex flex-wrap items-center gap-2 md:gap-3 mt-1">
                         <span className="text-xs text-green-600 flex items-center gap-1"><TrendingUp className="w-3 h-3" />{person.compatibility} compatible</span>
                         <span className="text-xs text-blue-500 flex items-center gap-1"><Users className="w-3 h-3" />{person.mutualConnections} mutual</span>
                         {person.attending && (
@@ -242,7 +242,7 @@ function EventDetail() {
                         )}
                       </div>
                     </div>
-                    <button className="px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] flex-shrink-0">
+                    <button className="w-full md:w-auto px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] flex-shrink-0 text-sm md:text-base">
                       Connect
                     </button>
                   </div>
