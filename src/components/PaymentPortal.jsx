@@ -7,6 +7,8 @@ function PaymentPortal() {
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [showCancelChangeModal, setShowCancelChangeModal] = useState(false);
+  const [showConfirmCancelModal, setShowConfirmCancelModal] = useState(false);
 
   const currentSubscription = {
     plan: 'Free',
@@ -85,9 +87,9 @@ function PaymentPortal() {
       {/* Header */}
       <div className="max-w-6xl mx-auto mb-8">
         <div className="flex items-center gap-4 mb-2">
-        
+
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Subscription & Billing</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Payment Portal</h1>
             <p className="text-gray-600 mt-1">Manage your subscription, payment methods, and billing</p>
           </div>
         </div>
@@ -151,12 +153,20 @@ function PaymentPortal() {
                 </div>
               </div>
 
-              <button
-                onClick={() => setActiveTab('plans')}
-          className="px-6 py-2 bg-[#009900] text-white rounded-lg border-[3px] border-[#D0ED00] hover:bg-[#007700] transition-colors"
-              >
-                Upgrade Plan
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setActiveTab('plans')}
+                  className="px-6 py-2 bg-[#009900] text-white rounded-lg border-[3px] border-[#D0ED00] hover:bg-[#007700] transition-colors"
+                >
+                  Upgrade Plan
+                </button>
+                <button
+                  onClick={() => setShowCancelChangeModal(true)}
+                  className="px-6 py-2 bg-white text-gray-700 rounded-lg border-2 border-gray-300 hover:bg-gray-50 transition-colors"
+                >
+                  Cancel or Change Plan
+                </button>
+              </div>
             </div>
 
             {/* Quick Stats */}
@@ -465,6 +475,90 @@ function PaymentPortal() {
           </div>
         )}
       </div>
+
+      {/* Cancel or Change Plan Modal */}
+      {showCancelChangeModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowCancelChangeModal(false)}>
+          <div className="bg-white rounded-lg p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900">Manage Your Plan</h2>
+              <button
+                onClick={() => setShowCancelChangeModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <p className="text-gray-600 mb-6">Would you like to change your plan or cancel your subscription?</p>
+            <div className="space-y-3">
+              <button
+                onClick={() => {
+                  setShowCancelChangeModal(false);
+                  setActiveTab('plans');
+                }}
+                className="w-full py-3 bg-[#009900] text-white rounded-lg border-[3px] border-[#D0ED00] font-medium hover:bg-[#007700] transition-colors"
+              >
+                Change to a Different Plan
+              </button>
+              <button
+                onClick={() => {
+                  setShowCancelChangeModal(false);
+                  setShowConfirmCancelModal(true);
+                }}
+                className="w-full py-3 bg-white text-red-600 rounded-lg border-2 border-red-600 font-medium hover:bg-red-50 transition-colors"
+              >
+                Cancel My Subscription
+              </button>
+              <button
+                onClick={() => setShowCancelChangeModal(false)}
+                className="w-full py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+              >
+                Nevermind
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm Cancel Modal */}
+      {showConfirmCancelModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowConfirmCancelModal(false)}>
+          <div className="bg-white rounded-lg p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-red-600">Confirm Cancellation</h2>
+              <button
+                onClick={() => setShowConfirmCancelModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <p className="text-gray-600 mb-4">Are you sure you want to cancel your subscription?</p>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <p className="text-sm text-yellow-800">
+                <strong>Important:</strong> You will lose access to all premium features at the end of your current billing period.
+              </p>
+            </div>
+            <div className="space-y-3">
+              <button
+                onClick={() => {
+                  setShowConfirmCancelModal(false);
+                  alert('Your subscription has been cancelled. You will retain access until the end of your billing period.');
+                }}
+                className="w-full py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+              >
+                Yes, Cancel My Subscription
+              </button>
+              <button
+                onClick={() => setShowConfirmCancelModal(false)}
+                className="w-full py-3 bg-[#009900] text-white rounded-lg border-[3px] border-[#D0ED00] font-medium hover:bg-[#007700] transition-colors"
+              >
+                Keep My Subscription
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

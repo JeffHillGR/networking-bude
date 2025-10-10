@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
-import { User, MapPin } from 'lucide-react';
+import { User, MapPin, ChevronDown, ChevronUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { submitToGoogleForms, isFormConfigured } from '../utils/googleForms';
 
 export default function BudEOnboarding() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
+  const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
+  const [showJobTitleSuggestions, setShowJobTitleSuggestions] = useState(false);
+  const [filteredJobTitles, setFilteredJobTitles] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -40,8 +45,72 @@ export default function BudEOnboarding() {
     'Startup', 'AI/ML', 'Blockchain', 'Sustainability', 'Leadership'
   ];
 
+  const jobTitleSuggestions = [
+    'Software Engineer',
+    'Marketing Manager',
+    'Sales Director',
+    'Product Manager',
+    'Data Analyst',
+    'Graphic Designer',
+    'Financial Analyst',
+    'Business Development Manager',
+    'HR Manager',
+    'Project Manager',
+    'Operations Manager',
+    'Account Executive',
+    'Content Marketing Manager',
+    'UX/UI Designer',
+    'Entrepreneur',
+    'CEO',
+    'CFO',
+    'CTO',
+    'Vice President',
+    'Director',
+    'Consultant',
+    'Accountant',
+    'Real Estate Agent',
+    'Attorney',
+    'Physician',
+    'Nurse',
+    'Teacher',
+    'Professor',
+    'Developer',
+    'DevOps Engineer',
+    'Product Designer',
+    'Brand Manager',
+    'Digital Marketing Specialist',
+    'Social Media Manager',
+    'Customer Success Manager',
+    'Business Analyst',
+    'Recruiter',
+    'Founder',
+    'Executive Director',
+    'Non-Profit Director'
+  ];
+
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleJobTitleChange = (value) => {
+    setFormData(prev => ({ ...prev, jobTitle: value }));
+
+    if (value.length > 0) {
+      const filtered = jobTitleSuggestions.filter(title =>
+        title.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredJobTitles(filtered);
+      setShowJobTitleSuggestions(filtered.length > 0);
+    } else {
+      setShowJobTitleSuggestions(false);
+      setFilteredJobTitles([]);
+    }
+  };
+
+  const selectJobTitle = (title) => {
+    setFormData(prev => ({ ...prev, jobTitle: title }));
+    setShowJobTitleSuggestions(false);
+    setFilteredJobTitles([]);
   };
 
   const toggleOrganization = (org) => {
@@ -60,6 +129,36 @@ export default function BudEOnboarding() {
         ? prev.professionalInterests.filter(i => i !== interest)
         : [...prev.professionalInterests, interest]
     }));
+  };
+
+  const handleFinalSubmit = async () => {
+    setIsSubmitting(true);
+
+    try {
+      // Submit to Google Forms if configured
+      if (isFormConfigured()) {
+        await submitToGoogleForms(formData);
+        console.log('Data sent to Google Forms');
+      } else {
+        console.warn('Google Forms not configured. Skipping submission.');
+      }
+
+      // Save to localStorage (existing behavior)
+      localStorage.setItem('onboardingCompleted', 'true');
+      localStorage.setItem('userFirstName', formData.firstName);
+      localStorage.setItem('userLastName', formData.lastName);
+      localStorage.setItem('userJobTitle', formData.jobTitle);
+      localStorage.setItem('userIndustry', formData.industry);
+
+      // Navigate to dashboard
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Error during submission:', error);
+      // Continue to dashboard even if Google Forms fails
+      navigate('/dashboard');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const BudELogo = () => (
@@ -168,13 +267,35 @@ export default function BudEOnboarding() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold mb-1">Password</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-semibold">Password</label>
+              <button
+                type="button"
+                onClick={() => setShowPasswordRequirements(!showPasswordRequirements)}
+                className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700"
+              >
+                <span>Password requirements</span>
+                {showPasswordRequirements ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+              </button>
+            </div>
             <input
               type="password"
               className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
               value={formData.password}
               onChange={(e) => handleChange('password', e.target.value)}
             />
+            {showPasswordRequirements && (
+              <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs">
+                <p className="font-semibold text-gray-900 mb-2">Create a strong password</p>
+                <p className="text-gray-700 mb-1">Your password must be at least 12 characters and include:</p>
+                <ul className="list-disc list-inside space-y-1 text-gray-700 ml-2">
+                  <li>One uppercase letter (A–Z)</li>
+                  <li>One lowercase letter (a–z)</li>
+                  <li>One number (0–9)</li>
+                  <li>One special character (!, @, #, etc.)</li>
+                </ul>
+              </div>
+            )}
           </div>
         </div>
 
@@ -233,15 +354,41 @@ export default function BudEOnboarding() {
           </div>
 
           <div className="space-y-6">
-            <div>
+            <div className="relative">
               <label className="block text-sm font-semibold mb-2">Job Title or what are you known for?</label>
               <input
                 type="text"
                 className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="e.g., Marketing Director, Software Engineer, Entrepreneur"
                 value={formData.jobTitle}
-                onChange={(e) => handleChange('jobTitle', e.target.value)}
+                onChange={(e) => handleJobTitleChange(e.target.value)}
+                onFocus={() => {
+                  if (formData.jobTitle.length > 0) {
+                    const filtered = jobTitleSuggestions.filter(title =>
+                      title.toLowerCase().includes(formData.jobTitle.toLowerCase())
+                    );
+                    setFilteredJobTitles(filtered);
+                    setShowJobTitleSuggestions(filtered.length > 0);
+                  }
+                }}
+                onBlur={() => {
+                  setTimeout(() => setShowJobTitleSuggestions(false), 200);
+                }}
               />
+              {showJobTitleSuggestions && filteredJobTitles.length > 0 && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  {filteredJobTitles.slice(0, 10).map((title, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => selectJobTitle(title)}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none text-sm"
+                    >
+                      {title}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -258,6 +405,7 @@ export default function BudEOnboarding() {
                   <option value="finance">Finance</option>
                   <option value="education">Education</option>
                   <option value="manufacturing">Manufacturing</option>
+                  <option value="marketing">Marketing</option>
                   <option value="real estate">Real Estate</option>
                   <option value="law">Law</option>
                   <option value="non-profit">Non-Profit</option>
@@ -334,7 +482,8 @@ export default function BudEOnboarding() {
                   onChange={(e) => handleChange('dobPreference', e.target.value)}
                 >
                   <option value="">Select age preference</option>
-                  <option value="similar">Similar Age (+-10 Years</option>
+                  <option value="similar5">Similar Age (+/- 5 Years)</option>
+                  <option value="similar10">Similar Age (+/- 10 Years)</option>
                   <option value="Mentor">Older - Mentor</option>
                   <option value="Mentee">Younger - Mentee</option>
                   <option value="No Preference">No Preference</option>
@@ -364,6 +513,7 @@ export default function BudEOnboarding() {
                   onChange={(e) => handleChange('radius', e.target.value)}
                 >
                   <option value="">How far to connect?</option>
+                  <option value="25">Less than 25 Miles</option>
                   <option value="50">Less than 50 Miles</option>
                   <option value="100">Less than 100 Miles</option>
                   <option value="Same State">Same State</option>
@@ -526,17 +676,11 @@ const renderStep2 = () => (
             Previous
           </button>
           <button
-            onClick={() => {
-              localStorage.setItem('onboardingCompleted', 'true');
-              localStorage.setItem('userFirstName', formData.firstName);
-              localStorage.setItem('userLastName', formData.lastName);
-              localStorage.setItem('userJobTitle', formData.jobTitle);
-              localStorage.setItem('userIndustry', formData.industry);
-              navigate('/dashboard');
-            }}
-            className="bg-[#009900] text-white px-6 py-3 rounded-lg border-[3px] border-[#D0ED00] hover:bg-green-700"
+            onClick={handleFinalSubmit}
+            disabled={isSubmitting}
+            className="bg-[#009900] text-white px-6 py-3 rounded-lg border-[3px] border-[#D0ED00] hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Complete Setup
+            {isSubmitting ? 'Creating Account...' : 'Create My Account'}
           </button>
         </div>
 

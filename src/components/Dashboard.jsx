@@ -43,6 +43,9 @@ const shouldShowUpgradePrompt = (feature) => {
   const adminContent2 = localStorage.getItem('featuredContent2');
   const adminFeaturedContent2 = adminContent2 ? JSON.parse(adminContent2) : null;
 
+  const adminContent3 = localStorage.getItem('featuredContent3');
+  const adminFeaturedContent3 = adminContent3 ? JSON.parse(adminContent3) : null;
+
   const defaultFeaturedContent = [
     {
       image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=200&h=200&fit=crop',
@@ -73,7 +76,7 @@ const shouldShowUpgradePrompt = (feature) => {
   // Build featured content array: use admin content where available, otherwise use defaults
   const slot1 = (adminFeaturedContent1 && adminFeaturedContent1.title) ? adminFeaturedContent1 : defaultFeaturedContent[0];
   const slot2 = (adminFeaturedContent2 && adminFeaturedContent2.title) ? adminFeaturedContent2 : defaultFeaturedContent[1];
-  const slot3 = defaultFeaturedContent[2]; // Always mock for demo
+  const slot3 = (adminFeaturedContent3 && adminFeaturedContent3.title) ? adminFeaturedContent3 : defaultFeaturedContent[2];
 
   const featuredContent = [slot1, slot2, slot3];
 
@@ -141,7 +144,7 @@ const shouldShowUpgradePrompt = (feature) => {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="font-bold text-gray-900">Featured Content</h3>
-                  <p className="text-sm text-gray-600">Curated content to help you grow professionally</p>
+                  <p className="text-sm text-gray-600">Thoughtfully curated content to help you grow professionally (and personally)</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -161,9 +164,8 @@ const shouldShowUpgradePrompt = (feature) => {
               </div>
               <div
                 onClick={() => {
-                  if (shouldShowUpgradePrompt('featuredContent')) {
-                    setShowUpgradeModal(true);
-                    setSelectedPlan(null);
+                  if (featuredContent[featuredContentIndex].url) {
+                    window.open(featuredContent[featuredContentIndex].url, '_blank');
                   }
                 }}
                 className="flex gap-4 hover:bg-gray-50 p-2 rounded-lg transition-colors -m-2 cursor-pointer"
@@ -287,7 +289,13 @@ const shouldShowUpgradePrompt = (feature) => {
                       </div>
                       <div className="flex justify-end">
                         <button
-                          onClick={() => navigate(`/events/${event.id}`)}
+                          onClick={() => {
+                            if (shouldShowUpgradePrompt('eventDetails')) {
+                              setShowUpgradePopup(true);
+                            } else {
+                              navigate(`/events/${event.id}`);
+                            }
+                          }}
                           className="text-[#009900] font-medium hover:text-[#007700] flex items-center gap-1 text-xs"
                         >
                           View Details
