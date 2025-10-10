@@ -118,12 +118,12 @@ function Connections() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative">
           {/* Large Card View */}
           <div className="lg:col-span-2">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Discover New Connections</h2>
-            
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden relative group">
               {/* Card Header */}
               <div className="relative bg-gradient-to-br from-blue-50 to-blue-100 p-8 pb-16">
                 {currentCard.isOnline && (
@@ -202,13 +202,26 @@ function Connections() {
                   </button>
                 </div>
               </div>
+
+              {/* Beta Testing Blur Overlay */}
+              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-lg flex items-center justify-center z-10">
+                <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 md:p-8 max-w-md mx-4 text-center shadow-2xl border-4 border-[#D0ED00]">
+                  <div className="text-4xl md:text-5xl mb-4">🔬</div>
+                  <p className="text-green-800 font-bold text-lg md:text-xl mb-2">
+                    Beta Version
+                  </p>
+                  <p className="text-green-700 font-medium text-sm md:text-base">
+                    Look for an email from us soon!
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* All Recommendations List */}
-          <div>
+          <div className="relative">
             <h2 className="text-xl font-bold text-gray-900 mb-4">All Recommendations</h2>
-            <div className="space-y-3">
+            <div className="space-y-3 relative">
               {connections.map((person) => (
                 <div key={person.id} className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-start gap-3 mb-3">
@@ -264,6 +277,19 @@ function Connections() {
                   </div>
                 </div>
               ))}
+
+              {/* Beta Testing Blur Overlay for Sidebar */}
+              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-lg flex items-center justify-center z-10">
+                <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-4 md:p-6 mx-4 text-center shadow-2xl border-4 border-[#D0ED00]">
+                  <div className="text-3xl md:text-4xl mb-3">🔬</div>
+                  <p className="text-green-800 font-bold text-base md:text-lg mb-1">
+                    Beta Version
+                  </p>
+                  <p className="text-green-700 font-medium text-xs md:text-sm">
+                    Look for an email from us soon!
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

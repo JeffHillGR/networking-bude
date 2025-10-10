@@ -82,7 +82,7 @@ function Messages() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Conversations List */}
-        <div className="w-80 bg-white border-r border-gray-200 flex flex-col flex-shrink-0">
+        <div className="w-80 bg-white border-r border-gray-200 flex flex-col flex-shrink-0 relative">
           <div className="p-4 border-b border-gray-200">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-bold text-gray-900">Conversations</h2>
@@ -128,10 +128,23 @@ function Messages() {
               </button>
             ))}
           </div>
+
+          {/* Beta Testing Blur Overlay for Conversations */}
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10">
+            <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 md:p-8 mx-4 text-center shadow-2xl border-4 border-[#D0ED00] max-w-xs">
+              <div className="text-4xl md:text-5xl mb-4">🔬</div>
+              <p className="text-green-800 font-bold text-lg md:text-xl mb-2">
+                Beta Version
+              </p>
+              <p className="text-green-700 font-medium text-sm md:text-base">
+                Look for an email from us soon!
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 flex flex-col bg-white">
+        <div className="flex-1 flex flex-col bg-white relative">
           {/* Chat Header */}
           <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-3">
@@ -220,6 +233,19 @@ function Messages() {
               >
                 <Send className="w-5 h-5 text-white" />
               </button>
+            </div>
+          </div>
+
+          {/* Beta Testing Blur Overlay for Chat */}
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10">
+            <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 md:p-8 mx-4 text-center shadow-2xl border-4 border-[#D0ED00] max-w-md">
+              <div className="text-4xl md:text-5xl mb-4">🔬</div>
+              <p className="text-green-800 font-bold text-lg md:text-xl mb-2">
+                Beta Version
+              </p>
+              <p className="text-green-700 font-medium text-sm md:text-base">
+                Look for an email from us soon!
+              </p>
             </div>
           </div>
         </div>
