@@ -14,7 +14,7 @@ const FORM_CONFIG = {
   formId: '1kFhNVS4SibNh7lEmQ4Wa3nemcXjqTAipdZfjT3b9i5Q',
 
   // Map your form fields to Google Form entry IDs
-  // Updated: 2025-10-10 - Fixed all entry IDs to match current Google Form
+  // Updated: 2025-10-10 10:58 AM - Verified all entry IDs match Google Form
   fields: {
     firstName: 'entry.10554968',
     lastName: 'entry.199267993',
