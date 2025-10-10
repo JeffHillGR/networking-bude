@@ -124,46 +124,45 @@ const shouldShowUpgradePrompt = (feature) => {
     switch(activeTab) {
       case 'dashboard':
         return (
-          <div className="space-y-6">
-            <div className="relative h-48 md:h-56 rounded-lg overflow-hidden shadow-lg">
-              <img 
+          <div className="space-y-4">
+            <div className="relative h-32 rounded-lg overflow-hidden shadow-lg">
+              <img
                 src="/Tech-Week-rooftop.jpg"
-                alt="Networking Event at Sunset" 
+                alt="Networking Event at Sunset"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-6 md:p-8 text-white">
-                <div className="flex items-center gap-2 mb-2">
-                  <Users className="w-6 h-6" />
-                  <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Discover. Connect. Grow.</h2>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-4 text-white">
+                <div className="flex items-center gap-2">
+                  <Users className="w-5 h-5" />
+                  <h2 className="text-xl md:text-2xl font-bold tracking-tight">Discover. Connect. Grow.</h2>
                 </div>
-                <p className="text-sm md:text-base opacity-90">Join professionals making meaningful connections</p>
               </div>
             </div>
 
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
-              <p className="text-gray-600 mt-1">Here's what's happening in your professional network today.</p>
+              <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
+              <p className="text-sm text-gray-600">Here's what's happening in your professional network today.</p>
             </div>
 
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-              <div className="flex items-center justify-between mb-4">
+            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+              <div className="flex items-center justify-between mb-3">
                 <div>
                   <h3 className="font-bold text-gray-900">Featured Content</h3>
-                  <p className="text-sm text-gray-600">Thoughtfully curated content to help you grow professionally (and personally)</p>
+                  <p className="text-xs text-gray-600">Curated content to help you grow</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setFeaturedContentIndex((featuredContentIndex - 1 + featuredContent.length) % featuredContent.length)}
                     className="p-1 hover:bg-gray-100 rounded"
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="w-4 h-4" />
                   </button>
-                  <span className="text-sm text-gray-600">{featuredContentIndex + 1} of {featuredContent.length}</span>
+                  <span className="text-xs text-gray-600">{featuredContentIndex + 1} of {featuredContent.length}</span>
                   <button
                     onClick={() => setFeaturedContentIndex((featuredContentIndex + 1) % featuredContent.length)}
                     className="p-1 hover:bg-gray-100 rounded"
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -173,21 +172,21 @@ const shouldShowUpgradePrompt = (feature) => {
                     window.open(featuredContent[featuredContentIndex].url, '_blank');
                   }
                 }}
-                className="flex gap-4 hover:bg-gray-50 p-2 rounded-lg transition-colors -m-2 cursor-pointer"
+                className="flex gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors -m-2 cursor-pointer"
               >
                 <img
                   src={featuredContent[featuredContentIndex].image}
                   alt={featuredContent[featuredContentIndex].title}
-                  className="w-24 h-24 rounded-lg object-cover flex-shrink-0"
+                  className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
                 />
-                <div className="flex-1">
-                  <h4 className="font-bold text-gray-900 mb-2">{featuredContent[featuredContentIndex].title}</h4>
-                  <p className="text-sm text-gray-600 mb-3">{featuredContent[featuredContentIndex].description}</p>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-bold text-gray-900 mb-1 text-sm">{featuredContent[featuredContentIndex].title}</h4>
+                  <p className="text-xs text-gray-600 mb-2 line-clamp-2">{featuredContent[featuredContentIndex].description}</p>
                   <div className="flex items-center justify-between">
                     {featuredContent[featuredContentIndex].tags && (
                       <div className="flex gap-1">
                         {featuredContent[featuredContentIndex].tags.split(',').slice(0, 2).map((tag, i) => (
-                          <span key={i} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                          <span key={i} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
                             {tag.trim()}
                           </span>
                         ))}
@@ -205,10 +204,10 @@ const shouldShowUpgradePrompt = (feature) => {
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-3">
                 <div>
                   <h3 className="font-bold text-gray-900">Check Out Your Potential Connections</h3>
-                  <p className="text-sm text-gray-600">People you might want to connect with</p>
+                  <p className="text-xs text-gray-600">People you might want to connect with</p>
                 </div>
                 <button 
   onClick={() => {
