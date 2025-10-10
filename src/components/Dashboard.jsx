@@ -241,10 +241,10 @@ const getGreeting = () => {
                   <img
                     src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
                     alt="Scientist at work"
-                    className="hidden md:block h-20 md:h-24 w-auto flex-shrink-0 rounded-lg object-cover"
+                    className="h-16 md:h-24 w-auto flex-shrink-0 rounded-lg object-cover"
                   />
                   <p className="text-green-800 font-medium text-sm md:text-base text-center md:text-left">
-                    Our scientists are hard at work finding connections for you. Look for an email from us!
+                    Our scientists are hard at work finding connections for you. Look for an email from us soon!
                   </p>
                 </div>
               </div>
