@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, MapPin, ChevronDown, ChevronUp } from 'lucide-react';
+import { User, MapPin, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { submitToGoogleForms, isFormConfigured } from '../utils/googleForms';
 
@@ -7,6 +7,7 @@ export default function BudEOnboarding() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [showJobTitleSuggestions, setShowJobTitleSuggestions] = useState(false);
   const [filteredJobTitles, setFilteredJobTitles] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -281,12 +282,21 @@ export default function BudEOnboarding() {
                 {showPasswordRequirements ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
               </button>
             </div>
-            <input
-              type="password"
-              className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-              value={formData.password}
-              onChange={(e) => handleChange('password', e.target.value)}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="w-full px-3 py-2 pr-10 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                value={formData.password}
+                onChange={(e) => handleChange('password', e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
             {showPasswordRequirements && (
               <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs">
                 <p className="font-semibold text-gray-900 mb-2">Create a strong password</p>
