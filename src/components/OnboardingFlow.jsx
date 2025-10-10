@@ -11,6 +11,7 @@ export default function BudEOnboarding() {
   const [showJobTitleSuggestions, setShowJobTitleSuggestions] = useState(false);
   const [filteredJobTitles, setFilteredJobTitles] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -155,8 +156,13 @@ export default function BudEOnboarding() {
       localStorage.setItem('userJobTitle', formData.jobTitle);
       localStorage.setItem('userIndustry', formData.industry);
 
-      // Navigate to dashboard
-      navigate('/dashboard');
+      // Show success popup
+      setShowSuccessPopup(true);
+
+      // Navigate to dashboard after 2 seconds
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
     } catch (error) {
       console.error('Error during submission:', error);
       // Continue to dashboard even if Google Forms fails
@@ -745,6 +751,27 @@ const renderStep2 = () => (
 );
 
   const steps = [renderWelcome, renderStep1, renderStep2];
-  
-  return steps[step]();
+
+  return (
+    <>
+      {steps[step]()}
+
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md mx-4 text-center shadow-2xl transform transition-all">
+            <div className="w-16 h-16 bg-[#009900] rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Success!</h2>
+            <p className="text-gray-600">
+              Now let's find some connections and events for you
+            </p>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }
