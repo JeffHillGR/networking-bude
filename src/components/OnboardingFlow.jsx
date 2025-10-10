@@ -183,9 +183,9 @@ export default function BudEOnboarding() {
 
 
  const renderWelcome = () => (
-  <div className="min-h-screen flex">
-    {/* Left side - Images */}
-    <div className="w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 p-12 flex items-start justify-end pt-16">
+  <div className="min-h-screen flex flex-col md:flex-row">
+    {/* Left side - Images - Hidden on mobile */}
+    <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 p-12 items-start justify-end pt-16">
       <div className="relative">
         {/* Large phone image */}
         <div className="w-[500px] h-[620px] rounded-3xl overflow-hidden shadow-2xl relative">
@@ -196,7 +196,7 @@ export default function BudEOnboarding() {
           />
           <div className="absolute top-6 left-6 text-white text-3xl font-bold drop-shadow-lg">
           </div>
-          
+
           {/* Three small images stacked at bottom right inside phone */}
           <div className="absolute right-6 bottom-6 space-y-3">
             <div className="w-24 h-24 rounded-xl overflow-hidden shadow-lg border-3 border-white">
@@ -212,16 +212,16 @@ export default function BudEOnboarding() {
         </div>
       </div>
     </div>
-    
-    {/* Right side - Form - keeping your existing form code */}
-    <div className="w-1/2 p-8 flex items-center justify-center bg-white overflow-y-auto">
+
+    {/* Right side - Form - Full width on mobile, half on desktop */}
+    <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center justify-center bg-white overflow-y-auto">
       <div className="max-w-lg w-full">
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-4 md:mb-6">
           <BudELogo />
         </div>
-        <h1 className="text-3xl font-bold text-center mb-6">Welcome to Networking BudE</h1>
-        <div className="bg-gray-50 rounded-xl p-5 mb-6">
-          <h2 className="text-lg font-semibold mb-2 text-center">What's this all about?</h2>
+        <h1 className="text-2xl md:text-3xl font-bold text-center mb-4 md:mb-6">Welcome to Networking BudE</h1>
+        <div className="bg-gray-50 rounded-xl p-4 md:p-5 mb-4 md:mb-6">
+          <h2 className="text-base md:text-lg font-semibold mb-2 text-center">What's this all about?</h2>
           <p className="text-gray-700 mb-3 text-sm">
             Networking BudE offers the ability to connect with others and attend events with people who share your networking goals:
           </p>
@@ -230,7 +230,7 @@ export default function BudEOnboarding() {
           </blockquote>
         </div>
 
-        <h3 className="text-base font-semibold text-center mb-4">Ready to jump in? Let's go!</h3>
+        <h3 className="text-sm md:text-base font-semibold text-center mb-4">Ready to jump in? Let's go!</h3>
 
         <div className="w-full h-2 bg-gray-200 rounded-full mb-6">
           <div className="w-1/3 h-full bg-black rounded-full"></div>

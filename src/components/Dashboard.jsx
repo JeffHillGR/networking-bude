@@ -198,17 +198,17 @@ const getGreeting = () => {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <h3 className="font-bold text-gray-900">Check Out Your Potential Connections</h3>
+                  <h3 className="font-bold text-gray-900 text-sm md:text-base">Check Out Your Potential Connections</h3>
                   <p className="text-xs text-gray-600">People you might want to connect with</p>
                 </div>
                 <button
   onClick={() => setActiveTab('connections')}
-  className="text-sm text-green-600 font-medium hover:underline"
+  className="text-sm text-green-600 font-medium hover:underline whitespace-nowrap"
 >
   View All
 </button>
               </div>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {connections.map((person, index) => (
                   <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 flex flex-col">
                     <div className="flex items-start gap-3 mb-3">
@@ -239,16 +239,16 @@ const getGreeting = () => {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="font-bold text-gray-900">See What Events Are Coming Up</h3>
-                  <p className="text-sm text-gray-600">Networking events happening near you</p>
+                  <h3 className="font-bold text-gray-900 text-sm md:text-base">See What Events Are Coming Up</h3>
+                  <p className="text-xs md:text-sm text-gray-600">Networking events happening near you</p>
                 </div>
 <button
   onClick={() => setActiveTab('events')}
-  className="text-sm text-green-600 font-medium hover:underline"
+  className="text-sm text-green-600 font-medium hover:underline whitespace-nowrap"
 >
   View All Events
 </button>              </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {events.map((event, index) => (
                   <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                     {event.image && (
