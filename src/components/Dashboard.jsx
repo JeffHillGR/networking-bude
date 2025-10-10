@@ -9,7 +9,6 @@ import Profile from './Profile';
 import { Settings as SettingsIcon } from 'lucide-react';
 import Settings from './Settings';
 import Subscription from './Subscription';
-import UpgradeModal from './UpgradeModal';
 import PaymentPortal from './PaymentPortal';
 import TermsPage from './TermsPage';
 import PrivacyPage from './PrivacyPage';
@@ -416,30 +415,6 @@ default:
           ))}
         </div>
       </nav>
-      {showUpgradePopup && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowUpgradePopup(false)}>
-    <div className="bg-white rounded-lg p-8 max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
-      <h2 className="text-2xl font-bold text-gray-900 mb-4">Premium Feature</h2>
-      <p className="text-gray-600 mb-6">Upgrade to a paid BudE Subscriber to access this feature</p>
-      <div className="flex gap-3">
-        <button 
-          onClick={() => {
-            setShowUpgradePopup(false);
-            setActiveTab('subscription');
-          }}
-          className="flex-1 bg-[#009900] text-white px-6 py-3 rounded-lg border-[3px] border-[#D0ED00] hover:bg-green-700"        >
-          Upgrade Now
-        </button>
-        <button 
-          onClick={() => setShowUpgradePopup(false)}
-          className="flex-1 border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50"
-        >
-          Maybe Later
-        </button>
-      </div>
-    </div>
-  </div>
-)}
     </div>
   );
 }
