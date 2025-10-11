@@ -172,6 +172,9 @@ export default function BudEOnboarding() {
       localStorage.setItem('userJobTitle', formData.jobTitle);
       localStorage.setItem('userIndustry', formData.industry);
 
+      // Save complete onboarding data for profile page
+      localStorage.setItem('onboardingData', JSON.stringify(formData));
+
       // Show success popup
       setShowSuccessPopup(true);
 
@@ -195,6 +198,9 @@ export default function BudEOnboarding() {
       localStorage.setItem('userLastName', formData.lastName);
       localStorage.setItem('userJobTitle', formData.jobTitle);
       localStorage.setItem('userIndustry', formData.industry);
+
+      // Save complete onboarding data for profile page
+      localStorage.setItem('onboardingData', JSON.stringify(formData));
 
       // Continue to dashboard even if submission fails
       // User data is backed up in localStorage
@@ -264,6 +270,13 @@ export default function BudEOnboarding() {
         </div>
 
         <h3 className="text-sm md:text-base font-semibold text-center mb-4">Ready to jump in? Let's go!</h3>
+
+        {/* Beta Device Notice */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+          <p className="text-xs md:text-sm text-blue-800 text-center">
+            <span className="font-semibold">Beta Testing:</span> Please use the same device to access your account during the beta period.
+          </p>
+        </div>
 
         <div className="w-full h-2 bg-gray-200 rounded-full mb-6">
           <div className="w-1/3 h-full bg-black rounded-full"></div>
@@ -376,7 +389,7 @@ export default function BudEOnboarding() {
         </div>
 
         <p className="text-center text-xs text-gray-600 mt-4">
-          Already have an account? <a href="#" className="text-blue-600 hover:underline">Sign in</a>
+          Already have an account? <button onClick={() => navigate('/dashboard')} className="text-blue-600 hover:underline">Go to Dashboard</button>
         </p>
       </div>
     </div>
@@ -668,7 +681,7 @@ export default function BudEOnboarding() {
           </div>
 
           <p className="text-center text-sm text-gray-600 mt-6">
-            Already have an account? <a href="#" className="text-blue-600 hover:underline">Sign in</a>
+            Already have an account? <button onClick={() => navigate('/dashboard')} className="text-blue-600 hover:underline">Go to Dashboard</button>
           </p>
         </div>
       </div>

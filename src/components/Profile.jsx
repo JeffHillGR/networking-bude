@@ -1,58 +1,91 @@
 import { Briefcase, MapPin, GraduationCap, Users, Calendar, Award } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 function Profile() {
-  const profileData = {
-    name: 'Sarah Johnson',
-    title: 'Product Manager',
-    company: 'TechCorp',
-    location: 'San Francisco, CA',
-    education: 'Stanford University, MBA',
-    initials: 'SJ',
-    about: "Passionate product manager with 7+ years of experience building user-centric products. I love connecting with fellow PMs, designers, and entrepreneurs to share insights and learn from each other.",
-    interests: ['Product Management', 'Design', 'Technology', 'Startup', 'Leadership'],
-    skills: ['Product Strategy', 'User Research', 'Data Analysis', 'Agile', 'Leadership'],
-    stats: {
-      connections: 234,
-      memberSince: 'Mar 2023',
-      experience: '7 years'
-    },
-    achievements: [
-      {
-        title: 'Top Performer 2024',
-        company: 'TechCorp',
-        icon: '🏆'
-      },
-      {
-        title: 'Product Launch Excellence',
-        company: 'TechCorp',
-        icon: '🏆'
-      },
-      {
-        title: 'Leadership Recognition',
-        company: 'Previous Company',
-        icon: '🏆'
-      }
-    ],
-    recentActivity: [
-      {
-        action: 'Attended Tech Leaders Breakfast',
-        date: '9/14/2025'
-      },
-      {
-        action: 'Connected with Alex Chen',
-        date: '9/13/2025'
-      },
-      {
-        action: 'Registered for Startup Pitch Night',
-        date: '9/11/2025'
-      }
-    ],
-    contactInfo: {
-      email: 'sarah.johnson@techcorp.com',
-      phone: '+1 (555) 123-4567',
-      website: 'sarahjohnson.dev'
+  const [profileData, setProfileData] = useState(null);
+
+  useEffect(() => {
+    // Get onboarding data from localStorage
+    const storedData = localStorage.getItem('onboardingData');
+    if (storedData) {
+      const data = JSON.parse(storedData);
+
+      // Transform onboarding data into profile format
+      const profile = {
+        name: `${data.firstName || ''} ${data.lastName || ''}`.trim() || 'User',
+        title: data.jobTitle || 'Professional',
+        company: data.company || 'N/A',
+        location: data.zipCode ? `Zip Code: ${data.zipCode}` : 'Not specified',
+        education: 'N/A',
+        initials: `${data.firstName?.[0] || ''}${data.lastName?.[0] || ''}`.toUpperCase() || 'U',
+        about: data.networkingGoals || data.personalInterests || 'No bio added yet.',
+        interests: data.professionalInterests || [],
+        skills: [],
+        stats: {
+          connections: 0,
+          memberSince: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+          experience: 'New Member'
+        },
+        achievements: [],
+        recentActivity: [
+          {
+            action: 'Created account',
+            date: new Date().toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })
+          }
+        ],
+        contactInfo: {
+          email: data.email || 'Not provided',
+          phone: 'Not provided',
+          website: 'Not provided'
+        },
+        preferences: {
+          industry: data.industry || 'Not specified',
+          sameIndustry: data.sameIndustry || 'Not specified',
+          gender: data.gender || 'Not specified',
+          genderPreference: data.genderPreference || 'Not specified',
+          dobPreference: data.dobPreference || 'Not specified'
+        },
+        organizations: data.organizations || [],
+        organizationsToCheckOut: data.organizationsToCheckOut || []
+      };
+
+      setProfileData(profile);
+    } else {
+      // Fallback if no onboarding data exists
+      setProfileData({
+        name: 'User',
+        title: 'Professional',
+        company: 'N/A',
+        location: 'Not specified',
+        education: 'N/A',
+        initials: 'U',
+        about: 'Complete your onboarding to see your profile.',
+        interests: [],
+        skills: [],
+        stats: {
+          connections: 0,
+          memberSince: 'New',
+          experience: 'New Member'
+        },
+        achievements: [],
+        recentActivity: [],
+        contactInfo: {
+          email: 'Not provided',
+          phone: 'Not provided',
+          website: 'Not provided'
+        },
+        preferences: {},
+        organizations: [],
+        organizationsToCheckOut: []
+      });
     }
-  };
+  }, []);
+
+  if (!profileData) {
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <p className="text-gray-600">Loading profile...</p>
+    </div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
