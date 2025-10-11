@@ -426,11 +426,11 @@ export default function BudEOnboarding() {
 
           <div className="space-y-6">
             <div className="relative">
-              <label className="block text-sm font-semibold mb-2">Job Title or what are you known for?</label>
+              <label className="block text-sm font-semibold mb-2">Job Title</label>
               <input
                 type="text"
                 className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                placeholder="e.g., Marketing Director, Software Engineer, Entrepreneur"
+                placeholder="Or what you are known for - e.g., Marketing Director, Software Engineer, Entrepreneur"
                 value={formData.jobTitle}
                 onChange={(e) => handleJobTitleChange(e.target.value)}
                 onFocus={() => {
