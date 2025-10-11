@@ -98,6 +98,11 @@ export default function BudEOnboarding() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleJobTitleChange = (value) => {
     setFormData(prev => ({ ...prev, jobTitle: value }));
 
@@ -355,13 +360,15 @@ export default function BudEOnboarding() {
         <div className="flex justify-end mt-6">
           <button
             onClick={() => {
-              if (formData.firstName && formData.lastName && formData.email && formData.password) {
-                setStep(1);
-              } else {
+              if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
                 alert('Please fill in all required fields (First Name, Last Name, Email, and Password)');
+              } else if (!isValidEmail(formData.email)) {
+                alert('Please enter a valid email address');
+              } else {
+                setStep(1);
               }
             }}
-            disabled={!formData.firstName || !formData.lastName || !formData.email || !formData.password}
+            disabled={!formData.firstName || !formData.lastName || !formData.email || !formData.password || !isValidEmail(formData.email)}
             className="bg-black text-white px-8 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Continue
