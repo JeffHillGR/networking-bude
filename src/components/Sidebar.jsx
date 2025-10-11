@@ -90,7 +90,7 @@ function Sidebar({ activeTab, setActiveTab }) {
                   className="w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-colors text-gray-500 hover:bg-gray-100"
                 >
                   <CreditCard className="w-4 h-4" />
-                  <span>Payment Portal</span>
+                  <span>Account</span>
                 </button>
 
                 <button

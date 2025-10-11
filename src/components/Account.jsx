@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ArrowLeft, CreditCard, Calendar, Shield, CheckCircle, Crown, Star, Users, X, Tag } from 'lucide-react';
 
-function PaymentPortal() {
+function Account() {
   const [activeTab, setActiveTab] = useState('overview');
   const [isYearly, setIsYearly] = useState(false);
   const [promoCode, setPromoCode] = useState('');
@@ -89,7 +89,7 @@ function PaymentPortal() {
         <div className="flex items-center gap-4 mb-2">
 
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Payment Portal</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Account</h1>
             <p className="text-gray-600 mt-1">Manage your subscription, payment methods, and billing</p>
           </div>
         </div>
@@ -136,7 +136,7 @@ function PaymentPortal() {
                   Active
                 </span>
               </div>
-              
+
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-1">{currentSubscription.plan} Plan</h3>
                 <p className="text-gray-600">Perfect for getting started with networking</p>
@@ -236,20 +236,20 @@ function PaymentPortal() {
                   <div className="text-center mb-6">
                    {plan.id === 'free' && <Users className="w-12 h-12 mx-auto mb-4 text-gray-600" />}
 {plan.id === 'bude' && (
-  <img 
-    src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/BudE-favicon.png" 
-    alt="BudE Plan" 
+  <img
+    src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/BudE-favicon.png"
+    alt="BudE Plan"
     className="w-20 h-20 mx-auto mb-4"
   />
 )}
 {plan.id === 'bude-plus' && (
-  <img 
-    src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/BudE-plus-favicon.png" 
-    alt="BudE Plus" 
+  <img
+    src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/BudE-plus-favicon.png"
+    alt="BudE Plus"
     className="w-20 h-20 mx-auto mb-4"
   />
 )}
-                    
+
                     <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
                     <div className="text-3xl font-bold text-gray-900">
                       {plan.price === 0 ? (
@@ -563,4 +563,4 @@ function PaymentPortal() {
   );
 }
 
-export default PaymentPortal;
+export default Account;

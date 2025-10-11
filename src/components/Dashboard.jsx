@@ -9,7 +9,7 @@ import Profile from './Profile';
 import { Settings as SettingsIcon } from 'lucide-react';
 import Settings from './Settings';
 import Subscription from './Subscription';
-import PaymentPortal from './PaymentPortal';
+import Account from './Account';
 import TermsPage from './TermsPage';
 import PrivacyPage from './PrivacyPage';
 import ArchivePage from './ArchivePage';
@@ -352,7 +352,7 @@ const getGreeting = () => {
   }} />;
 
   case 'payment':
-  return <PaymentPortal />;
+  return <Account />;
 
   case 'terms':
   return <TermsPage />;
