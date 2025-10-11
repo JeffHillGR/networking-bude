@@ -100,20 +100,21 @@ function Events() {
     e.preventDefault();
     setSubmitting(true);
 
-    // Create email body
-    const emailBody = `
-New Event Submission to BudE
-
-Submitted by: ${eventFormData.submitterName}
-Email: ${eventFormData.submitterEmail}
-Event URL: ${eventFormData.eventUrl}
-    `;
-
     try {
-      // Send email using mailto (opens user's email client)
-      const mailtoLink = `mailto:grjeff@gmail.com?subject=${encodeURIComponent('BudE Event Suggestion')}&body=${encodeURIComponent(emailBody)}`;
-      window.location.href = mailtoLink;
+      // Submit to Google Form
+      const formData = new FormData();
+      formData.append('entry.616142321', eventFormData.submitterName); // Your Name
+      formData.append('entry.1886560715', eventFormData.submitterEmail); // Your Email
+      formData.append('entry.643922933', eventFormData.eventUrl); // Event URL
 
+      // Submit to Google Form (no-cors mode since we don't need a response)
+      await fetch('https://docs.google.com/forms/d/e/1FAIpQLSc81i4K4l4s7Pbx3tJqW7AjlNNHwCYYcrqMSFvJZ1-hh4h7xg/formResponse', {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors'
+      });
+
+      // Show success message
       setSubmitSuccess(true);
       setTimeout(() => {
         setShowSubmitModal(false);
@@ -125,8 +126,8 @@ Event URL: ${eventFormData.eventUrl}
         });
       }, 2000);
     } catch (error) {
-      console.error('Error submitting event:', error);
-      alert('There was an error submitting your event. Please try again.');
+      console.error('Error submitting event suggestion:', error);
+      alert('There was an error submitting your suggestion. Please try again.');
     } finally {
       setSubmitting(false);
     }
