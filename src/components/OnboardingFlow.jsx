@@ -267,18 +267,20 @@ export default function BudEOnboarding() {
         <div className="space-y-2">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-semibold mb-1">First Name</label>
+              <label className="block text-sm font-semibold mb-1">First Name <span className="text-red-500">*</span></label>
               <input
                 type="text"
+                required
                 className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                 value={formData.firstName}
                 onChange={(e) => handleChange('firstName', e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-1">Last Name</label>
+              <label className="block text-sm font-semibold mb-1">Last Name <span className="text-red-500">*</span></label>
               <input
                 type="text"
+                required
                 className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                 value={formData.lastName}
                 onChange={(e) => handleChange('lastName', e.target.value)}
@@ -297,9 +299,10 @@ export default function BudEOnboarding() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold mb-1">Email</label>
+            <label className="block text-sm font-semibold mb-1">Email <span className="text-red-500">*</span></label>
             <input
               type="email"
+              required
               className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
               value={formData.email}
               onChange={(e) => handleChange('email', e.target.value)}
@@ -308,7 +311,7 @@ export default function BudEOnboarding() {
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-semibold">Password</label>
+              <label className="block text-sm font-semibold">Password <span className="text-red-500">*</span></label>
               <button
                 type="button"
                 onClick={() => setShowPasswordRequirements(!showPasswordRequirements)}
@@ -321,6 +324,7 @@ export default function BudEOnboarding() {
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
+                required
                 className="w-full px-3 py-2 pr-10 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                 value={formData.password}
                 onChange={(e) => handleChange('password', e.target.value)}
@@ -350,8 +354,15 @@ export default function BudEOnboarding() {
 
         <div className="flex justify-end mt-6">
           <button
-            onClick={() => setStep(1)}
-            className="bg-black text-white px-8 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors text-sm"
+            onClick={() => {
+              if (formData.firstName && formData.lastName && formData.email && formData.password) {
+                setStep(1);
+              } else {
+                alert('Please fill in all required fields (First Name, Last Name, Email, and Password)');
+              }
+            }}
+            disabled={!formData.firstName || !formData.lastName || !formData.email || !formData.password}
+            className="bg-black text-white px-8 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Continue
           </button>
