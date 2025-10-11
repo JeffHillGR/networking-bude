@@ -11,6 +11,7 @@ export default function BudEOnboarding() {
   const [filteredJobTitles, setFilteredJobTitles] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [showBetaTerms, setShowBetaTerms] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -805,7 +806,13 @@ const renderStep2 = () => (
         </div>
 
         <p className="text-center text-sm text-gray-600 mt-6">
-          By continuing, you agree to our Terms of Service and Privacy Policy
+          By creating an account, you agree to our{' '}
+          <button
+            onClick={() => setShowBetaTerms(true)}
+            className="text-blue-600 hover:underline font-medium"
+          >
+            Beta Terms
+          </button>
         </p>
       </div>
     </div>
@@ -831,6 +838,52 @@ const renderStep2 = () => (
             <p className="text-gray-600">
               Now let's find some connections and events for you
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* Beta Terms Modal */}
+      {showBetaTerms && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full shadow-2xl">
+            <div className="p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+                🧪 Beta Testing - Your Privacy Matters
+              </h2>
+              <div className="space-y-3 text-sm text-gray-700">
+                <p>We're testing BudE with a small group in Michigan. Your information is:</p>
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold flex-shrink-0">✓</span>
+                    <p>Stored securely for beta testing only</p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold flex-shrink-0">✓</span>
+                    <p>Never sold or shared with third parties</p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold flex-shrink-0">✓</span>
+                    <p>Used only to improve your experience (we'll email you a survey for feedback)</p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold flex-shrink-0">✓</span>
+                    <p>Will be deleted after beta if you request</p>
+                  </div>
+                </div>
+                <p className="pt-3 text-center">
+                  <span className="font-semibold">Questions?</span> Email us at{' '}
+                  <a href="mailto:grjeff@gmail.com" className="text-blue-600 hover:underline">
+                    grjeff@gmail.com
+                  </a>
+                </p>
+              </div>
+              <button
+                onClick={() => setShowBetaTerms(false)}
+                className="w-full mt-6 bg-[#009900] text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+              >
+                Got it!
+              </button>
+            </div>
           </div>
         </div>
       )}
