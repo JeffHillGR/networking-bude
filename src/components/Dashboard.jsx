@@ -389,11 +389,11 @@ default:
         Reset to Onboarding
       </button>
     </div>
-    <div className="md:flex md:h-screen">
-  
+    <div className="md:flex">
+
     <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
-        
-          <main className="flex-1 md:overflow-y-auto">
+
+          <main className="flex-1 w-full overflow-x-hidden">
           <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
             <div className="flex items-center justify-center">
               <img
@@ -404,7 +404,7 @@ default:
             </div>
           </div>
 
-          <div className="p-4 md:p-8 max-w-6xl mx-auto">
+          <div className="p-4 md:p-8 max-w-6xl mx-auto w-full">
             {renderContent()}
           </div>
         </main>
