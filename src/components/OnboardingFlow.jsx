@@ -556,6 +556,18 @@ export default function BudEOnboarding() {
             </div>
 
             <div>
+              <label className="block text-sm font-semibold mb-2">Your Zip Code</label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder="e.g., 49503"
+                value={formData.zipCode}
+                onChange={(e) => handleChange('zipCode', e.target.value)}
+                maxLength={10}
+              />
+            </div>
+
+            <div>
               <label className="block text-sm font-semibold mb-3">Organizations That Have Events I Like To Attend</label>
               <div className="flex flex-wrap gap-2">
                 {organizations.map(org => (
