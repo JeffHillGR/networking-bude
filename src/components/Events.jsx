@@ -101,18 +101,27 @@ function Events() {
     setSubmitting(true);
 
     try {
-      // Submit to Google Form
-      const formData = new FormData();
-      formData.append('entry.616142321', eventFormData.submitterName); // Your Name
-      formData.append('entry.1886560715', eventFormData.submitterEmail); // Your Email
-      formData.append('entry.643922933', eventFormData.eventUrl); // Event URL
+      console.log('📤 Submitting event suggestion:', eventFormData);
 
-      // Submit to Google Form (no-cors mode since we don't need a response)
-      await fetch('https://docs.google.com/forms/d/e/1FAIpQLSc81i4K4l4s7Pbx3tJqW7AjlNNHwCYYcrqMSFvJZ1-hh4h7xg/formResponse', {
+      // Create URL-encoded form data
+      const formBody = new URLSearchParams();
+      formBody.append('entry.616142321', eventFormData.submitterName); // Your Name
+      formBody.append('entry.1886560715', eventFormData.submitterEmail); // Your Email
+      formBody.append('entry.643922933', eventFormData.eventUrl); // Event URL
+
+      console.log('Form body:', formBody.toString());
+
+      // Submit to Google Form using fetch with no-cors
+      const response = await fetch('https://docs.google.com/forms/d/e/1FAIpQLSc81i4K4l4s7Pbx3tJqW7AjlNNHwCYYcrqMSFvJZ1-hh4h7xg/formResponse', {
         method: 'POST',
-        body: formData,
-        mode: 'no-cors'
+        body: formBody,
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
       });
+
+      console.log('✅ Form submitted (no-cors response)');
 
       // Show success message
       setSubmitSuccess(true);
@@ -126,7 +135,7 @@ function Events() {
         });
       }, 2000);
     } catch (error) {
-      console.error('Error submitting event suggestion:', error);
+      console.error('❌ Error submitting event suggestion:', error);
       alert('There was an error submitting your suggestion. Please try again.');
     } finally {
       setSubmitting(false);
