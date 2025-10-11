@@ -12,14 +12,9 @@ function Events() {
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [eventFormData, setEventFormData] = useState({
-    eventName: '',
-    organizerName: '',
-    date: '',
-    time: '',
-    location: '',
-    description: '',
-    eventUrl: '',
-    contactEmail: ''
+    submitterName: '',
+    submitterEmail: '',
+    eventUrl: ''
   });
   const [ads, setAds] = useState({
     eventsSidebar1: null,
@@ -109,19 +104,14 @@ function Events() {
     const emailBody = `
 New Event Submission to BudE
 
-Event Name: ${eventFormData.eventName}
-Organizer: ${eventFormData.organizerName}
-Date: ${eventFormData.date}
-Time: ${eventFormData.time}
-Location: ${eventFormData.location}
-Description: ${eventFormData.description}
+Submitted by: ${eventFormData.submitterName}
+Email: ${eventFormData.submitterEmail}
 Event URL: ${eventFormData.eventUrl}
-Contact Email: ${eventFormData.contactEmail}
     `;
 
     try {
       // Send email using mailto (opens user's email client)
-      const mailtoLink = `mailto:grjeff@gmail.com?subject=${encodeURIComponent('New Event Submission to BudE')}&body=${encodeURIComponent(emailBody)}`;
+      const mailtoLink = `mailto:grjeff@gmail.com?subject=${encodeURIComponent('BudE Event Suggestion')}&body=${encodeURIComponent(emailBody)}`;
       window.location.href = mailtoLink;
 
       setSubmitSuccess(true);
@@ -129,14 +119,9 @@ Contact Email: ${eventFormData.contactEmail}
         setShowSubmitModal(false);
         setSubmitSuccess(false);
         setEventFormData({
-          eventName: '',
-          organizerName: '',
-          date: '',
-          time: '',
-          location: '',
-          description: '',
-          eventUrl: '',
-          contactEmail: ''
+          submitterName: '',
+          submitterEmail: '',
+          eventUrl: ''
         });
       }, 2000);
     } catch (error) {
@@ -372,7 +357,7 @@ Contact Email: ${eventFormData.contactEmail}
                 className="bg-[#D0ED00] text-black px-6 py-3 rounded-lg font-bold hover:bg-[#bfd400] transition-colors inline-flex items-center gap-2"
               >
                 <span className="text-xl">+</span>
-                Submit Events to BudE
+                Suggest an Event
               </button>
             </div>
 
@@ -461,9 +446,9 @@ Contact Email: ${eventFormData.contactEmail}
       {/* Submit Event Modal */}
       {showSubmitModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">Submit Event to BudE</h2>
+          <div className="bg-white rounded-lg max-w-md w-full">
+            <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-lg">
+              <h2 className="text-2xl font-bold text-gray-900">Suggest an Event</h2>
               <button
                 onClick={() => setShowSubmitModal(false)}
                 className="text-gray-500 hover:text-gray-700"
@@ -473,116 +458,50 @@ Contact Email: ${eventFormData.contactEmail}
             </div>
 
             <form onSubmit={handleSubmitEvent} className="p-6">
+              <p className="text-gray-600 mb-6">
+                Let us know if there's an event you'd like us to add and we'll take a look!
+              </p>
+
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Event Name *
+                    Your Name *
                   </label>
                   <input
                     type="text"
                     required
-                    value={eventFormData.eventName}
-                    onChange={(e) => setEventFormData({...eventFormData, eventName: e.target.value})}
+                    value={eventFormData.submitterName}
+                    onChange={(e) => setEventFormData({...eventFormData, submitterName: e.target.value})}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    placeholder="Enter event name"
+                    placeholder="Enter your name"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Organizer Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={eventFormData.organizerName}
-                    onChange={(e) => setEventFormData({...eventFormData, organizerName: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    placeholder="Enter organizer name"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Date *
-                    </label>
-                    <input
-                      type="date"
-                      required
-                      value={eventFormData.date}
-                      onChange={(e) => setEventFormData({...eventFormData, date: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Time *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={eventFormData.time}
-                      onChange={(e) => setEventFormData({...eventFormData, time: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                      placeholder="e.g., 6:00 PM - 8:00 PM"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Location *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={eventFormData.location}
-                    onChange={(e) => setEventFormData({...eventFormData, location: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    placeholder="Enter venue name and address"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description *
-                  </label>
-                  <textarea
-                    required
-                    value={eventFormData.description}
-                    onChange={(e) => setEventFormData({...eventFormData, description: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    rows="4"
-                    placeholder="Describe your event"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Event URL (Optional)
-                  </label>
-                  <input
-                    type="url"
-                    value={eventFormData.eventUrl}
-                    onChange={(e) => setEventFormData({...eventFormData, eventUrl: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    placeholder="https://example.com/event"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Contact Email *
+                    Your Email *
                   </label>
                   <input
                     type="email"
                     required
-                    value={eventFormData.contactEmail}
-                    onChange={(e) => setEventFormData({...eventFormData, contactEmail: e.target.value})}
+                    value={eventFormData.submitterEmail}
+                    onChange={(e) => setEventFormData({...eventFormData, submitterEmail: e.target.value})}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                     placeholder="your@email.com"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Event URL *
+                  </label>
+                  <input
+                    type="url"
+                    required
+                    value={eventFormData.eventUrl}
+                    onChange={(e) => setEventFormData({...eventFormData, eventUrl: e.target.value})}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                    placeholder="https://example.com/event"
                   />
                 </div>
               </div>
@@ -600,7 +519,7 @@ Contact Email: ${eventFormData.contactEmail}
                   disabled={submitting}
                   className="flex-1 px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] disabled:bg-gray-400"
                 >
-                  {submitting ? 'Submitting...' : submitSuccess ? 'Success!' : 'Submit Event'}
+                  {submitting ? 'Submitting...' : submitSuccess ? 'Success!' : 'Submit'}
                 </button>
               </div>
             </form>
