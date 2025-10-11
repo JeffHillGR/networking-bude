@@ -3,8 +3,27 @@ import { useEffect, useState } from 'react';
 
 function Profile() {
   const [profileData, setProfileData] = useState(null);
+  const [avatarColor, setAvatarColor] = useState('blue');
+  const [showColorPicker, setShowColorPicker] = useState(false);
+
+  const avatarColors = [
+    { name: 'blue', gradient: 'from-blue-500 to-blue-600' },
+    { name: 'green', gradient: 'from-green-500 to-green-600' },
+    { name: 'purple', gradient: 'from-purple-500 to-purple-600' },
+    { name: 'pink', gradient: 'from-pink-500 to-pink-600' },
+    { name: 'orange', gradient: 'from-orange-500 to-orange-600' },
+    { name: 'teal', gradient: 'from-teal-500 to-teal-600' },
+    { name: 'red', gradient: 'from-red-500 to-red-600' },
+    { name: 'indigo', gradient: 'from-indigo-500 to-indigo-600' }
+  ];
 
   useEffect(() => {
+    // Get saved avatar color
+    const savedColor = localStorage.getItem('avatarColor');
+    if (savedColor) {
+      setAvatarColor(savedColor);
+    }
+
     // Get onboarding data from localStorage
     const storedData = localStorage.getItem('onboardingData');
     if (storedData) {
@@ -81,6 +100,17 @@ function Profile() {
     }
   }, []);
 
+  const handleColorChange = (colorName) => {
+    setAvatarColor(colorName);
+    localStorage.setItem('avatarColor', colorName);
+    setShowColorPicker(false);
+  };
+
+  const getCurrentGradient = () => {
+    const color = avatarColors.find(c => c.name === avatarColor);
+    return color ? color.gradient : 'from-blue-500 to-blue-600';
+  };
+
   if (!profileData) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <p className="text-gray-600">Loading profile...</p>
@@ -102,8 +132,36 @@ function Profile() {
             {/* Main Profile Card */}
             <div className="bg-white rounded-lg shadow-sm p-4 md:p-8">
               <div className="flex flex-col md:flex-row items-start gap-4 md:gap-6 mb-6">
-                <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-2xl md:text-3xl font-bold flex-shrink-0">
-                  {profileData.initials}
+                <div className="relative flex-shrink-0">
+                  <div className={`w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br ${getCurrentGradient()} rounded-full flex items-center justify-center text-white text-2xl md:text-3xl font-bold`}>
+                    {profileData.initials}
+                  </div>
+                  <button
+                    onClick={() => setShowColorPicker(!showColorPicker)}
+                    className="absolute -bottom-2 -right-2 w-8 h-8 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm"
+                    title="Change avatar color"
+                  >
+                    <span className="text-lg">🎨</span>
+                  </button>
+
+                  {/* Color Picker Dropdown */}
+                  {showColorPicker && (
+                    <div className="absolute top-0 left-28 md:left-32 z-10 bg-white rounded-lg shadow-xl border border-gray-200 p-3">
+                      <p className="text-xs font-semibold text-gray-700 mb-2">Choose Avatar Color</p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {avatarColors.map((color) => (
+                          <button
+                            key={color.name}
+                            onClick={() => handleColorChange(color.name)}
+                            className={`w-10 h-10 rounded-full bg-gradient-to-br ${color.gradient} hover:scale-110 transition-transform ${
+                              avatarColor === color.name ? 'ring-2 ring-offset-2 ring-gray-400' : ''
+                            }`}
+                            title={color.name}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="flex-1 w-full min-w-0">
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-0 mb-2">
