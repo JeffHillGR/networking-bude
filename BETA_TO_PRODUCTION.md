@@ -187,6 +187,40 @@ Replace with two separate modals:
 
 ---
 
+### File: `src/components/Account.jsx`
+
+#### 2. Update Plan Badge from Beta to Most Popular
+**Location:** Around line 228-234
+
+**Current (Beta):**
+```jsx
+{plan.popular && (
+  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+    <span className="bg-[#009900] text-white px-4 py-1 rounded-full text-sm font-medium">
+      Free during Beta Test period
+    </span>
+  </div>
+)}
+```
+
+**Production:**
+```jsx
+{plan.popular && (
+  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+    <span className="bg-[#009900] text-white px-4 py-1 rounded-full text-sm font-medium">
+      Most Popular
+    </span>
+  </div>
+)}
+```
+
+**Action:**
+- Change badge text from "Free during Beta Test period" to "Most Popular"
+- Ensure pricing is enabled (no longer free)
+- Update payment processing to be live
+
+---
+
 ## Authentication & Data Storage
 
 ### Current State (Beta)

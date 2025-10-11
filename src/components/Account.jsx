@@ -228,7 +228,7 @@ function Account() {
                   {plan.popular && (
                     <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                       <span className="bg-[#009900] text-white px-4 py-1 rounded-full text-sm font-medium">
-                        Most Popular
+                        Free during Beta Test period
                       </span>
                     </div>
                   )}
