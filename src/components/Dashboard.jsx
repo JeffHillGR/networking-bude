@@ -267,7 +267,7 @@ const getGreeting = () => {
                   <div
                     key={index}
                     onClick={() => navigate(`/events/${event.id}`)}
-                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200"
                   >
                     {event.image && (
                       <img
