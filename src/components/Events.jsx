@@ -103,25 +103,22 @@ function Events() {
     try {
       console.log('📤 Submitting event suggestion:', eventFormData);
 
-      // Create URL-encoded form data
-      const formBody = new URLSearchParams();
-      formBody.append('entry.616142321', eventFormData.submitterName); // Your Name
-      formBody.append('entry.1886560715', eventFormData.submitterEmail); // Your Email
-      formBody.append('entry.643922933', eventFormData.eventUrl); // Event URL
-
-      console.log('Form body:', formBody.toString());
-
-      // Submit to Google Form using fetch with no-cors
-      const response = await fetch('https://docs.google.com/forms/d/e/1FAIpQLSc81i4K4l4s7Pbx3tJqW7AjlNNHwCYYcrqMSFvJZ1-hh4h7xg/formResponse', {
+      // Submit to serverless API endpoint
+      const response = await fetch('/api/submitEvent', {
         method: 'POST',
-        body: formBody,
-        mode: 'no-cors',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(eventFormData)
       });
 
-      console.log('✅ Form submitted (no-cors response)');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to submit event suggestion');
+      }
+
+      const result = await response.json();
+      console.log('✅ Event suggestion submitted successfully:', result);
 
       // Show success message
       setSubmitSuccess(true);
