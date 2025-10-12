@@ -46,26 +46,26 @@ const getGreeting = () => {
   const defaultFeaturedContent = [
     {
       image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=200&h=200&fit=crop',
-      title: 'Building Meaningful Professional Networks',
-      description: 'Learn strategies for authentic networking that leads to lasting professional relationships.',
-      url: 'https://example.com',
-      tags: 'Leadership, Networking',
+      title: 'Networking For People Who Hate Networking',
+      description: 'Listen to this episode from Worklife with Adam Grant on Spotify. Ditch your business cards. There are more effective, less awkward strategies for building your connections. This episode is made possible with the support of Bonobos, Accenture, Hilton, and JPMorgan Chase & Co.',
+      url: 'https://open.spotify.com/episode/4RiIYoe4tBKgzPoN2IZezV?si=lwRhg5HVTh-7LmDu4JUWKg&dl_branch=1&nd=1&dlsi=4f0333bb1555420b',
+      tags: 'Networking, Professional Development',
       sponsoredBy: ''
     },
     {
       image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=200&h=200&fit=crop',
-      title: 'Leadership in the Modern Workplace',
-      description: 'Discover how to lead effectively in hybrid work environments and build resilient teams.',
-      url: 'https://example.com',
-      tags: 'Leadership, Management',
+      title: "The Mel Robbins Podcast. The Most Important Career Advice You'll Ever Hear With Harvard Business School's #1 Professor",
+      description: 'Get the simple science-backed secrets to getting what you want at work and in life...',
+      url: 'https://www.melrobbins.com/episode/episode-277/#43:40',
+      tags: 'Networking, Personal Growth',
       sponsoredBy: ''
     },
     {
       image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=200&h=200&fit=crop',
-      title: 'Personal Branding for Professionals',
-      description: 'Master the art of showcasing your unique value and building your professional reputation.',
-      url: 'https://example.com',
-      tags: 'Marketing, Career Growth',
+      title: 'How to Build Systems to Actually Achieve Your Goals',
+      description: "Are your goals holding you back? In this episode, I'll show you why focusing on big, long-term results can actually demotivate you—and how shifting to daily, actionable systems can help you achieve real progress.",
+      url: 'https://podcasts.apple.com/us/podcast/how-to-build-systems-to-actually-achieve-your-goals/id1033048640?i=1000728624111',
+      tags: 'Goal Setting, Personal Growth',
       sponsoredBy: ''
     }
   ];
