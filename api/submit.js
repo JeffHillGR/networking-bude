@@ -65,6 +65,7 @@ export default async function handler(req, res) {
       formData.email || '',
       formData.jobTitle || '',
       formData.company || '',
+      formData.zipCode || '', // Added zipCode field
       formData.industry || '',
       formData.sameIndustry || '',
       formData.gender || '',
@@ -88,7 +89,7 @@ export default async function handler(req, res) {
     // Append the data to the Google Sheet
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'Form Responses 1!A:U', // Adjust sheet name if different
+      range: 'Form_Responses!A:V', // Updated to match actual sheet name and added column for zipCode
       valueInputOption: 'USER_ENTERED',
       insertDataOption: 'INSERT_ROWS',
       resource: {
