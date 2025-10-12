@@ -62,7 +62,7 @@ export default async function handler(req, res) {
     // Append the data to the Google Sheet (same sheet, different tab)
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'Event_Suggestions!A:D', // Event suggestions tab
+      range: "'Event_Suggestions'!A:D", // Quoted sheet name to handle underscore
       valueInputOption: 'USER_ENTERED',
       insertDataOption: 'INSERT_ROWS',
       resource: {

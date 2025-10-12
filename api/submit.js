@@ -89,7 +89,7 @@ export default async function handler(req, res) {
     // Append the data to the Google Sheet
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'Form_Responses!A:V', // Updated to match actual sheet name and added column for zipCode
+      range: "'Form_Responses'!A:V", // Quoted sheet name to handle underscore
       valueInputOption: 'USER_ENTERED',
       insertDataOption: 'INSERT_ROWS',
       resource: {
