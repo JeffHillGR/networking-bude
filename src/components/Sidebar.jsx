@@ -27,12 +27,12 @@ function Sidebar({ activeTab, setActiveTab }) {
             {/* Logo */}
             <button
               onClick={() => setActiveTab('dashboard')}
-              className="w-full flex items-center justify-center px-3 py-2 mb-4 cursor-pointer hover:opacity-80 transition-opacity rounded-lg hover:bg-gray-50"
+              className="w-full flex items-center justify-center mb-4 cursor-pointer hover:opacity-80 transition-opacity"
             >
               <img
                 src="/BudE-Logo-Final.png"
                 alt="BudE Logo"
-                className="h-16 w-auto"
+                className="w-full h-auto"
               />
             </button>
 
