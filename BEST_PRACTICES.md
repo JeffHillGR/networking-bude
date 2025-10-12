@@ -63,6 +63,67 @@ When editing your Google Form:
   - Verify all fields appear correctly
   - Check that arrays (checkboxes) work
 
+### ✅ Google Sheets API Integration Checklist (Vercel Serverless Functions)
+
+When using Google Sheets API with Vercel (not Google Forms):
+
+- [ ] **Environment Variables in Vercel**:
+  - `GOOGLE_PROJECT_ID` - Your Google Cloud project ID
+  - `GOOGLE_PRIVATE_KEY_ID` - Service account private key ID
+  - `GOOGLE_PRIVATE_KEY` - Full private key including BEGIN/END lines
+  - `GOOGLE_CLIENT_EMAIL` - Service account email address
+  - `GOOGLE_CLIENT_ID` - Service account client ID
+  - `GOOGLE_CERT_URL` - Certificate URL for service account
+  - `GOOGLE_SHEET_ID` - The ID from your Google Sheet URL
+  - Apply to: Production, Preview, AND Development environments
+
+- [ ] **Google Sheet Permissions**:
+  - Share your Google Sheet with the service account email
+  - Grant "Editor" permissions (not just "Viewer")
+  - Service account email format: `xxx@xxx.iam.gserviceaccount.com`
+
+- [ ] **Sheet Tab Names**:
+  - Tab names are **case-sensitive**
+  - Tab names with spaces work: `Event Suggestions`
+  - Tab names with underscores work: `Event_Suggestions`
+  - Must match EXACTLY what's in the code
+  - Common mistake: Code has `Form_Responses`, sheet has `Form Responses 1`
+  - **Verify tab names match** in both Google Sheet and API code
+
+- [ ] **API Range Syntax**:
+  - Correct: `Form_Responses!A:V` (no quotes)
+  - Correct: `Event Suggestions!A:D` (spaces work without quotes)
+  - Incorrect: `'Form_Responses'!A:V` (single quotes cause URL encoding issues)
+  - Format: `TabName!StartColumn:EndColumn`
+
+- [ ] **Troubleshooting Checklist**:
+  - Error "Unable to parse range" → Check tab name matches exactly
+  - Error "Requested entity was not found" → Check GOOGLE_SHEET_ID
+  - Error "The caller does not have permission" → Check sheet sharing
+  - Error "Missing environment variables" → Check all 7 env vars are set
+  - Still using old code after deploy? → Force redeploy in Vercel dashboard
+
+- [ ] **Testing Protocol**:
+  - Test locally first (if you have a `.env` file)
+  - Push to GitHub to trigger Vercel deployment
+  - Wait 1-2 minutes for deployment to complete
+  - Test on production URL
+  - Check Vercel function logs if it fails
+  - Verify data appears in Google Sheet (not just console logs)
+
+- [ ] **Common Gotchas**:
+  - Private key must preserve newlines (`\n` characters)
+  - Tab names created by Google Forms auto-add numbers (e.g., "Form Responses 1")
+  - Renaming tabs in Google Sheets is safe and won't break things
+  - Changes require git push to Vercel for deployment
+  - Vercel caches can take 1-2 minutes to clear
+
+- [ ] **Documentation**:
+  - Keep a copy of your service account JSON file in a **secure location** (not in git)
+  - Document which sheet tabs map to which API endpoints
+  - Note the column structure for each tab (for future reference)
+  - Update comments in API files when changing tab names
+
 ### ✅ Backend/API Changes Checklist
 
 When you eventually add a backend:
@@ -550,7 +611,9 @@ If not, improve your documentation!
 
 ---
 
-## Remember Today's Lesson
+## Remember Today's Lessons
+
+### Lesson 1: Google Form Entry IDs (2025-10-10)
 
 **Small frontend change → Google Form edit → ALL entry IDs regenerated → Silent submission failures**
 
@@ -564,6 +627,27 @@ The chain reaction was:
 **Lesson**: Always check the full data flow, especially with external services like Google Forms.
 
 **Prevention**: Test immediately after external service changes, check the data destination (Google Sheet), not just the console.
+
+### Lesson 2: Google Sheets API Tab Names (2025-10-12)
+
+**Google Sheets API working yesterday → Failing today → "Unable to parse range" error**
+
+The debugging journey:
+1. Check environment variables - all set ✓
+2. Check authentication - Event Suggestions endpoint works ✓
+3. Check permissions - service account has access ✓
+4. Check the actual error - "Unable to parse range: 'Form_Responses'!A:V"
+5. **Root cause discovered**: Sheet tab named `Form Responses 1` but code looking for `Form_Responses`
+
+**What happened**: When creating the Event_Suggestions tab, Google automatically added "1" to the existing "Form Responses" tab to avoid naming conflicts. This created a mismatch between the code and the actual sheet.
+
+**Lesson**: Tab names in Google Sheets must match EXACTLY (case-sensitive, spaces, numbers, underscores). When one API endpoint works but another doesn't with the same sheet, it's usually a tab name mismatch.
+
+**Prevention**:
+- Always verify tab names in the actual Google Sheet
+- Use consistent naming: either underscores OR spaces, not both
+- When debugging API issues, check the working endpoint first to rule out auth/permission issues
+- If the error says "Unable to parse range", the tab name is likely wrong
 
 ---
 
