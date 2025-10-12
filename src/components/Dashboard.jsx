@@ -381,7 +381,7 @@ default:
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
-    <div className="bg-gradient-to-r from-green-600 via-lime-400 to-yellow-400 text-white px-4 py-2 text-center text-sm md:text-base">
+    <div className="bg-gradient-to-r from-green-600 via-lime-400 to-yellow-400 text-white px-4 py-1 text-center text-sm md:text-base">
       <span className="font-medium">
         Beta Testing - All Features Unlocked
       </span>

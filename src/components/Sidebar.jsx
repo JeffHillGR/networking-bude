@@ -32,7 +32,7 @@ function Sidebar({ activeTab, setActiveTab }) {
               <img
                 src="/BudE-Logo-Final.png"
                 alt="BudE Logo"
-                className="h-10 w-auto"
+                className="h-16 w-auto"
               />
             </button>
 
