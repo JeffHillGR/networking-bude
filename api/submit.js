@@ -103,6 +103,9 @@ export default async function handler(req, res) {
     ];
 
     console.log('📊 Preparing to append row to Google Sheet');
+    console.log('Sheet ID:', process.env.GOOGLE_SHEET_ID);
+    console.log('Range:', 'Form_Responses!A:V');
+    console.log('Row data length:', rowData.length);
 
     // Append the data to the Google Sheet
     const response = await sheets.spreadsheets.values.append({
