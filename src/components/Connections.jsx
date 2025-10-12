@@ -181,14 +181,14 @@ function Connections() {
                 <div className="flex gap-3">
                   <button
                     onClick={handleNoThanks}
-                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border-2 border-[#009900] text-[#009900] rounded-lg hover:bg-gray-50 transition-colors font-medium"
                   >
                     <X className="w-5 h-5" />
                     No Thanks
                   </button>
                   <button
                     onClick={handlePerhaps}
-                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border-2 border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium"
+                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border-2 border-[#D0ED00] bg-[#D0ED00] text-black rounded-lg hover:bg-[#bfd400] transition-colors font-medium"
                   >
                     <Clock className="w-5 h-5" />
                     Perhaps
@@ -269,13 +269,13 @@ function Connections() {
                   </div>
 
                   <div className="flex gap-2">
-                    <button className="flex-1 px-3 py-1.5 text-xs border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors">
+                    <button className="flex-1 px-3 py-1.5 text-xs border-2 border-[#009900] text-[#009900] rounded hover:bg-gray-50 transition-colors">
                       No Thanks
                     </button>
-                    <button className="flex-1 px-3 py-1.5 text-xs border border-blue-300 text-blue-600 rounded hover:bg-blue-50 transition-colors">
+                    <button className="flex-1 px-3 py-1.5 text-xs border-2 border-[#D0ED00] bg-[#D0ED00] text-black rounded hover:bg-[#bfd400] transition-colors font-medium">
                       Perhaps
                     </button>
-                    <button className="flex-1 px-3 py-1.5 text-xs bg-[#009900] text-white rounded hover:bg-[#007700] transition-colors font-medium">
+                    <button className="flex-1 px-3 py-1.5 text-xs bg-[#009900] border-2 border-[#D0ED00] text-white rounded hover:bg-[#007700] transition-colors font-medium">
                       Connect
                     </button>
                   </div>
