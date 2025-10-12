@@ -179,10 +179,10 @@ export default function BudEOnboarding() {
       // Show success popup
       setShowSuccessPopup(true);
 
-      // Navigate to dashboard after 3 seconds
+      // Navigate to dashboard after 4 seconds
       setTimeout(() => {
         navigate('/dashboard');
-      }, 3000);
+      }, 4000);
     } catch (error) {
       console.error('❌ Error submitting to Google Sheets:', error);
 
@@ -206,10 +206,10 @@ export default function BudEOnboarding() {
       // Show success popup even if API fails (data is saved locally)
       setShowSuccessPopup(true);
 
-      // Navigate to dashboard after 3 seconds
+      // Navigate to dashboard after 4 seconds
       setTimeout(() => {
         navigate('/dashboard');
-      }, 3000);
+      }, 4000);
     } finally {
       setIsSubmitting(false);
     }
