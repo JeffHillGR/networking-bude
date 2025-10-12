@@ -203,9 +203,13 @@ export default function BudEOnboarding() {
       // Save complete onboarding data for profile page
       localStorage.setItem('onboardingData', JSON.stringify(formData));
 
-      // Continue to dashboard even if submission fails
-      // User data is backed up in localStorage
-      navigate('/dashboard');
+      // Show success popup even if API fails (data is saved locally)
+      setShowSuccessPopup(true);
+
+      // Navigate to dashboard after 3 seconds
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 3000);
     } finally {
       setIsSubmitting(false);
     }
