@@ -203,7 +203,7 @@ const getGreeting = () => {
                 </div>
                 <button
   onClick={() => setActiveTab('connections')}
-  className="text-sm text-green-600 font-medium hover:underline whitespace-nowrap"
+  className="text-sm text-[#009900] font-medium hover:text-[#007700] hover:underline whitespace-nowrap"
 >
   View All
 </button>
@@ -227,7 +227,7 @@ const getGreeting = () => {
                         <span className="text-xs text-gray-600">{person.similarity} compatible</span>
                         <span className="text-xs text-blue-500">👥 {person.mutuals}</span>
                       </div>
-                      <button className="px-3 py-1.5 bg-[#009900] text-white text-xs rounded hover:bg-[#007700] flex-shrink-0">
+                      <button className="px-3 py-1.5 bg-[#009900] border-2 border-[#D0ED00] text-white text-xs rounded hover:bg-[#007700] flex-shrink-0 font-medium">
                         Connect
                       </button>
                     </div>
@@ -258,7 +258,7 @@ const getGreeting = () => {
                 </div>
 <button
   onClick={() => setActiveTab('events')}
-  className="text-sm text-green-600 font-medium hover:underline whitespace-nowrap"
+  className="text-sm text-[#009900] font-medium hover:text-[#007700] hover:underline whitespace-nowrap"
 >
   View All Events
 </button>              </div>
