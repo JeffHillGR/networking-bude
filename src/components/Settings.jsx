@@ -3,7 +3,9 @@ import { User, Shield, Bell, Lock, Upload, X } from 'lucide-react';
 
 function Settings() {
   const [activeTab, setActiveTab] = useState('profile');
-  
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
   // Profile state
   const [profile, setProfile] = useState({
     fullName: 'Sarah Johnson',
@@ -68,8 +70,56 @@ function Settings() {
     }
   };
 
+  const showSuccess = (message) => {
+    setSuccessMessage(message);
+    setShowSuccessMessage(true);
+    setTimeout(() => {
+      setShowSuccessMessage(false);
+    }, 3000);
+  };
+
+  const handleSaveProfile = () => {
+    // In a real app, this would save to a backend
+    showSuccess('Profile updated successfully!');
+  };
+
+  const handleChangePassword = () => {
+    // Validate passwords match
+    if (security.newPassword !== security.confirmPassword) {
+      alert('New passwords do not match');
+      return;
+    }
+    if (security.newPassword.length < 8) {
+      alert('Password must be at least 8 characters');
+      return;
+    }
+    // In a real app, this would call a backend API
+    showSuccess('Password changed successfully!');
+    setSecurity({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  };
+
+  const handleSaveNotifications = () => {
+    // In a real app, this would save to a backend
+    showSuccess('Notification preferences saved!');
+  };
+
+  const handleSavePrivacy = () => {
+    // In a real app, this would save to a backend
+    showSuccess('Privacy settings saved!');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Success Message Toast */}
+      {showSuccessMessage && (
+        <div className="fixed top-4 right-4 z-50 bg-green-600 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          <span className="font-medium">{successMessage}</span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-8">
         <h1 className="text-3xl font-bold text-gray-900">Account Settings</h1>
@@ -227,7 +277,10 @@ function Settings() {
             </div>
 
             <div className="mt-8 flex justify-end">
-              <button className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 font-medium">
+              <button
+                onClick={handleSaveProfile}
+                className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 font-medium"
+              >
                 Save Changes
               </button>
             </div>
@@ -278,7 +331,10 @@ function Settings() {
               </div>
 
               <div className="mt-6 flex justify-end">
-                <button className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 font-medium">
+                <button
+                  onClick={handleChangePassword}
+                  className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 font-medium"
+                >
                   Change Password
                 </button>
               </div>
@@ -371,7 +427,10 @@ function Settings() {
             </div>
 
             <div className="mt-8 flex justify-end">
-              <button className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 font-medium">
+              <button
+                onClick={handleSaveNotifications}
+                className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 font-medium"
+              >
                 Save Preferences
               </button>
             </div>
@@ -426,7 +485,10 @@ function Settings() {
               </div>
 
               <div className="mt-8 flex justify-end">
-                <button className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 font-medium">
+                <button
+                  onClick={handleSavePrivacy}
+                  className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 font-medium"
+                >
                   Save Settings
                 </button>
               </div>

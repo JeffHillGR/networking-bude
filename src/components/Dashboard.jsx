@@ -264,7 +264,11 @@ const getGreeting = () => {
 </button>              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {events.map((event, index) => (
-                  <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                  <div
+                    key={index}
+                    onClick={() => navigate(`/events/${event.id}`)}
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:bg-gray-50 transition-colors"
+                  >
                     {event.image && (
                       <img
                         src={event.image}
@@ -287,7 +291,10 @@ const getGreeting = () => {
                       </div>
                       <div className="flex justify-end">
                         <button
-                          onClick={() => navigate(`/events/${event.id}`)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/events/${event.id}`);
+                          }}
                           className="text-[#009900] font-medium hover:text-[#007700] flex items-center gap-1 text-xs"
                         >
                           View Details

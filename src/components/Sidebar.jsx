@@ -25,13 +25,16 @@ function Sidebar({ activeTab, setActiveTab }) {
         <div className="flex-1 overflow-y-auto">
           <div className="p-4">
             {/* Logo */}
-            <div className="flex items-center gap-3 mb-6">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className="flex items-center gap-3 mb-6 cursor-pointer hover:opacity-80 transition-opacity"
+            >
               <img
                 src="/BudE-Logo-Final.png"
                 alt="BudE Logo"
                 className="h-16 w-auto"
               />
-            </div>
+            </button>
 
             {/* Navigation */}
             <nav className="space-y-1">
