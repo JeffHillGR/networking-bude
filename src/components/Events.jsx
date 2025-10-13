@@ -168,16 +168,16 @@ function Events() {
     },
     {
       id: 7,
-      title: 'The Work Continues: Practical Strategies for Moving Forward',
-      description: 'Interactive panel with leaders from law, economic development, HR, and corporate DEI. Solutions-driven approaches to advancing DEIB in today\'s workplace.',
-      date: '11/20/2025',
-      time: '4:00 PM - 6:30 PM',
-      location: 'GVSU LV Eberhard Center',
+      title: 'Mastering The Matrix: AI, Innovation & Public Safety',
+      description: 'A groundbreaking full-day gathering with national experts, community leaders, tech innovators, and public safety professionals exploring how AI is reshaping our lives, laws, and liberties.',
+      date: '10/30/2025',
+      time: '7:30 AM - 5:00 PM',
+      location: 'GVSU Eberhard Center',
       attendees: '200+',
-      organizer: 'WMPRSA',
+      organizer: 'Scales Consulting LLC',
       price: 'Free',
       badge: 'In-Person',
-      image: 'http://static1.squarespace.com/static/611fc8eea9a27a5d31b728c2/t/68a8ada0fe9c916beba849cf/1757706567516/SaboPR-Logo-Blue.png?format=1500w'
+      image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1150451263%2F2284555542733%2F1%2Foriginal.20251010-230321?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.506&fp-y=0.098&s=99803e3fd6bb96e6dee48880e089b619'
     },
     {
       id: 8,

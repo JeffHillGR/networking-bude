@@ -110,22 +110,22 @@ function EventDetail() {
     },
     7: {
       id: 7,
-      title: 'The Work Continues: Practical Strategies for Moving Forward',
-      description: 'Interactive panel with leaders from law, economic development, HR, and corporate DEI discussing practical DEIB strategies.',
-      fullDescription: '"The Work Continues" brings together diverse leaders for an interactive panel discussion on advancing diversity, equity, inclusion, accessibility, and belonging in today\'s workplace.\n\nFeaturing experts from law, economic development, human resources, and corporate DEI, this session focuses on practical, solutions-driven approaches that organizations can implement immediately. This isn\'t about theory—it\'s about actionable strategies that create real change.\n\nWhether you\'re a business leader, HR professional, or passionate about workplace equity, you\'ll leave with concrete tools and renewed commitment to building truly inclusive organizations.\n\nHosted by WMPRSA at GVSU\'s Eberhard Center. Networking reception follows the panel discussion.',
-      date: 'Thursday, November 20, 2025',
-      time: '4:00 PM - 6:30 PM',
-      location: 'GVSU LV Eberhard Center',
-      fullAddress: '301 Fulton Street West, Grand Rapids, MI 49504',
-      image: 'http://static1.squarespace.com/static/611fc8eea9a27a5d31b728c2/t/68a8ada0fe9c916beba849cf/1757706567516/SaboPR-Logo-Blue.png?format=1500w',
+      title: 'Mastering The Matrix: AI, Innovation & Public Safety',
+      description: 'A groundbreaking full-day gathering with national experts exploring how artificial intelligence is reshaping our lives, laws, and liberties.',
+      fullDescription: 'Join Scales Consulting LLC, the Michigan Department of Civil Rights, and Kent County ALPACT for "Mastering The Matrix," a transformative full-day conference exploring the intersection of artificial intelligence, innovation, and public safety.\n\nKeynote Address: Renée Cummings, AI Ethicist and Professor at the University of Virginia, will share insights on ethical AI development and its implications for civil rights and justice.\n\nThis comprehensive event features expert panels on AI technology, law enforcement applications, civil rights considerations, and policy development. Attend interactive breakout sessions covering practical AI implementation, ethical frameworks, and community impact.\n\nWhether you\'re a tech leader, public safety official, educator, policy maker, or concerned community member, this conference offers critical insights into how AI is transforming our society. Network with national experts, local leaders, and fellow attendees during the vendor expo.\n\nIncludes breakfast, lunch, networking opportunities, and giveaways. Ages 18+.',
+      date: 'Thursday, October 30, 2025',
+      time: '7:30 AM - 5:00 PM',
+      location: 'GVSU Eberhard Center',
+      fullAddress: '301 Fulton St W, Grand Rapids, MI 49504',
+      image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1150451263%2F2284555542733%2F1%2Foriginal.20251010-230321?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.506&fp-y=0.098&s=99803e3fd6bb96e6dee48880e089b619',
       badge: 'In-Person',
       organizer: {
-        name: 'WMPRSA',
-        avatar: 'WP',
-        description: 'West Michigan Public Relations Society of America connects PR professionals and advocates for diversity, equity, and inclusion in communications.'
+        name: 'Scales Consulting LLC',
+        avatar: 'SC',
+        description: 'Scales Consulting LLC partners with the Michigan Department of Civil Rights and Kent County ALPACT to advance conversations on AI, innovation, and social justice.'
       },
-      tags: ['DEI', 'Leadership', 'HR', 'Workplace Culture', 'Professional Development'],
-      registrationUrl: 'https://lp.constantcontactpages.com/ev/reg/a7a5tp8'
+      tags: ['AI', 'Technology', 'Public Safety', 'Civil Rights', 'Innovation', 'Policy'],
+      registrationUrl: 'https://www.eventbrite.com/e/mastering-the-matrix-ai-innovation-public-safety-tickets-1752250060099'
     },
     8: {
       id: 8,
