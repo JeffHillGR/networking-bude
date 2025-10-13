@@ -190,17 +190,9 @@ const getGreeting = () => {
             </div>
 
             <div className="relative group">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h3 className="font-bold text-gray-900 text-sm md:text-base">Check Out Your Potential Connections</h3>
-                  <p className="text-xs text-gray-600">People you might want to connect with</p>
-                </div>
-                <button
-  onClick={() => setActiveTab('connections')}
-  className="text-sm text-[#009900] font-medium hover:text-[#007700] hover:underline whitespace-nowrap"
->
-  View All
-</button>
+              <div className="mb-3">
+                <h3 className="font-bold text-gray-900 text-sm md:text-base">Check Out Your Potential Connections</h3>
+                <p className="text-xs text-gray-600">People you might want to connect with</p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {connections.map((person, index) => (
@@ -227,6 +219,17 @@ const getGreeting = () => {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              {/* View All Connections Button */}
+              <div className="flex justify-center mt-6">
+                <button
+                  onClick={() => setActiveTab('connections')}
+                  className="px-8 py-3 bg-[#009900] text-white rounded-lg font-semibold hover:bg-[#007700] transition-colors shadow-md hover:shadow-lg flex items-center gap-2 border-[3px] border-[#D0ED00]"
+                >
+                  View All Connections
+                  <img src="/BudE-favicon.png" alt="BudE" className="w-5 h-5" />
+                </button>
               </div>
 
               {/* Beta Testing Hover Message */}
@@ -300,7 +303,7 @@ const getGreeting = () => {
                   className="px-8 py-3 bg-[#009900] text-white rounded-lg font-semibold hover:bg-[#007700] transition-colors shadow-md hover:shadow-lg flex items-center gap-2 border-[3px] border-[#D0ED00]"
                 >
                   View All Events
-                  <Calendar className="w-5 h-5" />
+                  <img src="/BudE-favicon.png" alt="BudE" className="w-5 h-5" />
                 </button>
               </div>
             </div>
