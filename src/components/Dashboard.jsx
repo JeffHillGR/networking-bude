@@ -297,7 +297,7 @@ const getGreeting = () => {
               <div className="flex justify-center mt-6">
                 <button
                   onClick={() => setActiveTab('events')}
-                  className="px-8 py-3 bg-[#009900] text-white rounded-lg font-semibold hover:bg-[#007700] transition-colors shadow-md hover:shadow-lg flex items-center gap-2"
+                  className="px-8 py-3 bg-[#009900] text-white rounded-lg font-semibold hover:bg-[#007700] transition-colors shadow-md hover:shadow-lg flex items-center gap-2 border-[3px] border-[#D0ED00]"
                 >
                   View All Events
                   <Calendar className="w-5 h-5" />
