@@ -245,17 +245,10 @@ const getGreeting = () => {
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="font-bold text-gray-900 text-sm md:text-base">See What Events Are Coming Up</h3>
-                  <p className="text-xs md:text-sm text-gray-600">Networking events happening near you</p>
-                </div>
-<button
-  onClick={() => setActiveTab('events')}
-  className="text-sm text-[#009900] font-medium hover:text-[#007700] hover:underline whitespace-nowrap"
->
-  View All Events
-</button>              </div>
+              <div className="mb-4">
+                <h3 className="font-bold text-gray-900 text-sm md:text-base">See What Events Are Coming Up</h3>
+                <p className="text-xs md:text-sm text-gray-600">Networking events happening near you</p>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {events.map((event, index) => (
                   <div
@@ -299,6 +292,18 @@ const getGreeting = () => {
                   </div>
                 ))}
               </div>
+
+              {/* View All Events Button */}
+              <div className="flex justify-center mt-6">
+                <button
+                  onClick={() => setActiveTab('events')}
+                  className="px-8 py-3 bg-[#009900] text-white rounded-lg font-semibold hover:bg-[#007700] transition-colors shadow-md hover:shadow-lg flex items-center gap-2"
+                >
+                  View All Events
+                  <Calendar className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
                     {/* Bottom Banner Ad */}
             <div className="mt-12">
               {(() => {
@@ -326,7 +331,6 @@ const getGreeting = () => {
                   </div>
                 );
               })()}
-            </div>
             </div>
           </div>
         );
