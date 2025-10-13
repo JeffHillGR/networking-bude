@@ -70,7 +70,8 @@ export default async function handler(req, res) {
       userData.lastName || '',
       userData.email || '',
       userData.jobTitle || '',
-      userData.company || ''
+      userData.company || '',
+      userData.reason || 'No reason provided' // Reason for leaving
     ];
 
     console.log('📊 Logging beta exit to Google Sheet');
@@ -78,7 +79,7 @@ export default async function handler(req, res) {
     // Append the data to the Google Sheet - Beta_Exits tab
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'Beta_Exits!A:F', // Tab name for beta exits
+      range: 'Beta_Exits!A:G', // Tab name for beta exits (now includes G column)
       valueInputOption: 'USER_ENTERED',
       insertDataOption: 'INSERT_ROWS',
       resource: {

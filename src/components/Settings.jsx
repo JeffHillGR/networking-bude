@@ -5,6 +5,8 @@ function Settings() {
   const [activeTab, setActiveTab] = useState('profile');
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [showLeaveBetaModal, setShowLeaveBetaModal] = useState(false);
+  const [leaveBetaReason, setLeaveBetaReason] = useState('');
 
   // Load profile data from localStorage on mount
   const loadProfileFromStorage = () => {
@@ -143,22 +145,23 @@ function Settings() {
     showSuccess('Privacy settings saved!');
   };
 
-  const handleLeaveBeta = async () => {
-    if (!confirm('Are you sure you want to leave the beta program? This will clear all your data and return you to the onboarding page.')) {
-      return;
-    }
+  const handleLeaveBetaClick = () => {
+    setShowLeaveBetaModal(true);
+  };
 
+  const handleConfirmLeaveBeta = async () => {
     // Collect user data for email notification
     const userData = {
       firstName: localStorage.getItem('userFirstName') || '',
       lastName: localStorage.getItem('userLastName') || '',
       email: profile.email || localStorage.getItem('userEmail') || '',
       jobTitle: profile.jobTitle || localStorage.getItem('userJobTitle') || '',
-      company: profile.company || localStorage.getItem('userCompany') || ''
+      company: profile.company || localStorage.getItem('userCompany') || '',
+      reason: leaveBetaReason || 'No reason provided'
     };
 
     try {
-      // Send email notification to Jeff
+      // Send notification to Jeff
       const response = await fetch('/api/leaveBeta', {
         method: 'POST',
         headers: {
@@ -620,7 +623,7 @@ function Settings() {
                   <p className="text-sm text-gray-600 mt-1">Stop participating in beta testing and remove your account data</p>
                 </div>
                 <button
-                  onClick={handleLeaveBeta}
+                  onClick={handleLeaveBetaClick}
                   className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 font-medium flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -633,6 +636,61 @@ function Settings() {
           </div>
         )}
       </div>
+
+      {/* Leave Beta Modal */}
+      {showLeaveBetaModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowLeaveBetaModal(false)}>
+          <div className="bg-white rounded-lg p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900">Leave Beta Program</h2>
+              <button
+                onClick={() => setShowLeaveBetaModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <p className="text-gray-600 mb-4">
+              We're sorry to see you go! Before you leave, would you mind sharing why you're leaving the beta program? Your feedback helps us improve BudE.
+            </p>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Reason for Leaving Beta (Thank you for participating!)
+              </label>
+              <textarea
+                value={leaveBetaReason}
+                onChange={(e) => setLeaveBetaReason(e.target.value)}
+                rows={4}
+                placeholder="Optional: Let us know what we could improve..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
+              />
+            </div>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <p className="text-sm text-yellow-800">
+                <strong>Warning:</strong> This will clear all your data and return you to the onboarding page. This action cannot be undone.
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLeaveBetaModal(false)}
+                className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmLeaveBeta}
+                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
+              >
+                Leave Beta
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
