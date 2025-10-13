@@ -18,6 +18,7 @@ function Dashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
 const [selectedPlan, setSelectedPlan] = useState(null);
 const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
+const [showSponsorModal, setShowSponsorModal] = useState(false);
 
 // Scroll to top when dashboard loads
 useEffect(() => {
@@ -259,7 +260,7 @@ const getGreeting = () => {
                 {events.map((event, index) => (
                   <div
                     key={index}
-                    onClick={() => navigate(`/events/${event.id}`)}
+                    onClick={() => event.isSponsored ? setShowSponsorModal(true) : navigate(`/events/${event.id}`)}
                     className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200"
                   >
                     {event.image && (
@@ -286,7 +287,7 @@ const getGreeting = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/events/${event.id}`);
+                            event.isSponsored ? setShowSponsorModal(true) : navigate(`/events/${event.id}`);
                           }}
                           className="text-[#009900] font-medium hover:text-[#007700] flex items-center gap-1 text-xs"
                         >
@@ -429,6 +430,40 @@ default:
           ))}
         </div>
       </nav>
+
+      {/* Sponsored Event Modal */}
+      {showSponsorModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowSponsorModal(false)}>
+          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 relative" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setShowSponsorModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
+            >
+              ×
+            </button>
+            <div className="text-center">
+              <div className="mb-4">
+                <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto">
+                  <Calendar className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Sponsored Event Opportunity</h3>
+              <p className="text-gray-600 mb-6">
+                For sponsored event or advertising inquiries, please email Jeff Hill at{' '}
+                <a href="mailto:grjeff@gmail.com" className="text-[#009900] font-semibold hover:underline">
+                  grjeff@gmail.com
+                </a>
+              </p>
+              <button
+                onClick={() => setShowSponsorModal(false)}
+                className="w-full bg-[#009900] text-white py-3 rounded-lg font-medium hover:bg-[#007700] transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
