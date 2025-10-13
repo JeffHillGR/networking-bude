@@ -265,7 +265,11 @@ function Events() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {featuredEvents.map((event) => (
-                  <div key={event.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                  <div
+                    key={event.id}
+                    onClick={() => !event.isSponsored && navigate(`/events/${event.id}`)}
+                    className={`bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow ${!event.isSponsored ? 'cursor-pointer' : ''}`}
+                  >
                     {event.isSponsored ? (
                       <div className="h-64 bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center p-8">
                         <div className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
@@ -302,7 +306,10 @@ function Events() {
                           </div>
                           <div className="flex justify-end">
                             <button
-                              onClick={() => navigate(`/events/${event.id}`)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/events/${event.id}`);
+                              }}
                               className="text-[#009900] font-medium hover:text-[#007700] flex items-center gap-1"
                             >
                               View Details
@@ -322,7 +329,11 @@ function Events() {
               <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6">More Events</h2>
               <div className="space-y-4">
                 {moreEvents.map((event) => (
-                  <div key={event.id} className="bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md transition-shadow">
+                  <div
+                    key={event.id}
+                    onClick={() => navigate(`/events/${event.id}`)}
+                    className="bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md transition-shadow cursor-pointer"
+                  >
                     <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                       <img src={event.image} alt={event.title} className="w-full md:w-48 h-48 md:h-32 object-contain rounded-lg flex-shrink-0 bg-white" />
                       <div className="flex-1 min-w-0">
@@ -359,7 +370,10 @@ function Events() {
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0 mt-3 md:mt-4">
                           <span className="text-xs md:text-sm text-gray-600 truncate">by {event.organizer} {event.price !== 'Free' && `• ${event.price}`}</span>
                           <button
-                            onClick={() => navigate(`/events/${event.id}`)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/events/${event.id}`);
+                            }}
                             className="flex items-center gap-2 text-[#009900] font-medium hover:text-[#007700] text-sm md:text-base whitespace-nowrap"
                           >
                             View Details
