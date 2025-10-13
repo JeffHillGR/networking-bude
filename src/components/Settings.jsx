@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { User, Shield, Bell, Lock, Upload, X } from 'lucide-react';
 
 function Settings() {
@@ -6,21 +6,42 @@ function Settings() {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
-  // Profile state
-  const [profile, setProfile] = useState({
-    fullName: 'Sarah Johnson',
-    email: 'sarah.johnson@techcorp.com',
-    jobTitle: 'Product Manager',
-    company: 'TechCorp',
-    location: 'San Francisco, CA',
-    website: 'sarahjohnson.dev',
-    phone: '+1 (555) 123-4567',
-    bio: 'Passionate product manager with 7+ years of experience building user-centric products. I love connecting with fellow PMs, designers, and entrepreneurs to share insights and learn from each other.'
-  });
+  // Load profile data from localStorage on mount
+  const loadProfileFromStorage = () => {
+    const savedProfile = localStorage.getItem('settingsProfile');
+    if (savedProfile) {
+      return JSON.parse(savedProfile);
+    }
+    // Default to onboarding data if available
+    const firstName = localStorage.getItem('userFirstName') || '';
+    const lastName = localStorage.getItem('userLastName') || '';
+    const email = localStorage.getItem('userEmail') || '';
+    const jobTitle = localStorage.getItem('userJobTitle') || '';
+    const company = localStorage.getItem('userCompany') || '';
 
-  const [selectedInterests, setSelectedInterests] = useState([
-    'Technology', 'Design', 'Product Management', 'Startup', 'Leadership'
-  ]);
+    return {
+      fullName: `${firstName} ${lastName}`.trim() || 'User Name',
+      email: email || 'user@example.com',
+      jobTitle: jobTitle || 'Job Title',
+      company: company || 'Company',
+      location: 'Location',
+      website: '',
+      phone: '',
+      bio: ''
+    };
+  };
+
+  const loadInterestsFromStorage = () => {
+    const savedInterests = localStorage.getItem('settingsInterests');
+    if (savedInterests) {
+      return JSON.parse(savedInterests);
+    }
+    return ['Technology', 'Design', 'Product Management', 'Startup', 'Leadership'];
+  };
+
+  // Profile state
+  const [profile, setProfile] = useState(loadProfileFromStorage());
+  const [selectedInterests, setSelectedInterests] = useState(loadInterestsFromStorage());
 
   const availableInterests = [
     'Technology', 'Marketing', 'Finance', 'Design', 'Sales', 'HR', 
@@ -79,7 +100,21 @@ function Settings() {
   };
 
   const handleSaveProfile = () => {
-    // In a real app, this would save to a backend
+    // Save to localStorage
+    localStorage.setItem('settingsProfile', JSON.stringify(profile));
+    localStorage.setItem('settingsInterests', JSON.stringify(selectedInterests));
+
+    // Also update the main user data used by other components
+    const names = profile.fullName.split(' ');
+    const firstName = names[0] || '';
+    const lastName = names.slice(1).join(' ') || '';
+
+    localStorage.setItem('userFirstName', firstName);
+    localStorage.setItem('userLastName', lastName);
+    localStorage.setItem('userEmail', profile.email);
+    localStorage.setItem('userJobTitle', profile.jobTitle);
+    localStorage.setItem('userCompany', profile.company);
+
     showSuccess('Profile updated successfully!');
   };
 
@@ -106,6 +141,47 @@ function Settings() {
   const handleSavePrivacy = () => {
     // In a real app, this would save to a backend
     showSuccess('Privacy settings saved!');
+  };
+
+  const handleLeaveBeta = async () => {
+    if (!confirm('Are you sure you want to leave the beta program? This will clear all your data and return you to the onboarding page.')) {
+      return;
+    }
+
+    // Collect user data for email notification
+    const userData = {
+      firstName: localStorage.getItem('userFirstName') || '',
+      lastName: localStorage.getItem('userLastName') || '',
+      email: profile.email || localStorage.getItem('userEmail') || '',
+      jobTitle: profile.jobTitle || localStorage.getItem('userJobTitle') || '',
+      company: profile.company || localStorage.getItem('userCompany') || ''
+    };
+
+    try {
+      // Send email notification to Jeff
+      const response = await fetch('/api/leaveBeta', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...userData,
+          leftAt: new Date().toISOString()
+        })
+      });
+
+      if (!response.ok) {
+        console.error('Failed to send leave beta notification');
+      }
+    } catch (error) {
+      console.error('Error sending leave beta notification:', error);
+    }
+
+    // Clear all localStorage
+    localStorage.clear();
+
+    // Redirect to home/onboarding
+    window.location.href = '/';
   };
 
   return (
@@ -158,12 +234,17 @@ function Settings() {
               <label className="block font-medium text-gray-900 mb-3">Profile Picture</label>
               <div className="flex items-center gap-4">
                 <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-2xl font-bold text-gray-600">
-                  SJ
+                  {profile.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U'}
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                  <Upload className="w-4 h-4" />
-                  Upload Photo
-                </button>
+                <div className="relative">
+                  <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed" disabled>
+                    <Upload className="w-4 h-4" />
+                    Upload Photo
+                  </button>
+                  <div className="absolute -top-2 -right-2 bg-[#D0ED00] text-black px-2 py-0.5 rounded-full text-xs font-bold shadow-sm">
+                    Coming Soon
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -354,19 +435,14 @@ function Settings() {
                     <h3 className="font-medium text-gray-900">Two-Factor Authentication</h3>
                     <p className="text-sm text-gray-600 mt-1">Add an extra layer of security to your account</p>
                   </div>
-                  <button className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium">
-                    Enable
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between pt-6 border-t">
-                  <div>
-                    <h3 className="font-medium text-gray-900">Login Sessions</h3>
-                    <p className="text-sm text-gray-600 mt-1">Manage your active login sessions</p>
+                  <div className="relative">
+                    <button className="px-6 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed font-medium" disabled>
+                      Enable
+                    </button>
+                    <div className="absolute -top-2 -right-2 bg-[#D0ED00] text-black px-2 py-0.5 rounded-full text-xs font-bold shadow-sm whitespace-nowrap">
+                      Coming Soon
+                    </div>
                   </div>
-                  <button className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium">
-                    View Sessions
-                  </button>
                 </div>
               </div>
             </div>
@@ -375,12 +451,29 @@ function Settings() {
 
         {/* Notifications Tab */}
         {activeTab === 'notifications' && (
-          <div className="bg-white rounded-lg shadow-sm p-8">
+          <div className="bg-white rounded-lg shadow-sm p-8 relative">
             <div className="flex items-center gap-2 mb-2">
               <Bell className="w-5 h-5" />
               <h2 className="text-xl font-bold text-gray-900">Notification Preferences</h2>
             </div>
             <p className="text-gray-600 mb-6">Choose what notifications you want to receive</p>
+
+            {/* Beta Overlay */}
+            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-lg flex items-center justify-center z-10">
+              <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 max-w-md mx-4 text-center shadow-2xl border-4 border-[#D0ED00]">
+                <img
+                  src="/BudE-favicon.png"
+                  alt="BudE"
+                  className="h-16 w-16 mx-auto mb-4 object-contain"
+                />
+                <p className="text-green-800 font-bold text-xl mb-2">
+                  Beta Version
+                </p>
+                <p className="text-green-700 font-medium text-base">
+                  Notification settings coming soon!
+                </p>
+              </div>
+            </div>
 
             <div className="space-y-1">
               <ToggleSetting
@@ -440,12 +533,29 @@ function Settings() {
         {/* Privacy Tab */}
         {activeTab === 'privacy' && (
           <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-sm p-8">
+            <div className="bg-white rounded-lg shadow-sm p-8 relative">
               <div className="flex items-center gap-2 mb-2">
                 <Lock className="w-5 h-5" />
                 <h2 className="text-xl font-bold text-gray-900">Privacy Settings</h2>
               </div>
               <p className="text-gray-600 mb-6">Control who can see your information and contact you</p>
+
+              {/* Beta Overlay */}
+              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-lg flex items-center justify-center z-10">
+                <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 max-w-md mx-4 text-center shadow-2xl border-4 border-[#D0ED00]">
+                  <img
+                    src="/BudE-favicon.png"
+                    alt="BudE"
+                    className="h-16 w-16 mx-auto mb-4 object-contain"
+                  />
+                  <p className="text-green-800 font-bold text-xl mb-2">
+                    Beta Version
+                  </p>
+                  <p className="text-green-700 font-medium text-base">
+                    Privacy settings coming soon!
+                  </p>
+                </div>
+              </div>
 
               <div className="space-y-1">
                 <ToggleSetting
@@ -509,7 +619,10 @@ function Settings() {
                   <h3 className="font-medium text-gray-900">Cancel Plan / Leave Beta / Unsubscribe</h3>
                   <p className="text-sm text-gray-600 mt-1">Stop participating in beta testing and remove your account data</p>
                 </div>
-                <button className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 font-medium flex items-center gap-2">
+                <button
+                  onClick={handleLeaveBeta}
+                  className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 font-medium flex items-center gap-2"
+                >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
