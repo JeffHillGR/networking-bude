@@ -225,10 +225,10 @@ const getGreeting = () => {
               <div className="flex justify-center mt-6">
                 <button
                   onClick={() => setActiveTab('connections')}
-                  className="px-8 py-3 bg-[#009900] text-white rounded-lg font-semibold hover:bg-[#007700] transition-colors shadow-md hover:shadow-lg flex items-center gap-2 border-[3px] border-[#D0ED00]"
+                  className="px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors flex items-center gap-2 border-[3px] border-[#D0ED00] text-sm"
                 >
                   View All Connections
-                  <img src="/BudE-favicon.png" alt="BudE" className="w-5 h-5" />
+                  <img src="/BudE-favicon.png" alt="BudE" className="w-4 h-4" />
                 </button>
               </div>
 
@@ -300,10 +300,10 @@ const getGreeting = () => {
               <div className="flex justify-center mt-6">
                 <button
                   onClick={() => setActiveTab('events')}
-                  className="px-8 py-3 bg-[#009900] text-white rounded-lg font-semibold hover:bg-[#007700] transition-colors shadow-md hover:shadow-lg flex items-center gap-2 border-[3px] border-[#D0ED00]"
+                  className="px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors flex items-center gap-2 border-[3px] border-[#D0ED00] text-sm"
                 >
                   View All Events
-                  <img src="/BudE-favicon.png" alt="BudE" className="w-5 h-5" />
+                  <img src="/BudE-favicon.png" alt="BudE" className="w-4 h-4" />
                 </button>
               </div>
             </div>
