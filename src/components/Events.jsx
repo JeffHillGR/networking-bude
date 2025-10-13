@@ -40,38 +40,38 @@ function Events() {
   const defaultFeaturedEvents = [
     {
       id: 1,
-      title: 'Creative Mornings Design Session',
-      description: 'Join fellow creatives for an inspiring morning session.',
-      date: '9/19/2025',
-      time: '8:00 AM - 10:00 AM',
-      location: 'Bamboo Grand Rapids',
-      organizerName: 'Creative Mornings GR',
-      attendees: '45/60',
-      image: 'https://images.unsplash.com/photo-1558403194-611308249627?w=800&h=600&fit=crop',
+      title: 'Salim Ismail – Founder, OpenExO and Author',
+      description: 'Join us for an inspiring lunch with Salim Ismail, entrepreneur, author, and global innovation expert. Hear insights on exponential technologies and organizational transformation.',
+      date: '10/20/2025',
+      time: '11:30 AM - 1:30 PM',
+      location: 'JW Marriott Grand Rapids',
+      organizerName: 'The Economic Club of Grand Rapids',
+      attendees: '250+',
+      image: 'https://econclub.net/wp-content/uploads/2025/06/Salim-Ismail-cropped.jpg',
       badge: 'In-Person'
     },
     {
       id: 2,
-      title: 'StartGarden Entrepreneur Pitch',
-      description: 'Watch promising West Michigan startups pitch their ideas.',
-      date: '9/24/2025',
-      time: '6:30 PM - 9:00 PM',
-      location: 'StartGarden',
-      organizerName: 'Start Garden',
-      attendees: '80/100',
-      image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&h=600&fit=crop',
+      title: 'OutPro Forum: Building Belonging',
+      description: 'Connect with LGBTQ+ professionals and allies at this networking forum focused on building belonging in West Michigan workplaces.',
+      date: '10/22/2025',
+      time: '11:00 AM - 1:00 PM',
+      location: 'Grand Rapids Chamber',
+      organizerName: 'Grand Rapids Chamber',
+      attendees: '75+',
+      image: 'https://grandrapids.org/wp-content/uploads/2025/01/Graphic-OutPro-10.22.25-1-1024x576.jpg',
       badge: 'In-Person'
     },
     {
       id: 3,
-      title: 'Athena Leadership Workshop',
-      description: 'Develop your leadership skills in this full-day workshop.',
-      date: '9/27/2025',
-      time: '9:00 AM - 5:00 PM',
-      location: 'Grand Rapids Art Museum',
-      organizerName: 'Athena',
-      attendees: '150/200',
-      image: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&h=600&fit=crop',
+      title: '17th Annual Jay & Betty Van Andel Legacy Awards Gala',
+      description: 'Celebrate community leadership and impact at this elegant gala honoring the Van Andel legacy and supporting the Grand Rapids Public Museum.',
+      date: '11/12/2025',
+      time: '6:00 PM - 10:00 PM',
+      location: 'JW Marriott Grand Rapids',
+      organizerName: 'Grand Rapids Public Museum',
+      attendees: '300+',
+      image: 'https://www.grpm.org/wp-content/uploads/2025/06/2025_Gala_Web-Header_Option-05.png',
       badge: 'In-Person'
     },
     {
@@ -142,42 +142,55 @@ function Events() {
   const moreEvents = [
     {
       id: 5,
-      title: 'Virtual Product Management Panel',
-      description: 'Learn from experienced PMs at top tech companies. Interactive Q&A session included.',
-      date: '9/21/2025',
-      time: '2:00 PM - 3:30 PM',
-      location: 'Zoom',
-      attendees: '120',
-      organizer: 'PM Community',
+      title: 'UNFILTERED Gen3: Unapologetic Underdogs Unleashed',
+      description: 'Born underground. Built on grit. Back, and louder than ever. Experience fearless storytelling with zero filter at this unique evening event.',
+      date: '10/24/2025',
+      time: '7:00 PM - 9:00 PM',
+      location: 'City Built Brewing Company',
+      attendees: '100+',
+      organizer: 'UNFILTERED',
       price: 'Free',
-      badge: 'Virtual',
-      image: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=400'
+      badge: 'In-Person',
+      image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1115649073%2F978818167483%2F1%2Foriginal.20250905-182811'
     },
     {
       id: 6,
-      title: 'AI & Machine Learning Mixer',
-      description: 'Connect with AI researchers, engineers, and enthusiasts in a casual setting.',
-      date: '10/1/2025',
-      time: '7:00 PM - 10:00 PM',
-      location: 'Tech Cafe',
-      attendees: '65',
-      organizer: 'AI Community Bay Area',
-      price: '$20',
+      title: 'Fuel on the Fire Pitch Competition',
+      description: 'Watch seven Black-owned businesses pitch for capital and support. A live competition empowering Kent County entrepreneurs with growth resources and visibility.',
+      date: '10/29/2025',
+      time: '5:00 PM - 8:00 PM',
+      location: 'ICCF Community Homes HQ',
+      attendees: '150+',
+      organizer: 'Grand Rapids Area Black Businesses',
+      price: 'Free',
       badge: 'In-Person',
-      image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400'
+      image: 'https://grabblocal.com/wp-content/uploads/FOF.jpeg'
     },
     {
       id: 7,
-      title: 'Remote Work Best Practices Webinar',
-      description: 'Learn strategies for effective remote collaboration and networking in distributed teams.',
-      date: '10/4/2025',
-      time: '12:00 PM - 1:00 PM',
-      location: 'Microsoft Teams',
-      attendees: '95',
-      organizer: 'Remote Workers United',
+      title: 'The Work Continues: Practical Strategies for Moving Forward',
+      description: 'Interactive panel with leaders from law, economic development, HR, and corporate DEI. Solutions-driven approaches to advancing DEIB in today\'s workplace.',
+      date: '11/20/2025',
+      time: '4:00 PM - 6:30 PM',
+      location: 'GVSU LV Eberhard Center',
+      attendees: '200+',
+      organizer: 'WMPRSA',
       price: 'Free',
-      badge: 'Virtual',
-      image: 'https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?w=400'
+      badge: 'In-Person',
+      image: 'http://static1.squarespace.com/static/611fc8eea9a27a5d31b728c2/t/68a8ada0fe9c916beba849cf/1757706567516/SaboPR-Logo-Blue.png?format=1500w'
+    },
+    {
+      id: 8,
+      title: 'Swing Dance at the Public Museum',
+      description: 'Swing dancing returns to the Grand Rapids Public Museum. Two dance areas, hundreds of dancers, beginner lessons, and special guest instructors. All ages welcome!',
+      date: '10/28/2025',
+      time: '7:00 PM - 9:00 PM',
+      location: 'Grand Rapids Public Museum',
+      attendees: '200+',
+      organizer: 'GR Swing Society',
+      price: '$10',
+      badge: 'In-Person',
+      image: 'https://secure.meetupstatic.com/photos/event/a/4/3/6/highres_530382038.webp?w=3840'
     }
   ];
 
@@ -345,7 +358,10 @@ function Events() {
                         </div>
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0 mt-3 md:mt-4">
                           <span className="text-xs md:text-sm text-gray-600 truncate">by {event.organizer} {event.price !== 'Free' && `• ${event.price}`}</span>
-                          <button className="flex items-center gap-2 text-[#009900] font-medium hover:text-[#007700] text-sm md:text-base whitespace-nowrap">
+                          <button
+                            onClick={() => navigate(`/events/${event.id}`)}
+                            className="flex items-center gap-2 text-[#009900] font-medium hover:text-[#007700] text-sm md:text-base whitespace-nowrap"
+                          >
                             View Details
                             <ExternalLink className="h-4 w-4" />
                           </button>

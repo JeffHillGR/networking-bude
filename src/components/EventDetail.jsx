@@ -69,6 +69,82 @@ function EventDetail() {
       },
       tags: ['Gala', 'Fundraiser', 'Leadership', 'Community', 'Networking'],
       registrationUrl: 'https://www.grpm.org/gala/'
+    },
+    5: {
+      id: 5,
+      title: 'UNFILTERED Gen3: Unapologetic Underdogs Unleashed',
+      description: 'Born underground. Built on grit. Back, and louder than ever - fearless storytelling with zero vulnerability.',
+      fullDescription: 'UNFILTERED returns with Gen3—an evening of raw, authentic storytelling that breaks down barriers and celebrates the underdog spirit.\n\nThis unique event features speakers sharing their unfiltered journeys, struggles, and triumphs. No polish, no pretense—just real stories from real people who\'ve overcome adversity and built something meaningful.\n\nJoin fellow entrepreneurs, creatives, and change-makers at City Built Brewing Company for an evening of connection, inspiration, and community. Tickets are free, with optional donations supporting local non-profits.\n\nCome ready to be inspired, challenged, and reminded that your story matters.',
+      date: 'Friday, October 24, 2025',
+      time: '7:00 PM - 9:00 PM',
+      location: 'City Built Brewing Company',
+      fullAddress: '820 Monroe Avenue Northwest #STE 155, Grand Rapids, MI 49503',
+      image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1115649073%2F978818167483%2F1%2Foriginal.20250905-182811',
+      badge: 'In-Person',
+      organizer: {
+        name: 'UNFILTERED',
+        avatar: 'UF',
+        description: 'UNFILTERED creates spaces for authentic storytelling and community connection, celebrating the underdog spirit and real human experiences.'
+      },
+      tags: ['Storytelling', 'Community', 'Entrepreneurship', 'Inspiration', 'Networking'],
+      registrationUrl: 'https://www.eventbrite.com/e/unfiltered-gen3-unapologetic-underdogs-unleashed-tickets-1669603973429'
+    },
+    6: {
+      id: 6,
+      title: 'Fuel on the Fire Pitch Competition',
+      description: 'A live pitch competition empowering Black-owned businesses with capital, expert support, and visibility.',
+      fullDescription: 'Fuel on the Fire is a transformative pitch competition designed to empower Black-owned, for-profit businesses in Kent County.\n\nWatch seven inspiring founders pitch their business growth plans to a panel of expert judges and a live audience. This isn\'t just a competition—it\'s a celebration of Black entrepreneurship and a commitment to economic equity in our community.\n\nWinners receive capital investment, mentorship, and ongoing support to help scale their businesses. Whether you\'re an entrepreneur, investor, or community supporter, this event offers powerful insights into the innovation happening in Grand Rapids\' Black business community.\n\nHosted by Grand Rapids Area Black Businesses at ICCF Community Homes HQ. Free admission.',
+      date: 'Wednesday, October 29, 2025',
+      time: '5:00 PM - 8:00 PM',
+      location: 'ICCF Community Homes HQ',
+      fullAddress: '415 M.L.K Jr St SE, Grand Rapids, MI 49507',
+      image: 'https://grabblocal.com/wp-content/uploads/FOF.jpeg',
+      badge: 'In-Person',
+      organizer: {
+        name: 'Grand Rapids Area Black Businesses',
+        avatar: 'GB',
+        description: 'GRABB supports Black-owned businesses through networking, resources, and advocacy, building economic strength in the Grand Rapids community.'
+      },
+      tags: ['Entrepreneurship', 'Diversity', 'Investment', 'Community', 'Pitch Competition'],
+      registrationUrl: 'https://grabblocal.com/event/fuel-on-the-fire2025/'
+    },
+    7: {
+      id: 7,
+      title: 'The Work Continues: Practical Strategies for Moving Forward',
+      description: 'Interactive panel with leaders from law, economic development, HR, and corporate DEI discussing practical DEIB strategies.',
+      fullDescription: '"The Work Continues" brings together diverse leaders for an interactive panel discussion on advancing diversity, equity, inclusion, accessibility, and belonging in today\'s workplace.\n\nFeaturing experts from law, economic development, human resources, and corporate DEI, this session focuses on practical, solutions-driven approaches that organizations can implement immediately. This isn\'t about theory—it\'s about actionable strategies that create real change.\n\nWhether you\'re a business leader, HR professional, or passionate about workplace equity, you\'ll leave with concrete tools and renewed commitment to building truly inclusive organizations.\n\nHosted by WMPRSA at GVSU\'s Eberhard Center. Networking reception follows the panel discussion.',
+      date: 'Thursday, November 20, 2025',
+      time: '4:00 PM - 6:30 PM',
+      location: 'GVSU LV Eberhard Center',
+      fullAddress: '301 Fulton Street West, Grand Rapids, MI 49504',
+      image: 'http://static1.squarespace.com/static/611fc8eea9a27a5d31b728c2/t/68a8ada0fe9c916beba849cf/1757706567516/SaboPR-Logo-Blue.png?format=1500w',
+      badge: 'In-Person',
+      organizer: {
+        name: 'WMPRSA',
+        avatar: 'WP',
+        description: 'West Michigan Public Relations Society of America connects PR professionals and advocates for diversity, equity, and inclusion in communications.'
+      },
+      tags: ['DEI', 'Leadership', 'HR', 'Workplace Culture', 'Professional Development'],
+      registrationUrl: 'https://lp.constantcontactpages.com/ev/reg/a7a5tp8'
+    },
+    8: {
+      id: 8,
+      title: 'Swing Dance at the Public Museum',
+      description: 'Swing dancing returns to the Grand Rapids Public Museum featuring two dance areas, beginner lessons, and special guest instructors.',
+      fullDescription: 'Swing dancing is back at the Grand Rapids Public Museum! Join hundreds of dancers every Tuesday evening for West Michigan\'s premier swing dance social.\n\nThis isn\'t your typical networking event—it\'s a chance to connect through movement, music, and shared joy. With two dance areas accommodating different skill levels, beginner lessons included, and special guest instructors, everyone is welcome regardless of experience.\n\nNo partner needed, all ages welcome. Whether you\'re a seasoned dancer or have two left feet, you\'ll find a welcoming community ready to show you the ropes. It\'s networking with a twist—literally!\n\nThis weekly event runs every Tuesday through April 2026. Come for the dancing, stay for the connections.',
+      date: 'Tuesday, October 28, 2025',
+      time: '7:00 PM - 9:00 PM',
+      location: 'Grand Rapids Public Museum',
+      fullAddress: '272 Pearl St NW, Grand Rapids, MI 49503',
+      image: 'https://secure.meetupstatic.com/photos/event/a/4/3/6/highres_530382038.webp?w=3840',
+      badge: 'In-Person',
+      organizer: {
+        name: 'GR Swing Society',
+        avatar: 'GS',
+        description: 'GR Swing Society promotes swing dancing in West Michigan through weekly socials, workshops, and special events, building community through dance.'
+      },
+      tags: ['Social', 'Dancing', 'Community', 'All Ages', 'Networking'],
+      registrationUrl: 'https://www.meetup.com/grswing/events/311448849/'
     }
   };
 
