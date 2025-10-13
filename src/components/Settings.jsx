@@ -812,7 +812,7 @@ function Settings() {
               {/* Contact Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                   <input
                     type="text"
                     required
@@ -822,7 +822,7 @@ function Settings() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
                   <input
                     type="email"
                     required
