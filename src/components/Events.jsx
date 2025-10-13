@@ -84,17 +84,8 @@ function Events() {
     }
   ];
 
-  // Mock events for slots 2 and 3 (always shown for demo)
-  const mockFeaturedEvents = [
-    defaultFeaturedEvents[1], // StartGarden
-    defaultFeaturedEvents[2], // Athena
-    defaultFeaturedEvents[3]  // Sponsored slot
-  ];
-
-  // First event from admin (if exists), then always show mock events
-  const featuredEvents = adminEvents.length > 0
-    ? [adminEvents[0], ...mockFeaturedEvents]
-    : defaultFeaturedEvents;
+  // Always use default featured events (real Grand Rapids events)
+  const featuredEvents = defaultFeaturedEvents;
 
   const handleSubmitEvent = async (e) => {
     e.preventDefault();
@@ -301,7 +292,7 @@ function Events() {
                             </div>
                             <div className="flex items-center gap-2">
                               <Users className="h-4 w-4" />
-                              <span>{event.attendees} attending</span>
+                              <span className="text-[#009900] font-medium">Beta - coming soon</span>
                             </div>
                           </div>
                           <div className="flex justify-end">
@@ -364,7 +355,7 @@ function Events() {
                           </div>
                           <div className="flex items-center gap-2">
                             <Users className="h-4 w-4 flex-shrink-0" />
-                            <span className="truncate">{event.attendees} attending</span>
+                            <span className="truncate text-[#009900] font-medium">Beta - coming soon</span>
                           </div>
                         </div>
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0 mt-3 md:mt-4">
