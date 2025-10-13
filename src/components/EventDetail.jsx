@@ -22,7 +22,7 @@ function EventDetail() {
       time: '11:30 AM - 1:30 PM',
       location: 'JW Marriott Grand Rapids',
       fullAddress: 'International Ballroom, JW Marriott, Grand Rapids, MI',
-      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop',
+      image: 'https://econclub.net/wp-content/uploads/2025/06/Salim-Ismail-cropped.jpg',
       badge: 'In-Person',
       organizer: {
         name: 'The Economic Club of Grand Rapids',
