@@ -21,7 +21,7 @@ const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
 const [showSponsorModal, setShowSponsorModal] = useState(false);
 const [showFeedbackPrompt, setShowFeedbackPrompt] = useState(false);
 
-// Check if user should see feedback prompt (after 7 days of usage)
+// Check if user should see feedback prompt (after 24 hours of usage)
 useEffect(() => {
   const firstLoginDate = localStorage.getItem('firstLoginDate');
   const feedbackPromptShown = localStorage.getItem('feedbackPromptShown');
@@ -30,9 +30,9 @@ useEffect(() => {
     // Set first login date if not already set
     localStorage.setItem('firstLoginDate', new Date().toISOString());
   } else if (!feedbackPromptShown) {
-    // Check if 7 days have passed
-    const daysSinceFirstLogin = Math.floor((new Date() - new Date(firstLoginDate)) / (1000 * 60 * 60 * 24));
-    if (daysSinceFirstLogin >= 7) {
+    // Check if 24 hours have passed
+    const hoursSinceFirstLogin = Math.floor((new Date() - new Date(firstLoginDate)) / (1000 * 60 * 60));
+    if (hoursSinceFirstLogin >= 24) {
       setShowFeedbackPrompt(true);
       localStorage.setItem('feedbackPromptShown', 'true');
     }
@@ -509,7 +509,7 @@ default:
                   </svg>
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">You've been using BudE for a week!</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">How's your BudE experience so far?</h3>
               <p className="text-gray-600 mb-6">
                 We'd love to hear your thoughts! Your feedback helps us make BudE better for everyone.
                 It only takes a few minutes.
