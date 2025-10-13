@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { User, Shield, Bell, Lock, Upload, X } from 'lucide-react';
 
-function Settings() {
+function Settings({ autoOpenFeedback = false }) {
   const [activeTab, setActiveTab] = useState('profile');
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [showLeaveBetaModal, setShowLeaveBetaModal] = useState(false);
   const [leaveBetaReason, setLeaveBetaReason] = useState('');
-  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(autoOpenFeedback);
   const [feedbackData, setFeedbackData] = useState({
     name: '',
     email: '',

@@ -370,6 +370,10 @@ const getGreeting = () => {
           </div>
         );
 
+  case 'settings':
+  // Auto-scroll to feedback section and open modal if coming from feedback button
+  return <Settings autoOpenFeedback={activeTab === 'settings'} />;
+
   case 'events':
   return <Events />;
 
