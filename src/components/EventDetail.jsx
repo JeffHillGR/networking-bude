@@ -11,64 +11,64 @@ function EventDetail() {
   // Load admin-created events from localStorage
   const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
 
-  // Mock event data - Grand Rapids events
+  // Real event data - Grand Rapids networking events
   const defaultEventData = {
     1: {
       id: 1,
-      title: 'Creative Mornings Design Session',
-      description: 'Join fellow creatives and designers for an inspiring morning session. Share ideas, discuss design trends, and build meaningful connections over coffee and breakfast.',
-      fullDescription: 'Creative Mornings is a global breakfast lecture series for the creative community. Each event features a short talk, Q&A, and plenty of time for networking with fellow designers, artists, marketers, and creative professionals.\n\nThis month\'s theme explores the intersection of design and community impact. Whether you\'re a seasoned designer or just starting your creative journey, this is your opportunity to connect with Grand Rapids\' vibrant creative community in a welcoming, inspiring environment.',
-      date: 'Thursday, September 19, 2025',
-      time: '8:00 AM - 10:00 AM',
-      location: 'Bamboo Grand Rapids',
-      fullAddress: '33 Commerce Ave SW, Grand Rapids, MI 49503',
-      image: 'https://images.unsplash.com/photo-1558403194-611308249627?w=800&h=600&fit=crop',
+      title: 'Salim Ismail – Founder, OpenExO and Author',
+      description: 'Business strategist speaking about innovation and exponential technologies. Founder of OpenExO with experience working with Procter & Gamble, HP, and Visa.',
+      fullDescription: 'Join The Economic Club of Grand Rapids for an inspiring presentation by Salim Ismail, a leading voice in exponential technologies and business innovation.\n\nSalim Ismail speaks globally about how organizations can leverage exponential technologies to transform their business models. As Founder of OpenExO, he helps companies understand and implement strategies for exponential growth. This is a rare opportunity to learn from someone who has advised Fortune 500 companies on navigating rapid technological change and building future-ready organizations.\n\nAvailable in-person at the JW Marriott or via Zoom livestream.',
+      date: 'Monday, October 20, 2025',
+      time: '11:30 AM - 1:30 PM',
+      location: 'JW Marriott Grand Rapids',
+      fullAddress: 'International Ballroom, JW Marriott, Grand Rapids, MI',
+      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop',
       badge: 'In-Person',
       organizer: {
-        name: 'Creative Mornings GR',
-        avatar: 'CM',
-        description: 'Creative Mornings Grand Rapids brings together the local creative community for monthly breakfast lectures and networking.'
+        name: 'The Economic Club of Grand Rapids',
+        avatar: 'EC',
+        description: 'The Economic Club brings world-class speakers to Grand Rapids to inspire business leaders and drive community dialogue on critical issues.'
       },
-      tags: ['Design', 'Creativity', 'Networking', 'Breakfast', 'Community'],
-      registrationUrl: 'https://creativemornings.com/cities/gr'
+      tags: ['Innovation', 'Technology', 'Leadership', 'Business Strategy', 'Networking'],
+      registrationUrl: 'https://econclub.net/salim-ismail/'
     },
     2: {
       id: 2,
-      title: 'StartGarden Entrepreneur Pitch',
-      description: 'Watch promising West Michigan startups pitch their ideas and network with entrepreneurs, investors, and the local startup community.',
-      fullDescription: 'StartGarden is West Michigan\'s startup accelerator and investment fund. Join us for an exciting evening of innovation as local entrepreneurs pitch their business ideas for a chance at funding and mentorship.\n\nThis event brings together the region\'s most passionate founders, investors, and startup enthusiasts. Whether you\'re building your own company, looking to invest, or simply curious about the entrepreneurial ecosystem, this is the place to be. Networking reception follows the pitches.',
-      date: 'Tuesday, September 24, 2025',
-      time: '6:30 PM - 9:00 PM',
-      location: 'StartGarden',
-      fullAddress: '38 Commerce Ave SW, Grand Rapids, MI 49503',
-      image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&h=600&fit=crop',
+      title: 'OutPro Forum',
+      description: 'Building Belonging: The OutPro Journey - A networking forum featuring Rick Baker discussing the history and impact of OutPro for LGBTQIA+ professionals.',
+      fullDescription: 'Join the Grand Rapids Chamber for "Building Belonging: The OutPro Journey," a powerful networking forum exploring workplace inclusion and professional development for LGBTQIA+ professionals.\n\nRick Baker, President & CEO of the Grand Rapids Chamber, will share insights on OutPro\'s evolution and its vital role in creating more inclusive workplaces across West Michigan. This forum brings together business leaders, HR professionals, and community members committed to fostering belonging in professional environments.\n\nConnect with allies and advocates while learning practical strategies for building truly inclusive organizations.',
+      date: 'Wednesday, October 22, 2025',
+      time: '11:00 AM - 1:00 PM',
+      location: 'Grand Rapids Chamber',
+      fullAddress: '250 Monroe Ave, Grand Rapids, MI 49503',
+      image: 'https://grandrapids.org/wp-content/uploads/2025/01/Graphic-OutPro-10.22.25-1-1024x576.jpg',
       badge: 'In-Person',
       organizer: {
-        name: 'StartGarden',
-        avatar: 'SG',
-        description: 'StartGarden is West Michigan\'s premier startup accelerator, providing funding, mentorship, and community for entrepreneurs.'
+        name: 'Grand Rapids Chamber',
+        avatar: 'GR',
+        description: 'The Grand Rapids Chamber advocates for business growth, economic development, and inclusive workplace cultures throughout West Michigan.'
       },
-      tags: ['Startup', 'Entrepreneurship', 'Investing', 'Networking', 'Pitch'],
-      registrationUrl: 'https://startgarden.com/'
+      tags: ['Diversity', 'Inclusion', 'LGBTQIA+', 'Networking', 'Leadership'],
+      registrationUrl: 'https://grandrapids.org/event/outpro-forum-2025-10-22/'
     },
     3: {
       id: 3,
-      title: 'Athena Leadership Workshop',
-      description: 'Develop your leadership skills in this full-day workshop designed for professional women in West Michigan.',
-      fullDescription: 'The Athena Leadership Workshop is a comprehensive professional development program designed to empower women leaders across all industries. Through interactive exercises, expert-led discussions, and peer networking, you\'ll develop practical leadership strategies and build lasting connections.\n\nThis intensive workshop covers leadership presence, strategic communication, negotiation skills, and building influential networks. Led by experienced executives and leadership coaches, you\'ll gain actionable insights to advance your career and make a greater impact in your organization and community.',
-      date: 'Saturday, September 27, 2025',
-      time: '9:00 AM - 5:00 PM',
-      location: 'Grand Rapids Art Museum',
-      fullAddress: '101 Monroe Center St NW, Grand Rapids, MI 49503',
-      image: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&h=600&fit=crop',
+      title: '17th Annual Jay & Betty Van Andel Legacy Awards Gala',
+      description: 'A Prehistoric Party - Annual fundraising gala honoring outstanding leaders throughout West Michigan.',
+      fullDescription: 'Join the Grand Rapids Public Museum for an unforgettable evening at the 17th Annual Jay & Betty Van Andel Legacy Awards Gala, themed "A Prehistoric Party."\n\nThis prestigious event celebrates exceptional leaders who have made lasting contributions to West Michigan\'s business community and quality of life. Hosted at the elegant JW Marriott Grand Rapids, the gala features dinner, entertainment, and recognition of this year\'s honorees.\n\nThe Van Andel Legacy Awards continue the tradition of Jay and Betty Van Andel\'s commitment to community leadership and philanthropy. Proceeds support the Grand Rapids Public Museum\'s education programs and community initiatives.\n\nEvent Co-Chairs: David & Carol Van Andel, Linsey Gleason',
+      date: 'Wednesday, November 12, 2025',
+      time: 'Evening Event',
+      location: 'JW Marriott Grand Rapids',
+      fullAddress: 'JW Marriott Grand Rapids, MI',
+      image: 'https://i0.wp.com/www.grpm.org/wp-content/uploads/2025/06/2025_Gala_Web-Header_Option-05.png',
       badge: 'In-Person',
       organizer: {
-        name: 'Athena Grand Rapids',
-        avatar: 'AG',
-        description: 'Athena Grand Rapids supports the development and recognition of women leaders through education, networking, and community engagement.'
+        name: 'Grand Rapids Public Museum',
+        avatar: 'GP',
+        description: 'The Grand Rapids Public Museum preserves and celebrates the history, science, and culture of West Michigan through engaging exhibits and community programs.'
       },
-      tags: ['Leadership', 'Professional Development', 'Women in Business', 'Workshop', 'Networking'],
-      registrationUrl: 'https://www.athenagr.org/'
+      tags: ['Gala', 'Fundraiser', 'Leadership', 'Community', 'Networking'],
+      registrationUrl: 'https://www.grpm.org/gala/'
     }
   };
 
@@ -218,7 +218,7 @@ function EventDetail() {
             </div>
 
             {/* Suggested Connections */}
-            <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+            <div className="bg-white rounded-lg shadow-sm p-4 md:p-6 relative group">
               <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">Suggested Connections Attending</h3>
               <p className="text-gray-600 text-xs md:text-sm mb-3 md:mb-4">Connect with these professionals who are also attending this event</p>
               <div className="space-y-3 md:space-y-4">
@@ -247,6 +247,20 @@ function EventDetail() {
                     </button>
                   </div>
                 ))}
+              </div>
+
+              {/* Beta Testing Hover Message */}
+              <div className="absolute inset-0 bg-black/60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none z-10">
+                <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-4 md:p-6 max-w-2xl mx-4 flex flex-col md:flex-row items-center gap-3 md:gap-4 shadow-2xl border-4 border-[#D0ED00]">
+                  <img
+                    src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
+                    alt="Scientist at work"
+                    className="h-16 md:h-24 w-auto flex-shrink-0 rounded-lg object-cover"
+                  />
+                  <p className="text-green-800 font-medium text-sm md:text-base text-center md:text-left">
+                    Our scientists are hard at work finding connections for you. Look for an email from us soon!
+                  </p>
+                </div>
               </div>
             </div>
           </div>
