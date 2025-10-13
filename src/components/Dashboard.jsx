@@ -46,7 +46,7 @@ const getGreeting = () => {
 
   const defaultFeaturedContent = [
     {
-      image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=200&h=200&fit=crop',
+      image: 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/64/64/19/646419d8-0249-3aa6-22e1-cf481814a28d/mza_16901703840593164642.png/540x540bb.webp',
       title: 'Networking For People Who Hate Networking',
       description: 'Listen to this episode from Worklife with Adam Grant on Spotify. Ditch your business cards. There are more effective, less awkward strategies for building your connections. This episode is made possible with the support of Bonobos, Accenture, Hilton, and JPMorgan Chase & Co.',
       url: 'https://open.spotify.com/episode/4RiIYoe4tBKgzPoN2IZezV?si=lwRhg5HVTh-7LmDu4JUWKg&dl_branch=1&nd=1&dlsi=4f0333bb1555420b',
@@ -54,15 +54,15 @@ const getGreeting = () => {
       sponsoredBy: ''
     },
     {
-      image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=200&h=200&fit=crop',
-      title: "The Mel Robbins Podcast. The Most Important Career Advice You'll Ever Hear With Harvard Business School's #1 Professor",
-      description: 'Get the simple science-backed secrets to getting what you want at work and in life...',
-      url: 'https://www.melrobbins.com/episode/episode-277/#43:40',
-      tags: 'Networking, Personal Growth',
+      image: 'https://m.media-amazon.com/images/I/411o1ZnXQsL._SY445_SX342_ControlCacheEqualizer_.jpg',
+      title: 'Superconnector: Stop Networking And Start Building Relationships',
+      description: 'By Scott Gerber and Ryan Paugh. Learn how to build, manage, and maximize the value of a professional community. Discover the secrets to creating meaningful relationships that drive business success.',
+      url: 'https://superconnectorbook.com/',
+      tags: 'Networking, Relationship Building',
       sponsoredBy: ''
     },
     {
-      image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=200&h=200&fit=crop',
+      image: 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts126/v4/aa/8e/72/aa8e72f7-643a-f98e-f929-3586a8c3ef62/mza_10593625707581288470.jpg/540x540bb.webp',
       title: 'How to Build Systems to Actually Achieve Your Goals',
       description: "Are your goals holding you back? In this episode, I'll show you why focusing on big, long-term results can actually demotivate you—and how shifting to daily, actionable systems can help you achieve real progress.",
       url: 'https://podcasts.apple.com/us/podcast/how-to-build-systems-to-actually-achieve-your-goals/id1033048640?i=1000728624111',
