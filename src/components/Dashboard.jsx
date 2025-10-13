@@ -163,7 +163,7 @@ const getGreeting = () => {
                 <img
                   src={featuredContent[featuredContentIndex].image}
                   alt={featuredContent[featuredContentIndex].title}
-                  className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+                  className="w-20 h-20 rounded-lg object-contain flex-shrink-0 bg-white"
                 />
                 <div className="flex-1 min-w-0">
                   <h4 className="font-bold text-gray-900 mb-1 text-sm">{featuredContent[featuredContentIndex].title}</h4>

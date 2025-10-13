@@ -79,7 +79,7 @@ function EventDetail() {
       time: '7:00 PM - 9:00 PM',
       location: 'City Built Brewing Company',
       fullAddress: '820 Monroe Avenue Northwest #STE 155, Grand Rapids, MI 49503',
-      image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1115649073%2F978818167483%2F1%2Foriginal.20250905-182811',
+      image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1115649073%2F978818167483%2F1%2Foriginal.20250905-182811?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.557271596548&fp-y=0.544888875326&s=f63fa760ac5800775ace7493cbe92039',
       badge: 'In-Person',
       organizer: {
         name: 'UNFILTERED',

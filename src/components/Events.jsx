@@ -151,7 +151,7 @@ function Events() {
       organizer: 'UNFILTERED',
       price: 'Free',
       badge: 'In-Person',
-      image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1115649073%2F978818167483%2F1%2Foriginal.20250905-182811'
+      image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1115649073%2F978818167483%2F1%2Foriginal.20250905-182811?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.557271596548&fp-y=0.544888875326&s=f63fa760ac5800775ace7493cbe92039'
     },
     {
       id: 6,
@@ -199,7 +199,7 @@ function Events() {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-8">
         <h1 className="text-3xl font-bold text-gray-900">Networking Events</h1>
-        <p className="text-gray-600 mt-2">Discover and join professional networking events and see who else is going!</p>
+        <p className="text-gray-600 mt-2">These are real events. Check them out!</p>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
@@ -276,8 +276,8 @@ function Events() {
                       </div>
                     ) : (
                       <>
-                        <div className="relative h-48">
-                          <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+                        <div className="relative h-48 bg-white">
+                          <img src={event.image} alt={event.title} className="w-full h-full object-contain" />
                           <div className="absolute top-4 left-4 bg-black text-white px-3 py-1 rounded-full text-sm font-medium">
                             {event.badge}
                           </div>
@@ -324,7 +324,7 @@ function Events() {
                 {moreEvents.map((event) => (
                   <div key={event.id} className="bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md transition-shadow">
                     <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                      <img src={event.image} alt={event.title} className="w-full md:w-48 h-48 md:h-32 object-cover rounded-lg flex-shrink-0" />
+                      <img src={event.image} alt={event.title} className="w-full md:w-48 h-48 md:h-32 object-contain rounded-lg flex-shrink-0 bg-white" />
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-2 gap-2">
                           <div className="flex-1 min-w-0">
