@@ -292,7 +292,7 @@ function Events() {
                             </div>
                             <div className="flex items-center gap-2">
                               <Users className="h-4 w-4" />
-                              <span className="text-[#009900] font-medium">Beta - coming soon</span>
+                              <span className="text-[#009900] font-medium">Number Attending - Beta Coming Soon</span>
                             </div>
                           </div>
                           <div className="flex justify-end">
@@ -355,7 +355,7 @@ function Events() {
                           </div>
                           <div className="flex items-center gap-2">
                             <Users className="h-4 w-4 flex-shrink-0" />
-                            <span className="truncate text-[#009900] font-medium">Beta - coming soon</span>
+                            <span className="truncate text-[#009900] font-medium">Number Attending - Beta Coming Soon</span>
                           </div>
                         </div>
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0 mt-3 md:mt-4">
