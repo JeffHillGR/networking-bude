@@ -19,6 +19,25 @@ function Dashboard() {
 const [selectedPlan, setSelectedPlan] = useState(null);
 const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
 const [showSponsorModal, setShowSponsorModal] = useState(false);
+const [showFeedbackPrompt, setShowFeedbackPrompt] = useState(false);
+
+// Check if user should see feedback prompt (after 7 days of usage)
+useEffect(() => {
+  const firstLoginDate = localStorage.getItem('firstLoginDate');
+  const feedbackPromptShown = localStorage.getItem('feedbackPromptShown');
+
+  if (!firstLoginDate) {
+    // Set first login date if not already set
+    localStorage.setItem('firstLoginDate', new Date().toISOString());
+  } else if (!feedbackPromptShown) {
+    // Check if 7 days have passed
+    const daysSinceFirstLogin = Math.floor((new Date() - new Date(firstLoginDate)) / (1000 * 60 * 60 * 24));
+    if (daysSinceFirstLogin >= 7) {
+      setShowFeedbackPrompt(true);
+      localStorage.setItem('feedbackPromptShown', 'true');
+    }
+  }
+}, []);
 
 // Scroll to top when dashboard loads
 useEffect(() => {
@@ -467,6 +486,53 @@ default:
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Beta Feedback Prompt Modal */}
+      {showFeedbackPrompt && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowFeedbackPrompt(false)}>
+          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 relative border-4 border-[#D0ED00]" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setShowFeedbackPrompt(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
+            >
+              ×
+            </button>
+            <div className="text-center">
+              <div className="mb-4">
+                <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                  </svg>
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">You've been using BudE for a week!</h3>
+              <p className="text-gray-600 mb-6">
+                We'd love to hear your thoughts! Your feedback helps us make BudE better for everyone.
+                It only takes a few minutes.
+              </p>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => {
+                    setShowFeedbackPrompt(false);
+                    setActiveTab('settings');
+                    // Scroll to settings after a brief delay
+                    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                  }}
+                  className="w-full bg-[#009900] text-white py-3 rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00]"
+                >
+                  Give Feedback
+                </button>
+                <button
+                  onClick={() => setShowFeedbackPrompt(false)}
+                  className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                >
+                  Maybe Later
+                </button>
+              </div>
             </div>
           </div>
         </div>
