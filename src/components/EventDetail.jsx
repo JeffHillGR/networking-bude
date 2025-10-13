@@ -207,7 +207,7 @@ function EventDetail() {
           <div className="px-4 py-4">
             <button
               onClick={() => navigate('/dashboard')}
-              className="flex items-center gap-2 px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors mb-4"
+              className="flex items-center gap-2 px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] mb-4"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>Back to Dashboard</span>

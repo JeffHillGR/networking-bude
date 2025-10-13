@@ -41,7 +41,7 @@ function ArchivePage() {
         {/* Back Button */}
         <button
           onClick={() => navigate('/dashboard')}
-          className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-6 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] mb-6"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Dashboard
