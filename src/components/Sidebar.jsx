@@ -19,8 +19,19 @@ function Sidebar({ activeTab, setActiveTab }) {
   ];
 
   return (
-    <aside className="hidden md:block w-64 bg-white border-r border-gray-200 flex-shrink-0">
-      <div className="flex flex-col h-screen">
+    <aside className="hidden md:block w-64 bg-white border-r border-gray-200 flex-shrink-0 relative overflow-hidden">
+      {/* Background Image with Blur */}
+      <div
+        className="absolute inset-0 bg-cover opacity-30"
+        style={{
+          backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
+          backgroundPosition: 'center 10%',
+          filter: 'blur(8px)',
+          transform: 'scale(1.1)'
+        }}
+      />
+      {/* Content Layer */}
+      <div className="flex flex-col h-screen relative z-10">
         {/* Scrollable navigation section */}
         <div className="flex-1 overflow-y-auto">
           <div className="p-4">
