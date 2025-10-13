@@ -45,11 +45,12 @@ export default async function handler(req, res) {
       feedbackData.submittedAt || new Date().toISOString()
     ];
 
-    // Append to the Beta_Feedback sheet
+    // Append to the Beta_Feedback sheet starting from row 2
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: 'Beta_Feedback!A:T', // Columns A through T (20 columns)
+      range: 'Beta_Feedback!A2:T2', // Start from row 2, columns A through T
       valueInputOption: 'RAW',
+      insertDataOption: 'INSERT_ROWS',
       resource: {
         values: [rowData],
       },
