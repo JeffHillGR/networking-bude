@@ -137,7 +137,7 @@ function EventDetail() {
               <span>Back to Dashboard</span>
             </button>
             <h1 className="text-2xl font-bold text-gray-900">Event Details</h1>
-            <p className="text-gray-600 mt-1">Everything you need to know about this event</p>
+            <p className="text-gray-600 mt-1">This is a real event. Check it out!</p>
           </div>
         </div>
 
