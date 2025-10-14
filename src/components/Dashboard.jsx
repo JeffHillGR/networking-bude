@@ -391,7 +391,7 @@ const getGreeting = () => {
   return <Messages />;
 
   case 'settings':
-  return <Settings />;
+  return <Settings autoOpenFeedback={showFeedbackPrompt} />;
 
   case 'subscription':
   return <Subscription onSelectPlan={(planId, isYearly) => {
@@ -672,10 +672,12 @@ default:
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => {
-                    setShowFeedbackPrompt(false);
                     setActiveTab('settings');
-                    // Scroll to settings after a brief delay
-                    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                    // Keep showFeedbackPrompt true so Settings component auto-opens the feedback modal
+                    setTimeout(() => {
+                      setShowFeedbackPrompt(false);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 100);
                   }}
                   className="w-full bg-[#009900] text-white py-3 rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00]"
                 >
