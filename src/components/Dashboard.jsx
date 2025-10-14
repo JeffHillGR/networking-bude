@@ -645,6 +645,8 @@ default:
                     <option value="Events Page Sidebar">Events Page Sidebar</option>
                     <option value="Events Page Banner">Events Page Banner</option>
                     <option value="Event Detail Banner">Event Detail Banner</option>
+                    <option value="Sponsored Event">Sponsored Event</option>
+                    <option value="Sponsored Content">Sponsored Content</option>
                     <option value="Multiple Placements">Multiple Placements</option>
                   </select>
                 </div>
