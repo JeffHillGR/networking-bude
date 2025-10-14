@@ -188,16 +188,16 @@ function Events() {
     },
     {
       id: 8,
-      title: 'Swing Dance at the Public Museum',
-      description: 'Swing dancing returns to the Grand Rapids Public Museum. Two dance areas, hundreds of dancers, beginner lessons, and special guest instructors. All ages welcome!',
-      date: '10/28/2025',
-      time: '7:00 PM - 9:00 PM',
-      location: 'Grand Rapids Public Museum',
+      title: 'Crain\'s Grand Rapids Business 40 Under 40 Celebration',
+      description: 'Join us to celebrate 40 outstanding business professionals under 40 in the Grand Rapids area. An evening of networking and recognition.',
+      date: '10/22/2025',
+      time: '5:30 PM - 9:00 PM',
+      location: 'Amway Grand Plaza Hotel',
       attendees: '200+',
-      organizer: 'GR Swing Society',
-      price: '$10',
+      organizer: 'Crain\'s Grand Rapids Business',
+      price: 'Registration Required',
       badge: 'In-Person',
-      image: 'https://secure.meetupstatic.com/photos/event/a/4/3/6/highres_530382038.webp?w=3840'
+      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=940&auto=format&fit=crop&q=75'
     }
   ];
 

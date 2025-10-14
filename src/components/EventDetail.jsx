@@ -146,22 +146,22 @@ function EventDetail() {
     },
     8: {
       id: 8,
-      title: 'Swing Dance at the Public Museum',
-      description: 'Swing dancing returns to the Grand Rapids Public Museum featuring two dance areas, beginner lessons, and special guest instructors.',
-      fullDescription: 'Swing dancing is back at the Grand Rapids Public Museum! Join hundreds of dancers every Tuesday evening for West Michigan\'s premier swing dance social.\n\nThis isn\'t your typical networking event—it\'s a chance to connect through movement, music, and shared joy. With two dance areas accommodating different skill levels, beginner lessons included, and special guest instructors, everyone is welcome regardless of experience.\n\nNo partner needed, all ages welcome. Whether you\'re a seasoned dancer or have two left feet, you\'ll find a welcoming community ready to show you the ropes. It\'s networking with a twist—literally!\n\nThis weekly event runs every Tuesday through April 2026. Come for the dancing, stay for the connections.',
-      date: 'Tuesday, October 28, 2025',
-      time: '7:00 PM - 9:00 PM',
-      location: 'Grand Rapids Public Museum',
-      fullAddress: '272 Pearl St NW, Grand Rapids, MI 49503',
-      image: 'https://secure.meetupstatic.com/photos/event/a/4/3/6/highres_530382038.webp?w=3840',
+      title: 'Crain\'s Grand Rapids Business 40 Under 40 Celebration',
+      description: 'Join us to celebrate 40 outstanding business professionals under 40 in the Grand Rapids area. An evening of networking and recognition.',
+      fullDescription: 'Celebrate the achievements of 40 exceptional business professionals under 40 years old who are shaping the future of Grand Rapids.\n\nThis prestigious evening brings together the region\'s rising leaders, innovators, and change-makers for an unforgettable celebration at the historic Amway Grand Plaza Hotel. Connect with honorees, community leaders, and fellow professionals who are driving economic growth and innovation across West Michigan.\n\nThe event features networking opportunities, recognition of this year\'s honorees, and insights into the trends shaping our business community. Whether you\'re an honoree, business leader, or aspiring professional, this is a must-attend event for anyone invested in the future of Grand Rapids business.\n\nRegistration required. Visit the event website for ticket information and full details.',
+      date: 'Wednesday, October 22, 2025',
+      time: '5:30 PM - 9:00 PM',
+      location: 'Amway Grand Plaza Hotel',
+      fullAddress: '187 Monroe Ave NW, Grand Rapids, MI 49503',
+      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=940&auto=format&fit=crop&q=75',
       badge: 'In-Person',
       organizer: {
-        name: 'GR Swing Society',
-        avatar: 'GS',
-        description: 'GR Swing Society promotes swing dancing in West Michigan through weekly socials, workshops, and special events, building community through dance.'
+        name: 'Crain\'s Grand Rapids Business',
+        avatar: 'CR',
+        description: 'Crain\'s Grand Rapids Business recognizes and celebrates business excellence, leadership, and innovation throughout the Grand Rapids region.'
       },
-      tags: ['Social', 'Dancing', 'Community', 'All Ages', 'Networking'],
-      registrationUrl: 'https://www.meetup.com/grswing/events/311448849/'
+      tags: ['Business', 'Leadership', 'Networking', 'Awards', 'Young Professionals'],
+      registrationUrl: 'https://web.cvent.com/event/585ab6ca-993b-4083-bb73-6a51684dc89a/summary'
     }
   };
 
