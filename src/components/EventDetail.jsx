@@ -9,6 +9,21 @@ function EventDetail() {
   const [isFavorited, setIsFavorited] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+
+  // Format phone number as user types: (XXX) XXX-XXXX
+  const formatPhoneNumber = (value) => {
+    const cleaned = value.replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
+    if (match) {
+      const parts = [];
+      if (match[1]) parts.push('(', match[1]);
+      if (match[2]) parts.push(') ', match[2]);
+      if (match[3]) parts.push('-', match[3]);
+      return parts.join('');
+    }
+    return value;
+  };
 
   // Load admin-created events from localStorage
   const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
@@ -578,7 +593,7 @@ function EventDetail() {
                         name: formData.get('name'),
                         email: formData.get('email'),
                         company: formData.get('company'),
-                        phone: formData.get('phone'),
+                        phone: phoneNumber,
                         adType: formData.get('adType'),
                         message: formData.get('message')
                       })
@@ -590,6 +605,7 @@ function EventDetail() {
 
                     alert('Thank you! We\'ll be in touch soon.');
                     setShowAdInquiryModal(false);
+                    setPhoneNumber('');
                   } catch (error) {
                     console.error('Error:', error);
                     alert('There was an error submitting your inquiry. Please email grjeff@gmail.com directly.');
@@ -628,6 +644,10 @@ function EventDetail() {
                   <input
                     type="tel"
                     name="phone"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value))}
+                    placeholder="(555) 123-4567"
+                    maxLength="14"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                   />
                 </div>

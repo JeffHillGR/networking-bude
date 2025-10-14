@@ -19,6 +19,21 @@ const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
 const [showSponsorModal, setShowSponsorModal] = useState(false);
 const [showFeedbackPrompt, setShowFeedbackPrompt] = useState(false);
 const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
+const [phoneNumber, setPhoneNumber] = useState('');
+
+// Format phone number as user types: (XXX) XXX-XXXX
+const formatPhoneNumber = (value) => {
+  const cleaned = value.replace(/\D/g, '');
+  const match = cleaned.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
+  if (match) {
+    const parts = [];
+    if (match[1]) parts.push('(', match[1]);
+    if (match[2]) parts.push(') ', match[2]);
+    if (match[3]) parts.push('-', match[3]);
+    return parts.join('');
+  }
+  return value;
+};
 
 // Check if user should see feedback prompt (after 24 hours of usage)
 useEffect(() => {
@@ -540,30 +555,43 @@ default:
                   const formData = new FormData(e.target);
 
                   try {
+                    console.log('📤 Submitting ad inquiry...');
+                    const payload = {
+                      name: formData.get('name'),
+                      email: formData.get('email'),
+                      company: formData.get('company'),
+                      phone: phoneNumber,
+                      adType: formData.get('adType'),
+                      message: formData.get('message')
+                    };
+                    console.log('Payload:', payload);
+
                     const response = await fetch('/api/submitAdInquiry', {
                       method: 'POST',
                       headers: {
                         'Content-Type': 'application/json',
                       },
-                      body: JSON.stringify({
-                        name: formData.get('name'),
-                        email: formData.get('email'),
-                        company: formData.get('company'),
-                        phone: formData.get('phone'),
-                        adType: formData.get('adType'),
-                        message: formData.get('message')
-                      })
+                      body: JSON.stringify(payload)
                     });
 
+                    console.log('Response status:', response.status);
+
                     if (!response.ok) {
-                      throw new Error('Failed to submit inquiry');
+                      const errorData = await response.json().catch(() => ({ message: 'Unknown server error' }));
+                      console.error('❌ Server error response:', errorData);
+                      alert(`Server Error: ${errorData.message || 'Failed to submit inquiry'}\n\nPlease email grjeff@gmail.com directly.`);
+                      return;
                     }
+
+                    const result = await response.json();
+                    console.log('✅ Success:', result);
 
                     alert('Thank you! We\'ll be in touch soon.');
                     setShowAdInquiryModal(false);
+                    setPhoneNumber('');
                   } catch (error) {
-                    console.error('Error:', error);
-                    alert('There was an error submitting your inquiry. Please email grjeff@gmail.com directly.');
+                    console.error('❌ Error submitting ad inquiry:', error);
+                    alert(`Error: ${error.message}\n\nPlease email grjeff@gmail.com directly.`);
                   }
                 }}
                 className="space-y-4"
@@ -599,6 +627,10 @@ default:
                   <input
                     type="tel"
                     name="phone"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value))}
+                    placeholder="(555) 123-4567"
+                    maxLength="14"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                   />
                 </div>

@@ -80,10 +80,10 @@ export default async function handler(req, res) {
 
     console.log('📊 Preparing to append ad inquiry to Google Sheet');
 
-    // Append the data to the Google Sheet - Ad Inquiries tab
+    // Append the data to the Google Sheet - Advertising_Sponsorship_Inquiries tab
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'Ad Inquiries!A:G', // Sheet tab name for ad inquiries
+      range: 'Advertising_Sponsorship_Inquiries!A:G', // Sheet tab name for ad inquiries
       valueInputOption: 'USER_ENTERED',
       insertDataOption: 'INSERT_ROWS',
       resource: {
