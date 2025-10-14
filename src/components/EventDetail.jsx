@@ -357,7 +357,7 @@ function EventDetail() {
 
               {/* Suggested Connections */}
               <div className="bg-white rounded-lg shadow-sm p-6 relative group">
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Suggested Connections Who Have Similar Interest in This Event/Organization</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Connect Before the Event</h3>
                 <p className="text-gray-600 text-sm mb-4">Connect with these professionals</p>
                 <div className="space-y-3">
                   {suggestedConnections.map((person, index) => (
