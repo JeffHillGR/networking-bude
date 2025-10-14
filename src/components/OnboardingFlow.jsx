@@ -42,7 +42,7 @@ export default function BudEOnboarding() {
     'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
     'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo',
     'Hello West Michigan', 'CARWM', 'Creative Mornings', 'Athena',
-    'Inforum', 'Start Garden'
+    'Inforum', 'Start Garden', 'GRABB', 'WMPRSA'
   ];
 
   const professionalInterestOptions = [
