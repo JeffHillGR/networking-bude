@@ -10,6 +10,7 @@ function AdminPanel() {
     eventsSidebar1: JSON.parse(localStorage.getItem('ad_eventsSidebar1') || 'null'),
     eventsSidebar2: JSON.parse(localStorage.getItem('ad_eventsSidebar2') || 'null'),
     eventsBottom: JSON.parse(localStorage.getItem('ad_eventsBottom') || 'null'),
+    eventDetailBanner: JSON.parse(localStorage.getItem('ad_eventDetailBanner') || 'null'),
     dashboardBottom: JSON.parse(localStorage.getItem('ad_dashboardBottom') || 'null')
   });
 
@@ -1345,7 +1346,7 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
           </div>
 
           {/* Bottom Banner Ad - pushed to bottom */}
-          <div className="mt-auto">
+          <div className="mt-auto space-y-6">
             <InlineAdEditor
               title="Events - Bottom Banner"
               slot="eventsBottom"
@@ -1355,6 +1356,18 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
               onRemove={removeAd}
               dimensions="728x160px"
               description="Full width banner below Events list"
+              aspectRatio="728/160"
+            />
+
+            <InlineAdEditor
+              title="Event Detail Page - Banner Ad"
+              slot="eventDetailBanner"
+              ad={ads.eventDetailBanner}
+              onImageUpload={handleImageUpload}
+              onUrlChange={handleUrlChange}
+              onRemove={removeAd}
+              dimensions="728x160px"
+              description="Banner ad at bottom of individual event detail pages"
               aspectRatio="728/160"
             />
           </div>
@@ -1430,6 +1443,14 @@ function ModerationTab() {
 }
 
 function InlineAdEditor({ title, slot, ad, onImageUpload, onUrlChange, onRemove, dimensions, description, aspectRatio = "160/600" }) {
+  const [tags, setTags] = useState(ad?.tags || '');
+
+  const handleTagsChange = (newTags) => {
+    setTags(newTags);
+    const updatedAd = { ...ad, tags: newTags };
+    localStorage.setItem(`ad_${slot}`, JSON.stringify(updatedAd));
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-4 border-2 border-gray-300">
       <div className="mb-3">
@@ -1442,9 +1463,9 @@ function InlineAdEditor({ title, slot, ad, onImageUpload, onUrlChange, onRemove,
         <label className="block text-xs font-medium mb-2">Ad Image</label>
         {ad?.image ? (
           <div className="relative">
-            <img 
-              src={ad.image} 
-              alt="Ad preview" 
+            <img
+              src={ad.image}
+              alt="Ad preview"
               className="w-full rounded border border-gray-300"
               style={{ aspectRatio }}
             />
@@ -1456,7 +1477,7 @@ function InlineAdEditor({ title, slot, ad, onImageUpload, onUrlChange, onRemove,
             </button>
           </div>
         ) : (
-          <label 
+          <label
             className="flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 bg-gray-50"
             style={{ aspectRatio }}
           >
@@ -1486,6 +1507,19 @@ function InlineAdEditor({ title, slot, ad, onImageUpload, onUrlChange, onRemove,
     />
   </div>
 </div>
+
+      {/* Tags Input */}
+      <div className="mb-3">
+        <label className="block text-xs font-medium mb-2">Content Tags (comma-separated)</label>
+        <input
+          type="text"
+          value={tags}
+          onChange={(e) => handleTagsChange(e.target.value)}
+          placeholder="e.g., Technology, Leadership, Innovation"
+          className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg"
+        />
+        <p className="text-xs text-gray-500 mt-1">Ad will show on events matching these tags</p>
+      </div>
 
       {/* Zip Code Input - DEMO ONLY */}
       <div className="mb-3">

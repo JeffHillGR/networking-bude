@@ -405,6 +405,43 @@ function EventDetail() {
             </div>
           </div>
         </div>
+
+        {/* Banner Ad Section */}
+        {(() => {
+          const bannerAd = JSON.parse(localStorage.getItem('ad_eventDetailBanner') || 'null');
+          if (bannerAd?.image && bannerAd?.url) {
+            // Check if ad tags match event tags (if tags exist)
+            if (bannerAd.tags) {
+              const adTags = bannerAd.tags.split(',').map(t => t.trim().toLowerCase());
+              const eventTags = event.tags.map(t => t.toLowerCase());
+              const hasMatchingTag = adTags.some(adTag => eventTags.includes(adTag));
+
+              // Only show ad if tags match
+              if (!hasMatchingTag) {
+                return null;
+              }
+            }
+
+            return (
+              <div className="mt-8 flex justify-center">
+                <a
+                  href={bannerAd.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  <img
+                    src={bannerAd.image}
+                    alt="Sponsored"
+                    className="w-full max-w-[728px] h-auto rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+                    style={{ aspectRatio: '728/160' }}
+                  />
+                </a>
+              </div>
+            );
+          }
+          return null;
+        })()}
         </div>
       </div>
 
