@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, Calendar, Users, ExternalLink, X } from 'lucide-react';
+import { Search, MapPin, Calendar, Users, ExternalLink, X, TrendingUp } from 'lucide-react';
 
 function Events() {
   const navigate = useNavigate();
@@ -162,6 +162,7 @@ function Events() {
       organizer: 'UNFILTERED',
       price: 'Free',
       badge: 'In-Person',
+      isTrending: true,
       image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1115649073%2F978818167483%2F1%2Foriginal.20250905-182811?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.557271596548&fp-y=0.544888875326&s=f63fa760ac5800775ace7493cbe92039'
     },
     {
@@ -331,7 +332,7 @@ function Events() {
                   <div
                     key={event.id}
                     onClick={() => navigate(`/events/${event.id}`)}
-                    className="bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md transition-shadow cursor-pointer"
+                    className={`bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md transition-shadow cursor-pointer relative ${event.isTrending ? 'border-2 border-green-200' : ''}`}
                   >
                     <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                       <img src={event.image} alt={event.title} className="w-full md:w-48 h-48 md:h-32 object-contain rounded-lg flex-shrink-0 bg-white" />
@@ -342,6 +343,12 @@ function Events() {
                             <p className="text-sm md:text-base text-gray-600 mt-1">{event.description}</p>
                           </div>
                           <div className="flex gap-2 flex-shrink-0">
+                            {event.isTrending && (
+                              <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-300 flex items-center gap-1">
+                                <TrendingUp className="h-3 w-3" />
+                                Trending
+                              </span>
+                            )}
                             <span className="bg-black text-white px-3 py-1 rounded-full text-xs font-medium">
                               {event.badge}
                             </span>
