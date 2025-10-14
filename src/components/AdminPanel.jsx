@@ -125,6 +125,16 @@ function AdminPanel() {
               Events & Banner Ads
             </button>
             <button
+              onClick={() => setActiveTab('eventDetailAds')}
+              className={`px-4 py-4 font-semibold border-b-2 transition-colors ${
+                activeTab === 'eventDetailAds'
+                  ? 'border-green-600 text-green-600'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Event Details Banner Ads
+            </button>
+            <button
               onClick={() => setActiveTab('moderation')}
               className={`px-4 py-4 font-semibold border-b-2 transition-colors ${
                 activeTab === 'moderation'
@@ -150,6 +160,14 @@ function AdminPanel() {
         )}
         {activeTab === 'events' && (
           <EventsAdsTab
+            ads={ads}
+            handleImageUpload={handleImageUpload}
+            handleUrlChange={handleUrlChange}
+            removeAd={removeAd}
+          />
+        )}
+        {activeTab === 'eventDetailAds' && (
+          <EventDetailAdsTab
             ads={ads}
             handleImageUpload={handleImageUpload}
             handleUrlChange={handleUrlChange}
@@ -1346,7 +1364,7 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
           </div>
 
           {/* Bottom Banner Ad - pushed to bottom */}
-          <div className="mt-auto space-y-6">
+          <div className="mt-auto">
             <InlineAdEditor
               title="Events - Bottom Banner"
               slot="eventsBottom"
@@ -1356,18 +1374,6 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
               onRemove={removeAd}
               dimensions="728x160px"
               description="Full width banner below Events list"
-              aspectRatio="728/160"
-            />
-
-            <InlineAdEditor
-              title="Event Detail Page - Banner Ad"
-              slot="eventDetailBanner"
-              ad={ads.eventDetailBanner}
-              onImageUpload={handleImageUpload}
-              onUrlChange={handleUrlChange}
-              onRemove={removeAd}
-              dimensions="728x160px"
-              description="Banner ad at bottom of individual event detail pages"
               aspectRatio="728/160"
             />
           </div>
@@ -1398,6 +1404,48 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
             description="Appears in right sidebar, lower position"
             aspectRatio="160/600"
           />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EventDetailAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
+  return (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold mb-6">Event Details Banner Ads</h2>
+      <p className="text-gray-600 mb-6">
+        Manage 728x160 banner ads that appear at the bottom of individual event detail pages.
+        Use content tags to target specific types of events (e.g., Technology, Leadership, Networking).
+      </p>
+
+      <div className="bg-white rounded-lg p-6 border border-gray-200">
+        <h3 className="text-xl font-semibold mb-4">Banner Ad Management</h3>
+        <p className="text-gray-600 mb-6">
+          Upload a banner ad with targeted content tags. The ad will only display on event detail pages
+          where the event's tags match your ad's tags.
+        </p>
+
+        <InlineAdEditor
+          title="Event Detail Page - Banner Ad"
+          slot="eventDetailBanner"
+          ad={ads.eventDetailBanner}
+          onImageUpload={handleImageUpload}
+          onUrlChange={handleUrlChange}
+          onRemove={removeAd}
+          dimensions="728x160px"
+          description="Banner ad at bottom of individual event detail pages"
+          aspectRatio="728/160"
+        />
+
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h4 className="font-semibold text-sm text-blue-900 mb-2">How Tag Targeting Works:</h4>
+          <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+            <li>Enter tags like "Technology, Innovation, AI" in the Content Tags field above</li>
+            <li>Your ad will only show on events that have at least one matching tag</li>
+            <li>Example: An ad tagged "Leadership, Networking" shows on leadership forums and networking events</li>
+            <li>Leave tags empty to show the ad on all event detail pages</li>
+          </ul>
         </div>
       </div>
     </div>
