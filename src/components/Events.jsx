@@ -344,7 +344,7 @@ function Events() {
                           </div>
                           <div className="flex gap-2 flex-shrink-0">
                             {event.isTrending && (
-                              <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-300 flex items-center gap-1">
+                              <span className="bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-bold border border-red-400 flex items-center gap-1">
                                 <TrendingUp className="h-3 w-3" />
                                 Trending
                               </span>
