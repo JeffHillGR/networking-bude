@@ -20,6 +20,7 @@ const [showSponsorModal, setShowSponsorModal] = useState(false);
 const [showFeedbackPrompt, setShowFeedbackPrompt] = useState(false);
 const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
 const [phoneNumber, setPhoneNumber] = useState('');
+const [isSubmittingAd, setIsSubmittingAd] = useState(false);
 
 // Format phone number as user types: (XXX) XXX-XXXX
 const formatPhoneNumber = (value) => {
@@ -552,6 +553,7 @@ default:
               <form
                 onSubmit={async (e) => {
                   e.preventDefault();
+                  setIsSubmittingAd(true);
                   const formData = new FormData(e.target);
 
                   try {
@@ -592,6 +594,8 @@ default:
                   } catch (error) {
                     console.error('❌ Error submitting ad inquiry:', error);
                     alert(`Error: ${error.message}\n\nPlease email grjeff@gmail.com directly.`);
+                  } finally {
+                    setIsSubmittingAd(false);
                   }
                 }}
                 className="space-y-4"
@@ -662,14 +666,26 @@ default:
                 <div className="flex gap-3 pt-2">
                   <button
                     type="submit"
-                    className="flex-1 bg-[#009900] text-white py-3 rounded-lg font-medium hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
+                    disabled={isSubmittingAd}
+                    className="flex-1 bg-[#009900] text-white py-3 rounded-lg font-medium hover:bg-[#007700] transition-colors border-2 border-[#D0ED00] disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
-                    Submit Inquiry
+                    {isSubmittingAd ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Submitting...
+                      </>
+                    ) : (
+                      'Submit Inquiry'
+                    )}
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowAdInquiryModal(false)}
-                    className="px-6 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                    disabled={isSubmittingAd}
+                    className="px-6 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Cancel
                   </button>

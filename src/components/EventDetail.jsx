@@ -223,11 +223,11 @@ function EventDetail() {
         <div className="bg-white border-b border-gray-200">
           <div className="px-4 py-4">
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate(-1)}
               className="flex items-center gap-2 px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] mb-4"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span>Back to Dashboard</span>
+              <span>Back to Events</span>
             </button>
             <h1 className="text-2xl font-bold text-gray-900">Event Details</h1>
             <p className="text-gray-600 mt-1">This is a real event. Check it out!</p>
