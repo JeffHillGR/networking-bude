@@ -447,10 +447,19 @@ function EventDetail() {
             <div className="mt-8 flex justify-center">
               <div
                 onClick={() => setShowAdInquiryModal(true)}
-                className="w-full max-w-[728px] bg-gradient-to-br from-yellow-200/80 via-yellow-100/70 to-lime-100/60 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md backdrop-blur-sm"
+                className="w-full max-w-[728px] rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
                 style={{ aspectRatio: '728/160' }}
               >
-                <div className="text-center">
+                <div
+                  className="absolute inset-0 bg-cover opacity-30"
+                  style={{
+                    backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
+                    backgroundPosition: 'center',
+                    filter: 'blur(12px)',
+                    transform: 'scale(1.1)'
+                  }}
+                />
+                <div className="text-center relative z-10">
                   <p className="text-gray-700 font-bold text-lg">Banner Ad Spot: Click to Inquire</p>
                 </div>
               </div>

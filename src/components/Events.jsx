@@ -409,10 +409,19 @@ function Events() {
               ) : (
                 <div
                   onClick={() => setShowAdInquiryModal(true)}
-                  className="bg-gradient-to-br from-yellow-200/80 via-yellow-100/70 to-lime-100/60 rounded-lg p-6 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md backdrop-blur-sm"
+                  className="rounded-lg p-6 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
                   style={{ aspectRatio: '728/160' }}
                 >
-                  <div className="text-center">
+                  <div
+                    className="absolute inset-0 bg-cover opacity-30"
+                    style={{
+                      backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
+                      backgroundPosition: 'center',
+                      filter: 'blur(12px)',
+                      transform: 'scale(1.1)'
+                    }}
+                  />
+                  <div className="text-center relative z-10">
                     <p className="text-gray-700 font-bold text-lg">Banner Ad Spot: Click to Inquire</p>
                   </div>
                 </div>
@@ -441,10 +450,19 @@ function Events() {
               ) : (
                 <div
                   onClick={() => setShowAdInquiryModal(true)}
-                  className="bg-gradient-to-br from-yellow-200/80 via-yellow-100/70 to-lime-100/60 rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md backdrop-blur-sm"
+                  className="rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
                   style={{ aspectRatio: '160/600' }}
                 >
-                  <div className="text-center">
+                  <div
+                    className="absolute inset-0 bg-cover opacity-30"
+                    style={{
+                      backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
+                      backgroundPosition: 'center',
+                      filter: 'blur(12px)',
+                      transform: 'scale(1.1)'
+                    }}
+                  />
+                  <div className="text-center relative z-10">
                     <p className="text-gray-700 font-bold text-sm">Banner Ad Spot: Click to Inquire</p>
                   </div>
                 </div>
@@ -468,10 +486,19 @@ function Events() {
               ) : (
                 <div
                   onClick={() => setShowAdInquiryModal(true)}
-                  className="bg-gradient-to-br from-yellow-200/80 via-yellow-100/70 to-lime-100/60 rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md backdrop-blur-sm"
+                  className="rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
                   style={{ aspectRatio: '160/600' }}
                 >
-                  <div className="text-center">
+                  <div
+                    className="absolute inset-0 bg-cover opacity-30"
+                    style={{
+                      backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
+                      backgroundPosition: 'center',
+                      filter: 'blur(12px)',
+                      transform: 'scale(1.1)'
+                    }}
+                  />
+                  <div className="text-center relative z-10">
                     <p className="text-gray-700 font-bold text-sm">Banner Ad Spot: Click to Inquire</p>
                   </div>
                 </div>
