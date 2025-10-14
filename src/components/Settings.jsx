@@ -430,24 +430,119 @@ function Settings({ autoOpenFeedback = false }) {
                 </div>
 
                 <div>
-                  <label className="block font-medium text-gray-900 mb-2">Website</label>
+                  <label className="block font-medium text-gray-900 mb-2">Industry</label>
                   <input
                     type="text"
-                    value={profile.website}
-                    onChange={(e) => setProfile({...profile, website: e.target.value})}
+                    value={profile.industry}
+                    onChange={(e) => setProfile({...profile, industry: e.target.value})}
                     className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
+                    placeholder="e.g., Technology, Healthcare"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block font-medium text-gray-900 mb-2">Phone Number</label>
-                <input
-                  type="tel"
-                  value={profile.phone}
-                  onChange={(e) => setProfile({...profile, phone: e.target.value})}
-                  className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
-                />
+              {/* Onboarding Preferences Section */}
+              <div className="border-t border-gray-200 pt-6 mt-6">
+                <h3 className="font-bold text-gray-900 mb-4">Connection Preferences</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block font-medium text-gray-900 mb-2">Same Industry Connect</label>
+                    <input
+                      type="text"
+                      value={profile.sameIndustry}
+                      onChange={(e) => setProfile({...profile, sameIndustry: e.target.value})}
+                      className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
+                      placeholder="Your preference"
+                      readOnly
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-medium text-gray-900 mb-2">Gender Preference</label>
+                    <input
+                      type="text"
+                      value={profile.genderPreference}
+                      onChange={(e) => setProfile({...profile, genderPreference: e.target.value})}
+                      className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
+                      placeholder="Your preference"
+                      readOnly
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-medium text-gray-900 mb-2">DOB Preference</label>
+                    <input
+                      type="text"
+                      value={profile.dobPreference}
+                      onChange={(e) => setProfile({...profile, dobPreference: e.target.value})}
+                      className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
+                      placeholder="Your preference"
+                      readOnly
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-medium text-gray-900 mb-2">Zip Code</label>
+                    <input
+                      type="text"
+                      value={profile.zipCode}
+                      onChange={(e) => setProfile({...profile, zipCode: e.target.value})}
+                      className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
+                      placeholder="e.g., 49503"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Organizations Section */}
+              <div className="border-t border-gray-200 pt-6 mt-6">
+                <h3 className="font-bold text-gray-900 mb-4">Organizations</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block font-medium text-gray-900 mb-2">Organizations I Attend Events For</label>
+                    <div className="flex flex-wrap gap-2">
+                      {profile.organizations && profile.organizations.length > 0 ? (
+                        profile.organizations.map((org, index) => (
+                          <span key={index} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
+                            {org}
+                          </span>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-sm">No organizations selected</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-medium text-gray-900 mb-2">Organizations I Want to Check Out</label>
+                    <div className="flex flex-wrap gap-2">
+                      {profile.organizationsToCheckOut && profile.organizationsToCheckOut.length > 0 ? (
+                        profile.organizationsToCheckOut.map((org, index) => (
+                          <span key={index} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
+                            {org}
+                          </span>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-sm">No organizations selected</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Personal Interests Section */}
+              <div className="border-t border-gray-200 pt-6 mt-6">
+                <h3 className="font-bold text-gray-900 mb-4">Personal Interests</h3>
+                <div>
+                  <label className="block font-medium text-gray-900 mb-2">What keeps you busy in your spare time?</label>
+                  <textarea
+                    value={profile.personalInterests}
+                    onChange={(e) => setProfile({...profile, personalInterests: e.target.value})}
+                    rows={3}
+                    className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
+                    placeholder="Share your hobbies and activities..."
+                  />
+                </div>
               </div>
 
               <div>

@@ -249,13 +249,63 @@ function Profile() {
                   <p className="text-gray-600">Email</p>
                   <p className="text-gray-900 font-medium break-words">{profileData.contactInfo.email}</p>
                 </div>
+              </div>
+            </div>
+
+            {/* Connection Preferences */}
+            <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+              <h3 className="font-bold text-gray-900 mb-4 text-base md:text-lg">Connection Preferences</h3>
+              <div className="space-y-3 text-sm">
                 <div className="min-w-0">
-                  <p className="text-gray-600">Phone</p>
-                  <p className="text-gray-900 font-medium break-words">{profileData.contactInfo.phone}</p>
+                  <p className="text-gray-600">Industry</p>
+                  <p className="text-gray-900 font-medium">{profileData.preferences.industry}</p>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-gray-600">Website</p>
-                  <p className="text-blue-600 font-medium break-words">{profileData.contactInfo.website}</p>
+                  <p className="text-gray-600">Same Industry Connect</p>
+                  <p className="text-gray-900 font-medium">{profileData.preferences.sameIndustry}</p>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-gray-600">Gender Preference</p>
+                  <p className="text-gray-900 font-medium">{profileData.preferences.genderPreference}</p>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-gray-600">DOB Preference</p>
+                  <p className="text-gray-900 font-medium">{profileData.preferences.dobPreference}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Organizations */}
+            <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+              <h3 className="font-bold text-gray-900 mb-4 text-base md:text-lg">Organizations</h3>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-gray-600 mb-2">I Attend Events For</p>
+                  <div className="flex flex-wrap gap-2">
+                    {profileData.organizations && profileData.organizations.length > 0 ? (
+                      profileData.organizations.map((org, index) => (
+                        <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">
+                          {org}
+                        </span>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 text-xs">None selected</p>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600 mb-2">Want to Check Out</p>
+                  <div className="flex flex-wrap gap-2">
+                    {profileData.organizationsToCheckOut && profileData.organizationsToCheckOut.length > 0 ? (
+                      profileData.organizationsToCheckOut.map((org, index) => (
+                        <span key={index} className="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-xs">
+                          {org}
+                        </span>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 text-xs">None selected</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
