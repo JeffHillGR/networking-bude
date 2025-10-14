@@ -409,7 +409,7 @@ function Events() {
               ) : (
                 <div
                   onClick={() => setShowAdInquiryModal(true)}
-                  className="bg-gradient-to-br from-green-50/30 via-lime-50/30 to-yellow-50/30 rounded-lg p-6 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#009900] transition-all cursor-pointer hover:shadow-md backdrop-blur-sm"
+                  className="bg-gradient-to-br from-yellow-100/50 via-lime-100/40 to-yellow-50/50 rounded-lg p-6 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md backdrop-blur-sm"
                   style={{ aspectRatio: '728/160' }}
                 >
                   <div className="text-center">
@@ -441,7 +441,7 @@ function Events() {
               ) : (
                 <div
                   onClick={() => setShowAdInquiryModal(true)}
-                  className="bg-gradient-to-br from-green-50/30 via-lime-50/30 to-yellow-50/30 rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#009900] transition-all cursor-pointer hover:shadow-md backdrop-blur-sm"
+                  className="bg-gradient-to-br from-yellow-100/50 via-lime-100/40 to-yellow-50/50 rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md backdrop-blur-sm"
                   style={{ aspectRatio: '160/600' }}
                 >
                   <div className="text-center">
@@ -468,7 +468,7 @@ function Events() {
               ) : (
                 <div
                   onClick={() => setShowAdInquiryModal(true)}
-                  className="bg-gradient-to-br from-green-50/30 via-lime-50/30 to-yellow-50/30 rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#009900] transition-all cursor-pointer hover:shadow-md backdrop-blur-sm"
+                  className="bg-gradient-to-br from-yellow-100/50 via-lime-100/40 to-yellow-50/50 rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md backdrop-blur-sm"
                   style={{ aspectRatio: '160/600' }}
                 >
                   <div className="text-center">
