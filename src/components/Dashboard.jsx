@@ -18,6 +18,7 @@ const [selectedPlan, setSelectedPlan] = useState(null);
 const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
 const [showSponsorModal, setShowSponsorModal] = useState(false);
 const [showFeedbackPrompt, setShowFeedbackPrompt] = useState(false);
+const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
 
 // Check if user should see feedback prompt (after 24 hours of usage)
 useEffect(() => {
@@ -343,10 +344,13 @@ const getGreeting = () => {
                     />
                   </a>
                 ) : (
-                  <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg p-12 flex items-center justify-center border-2 border-dashed border-gray-300" style={{ aspectRatio: '1200/300' }}>
+                  <div
+                    onClick={() => setShowAdInquiryModal(true)}
+                    className="bg-gradient-to-br from-green-50/30 via-lime-50/30 to-yellow-50/30 rounded-lg p-12 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#009900] transition-all cursor-pointer hover:shadow-md backdrop-blur-sm"
+                    style={{ aspectRatio: '1200/300' }}
+                  >
                     <div className="text-center">
-                      <p className="text-gray-600 font-medium">Dashboard Bottom Banner</p>
-                      <p className="text-sm text-gray-500 mt-2">1200 x 300 • Add via Admin Panel</p>
+                      <p className="text-gray-700 font-bold text-lg">Banner Ad Spot: Click to Inquire</p>
                     </div>
                   </div>
                 );
@@ -494,6 +498,134 @@ default:
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ad Inquiry Modal */}
+      {showAdInquiryModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowAdInquiryModal(false)}>
+          <div className="bg-white rounded-lg shadow-2xl max-w-lg w-full p-6 relative border-4 border-[#D0ED00]" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setShowAdInquiryModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
+            >
+              ×
+            </button>
+            <div>
+              <div className="mb-4">
+                <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                  </svg>
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">Advertise with BudE</h3>
+              <p className="text-gray-600 mb-6 text-center">
+                Interested in advertising? Fill out this quick form and we'll get back to you soon!
+              </p>
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.target);
+
+                  try {
+                    await fetch('https://docs.google.com/forms/d/e/1FAIpQLSdm2szmQK5J4X_XBTzJV5LmqmB8PNwwMg6oQ9GkKy9Zd3qg8A/formResponse', {
+                      method: 'POST',
+                      body: new URLSearchParams({
+                        'entry.1234567890': formData.get('name'),
+                        'entry.0987654321': formData.get('email'),
+                        'entry.1122334455': formData.get('company'),
+                        'entry.5566778899': formData.get('phone'),
+                        'entry.9988776655': formData.get('adType'),
+                        'entry.1231231234': formData.get('message')
+                      }),
+                      mode: 'no-cors'
+                    });
+
+                    alert('Thank you! We\'ll be in touch soon.');
+                    setShowAdInquiryModal(false);
+                  } catch (error) {
+                    console.error('Error:', error);
+                    alert('There was an error submitting your inquiry. Please email grjeff@gmail.com directly.');
+                  }
+                }}
+                className="space-y-4"
+              >
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                  <input
+                    type="text"
+                    name="name"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                  <input
+                    type="text"
+                    name="company"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Ad Type of Interest</label>
+                  <select
+                    name="adType"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                  >
+                    <option value="">Select one...</option>
+                    <option value="Dashboard Banner">Dashboard Banner</option>
+                    <option value="Events Page Sidebar">Events Page Sidebar</option>
+                    <option value="Events Page Banner">Events Page Banner</option>
+                    <option value="Event Detail Banner">Event Detail Banner</option>
+                    <option value="Multiple Placements">Multiple Placements</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                  <textarea
+                    name="message"
+                    rows="3"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                    placeholder="Tell us about your advertising goals..."
+                  ></textarea>
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="submit"
+                    className="flex-1 bg-[#009900] text-white py-3 rounded-lg font-medium hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
+                  >
+                    Submit Inquiry
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowAdInquiryModal(false)}
+                    className="px-6 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
