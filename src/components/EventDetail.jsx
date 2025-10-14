@@ -296,53 +296,6 @@ function EventDetail() {
                 </div>
               </div>
             </div>
-
-            {/* Suggested Connections */}
-            <div className="bg-white rounded-lg shadow-sm p-4 md:p-6 relative group">
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">Suggested Connections Attending</h3>
-              <p className="text-gray-600 text-xs md:text-sm mb-3 md:mb-4">Connect with these professionals who are also attending this event</p>
-              <div className="space-y-3 md:space-y-4">
-                {suggestedConnections.map((person, index) => (
-                  <div key={index} className="flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <img
-                      src={person.image}
-                      alt={person.name}
-                      className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover flex-shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-gray-900 text-sm md:text-base">{person.name}</h4>
-                      <p className="text-xs md:text-sm text-gray-600 truncate">{person.title}</p>
-                      <div className="flex flex-wrap items-center gap-2 md:gap-3 mt-1">
-                        <span className="text-xs text-green-600 flex items-center gap-1"><TrendingUp className="w-3 h-3" />{person.compatibility} compatible</span>
-                        <span className="text-xs text-blue-500 flex items-center gap-1"><Users className="w-3 h-3" />{person.mutualConnections} mutual</span>
-                        {person.attending && (
-                          <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
-                            Attending
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <button className="w-full md:w-auto px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] flex-shrink-0 text-sm md:text-base">
-                      Connect
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              {/* Beta Testing Hover Message */}
-              <div className="absolute inset-0 bg-black/60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none z-10">
-                <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-4 md:p-6 max-w-2xl mx-4 flex flex-col md:flex-row items-center gap-3 md:gap-4 shadow-2xl border-4 border-[#D0ED00]">
-                  <img
-                    src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
-                    alt="Scientist at work"
-                    className="h-16 md:h-24 w-auto flex-shrink-0 rounded-lg object-cover"
-                  />
-                  <p className="text-green-800 font-medium text-sm md:text-base text-center md:text-left">
-                    Our scientists are hard at work finding connections for you. Look for an email from us soon!
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Right Sidebar */}
@@ -398,6 +351,59 @@ function EventDetail() {
                       <div className="font-semibold text-gray-900">Number Attending</div>
                       <div className="text-sm text-[#009900] font-medium">Beta coming soon</div>
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Suggested Connections */}
+              <div className="bg-white rounded-lg shadow-sm p-6 relative group">
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Suggested Connections Who Have Similar Interest in This Event/Organization</h3>
+                <p className="text-gray-600 text-sm mb-4">Connect with these professionals</p>
+                <div className="space-y-3">
+                  {suggestedConnections.map((person, index) => (
+                    <div key={index} className="flex flex-col gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                      <div className="flex items-start gap-3">
+                        <img
+                          src={person.image}
+                          alt={person.name}
+                          className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-bold text-gray-900 text-sm">{person.name}</h4>
+                          <p className="text-xs text-gray-600 line-clamp-1">{person.title}</p>
+                          <div className="flex flex-wrap items-center gap-2 mt-1">
+                            <span className="text-xs text-green-600 flex items-center gap-1">
+                              <TrendingUp className="w-3 h-3" />{person.compatibility}
+                            </span>
+                            <span className="text-xs text-blue-500 flex items-center gap-1">
+                              <Users className="w-3 h-3" />{person.mutualConnections}
+                            </span>
+                            {person.attending && (
+                              <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                                Attending
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <button className="w-full px-3 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] text-sm">
+                        Connect
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Beta Testing Hover Message */}
+                <div className="absolute inset-0 bg-black/60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none z-10">
+                  <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-4 max-w-sm mx-4 flex flex-col items-center gap-3 shadow-2xl border-4 border-[#D0ED00]">
+                    <img
+                      src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
+                      alt="Scientist at work"
+                      className="h-16 w-auto flex-shrink-0 rounded-lg object-cover"
+                    />
+                    <p className="text-green-800 font-medium text-sm text-center">
+                      Our scientists are hard at work finding connections for you. Look for an email from us soon!
+                    </p>
                   </div>
                 </div>
               </div>
