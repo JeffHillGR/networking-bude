@@ -132,7 +132,7 @@ function Settings({ autoOpenFeedback = false }) {
     'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
     'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo',
     'Hello West Michigan', 'CARWM', 'Creative Mornings', 'Athena',
-    'Inforum', 'Start Garden', 'GRABB', 'WMPRSA'
+    'Inforum', 'Start Garden', 'GRABB', 'WMPRSA', 'Crain\'s GR Business'
   ];
 
   // Security state
