@@ -144,6 +144,25 @@ function EventDetail() {
       tags: ['AI', 'Technology', 'Public Safety', 'Civil Rights', 'Innovation', 'Policy'],
       registrationUrl: 'https://www.eventbrite.com/e/mastering-the-matrix-ai-innovation-public-safety-tickets-1752250060099'
     },
+    4: {
+      id: 4,
+      title: 'Place Matters Summit 2025',
+      description: 'Join community leaders from government, business, and nonprofits for meaningful discussions on nurturing vibrant communities and neighborhoods.',
+      fullDescription: 'The Place Matters Summit brings together community leaders from government, business, non-profit, and association industries for meaningful discussions on creating vibrant communities.\n\nFeatured Keynote: "Redefining Community: People, Places, Purpose" by Allyson Brunette. This powerful presentation addresses how social institutions are deteriorating due to digital-induced isolation and poor urban design, and offers solutions for rebuilding authentic community connections.\n\nAdditional Session: "Growth, Development, and Community Character: You Can Have it All!" presented by Dan Leonard, Redevelopment Services Director at Michigan Economic Development Corporation. Learn how communities can balance growth with preserving their unique character.\n\nThis summit provides valuable insights and inspiration to take proactive steps in nurturing vibrant communities and neighborhoods across West Michigan. Previous summits have sold out, demonstrating strong community interest in place-making and community development.\n\nOrganized by The Right Place, the regional economic development organization serving Greater Grand Rapids.',
+      date: 'Thursday, November 6, 2025',
+      time: '12:00 PM - 5:00 PM',
+      location: 'The Rockford Corner Bar',
+      fullAddress: 'The Rockford Corner Bar, Rockford, MI',
+      image: 'https://web.cvent.com/event_guestside_app/_next/image?url=https%3A%2F%2Fimages.cvent.com%2Fc49e750ef94b4a73879b4e57ae9c1393%2Fa261375d7d47fd2cd2c68c3a86dd821f%2Fd978795e378242b5af5233c775c250e4%2Ff65bb8e0f27745f5bcf821b889bc6407!_!eb5aa18403450c956b23c2a0b455af07.jpeg&w=3840&q=75',
+      badge: 'In-Person',
+      organizer: {
+        name: 'The Right Place',
+        avatar: 'RP',
+        description: 'The Right Place is the regional economic development organization serving Greater Grand Rapids, focused on business growth, talent attraction, and community development.'
+      },
+      tags: ['Community Development', 'Leadership', 'Networking', 'Urban Planning', 'Economic Development'],
+      registrationUrl: 'https://web.cvent.com/event/d978795e-3782-42b5-af52-33c775c250e4/summary'
+    },
     8: {
       id: 8,
       title: 'Crain\'s Grand Rapids Business 40 Under 40 Celebration',

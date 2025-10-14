@@ -92,11 +92,15 @@ function Events() {
     },
     {
       id: 4,
-      isSponsored: true,
-      title: 'Sponsored Event Slot',
-      description: 'Your premium event can appear here',
-      organizerName: 'Your Organization',
-      badge: 'Sponsored'
+      title: 'Place Matters Summit 2025',
+      description: 'Join community leaders from government, business, and nonprofits for meaningful discussions on nurturing vibrant communities and neighborhoods.',
+      date: '11/6/2025',
+      time: '12:00 PM - 5:00 PM',
+      location: 'The Rockford Corner Bar',
+      organizerName: 'The Right Place',
+      attendees: '150+',
+      image: 'https://web.cvent.com/event_guestside_app/_next/image?url=https%3A%2F%2Fimages.cvent.com%2Fc49e750ef94b4a73879b4e57ae9c1393%2Fa261375d7d47fd2cd2c68c3a86dd821f%2Fd978795e378242b5af5233c775c250e4%2Ff65bb8e0f27745f5bcf821b889bc6407!_!eb5aa18403450c956b23c2a0b455af07.jpeg&w=3840&q=75',
+      badge: 'In-Person'
     }
   ];
 
@@ -274,58 +278,46 @@ function Events() {
                 {featuredEvents.map((event) => (
                   <div
                     key={event.id}
-                    onClick={() => !event.isSponsored && navigate(`/events/${event.id}`)}
-                    className={`bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow ${!event.isSponsored ? 'cursor-pointer' : ''}`}
+                    onClick={() => navigate(`/events/${event.id}`)}
+                    className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                   >
-                    {event.isSponsored ? (
-                      <div className="h-64 bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center p-8">
-                        <div className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
-                          {event.badge}
-                        </div>
-                        <h3 className="text-xl font-bold text-gray-900 text-center mb-2">{event.title}</h3>
-                        <p className="text-gray-600 text-center">{event.description}</p>
+                    <div className="relative h-48 bg-white">
+                      <img src={event.image} alt={event.title} className="w-full h-full object-contain" />
+                      <div className="absolute top-4 left-4 bg-black text-white px-3 py-1 rounded-full text-sm font-medium">
+                        {event.badge}
                       </div>
-                    ) : (
-                      <>
-                        <div className="relative h-48 bg-white">
-                          <img src={event.image} alt={event.title} className="w-full h-full object-contain" />
-                          <div className="absolute top-4 left-4 bg-black text-white px-3 py-1 rounded-full text-sm font-medium">
-                            {event.badge}
-                          </div>
+                    </div>
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>
+                      <p className="text-gray-600 mb-4">{event.description}</p>
+                      <div className="space-y-2 text-sm text-gray-600 mb-4">
+                        <p className="font-semibold text-gray-700">🏢 {event.organizerName || 'Event Organizer'}</p>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4" />
+                          <span>{event.date} • {event.time}</span>
                         </div>
-                        <div className="p-6">
-                          <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>
-                          <p className="text-gray-600 mb-4">{event.description}</p>
-                          <div className="space-y-2 text-sm text-gray-600 mb-4">
-                            <p className="font-semibold text-gray-700">🏢 {event.organizerName || 'Event Organizer'}</p>
-                            <div className="flex items-center gap-2">
-                              <Calendar className="h-4 w-4" />
-                              <span>{event.date} • {event.time}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <MapPin className="h-4 w-4" />
-                              <span>{event.location}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Users className="h-4 w-4" />
-                              <span className="text-[#009900] font-medium">Number Attending - Beta Coming Soon</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-end">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                navigate(`/events/${event.id}`);
-                              }}
-                              className="text-[#009900] font-medium hover:text-[#007700] flex items-center gap-1"
-                            >
-                              View Details
-                              <ExternalLink className="h-4 w-4" />
-                            </button>
-                          </div>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4" />
+                          <span>{event.location}</span>
                         </div>
-                      </>
-                    )}
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4" />
+                          <span className="text-[#009900] font-medium">Number Attending - Beta Coming Soon</span>
+                        </div>
+                      </div>
+                      <div className="flex justify-end">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/events/${event.id}`);
+                          }}
+                          className="text-[#009900] font-medium hover:text-[#007700] flex items-center gap-1"
+                        >
+                          View Details
+                          <ExternalLink className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
