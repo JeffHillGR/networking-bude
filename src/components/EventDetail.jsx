@@ -447,7 +447,7 @@ function EventDetail() {
             <div className="mt-8 flex justify-center">
               <div
                 onClick={() => setShowAdInquiryModal(true)}
-                className="w-full max-w-[728px] bg-gradient-to-br from-yellow-100/50 via-lime-100/40 to-yellow-50/50 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md backdrop-blur-sm"
+                className="w-full max-w-[728px] bg-gradient-to-br from-yellow-200/80 via-yellow-100/70 to-lime-100/60 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md backdrop-blur-sm"
                 style={{ aspectRatio: '728/160' }}
               >
                 <div className="text-center">
