@@ -454,7 +454,7 @@ function EventDetail() {
                   className="absolute inset-0 bg-cover opacity-30"
                   style={{
                     backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
-                    backgroundPosition: 'center',
+                    backgroundPosition: 'center 80%',
                     filter: 'blur(12px)',
                     transform: 'scale(1.1)'
                   }}
