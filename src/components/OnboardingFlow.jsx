@@ -592,7 +592,7 @@ export default function BudEOnboarding() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2">Your Zip Code</label>
+              <label className="block text-sm font-semibold mb-2">Zip Code</label>
               <input
                 type="text"
                 className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"

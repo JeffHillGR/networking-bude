@@ -92,7 +92,7 @@ Your Google Sheet needs two tabs (sheets) with these exact names:
 
 | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Timestamp | First Name | Last Name | Username | Email | Job Title | Company | Zip Code | Industry | Same Industry | Gender | Gender Preference | DOB | DOB Preference | Organizations | Organizations Other | Organizations To Check Out | Organizations To Check Out Other | Professional Interests | Professional Interests Other | Personal Interests | Networking Goals |
+| Timestamp | First Name | Last Name | Username | Email | Job Title | Company | Industry | Same Industry | Gender | Gender Preference | DOB | DOB Connect | Zip Code | Organizations | Organizations Other | Organizations To Check Out | Organizations To Check Out Other | Professional Interests | Professional Interests Other | Personal Interests | Networking Goals |
 
 ### Event_Suggestions Tab - Column Headers (Row 1):
 

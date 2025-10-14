@@ -74,32 +74,32 @@ export default async function handler(req, res) {
 
     const sheets = google.sheets({ version: 'v4', auth });
 
-    // Prepare the row data in the same order as Google Form columns
+    // Prepare the row data to match form field order
     const rowData = [
-      new Date().toISOString(), // Timestamp
-      formData.firstName || '',
-      formData.lastName || '',
-      formData.username || '',
-      formData.email || '',
-      formData.jobTitle || '',
-      formData.company || '',
-      formData.zipCode || '', // Added zipCode field
-      formData.industry || '',
-      formData.sameIndustry || '',
-      formData.gender || '',
-      formData.genderPreference || '',
-      formData.dob || '',
-      formData.dobPreference || '',
+      new Date().toISOString(), // A: Timestamp
+      formData.firstName || '', // B: First Name
+      formData.lastName || '', // C: Last Name
+      formData.username || '', // D: Username
+      formData.email || '', // E: Email
+      formData.jobTitle || '', // F: Job Title
+      formData.company || '', // G: Company
+      formData.industry || '', // H: Industry
+      formData.sameIndustry || '', // I: Same Industry
+      formData.gender || '', // J: Gender
+      formData.genderPreference || '', // K: Gender Preference
+      formData.dob || '', // L: DOB
+      formData.dobPreference || '', // M: DOB Connect
+      formData.zipCode || '', // N: Zip Code
       // Handle arrays for organizations
-      Array.isArray(formData.organizations) ? formData.organizations.join(', ') : (formData.organizations || ''),
-      formData.organizationsOther || '',
-      Array.isArray(formData.organizationsToCheckOut) ? formData.organizationsToCheckOut.join(', ') : (formData.organizationsToCheckOut || ''),
-      formData.organizationsToCheckOutOther || '',
+      Array.isArray(formData.organizations) ? formData.organizations.join(', ') : (formData.organizations || ''), // O: Organizations
+      formData.organizationsOther || '', // P: Organizations Other
+      Array.isArray(formData.organizationsToCheckOut) ? formData.organizationsToCheckOut.join(', ') : (formData.organizationsToCheckOut || ''), // Q: Organizations To Check Out
+      formData.organizationsToCheckOutOther || '', // R: Organizations To Check Out Other
       // Handle arrays for professional interests
-      Array.isArray(formData.professionalInterests) ? formData.professionalInterests.join(', ') : (formData.professionalInterests || ''),
-      formData.professionalInterestsOther || '',
-      formData.personalInterests || '',
-      formData.networkingGoals || ''
+      Array.isArray(formData.professionalInterests) ? formData.professionalInterests.join(', ') : (formData.professionalInterests || ''), // S: Professional Interests
+      formData.professionalInterestsOther || '', // T: Professional Interests Other
+      formData.personalInterests || '', // U: Personal Interests
+      formData.networkingGoals || '' // V: Networking Goals
     ];
 
     console.log('📊 Preparing to append row to Google Sheet');
@@ -110,7 +110,7 @@ export default async function handler(req, res) {
     // Append the data to the Google Sheet
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'Form_Responses!A:V', // Sheet tab name
+      range: 'Form_Responses!A:V', // Sheet tab name (22 columns)
       valueInputOption: 'USER_ENTERED',
       insertDataOption: 'INSERT_ROWS',
       resource: {

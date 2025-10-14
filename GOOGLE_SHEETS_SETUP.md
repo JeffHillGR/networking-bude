@@ -290,20 +290,21 @@ The serverless function expects your Google Sheet to have these columns (in this
 5. Email
 6. Job Title
 7. Company
-8. Industry
-9. Same Industry Connect
-10. Gender
-11. Gender Preference Connect
-12. Date of Birth
-13. DOB Connect
-14. Organizations (Attend)
-15. Organizations Other
-16. Organizations (Check Out)
-17. Organizations Check Out Other
-18. Professional Interests
-19. Professional Interests Other
-20. Personal Interests
-21. Networking Goals
+8. Zip Code
+9. Industry
+10. Same Industry Connect
+11. Gender
+12. Gender Preference Connect
+13. Date of Birth
+14. DOB Connect
+15. Organizations (Attend)
+16. Organizations Other
+17. Organizations (Check Out)
+18. Organizations Check Out Other
+19. Professional Interests
+20. Professional Interests Other
+21. Personal Interests
+22. Networking Goals
 
 If your Google Form created a sheet with these columns already, you're all set! If not, you can:
 - Add the headers manually
