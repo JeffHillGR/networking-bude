@@ -358,7 +358,7 @@ function EventDetail() {
               {/* Suggested Connections */}
               <div className="bg-white rounded-lg shadow-sm p-6 relative group">
                 <h3 className="text-lg font-bold text-gray-900 mb-2">Connect Before the Event</h3>
-                <p className="text-gray-600 text-sm mb-4">Connect with these professionals</p>
+                <p className="text-gray-600 text-sm mb-4">These people share your interests, take a look</p>
                 <div className="space-y-3">
                   {suggestedConnections.map((person, index) => (
                     <div key={index} className="flex flex-col gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
