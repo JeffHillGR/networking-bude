@@ -11,6 +11,7 @@ function Events() {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
   const [eventFormData, setEventFormData] = useState({
     submitterName: '',
     submitterEmail: '',
@@ -406,10 +407,13 @@ function Events() {
                   />
                 </a>
               ) : (
-                <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg p-6 flex items-center justify-center border-2 border-dashed border-gray-300" style={{ aspectRatio: '728/160' }}>
+                <div
+                  onClick={() => setShowAdInquiryModal(true)}
+                  className="bg-gradient-to-br from-green-50/30 via-lime-50/30 to-yellow-50/30 rounded-lg p-6 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#009900] transition-all cursor-pointer hover:shadow-md backdrop-blur-sm"
+                  style={{ aspectRatio: '728/160' }}
+                >
                   <div className="text-center">
-                    <p className="text-gray-600 font-medium">Sample Bottom Banner</p>
-                    <p className="text-sm text-gray-500 mt-2">728 x 160</p>
+                    <p className="text-gray-700 font-bold text-lg">Banner Ad Spot: Click to Inquire</p>
                   </div>
                 </div>
               )}
@@ -435,10 +439,13 @@ function Events() {
                   />
                 </a>
               ) : (
-                <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300" style={{ aspectRatio: '160/600' }}>
+                <div
+                  onClick={() => setShowAdInquiryModal(true)}
+                  className="bg-gradient-to-br from-green-50/30 via-lime-50/30 to-yellow-50/30 rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#009900] transition-all cursor-pointer hover:shadow-md backdrop-blur-sm"
+                  style={{ aspectRatio: '160/600' }}
+                >
                   <div className="text-center">
-                    <p className="text-gray-600 font-medium text-sm">Banner Ad</p>
-                    <p className="text-xs text-gray-500 mt-2">160 x 600</p>
+                    <p className="text-gray-700 font-bold text-sm">Banner Ad Spot: Click to Inquire</p>
                   </div>
                 </div>
               )}
@@ -459,10 +466,13 @@ function Events() {
                   />
                 </a>
               ) : (
-                <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300" style={{ aspectRatio: '160/600' }}>
+                <div
+                  onClick={() => setShowAdInquiryModal(true)}
+                  className="bg-gradient-to-br from-green-50/30 via-lime-50/30 to-yellow-50/30 rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#009900] transition-all cursor-pointer hover:shadow-md backdrop-blur-sm"
+                  style={{ aspectRatio: '160/600' }}
+                >
                   <div className="text-center">
-                    <p className="text-gray-600 font-medium text-sm">Banner Ad</p>
-                    <p className="text-xs text-gray-500 mt-2">160 x 600</p>
+                    <p className="text-gray-700 font-bold text-sm">Banner Ad Spot: Click to Inquire</p>
                   </div>
                 </div>
               )}

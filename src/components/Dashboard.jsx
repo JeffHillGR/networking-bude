@@ -531,18 +531,24 @@ default:
                   const formData = new FormData(e.target);
 
                   try {
-                    await fetch('https://docs.google.com/forms/d/e/1FAIpQLSdm2szmQK5J4X_XBTzJV5LmqmB8PNwwMg6oQ9GkKy9Zd3qg8A/formResponse', {
+                    const response = await fetch('/api/submitAdInquiry', {
                       method: 'POST',
-                      body: new URLSearchParams({
-                        'entry.1234567890': formData.get('name'),
-                        'entry.0987654321': formData.get('email'),
-                        'entry.1122334455': formData.get('company'),
-                        'entry.5566778899': formData.get('phone'),
-                        'entry.9988776655': formData.get('adType'),
-                        'entry.1231231234': formData.get('message')
-                      }),
-                      mode: 'no-cors'
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        name: formData.get('name'),
+                        email: formData.get('email'),
+                        company: formData.get('company'),
+                        phone: formData.get('phone'),
+                        adType: formData.get('adType'),
+                        message: formData.get('message')
+                      })
                     });
+
+                    if (!response.ok) {
+                      throw new Error('Failed to submit inquiry');
+                    }
 
                     alert('Thank you! We\'ll be in touch soon.');
                     setShowAdInquiryModal(false);
