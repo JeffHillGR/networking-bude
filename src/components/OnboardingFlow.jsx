@@ -279,7 +279,7 @@ export default function BudEOnboarding() {
         {/* Beta Device Notice */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
           <p className="text-xs md:text-sm text-blue-800 text-center">
-            <span className="font-semibold">Beta Testing:</span> Please use the same device to access your account during the beta period.
+            <span className="font-semibold">Beta Testing:</span> Please use the same device and browser to access your account during the beta period.
           </p>
         </div>
 
