@@ -197,7 +197,7 @@ function Events() {
       organizer: 'Crain\'s Grand Rapids Business',
       price: 'Registration Required',
       badge: 'In-Person',
-      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=940&auto=format&fit=crop&q=75'
+      image: 'https://images.cvent.com/81fd802d90fc4485ad7e62818fc2f0f4/pix/cea3e653a8704097b40d96720419d46e!_!ece8983ef528374c785e8d0c594591f1.png?f=webp'
     }
   ];
 

@@ -153,7 +153,7 @@ function EventDetail() {
       time: '5:30 PM - 9:00 PM',
       location: 'Amway Grand Plaza Hotel',
       fullAddress: '187 Monroe Ave NW, Grand Rapids, MI 49503',
-      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=940&auto=format&fit=crop&q=75',
+      image: 'https://images.cvent.com/81fd802d90fc4485ad7e62818fc2f0f4/pix/cea3e653a8704097b40d96720419d46e!_!ece8983ef528374c785e8d0c594591f1.png?f=webp',
       badge: 'In-Person',
       organizer: {
         name: 'Crain\'s Grand Rapids Business',
