@@ -126,7 +126,7 @@ const getGreeting = () => {
     { id: 1, title: 'Salim Ismail – Founder, OpenExO and Author', date: '10/20/2025', time: '11:30 AM - 1:30 PM', location: 'JW Marriott Grand Rapids', organizerName: 'The Economic Club of Grand Rapids', fullAddress: 'International Ballroom, JW Marriott, Grand Rapids, MI', image: 'https://econclub.net/wp-content/uploads/2025/06/Salim-Ismail-cropped.jpg', badge: 'In-Person' },
     { id: 2, title: 'OutPro Forum', date: '10/22/2025', time: '11:00 AM - 1:00 PM', location: 'Grand Rapids Chamber', organizerName: 'Grand Rapids Chamber', fullAddress: '250 Monroe Ave, Grand Rapids, MI 49503', image: 'https://grandrapids.org/wp-content/uploads/2025/01/Graphic-OutPro-10.22.25-1-1024x576.jpg', badge: 'In-Person' },
     { id: 3, title: '17th Annual Jay & Betty Van Andel Legacy Awards Gala', date: '11/12/2025', time: 'Evening Event', location: 'JW Marriott Grand Rapids', organizerName: 'Grand Rapids Public Museum', fullAddress: 'JW Marriott Grand Rapids, MI', image: 'https://i0.wp.com/www.grpm.org/wp-content/uploads/2025/06/2025_Gala_Web-Header_Option-05.png', badge: 'In-Person' },
-    { id: 4, title: 'Sponsored Event', date: 'Coming Soon', time: 'TBA', location: 'Your Event Here', organizerName: 'Your Organization', fullAddress: 'Grand Rapids, MI', image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop', badge: 'Sponsored', isSponsored: true }
+    { id: 4, title: 'Place Matters Summit 2025', date: '11/6/2025', time: '12:00 PM - 5:00 PM', location: 'The Rockford Corner Bar', organizerName: 'The Right Place', fullAddress: 'The Rockford Corner Bar, Rockford, MI', image: 'https://web.cvent.com/event_guestside_app/_next/image?url=https%3A%2F%2Fimages.cvent.com%2Fc49e750ef94b4a73879b4e57ae9c1393%2Fa261375d7d47fd2cd2c68c3a86dd821f%2Fd978795e378242b5af5233c775c250e4%2Ff65bb8e0f27745f5bcf821b889bc6407!_!eb5aa18403450c956b23c2a0b455af07.jpeg&w=3840&q=75', badge: 'In-Person' }
   ];
 
   const navItems = [
@@ -290,7 +290,7 @@ const getGreeting = () => {
                 {events.map((event, index) => (
                   <div
                     key={index}
-                    onClick={() => event.isSponsored ? setShowSponsorModal(true) : navigate(`/events/${event.id}`)}
+                    onClick={() => navigate(`/events/${event.id}`)}
                     className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200"
                   >
                     {event.image && (
@@ -317,7 +317,7 @@ const getGreeting = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            event.isSponsored ? setShowSponsorModal(true) : navigate(`/events/${event.id}`);
+                            navigate(`/events/${event.id}`);
                           }}
                           className="text-[#009900] font-medium hover:text-[#007700] flex items-center gap-1 text-xs"
                         >
