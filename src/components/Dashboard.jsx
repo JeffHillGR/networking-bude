@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, Calendar, Heart, MessageCircle, User, CreditCard, Archive, ChevronLeft, ChevronRight, Users, ExternalLink } from 'lucide-react';
+import { Home, Calendar, Heart, MessageCircle, User, ChevronLeft, ChevronRight, Users, ExternalLink } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
 import Events from './Events';
 import Connections from './Connections';
 import Messages from './Messages';
-import Profile from './Profile';
-import { Settings as SettingsIcon } from 'lucide-react';
 import Settings from './Settings';
 import Subscription from './Subscription';
 import Account from './Account';
@@ -119,7 +117,7 @@ const getGreeting = () => {
     { id: 'events', icon: Calendar, label: 'Events' },
     { id: 'connections', icon: Heart, label: 'Connections' },
     { id: 'messages', icon: MessageCircle, label: 'Messages' },
-    { id: 'profile', icon: User, label: 'Profile' }
+    { id: 'settings', icon: User, label: 'Profile' }
   ];
 
   const renderContent = () => {
@@ -370,10 +368,6 @@ const getGreeting = () => {
           </div>
         );
 
-  case 'settings':
-  // Auto-scroll to feedback section and open modal if coming from feedback button
-  return <Settings autoOpenFeedback={activeTab === 'settings'} />;
-
   case 'events':
   return <Events />;
 
@@ -382,9 +376,6 @@ const getGreeting = () => {
 
   case 'messages':
   return <Messages />;
-
-  case 'profile':
-  return <Profile />;
 
   case 'settings':
   return <Settings />;

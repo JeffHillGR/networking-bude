@@ -15,7 +15,7 @@ function Sidebar({ activeTab, setActiveTab }) {
     { id: 'events', icon: Calendar, label: 'Events' },
     { id: 'connections', icon: Heart, label: 'Connections' },
     { id: 'messages', icon: MessageCircle, label: 'Messages' },
-    { id: 'profile', icon: User, label: 'Profile' }
+    { id: 'settings', icon: User, label: 'Profile' }
   ];
 
   return (

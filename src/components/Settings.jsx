@@ -122,10 +122,17 @@ function Settings({ autoOpenFeedback = false }) {
   const [selectedInterests, setSelectedInterests] = useState(loadInterestsFromStorage());
 
   const availableInterests = [
-    'Technology', 'Marketing', 'Finance', 'Design', 'Sales', 'HR', 
-    'Product Management', 'Data Science', 'Engineering', 'Consulting', 
-    'Healthcare', 'Education', 'Real Estate', 'Legal', 'Media', 
+    'Technology', 'Marketing', 'Finance', 'Design', 'Sales', 'HR',
+    'Product Management', 'Data Science', 'Engineering', 'Consulting',
+    'Healthcare', 'Education', 'Real Estate', 'Legal', 'Media',
     'Startup', 'AI/ML', 'Blockchain', 'Sustainability', 'Leadership'
+  ];
+
+  const availableOrganizations = [
+    'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
+    'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo',
+    'Hello West Michigan', 'CARWM', 'Creative Mornings', 'Athena',
+    'Inforum', 'Start Garden'
   ];
 
   // Security state
@@ -166,6 +173,24 @@ function Settings({ autoOpenFeedback = false }) {
       setSelectedInterests(selectedInterests.filter(i => i !== interest));
     } else {
       setSelectedInterests([...selectedInterests, interest]);
+    }
+  };
+
+  const toggleOrganization = (org) => {
+    const currentOrgs = profile.organizations || [];
+    if (currentOrgs.includes(org)) {
+      setProfile({...profile, organizations: currentOrgs.filter(o => o !== org)});
+    } else {
+      setProfile({...profile, organizations: [...currentOrgs, org]});
+    }
+  };
+
+  const toggleOrganizationToCheckOut = (org) => {
+    const currentOrgs = profile.organizationsToCheckOut || [];
+    if (currentOrgs.includes(org)) {
+      setProfile({...profile, organizationsToCheckOut: currentOrgs.filter(o => o !== org)});
+    } else {
+      setProfile({...profile, organizationsToCheckOut: [...currentOrgs, org]});
     }
   };
 
@@ -431,13 +456,30 @@ function Settings({ autoOpenFeedback = false }) {
 
                 <div>
                   <label className="block font-medium text-gray-900 mb-2">Industry</label>
-                  <input
-                    type="text"
+                  <select
                     value={profile.industry}
                     onChange={(e) => setProfile({...profile, industry: e.target.value})}
                     className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
-                    placeholder="e.g., Technology, Healthcare"
-                  />
+                  >
+                    <option value="">Select your industry</option>
+                    <option value="technology">Technology</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="finance">Finance</option>
+                    <option value="education">Education</option>
+                    <option value="manufacturing">Manufacturing</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="real estate">Real Estate</option>
+                    <option value="law">Law</option>
+                    <option value="non-profit">Non-Profit</option>
+                    <option value="government">Government</option>
+                    <option value="accounting">Accounting</option>
+                    <option value="consulting">Consulting</option>
+                    <option value="professional development">Professional Development</option>
+                    <option value="recruiting">Recruiting</option>
+                    <option value="entrepreneur">Entrepreneur/Business Owner</option>
+                    <option value="startup">Startup/Founder</option>
+                    <option value="other">Other</option>
+                  </select>
                 </div>
               </div>
 
@@ -497,34 +539,64 @@ function Settings({ autoOpenFeedback = false }) {
               {/* Organizations Section */}
               <div className="border-t border-gray-200 pt-6 mt-6">
                 <h3 className="font-bold text-gray-900 mb-4">Organizations</h3>
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div>
-                    <label className="block font-medium text-gray-900 mb-2">Organizations I Attend Events For</label>
+                    <label className="block font-medium text-gray-900 mb-3">Organizations I Attend Events For</label>
+                    <p className="text-sm text-gray-600 mb-3">Select all organizations whose events you regularly attend</p>
                     <div className="flex flex-wrap gap-2">
-                      {profile.organizations && profile.organizations.length > 0 ? (
-                        profile.organizations.map((org, index) => (
-                          <span key={index} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
-                            {org}
-                          </span>
-                        ))
-                      ) : (
-                        <p className="text-gray-500 text-sm">No organizations selected</p>
-                      )}
+                      {availableOrganizations.map((org) => (
+                        <button
+                          key={org}
+                          type="button"
+                          onClick={() => toggleOrganization(org)}
+                          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                            profile.organizations?.includes(org)
+                              ? 'bg-black text-white'
+                              : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                          }`}
+                        >
+                          {org}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="mt-3">
+                      <input
+                        type="text"
+                        placeholder="Other organization (type to add)"
+                        className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white text-sm"
+                        value={profile.organizationsOther || ''}
+                        onChange={(e) => setProfile({...profile, organizationsOther: e.target.value})}
+                      />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block font-medium text-gray-900 mb-2">Organizations I Want to Check Out</label>
+                    <label className="block font-medium text-gray-900 mb-3">Organizations I Want to Check Out</label>
+                    <p className="text-sm text-gray-600 mb-3">Select organizations you're interested in exploring</p>
                     <div className="flex flex-wrap gap-2">
-                      {profile.organizationsToCheckOut && profile.organizationsToCheckOut.length > 0 ? (
-                        profile.organizationsToCheckOut.map((org, index) => (
-                          <span key={index} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
-                            {org}
-                          </span>
-                        ))
-                      ) : (
-                        <p className="text-gray-500 text-sm">No organizations selected</p>
-                      )}
+                      {availableOrganizations.map((org) => (
+                        <button
+                          key={`checkout-${org}`}
+                          type="button"
+                          onClick={() => toggleOrganizationToCheckOut(org)}
+                          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                            profile.organizationsToCheckOut?.includes(org)
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                          }`}
+                        >
+                          {org}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="mt-3">
+                      <input
+                        type="text"
+                        placeholder="Other organization (type to add)"
+                        className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white text-sm"
+                        value={profile.organizationsToCheckOutOther || ''}
+                        onChange={(e) => setProfile({...profile, organizationsToCheckOutOther: e.target.value})}
+                      />
                     </div>
                   </div>
                 </div>

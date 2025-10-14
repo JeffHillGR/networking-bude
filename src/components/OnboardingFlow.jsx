@@ -225,7 +225,7 @@ export default function BudEOnboarding() {
 
 
  const renderWelcome = () => (
-  <div className="min-h-screen-stable flex flex-col md:flex-row">
+  <div className="min-h-screen flex flex-col md:flex-row">
     {/* Left side - Images - Hidden on mobile */}
     <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 p-12 items-start justify-end pt-16">
       <div className="relative">
@@ -404,7 +404,7 @@ export default function BudEOnboarding() {
 
 
   const renderStep1 = () => (
-    <div className="min-h-screen-stable flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col md:flex-row">
    {/* Left side - Images - Hidden on mobile */}
    <div className="hidden md:flex md:w-1/2 relative p-12 items-start justify-end pt-16 overflow-hidden">
   <div className="absolute inset-0">
@@ -443,7 +443,7 @@ export default function BudEOnboarding() {
           </div>
 
           <div className="space-y-6">
-            <div className="relative">
+            <div>
               <label className="block text-sm font-semibold mb-2">Job Title</label>
               <input
                 type="text"
@@ -464,20 +464,23 @@ export default function BudEOnboarding() {
                   setTimeout(() => setShowJobTitleSuggestions(false), 200);
                 }}
               />
-              {showJobTitleSuggestions && filteredJobTitles.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                  {filteredJobTitles.slice(0, 10).map((title, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => selectJobTitle(title)}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none text-sm"
-                    >
-                      {title}
-                    </button>
-                  ))}
-                </div>
-              )}
+              {/* Fixed height container to prevent layout shift */}
+              <div className="relative h-0">
+                {showJobTitleSuggestions && filteredJobTitles.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    {filteredJobTitles.slice(0, 10).map((title, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => selectJobTitle(title)}
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none text-sm"
+                      >
+                        {title}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div>
@@ -694,7 +697,7 @@ export default function BudEOnboarding() {
   );
 
 const renderStep2 = () => (
-  <div className="min-h-screen-stable flex flex-col md:flex-row">
+  <div className="min-h-screen flex flex-col md:flex-row">
     {/* Left side - Image with blurred background - Hidden on mobile */}
     <div className="hidden md:flex md:w-1/2 relative p-12 items-start justify-end pt-16 overflow-hidden">
       <div className="absolute inset-0">
