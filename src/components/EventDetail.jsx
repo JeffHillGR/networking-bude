@@ -224,11 +224,11 @@ function EventDetail() {
           <div className="lg:col-span-2 space-y-6">
             {/* Event Image */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="relative h-96">
+              <div className="relative h-96 bg-gray-100">
                 <img
                   src={event.image}
                   alt={event.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
                 <div className="absolute top-4 left-4 bg-black text-white px-3 py-1 rounded-full text-sm font-medium">
                   {event.badge}
