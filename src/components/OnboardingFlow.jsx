@@ -294,7 +294,7 @@ export default function BudEOnboarding() {
               <input
                 type="text"
                 required
-                className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-base"
                 value={formData.firstName}
                 onChange={(e) => handleChange('firstName', e.target.value)}
               />
@@ -304,7 +304,7 @@ export default function BudEOnboarding() {
               <input
                 type="text"
                 required
-                className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-base"
                 value={formData.lastName}
                 onChange={(e) => handleChange('lastName', e.target.value)}
               />
@@ -315,7 +315,7 @@ export default function BudEOnboarding() {
             <label className="block text-sm font-semibold mb-1">Preferred Username</label>
             <input
               type="text"
-              className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+              className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-base"
               value={formData.username}
               onChange={(e) => handleChange('username', e.target.value)}
             />
@@ -326,7 +326,7 @@ export default function BudEOnboarding() {
             <input
               type="email"
               required
-              className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+              className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-base"
               value={formData.email}
               onChange={(e) => handleChange('email', e.target.value)}
             />
@@ -348,7 +348,7 @@ export default function BudEOnboarding() {
               <input
                 type={showPassword ? "text" : "password"}
                 required
-                className="w-full px-3 py-2 pr-10 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                className="w-full px-3 py-2 pr-10 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-base"
                 value={formData.password}
                 onChange={(e) => handleChange('password', e.target.value)}
               />
@@ -627,7 +627,7 @@ export default function BudEOnboarding() {
                 <input
                   type="text"
                   placeholder="Other organization (please specify)"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-base"
                   value={formData.organizationsOther}
                   onChange={(e) => handleChange('organizationsOther', e.target.value)}
                 />
@@ -662,7 +662,7 @@ export default function BudEOnboarding() {
                 <input
                   type="text"
                   placeholder="Other organization (please specify)"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-base"
                   value={formData.organizationsToCheckOutOther}
                   onChange={(e) => handleChange('organizationsToCheckOutOther', e.target.value)}
                 />
@@ -757,7 +757,7 @@ const renderStep2 = () => (
               <input
                 type="text"
                 placeholder="Other professional interest (please specify)"
-                className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-base"
                 value={formData.professionalInterestsOther}
                 onChange={(e) => handleChange('professionalInterestsOther', e.target.value)}
               />
