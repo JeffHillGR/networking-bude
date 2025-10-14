@@ -36,7 +36,38 @@ function Settings({ autoOpenFeedback = false }) {
     if (savedProfile) {
       return JSON.parse(savedProfile);
     }
-    // Default to onboarding data if available
+
+    // Try to get full onboarding data first
+    const onboardingData = localStorage.getItem('onboardingData');
+    if (onboardingData) {
+      const data = JSON.parse(onboardingData);
+      return {
+        fullName: `${data.firstName || ''} ${data.lastName || ''}`.trim() || 'User Name',
+        email: data.email || 'user@example.com',
+        jobTitle: data.jobTitle || 'Job Title',
+        company: data.company || 'Company',
+        location: data.zipCode ? `Zip Code: ${data.zipCode}` : 'Location',
+        website: '',
+        phone: '',
+        bio: data.networkingGoals || data.personalInterests || '',
+        // Store additional onboarding data
+        industry: data.industry || '',
+        sameIndustry: data.sameIndustry || '',
+        gender: data.gender || '',
+        genderPreference: data.genderPreference || '',
+        dob: data.dob || '',
+        dobPreference: data.dobPreference || '',
+        zipCode: data.zipCode || '',
+        organizations: data.organizations || [],
+        organizationsOther: data.organizationsOther || '',
+        organizationsToCheckOut: data.organizationsToCheckOut || [],
+        organizationsToCheckOutOther: data.organizationsToCheckOutOther || '',
+        personalInterests: data.personalInterests || '',
+        networkingGoals: data.networkingGoals || ''
+      };
+    }
+
+    // Fallback to individual localStorage items
     const firstName = localStorage.getItem('userFirstName') || '';
     const lastName = localStorage.getItem('userLastName') || '';
     const email = localStorage.getItem('userEmail') || '';
@@ -51,7 +82,20 @@ function Settings({ autoOpenFeedback = false }) {
       location: 'Location',
       website: '',
       phone: '',
-      bio: ''
+      bio: '',
+      industry: '',
+      sameIndustry: '',
+      gender: '',
+      genderPreference: '',
+      dob: '',
+      dobPreference: '',
+      zipCode: '',
+      organizations: [],
+      organizationsOther: '',
+      organizationsToCheckOut: [],
+      organizationsToCheckOutOther: '',
+      personalInterests: '',
+      networkingGoals: ''
     };
   };
 
@@ -60,7 +104,17 @@ function Settings({ autoOpenFeedback = false }) {
     if (savedInterests) {
       return JSON.parse(savedInterests);
     }
-    return ['Technology', 'Design', 'Product Management', 'Startup', 'Leadership'];
+
+    // Try to get from onboarding data
+    const onboardingData = localStorage.getItem('onboardingData');
+    if (onboardingData) {
+      const data = JSON.parse(onboardingData);
+      if (data.professionalInterests && Array.isArray(data.professionalInterests) && data.professionalInterests.length > 0) {
+        return data.professionalInterests;
+      }
+    }
+
+    return [];
   };
 
   // Profile state
