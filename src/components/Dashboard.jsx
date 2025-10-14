@@ -353,7 +353,7 @@ const getGreeting = () => {
                       className="absolute inset-0 bg-cover opacity-30"
                       style={{
                         backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
-                        backgroundPosition: 'center 80%',
+                        backgroundPosition: 'center 90%',
                         filter: 'blur(12px)',
                         transform: 'scale(1.1)'
                       }}
@@ -369,7 +369,7 @@ const getGreeting = () => {
             {/* Beta Feedback Form Button */}
             <div className="flex justify-center mt-8">
               <button
-                onClick={() => setActiveTab('settings')}
+                onClick={() => setShowFeedbackPrompt(true)}
                 className="px-6 py-3 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] flex items-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
