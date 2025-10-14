@@ -1,7 +1,7 @@
 import { Briefcase, MapPin, GraduationCap, Users, Calendar, Award } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-function Profile() {
+function Profile({ onNavigateToSettings }) {
   const [profileData, setProfileData] = useState(null);
   const [avatarColor, setAvatarColor] = useState('blue');
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -184,7 +184,10 @@ function Profile() {
                         <span className="truncate">{profileData.education}</span>
                       </div>
                     </div>
-                    <button className="w-full md:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm md:text-base whitespace-nowrap">
+                    <button
+                      onClick={() => onNavigateToSettings && onNavigateToSettings()}
+                      className="w-full md:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm md:text-base whitespace-nowrap"
+                    >
                       Edit Profile
                     </button>
                   </div>
