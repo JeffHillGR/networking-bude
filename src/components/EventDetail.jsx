@@ -361,34 +361,29 @@ function EventDetail() {
                 <p className="text-gray-600 text-sm mb-4">These people share your interests, take a look</p>
                 <div className="space-y-3">
                   {suggestedConnections.map((person, index) => (
-                    <div key={index} className="flex flex-col gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                      <div className="flex items-start gap-3">
-                        <img
-                          src={person.image}
-                          alt={person.name}
-                          className="w-12 h-12 rounded-full object-cover flex-shrink-0"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-bold text-gray-900 text-sm">{person.name}</h4>
-                          <p className="text-xs text-gray-600 line-clamp-1">{person.title}</p>
-                          <div className="flex flex-wrap items-center gap-2 mt-1">
-                            <span className="text-xs text-green-600 flex items-center gap-1">
-                              <TrendingUp className="w-3 h-3" />{person.compatibility}
+                    <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                      <img
+                        src={person.image}
+                        alt={person.name}
+                        className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-gray-900 text-sm">{person.name}</h4>
+                        <p className="text-xs text-gray-600 line-clamp-1">{person.title}</p>
+                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                          <span className="text-xs text-green-600 flex items-center gap-1">
+                            <TrendingUp className="w-3 h-3" />{person.compatibility}
+                          </span>
+                          <span className="text-xs text-blue-500 flex items-center gap-1">
+                            <Users className="w-3 h-3" />{person.mutualConnections}
+                          </span>
+                          {person.attending && (
+                            <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                              Attending
                             </span>
-                            <span className="text-xs text-blue-500 flex items-center gap-1">
-                              <Users className="w-3 h-3" />{person.mutualConnections}
-                            </span>
-                            {person.attending && (
-                              <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
-                                Attending
-                              </span>
-                            )}
-                          </div>
+                          )}
                         </div>
                       </div>
-                      <button className="w-full px-3 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] text-sm">
-                        Connect
-                      </button>
                     </div>
                   ))}
                 </div>
