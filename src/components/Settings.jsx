@@ -847,7 +847,7 @@ function Settings({ autoOpenFeedback = false }) {
                     Beta Version
                   </p>
                   <p className="text-green-700 font-medium text-base">
-                    Privacy settings coming soon!
+                    During Beta testing phase, your provided personal profile data is stored unencrypted in your browser to simulate a logged in status. Privacy settings coming soon.
                   </p>
                 </div>
               </div>
@@ -1227,27 +1227,42 @@ function Settings({ autoOpenFeedback = false }) {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Overall rating (e.g., 1–10)</label>
-                    <input
-                      type="number"
-                      min="1"
-                      max="10"
-                      value={feedbackData.overallRating}
-                      onChange={(e) => setFeedbackData({...feedbackData, overallRating: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-3">Overall rating (1–10)</label>
+                    <div className="flex flex-wrap gap-2">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
+                        <button
+                          key={rating}
+                          type="button"
+                          onClick={() => setFeedbackData({...feedbackData, overallRating: rating.toString()})}
+                          className={`w-12 h-12 rounded-lg font-bold text-lg transition-all ${
+                            feedbackData.overallRating === rating.toString()
+                              ? 'bg-[#009900] text-white border-2 border-[#D0ED00] shadow-md scale-105'
+                              : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-[#009900] hover:bg-gray-50'
+                          }`}
+                        >
+                          {rating}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">"Would you recommend this app to a friend or colleague?" (Net Promoter Score style)</label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="10"
-                      value={feedbackData.netPromoterScore}
-                      onChange={(e) => setFeedbackData({...feedbackData, netPromoterScore: e.target.value})}
-                      placeholder="0-10 scale"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-3">"Would you recommend this app to a friend or colleague?" (0-10 scale)</label>
+                    <div className="flex flex-wrap gap-2">
+                      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((score) => (
+                        <button
+                          key={score}
+                          type="button"
+                          onClick={() => setFeedbackData({...feedbackData, netPromoterScore: score.toString()})}
+                          className={`w-12 h-12 rounded-lg font-bold text-lg transition-all ${
+                            feedbackData.netPromoterScore === score.toString()
+                              ? 'bg-[#009900] text-white border-2 border-[#D0ED00] shadow-md scale-105'
+                              : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-[#009900] hover:bg-gray-50'
+                          }`}
+                        >
+                          {score}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
