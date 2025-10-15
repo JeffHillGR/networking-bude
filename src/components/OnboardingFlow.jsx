@@ -49,7 +49,8 @@ export default function BudEOnboarding() {
     'Technology', 'Marketing', 'Finance', 'Design', 'Sales', 'HR',
     'Product Management', 'Data Science', 'Engineering', 'Consulting',
     'Healthcare', 'Education', 'Real Estate', 'Legal', 'Media',
-    'Startup', 'AI/ML', 'Blockchain', 'Sustainability', 'Leadership'
+    'Startup', 'AI/ML', 'Blockchain', 'Sustainability', 'Leadership',
+    'Coding', 'AI'
   ];
 
   const jobTitleSuggestions = [
