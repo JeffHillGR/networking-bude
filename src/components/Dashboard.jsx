@@ -168,13 +168,14 @@ const getGreeting = () => {
               <p className="text-sm text-gray-600">Here's what's happening in your professional network today.</p>
             </div>
 
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h3 className="font-bold text-gray-900 text-lg">Featured Content</h3>
-                  <p className="text-sm text-gray-600">Curated content to help you grow</p>
-                </div>
-                <div className="flex items-center gap-2">
+            <div>
+              <div className="mb-3">
+                <h3 className="font-bold text-gray-900 text-lg">Featured Content</h3>
+                <p className="text-sm text-gray-600">Curated content to help you grow</p>
+              </div>
+              <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
                   <button
                     onClick={() => setFeaturedContentIndex((featuredContentIndex - 1 + featuredContent.length) % featuredContent.length)}
                     className="p-1 hover:bg-gray-100 rounded"
@@ -224,6 +225,7 @@ const getGreeting = () => {
                     )}
                   </div>
                 </div>
+              </div>
               </div>
             </div>
 
