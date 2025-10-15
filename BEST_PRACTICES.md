@@ -649,6 +649,52 @@ The debugging journey:
 - When debugging API issues, check the working endpoint first to rule out auth/permission issues
 - If the error says "Unable to parse range", the tab name is likely wrong
 
+### Lesson 3: Vercel SPA Routing and 404 Errors (2025-10-15)
+
+**Users can view the site but refresh on `/dashboard` or any route → 404 error**
+
+The problem:
+1. React Router handles routing client-side (in the browser)
+2. When you refresh `/dashboard`, the browser makes a server request to Vercel
+3. Vercel looks for a physical file at `/dashboard/index.html`
+4. No file exists → Vercel returns 404
+5. User sees error instead of the React app
+
+**Root cause**: Single-page applications (SPAs) need the server to route ALL requests to `index.html`, allowing React Router to handle routing client-side.
+
+**Solution**: Add a `vercel.json` configuration file:
+```json
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+```
+
+**What this does**: Tells Vercel "no matter what URL path is requested, serve the index.html file and let React Router handle it."
+
+**Lesson**: SPAs need server-side configuration to handle client-side routing. This applies to:
+- Vercel (use `vercel.json`)
+- Netlify (use `_redirects` or `netlify.toml`)
+- Apache (use `.htaccess`)
+- Nginx (use `nginx.conf`)
+
+**Why this matters for beta**:
+- Users might bookmark specific pages like `/events` or `/connections`
+- Browser refresh should work seamlessly
+- Shared links should work (not just the root URL)
+- Some users have browser extensions that auto-refresh pages
+- Professional appearance - 404 errors break trust
+
+**Prevention**:
+- Always add server routing config when deploying SPAs
+- Test by navigating to a route and hitting refresh
+- Test shared links to internal routes
+- Include in deployment checklist for future projects
+
 ---
 
 ## Your Mantra Going Forward
