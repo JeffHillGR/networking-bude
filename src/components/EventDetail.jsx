@@ -384,8 +384,8 @@ function EventDetail() {
                   <div className="flex gap-3">
                     <Users className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
                     <div>
-                      <div className="font-semibold text-gray-900">Number Attending</div>
-                      <div className="text-sm text-[#009900] font-medium">Beta coming soon</div>
+                      <div className="font-semibold text-gray-900">Attendees</div>
+                      <div className="text-sm text-[#009900] font-medium">Coming Soon</div>
                     </div>
                   </div>
                 </div>
