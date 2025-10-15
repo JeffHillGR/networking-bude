@@ -773,12 +773,7 @@ default:
       {/* Floating Feedback Widget */}
       <FeedbackWidget
         onOpenFeedback={() => {
-          setActiveTab('settings');
           setShowFeedbackPrompt(true);
-          setTimeout(() => {
-            setShowFeedbackPrompt(false);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }, 100);
         }}
       />
     </div>
