@@ -147,11 +147,13 @@ const getGreeting = () => {
       case 'dashboard':
         return (
           <div className="space-y-4">
-            <div className="relative h-32 rounded-lg overflow-hidden shadow-lg">
+            <div className="relative h-32 rounded-lg overflow-hidden shadow-lg bg-gradient-to-r from-green-600 to-lime-400">
               <img
                 src="/Tech-Week-rooftop.jpg"
                 alt="Networking Event at Sunset"
                 className="w-full h-full object-cover"
+                loading="eager"
+                fetchpriority="high"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-4 text-white">
                 <div className="flex items-center gap-2">
