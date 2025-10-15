@@ -325,10 +325,6 @@ function EventDetail() {
                 <div className="flex-1">
                   <h4 className="font-bold text-gray-900 text-lg">{event.organizer.name}</h4>
                   <p className="text-gray-600 text-sm mt-1">{event.organizer.description}</p>
-                  <button className="mt-3 flex items-center gap-2 text-[#009900] font-medium hover:text-[#007700] text-sm">
-                    <User className="w-4 h-4" />
-                    View Profile
-                  </button>
                 </div>
               </div>
             </div>
