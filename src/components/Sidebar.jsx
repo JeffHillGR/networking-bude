@@ -26,7 +26,7 @@ function Sidebar({ activeTab, setActiveTab }) {
         style={{
           backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
           backgroundPosition: 'center 10%',
-          filter: 'blur(8px)',
+          filter: 'blur(3px)',
           transform: 'scale(1.1)'
         }}
       />

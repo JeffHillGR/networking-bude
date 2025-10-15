@@ -23,6 +23,7 @@ const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
 const [adInquirySubmitted, setAdInquirySubmitted] = useState(false);
 const [phoneNumber, setPhoneNumber] = useState('');
 const [isSubmittingAd, setIsSubmittingAd] = useState(false);
+const [showScientistModal, setShowScientistModal] = useState(false);
 
 // Format phone number as user types: (XXX) XXX-XXXX
 const formatPhoneNumber = (value) => {
@@ -178,13 +179,13 @@ const getGreeting = () => {
                   <div
                     key={index}
                     onClick={() => navigate(`/events/${event.id}`)}
-                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200 flex h-32"
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200 flex min-h-[136px]"
                   >
                     {event.image && (
                       <img
                         src={event.image}
                         alt={event.title}
-                        className="w-24 h-24 object-cover flex-shrink-0"
+                        className="w-32 h-32 object-cover flex-shrink-0"
                       />
                     )}
                     <div className="p-3 flex-1 min-w-0">
@@ -217,33 +218,39 @@ const getGreeting = () => {
               </div>
 
               {/* Potential Connections - Right Side */}
-              <div className="relative group">
+              <div>
                 <div className="mb-4">
                   <h3 className="font-bold text-gray-900 text-lg">Potential Connections</h3>
                   <p className="text-sm text-gray-600">People you might want to connect with</p>
                 </div>
                 <div className="space-y-4">
                   {connections.map((person, index) => (
-                    <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 flex flex-col h-32">
-                      <div className="flex items-start gap-3 mb-3">
+                    <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                      <div className="flex gap-4">
                         <img
                           src={person.image}
                           alt={person.name}
-                          className="w-14 h-14 rounded-full object-cover flex-shrink-0"
+                          className="w-24 h-24 rounded-full object-cover flex-shrink-0"
                         />
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-bold text-gray-900 text-sm">{person.name}</h4>
-                          <p className="text-xs text-gray-600 line-clamp-2">{person.title}</p>
+                          <h4 className="font-bold text-gray-900 text-lg">{person.name}</h4>
+                          <p className="text-sm text-gray-600 mb-3">{person.title}</p>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4 text-sm">
+                              <span className="font-medium">{person.similarity} compatible</span>
+                              <span className="text-blue-600">👥 {person.mutuals}</span>
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowScientistModal(true);
+                              }}
+                              className="px-4 py-2 bg-[#009900] border-2 border-[#D0ED00] text-white text-sm rounded-lg hover:bg-[#007700] font-medium flex-shrink-0"
+                            >
+                              Connect
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-xs text-gray-600">{person.similarity} compatible</span>
-                          <span className="text-xs text-blue-500">👥 {person.mutuals}</span>
-                        </div>
-                        <button className="px-3 py-1.5 bg-[#009900] border-2 border-[#D0ED00] text-white text-xs rounded-lg hover:bg-[#007700] flex-shrink-0 font-medium">
-                          Connect
-                        </button>
                       </div>
                     </div>
                   ))}
@@ -258,20 +265,6 @@ const getGreeting = () => {
                     View All Connections
                     <img src="/BudE-favicon.png" alt="BudE" className="w-4 h-4" />
                   </button>
-                </div>
-
-                {/* Beta Testing Hover Message */}
-                <div className="absolute inset-0 bg-black/60 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none z-10">
-                  <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-4 md:p-6 max-w-2xl mx-4 flex flex-col md:flex-row items-center gap-3 md:gap-4 shadow-2xl border-4 border-[#D0ED00]">
-                    <img
-                      src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
-                      alt="Scientist at work"
-                      className="h-16 md:h-24 w-auto flex-shrink-0 rounded-lg object-cover"
-                    />
-                    <p className="text-green-800 font-medium text-sm md:text-base text-center md:text-left">
-                      Our scientists are hard at work finding connections for you. Look for an email from us soon!
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>
@@ -759,6 +752,41 @@ default:
                   Maybe Later
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Scientist Modal - Shown when clicking Connect */}
+      {showScientistModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowScientistModal(false)}>
+          <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-8 max-w-2xl w-full shadow-2xl border-4 border-[#D0ED00] relative" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setShowScientistModal(false)}
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-3xl font-bold leading-none"
+            >
+              ×
+            </button>
+            <div className="text-center mb-6">
+              <h3 className="text-2xl font-bold text-green-900 mb-2">Connection Request Noted!</h3>
+            </div>
+            <div className="flex items-center justify-center gap-6 mb-6">
+              <img
+                src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
+                alt="Scientist at work"
+                className="h-32 w-auto flex-shrink-0 rounded-lg object-cover shadow-lg"
+              />
+            </div>
+            <p className="text-green-800 font-medium text-lg text-center mb-8">
+              Our scientists are hard at work finding connections for you. Look for an email from us soon!
+            </p>
+            <div className="flex justify-center">
+              <button
+                onClick={() => setShowScientistModal(false)}
+                className="px-8 py-3 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
+              >
+                Got it!
+              </button>
             </div>
           </div>
         </div>
