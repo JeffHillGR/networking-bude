@@ -19,6 +19,7 @@ const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
 const [showSponsorModal, setShowSponsorModal] = useState(false);
 const [showFeedbackPrompt, setShowFeedbackPrompt] = useState(false);
 const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
+const [adInquirySubmitted, setAdInquirySubmitted] = useState(false);
 const [phoneNumber, setPhoneNumber] = useState('');
 const [isSubmittingAd, setIsSubmittingAd] = useState(false);
 
@@ -530,27 +531,41 @@ default:
 
       {/* Ad Inquiry Modal */}
       {showAdInquiryModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowAdInquiryModal(false)}>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => !adInquirySubmitted && setShowAdInquiryModal(false)}>
           <div className="bg-white rounded-lg shadow-2xl max-w-lg w-full p-6 relative border-4 border-[#D0ED00]" onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={() => setShowAdInquiryModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
-            >
-              ×
-            </button>
-            <div>
-              <div className="mb-4">
-                <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+            {adInquirySubmitted ? (
+              // Success Message
+              <div className="text-center py-12">
+                <div className="mb-6">
+                  <svg className="w-20 h-20 mx-auto text-[#009900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Thank You!</h2>
+                <p className="text-lg text-gray-600 mb-2">Your inquiry has been submitted successfully.</p>
+                <p className="text-gray-500">We'll be in touch soon!</p>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">Advertise with BudE</h3>
-              <p className="text-gray-600 mb-6 text-center">
-                Interested in advertising? Fill out this quick form and we'll get back to you soon!
-              </p>
-              <form
+            ) : (
+              <>
+                <button
+                  onClick={() => setShowAdInquiryModal(false)}
+                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                >
+                  ×
+                </button>
+                <div>
+                  <div className="mb-4">
+                    <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto">
+                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">Advertise with BudE</h3>
+                  <p className="text-gray-600 mb-6 text-center">
+                    Interested in advertising? Fill out this quick form and we'll get back to you soon!
+                  </p>
+                  <form
                 onSubmit={async (e) => {
                   e.preventDefault();
                   setIsSubmittingAd(true);
@@ -588,9 +603,16 @@ default:
                     const result = await response.json();
                     console.log('✅ Success:', result);
 
-                    alert('Thank you! We\'ll be in touch soon.');
-                    setShowAdInquiryModal(false);
+                    // Show success message in modal
+                    setAdInquirySubmitted(true);
+                    e.target.reset();
                     setPhoneNumber('');
+
+                    // Close modal after 3 seconds
+                    setTimeout(() => {
+                      setAdInquirySubmitted(false);
+                      setShowAdInquiryModal(false);
+                    }, 3000);
                   } catch (error) {
                     console.error('❌ Error submitting ad inquiry:', error);
                     alert(`Error: ${error.message}\n\nPlease email grjeff@gmail.com directly.`);
@@ -691,7 +713,9 @@ default:
                   </button>
                 </div>
               </form>
-            </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

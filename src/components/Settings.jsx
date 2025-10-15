@@ -8,6 +8,7 @@ function Settings({ autoOpenFeedback = false }) {
   const [showLeaveBetaModal, setShowLeaveBetaModal] = useState(false);
   const [leaveBetaReason, setLeaveBetaReason] = useState('');
   const [showFeedbackModal, setShowFeedbackModal] = useState(autoOpenFeedback);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [feedbackData, setFeedbackData] = useState({
     name: '',
     email: '',
@@ -307,30 +308,35 @@ function Settings({ autoOpenFeedback = false }) {
         throw new Error('Failed to submit feedback');
       }
 
-      showSuccess('Thank you for your feedback!');
-      setShowFeedbackModal(false);
-      // Reset form
-      setFeedbackData({
-        name: '',
-        email: '',
-        signUpSmoothness: '',
-        navigationEase: '',
-        confusingSteps: '',
-        visualAppeal: '',
-        brandClarity: '',
-        performance: '',
-        crashesOrBugs: '',
-        usefulFeatures: '',
-        missingFeatures: '',
-        corePurposeUnderstood: '',
-        valueProposition: '',
-        solvesRealProblem: '',
-        wouldUseOrRecommend: '',
-        reasonToComeBack: '',
-        overallSatisfaction: '',
-        overallRating: '',
-        netPromoterScore: ''
-      });
+      // Show success message in modal
+      setFeedbackSubmitted(true);
+
+      // Reset form after 3 seconds and close modal
+      setTimeout(() => {
+        setFeedbackSubmitted(false);
+        setShowFeedbackModal(false);
+        setFeedbackData({
+          name: '',
+          email: '',
+          signUpSmoothness: '',
+          navigationEase: '',
+          confusingSteps: '',
+          visualAppeal: '',
+          brandClarity: '',
+          performance: '',
+          crashesOrBugs: '',
+          usefulFeatures: '',
+          missingFeatures: '',
+          corePurposeUnderstood: '',
+          valueProposition: '',
+          solvesRealProblem: '',
+          wouldUseOrRecommend: '',
+          reasonToComeBack: '',
+          overallSatisfaction: '',
+          overallRating: '',
+          netPromoterScore: ''
+        });
+      }, 3000);
     } catch (error) {
       console.error('Error submitting feedback:', error);
       alert('There was an error submitting your feedback. Please try again.');
@@ -1013,23 +1019,37 @@ function Settings({ autoOpenFeedback = false }) {
 
       {/* Beta Feedback Modal */}
       {showFeedbackModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowFeedbackModal(false)}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => !feedbackSubmitted && setShowFeedbackModal(false)}>
           <div className="bg-white rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-gray-900">Beta Feedback</h2>
-              <button
-                onClick={() => setShowFeedbackModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+            {feedbackSubmitted ? (
+              // Success Message
+              <div className="text-center py-12">
+                <div className="mb-6">
+                  <svg className="w-20 h-20 mx-auto text-[#009900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Thank You!</h2>
+                <p className="text-lg text-gray-600 mb-2">Your feedback has been submitted successfully.</p>
+                <p className="text-gray-500">This helps us make BudE better for everyone!</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-2xl font-bold text-gray-900">Beta Feedback</h2>
+                  <button
+                    onClick={() => setShowFeedbackModal(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
 
-            <p className="text-gray-600 mb-6">
-              Thank you for testing BudE! Your feedback is invaluable in helping us create the best networking platform.
-            </p>
+                <p className="text-gray-600 mb-6">
+                  Thank you for testing BudE! Your feedback is invaluable in helping us create the best networking platform.
+                </p>
 
-            <form onSubmit={handleSubmitFeedback} className="space-y-6">
+                <form onSubmit={handleSubmitFeedback} className="space-y-6">
               {/* Contact Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -1283,6 +1303,8 @@ function Settings({ autoOpenFeedback = false }) {
                 </button>
               </div>
             </form>
+              </>
+            )}
           </div>
         </div>
       )}
