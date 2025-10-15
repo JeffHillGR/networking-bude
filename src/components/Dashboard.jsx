@@ -11,6 +11,7 @@ import Account from './Account';
 import TermsPage from './TermsPage';
 import PrivacyPage from './PrivacyPage';
 import ArchivePage from './ArchivePage';
+import FeedbackWidget from './FeedbackWidget';
 function Dashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -768,6 +769,18 @@ default:
           </div>
         </div>
       )}
+
+      {/* Floating Feedback Widget */}
+      <FeedbackWidget
+        onOpenFeedback={() => {
+          setActiveTab('settings');
+          setShowFeedbackPrompt(true);
+          setTimeout(() => {
+            setShowFeedbackPrompt(false);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }, 100);
+        }}
+      />
     </div>
   );
 }
