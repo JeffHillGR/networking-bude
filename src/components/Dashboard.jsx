@@ -169,7 +169,7 @@ const getGreeting = () => {
             </div>
 
             <div>
-              <div className="mb-3">
+              <div className="mb-2">
                 <h3 className="font-bold text-gray-900 text-lg">Featured Content</h3>
                 <p className="text-sm text-gray-600">Curated content to help you grow</p>
               </div>
