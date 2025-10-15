@@ -11,6 +11,7 @@ function Events() {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [eventSubmitted, setEventSubmitted] = useState(false);
   const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
   const [adInquirySubmitted, setAdInquirySubmitted] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -132,17 +133,19 @@ function Events() {
       const result = await response.json();
       console.log('✅ Event suggestion submitted successfully:', result);
 
-      // Show success message
-      setSubmitSuccess(true);
+      // Show success message in modal
+      setEventSubmitted(true);
+      setEventFormData({
+        submitterName: '',
+        submitterEmail: '',
+        eventUrl: ''
+      });
+
+      // Close modal after 3 seconds
       setTimeout(() => {
+        setEventSubmitted(false);
         setShowSubmitModal(false);
-        setSubmitSuccess(false);
-        setEventFormData({
-          submitterName: '',
-          submitterEmail: '',
-          eventUrl: ''
-        });
-      }, 2000);
+      }, 3000);
     } catch (error) {
       console.error('❌ Error submitting event suggestion:', error);
       alert('There was an error submitting your suggestion. Please try again.');
@@ -525,19 +528,33 @@ function Events() {
 
       {/* Submit Event Modal */}
       {showSubmitModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full">
-            <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-lg">
-              <h2 className="text-2xl font-bold text-gray-900">Suggest an Event</h2>
-              <button
-                onClick={() => setShowSubmitModal(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => !eventSubmitted && setShowSubmitModal(false)}>
+          <div className="bg-white rounded-lg max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+            {eventSubmitted ? (
+              // Success Message
+              <div className="text-center py-12 px-6">
+                <div className="mb-6">
+                  <svg className="w-20 h-20 mx-auto text-[#009900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Thank You!</h2>
+                <p className="text-lg text-gray-600 mb-2">Thank you for submitting.</p>
+                <p className="text-gray-500">We'll check it out.</p>
+              </div>
+            ) : (
+              <>
+                <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-lg">
+                  <h2 className="text-2xl font-bold text-gray-900">Suggest an Event</h2>
+                  <button
+                    onClick={() => setShowSubmitModal(false)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
 
-            <form onSubmit={handleSubmitEvent} className="p-6">
+                <form onSubmit={handleSubmitEvent} className="p-6">
               <p className="text-gray-600 mb-6">
                 Let us know if there's an event you'd like us to add and we'll take a look!
               </p>
@@ -599,10 +616,12 @@ function Events() {
                   disabled={submitting}
                   className="flex-1 px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] disabled:bg-gray-400"
                 >
-                  {submitting ? 'Submitting...' : submitSuccess ? 'Success!' : 'Submit'}
+                  {submitting ? 'Submitting...' : 'Suggest an Event'}
                 </button>
               </div>
             </form>
+              </>
+            )}
           </div>
         </div>
       )}
