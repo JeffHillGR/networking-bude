@@ -448,7 +448,7 @@ export default function BudEOnboarding() {
               <input
                 type="text"
                 className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                placeholder="Or what you are known for - e.g., Marketing Director, Software Engineer, Entrepreneur"
+                placeholder="Or what you are known for"
                 value={formData.jobTitle}
                 onChange={(e) => handleJobTitleChange(e.target.value)}
                 onFocus={() => {
