@@ -248,7 +248,6 @@ const getGreeting = () => {
 
             <div>
               <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
-              <p className="text-sm text-gray-600">Here's what's happening in your professional network today.</p>
             </div>
 
             {/* Events and Connections Side by Side */}
