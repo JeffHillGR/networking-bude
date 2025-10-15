@@ -921,9 +921,9 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
             onImageUpload={handleImageUpload}
             onUrlChange={handleUrlChange}
             onRemove={removeAd}
-            dimensions="1200x300px"
+            dimensions="1200x180px"
             description="Appears at bottom of user dashboard"
-            aspectRatio="1200/300"
+            aspectRatio="1200/180"
           />
         </div>
       </div>

@@ -165,26 +165,138 @@ const getGreeting = () => {
               <p className="text-sm text-gray-600">Here's what's happening in your professional network today.</p>
             </div>
 
+            {/* Events and Connections Side by Side */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Upcoming Events - Left Side */}
+              <div>
+                <div className="mb-4">
+                  <h3 className="font-bold text-gray-900 text-lg">Upcoming Events</h3>
+                  <p className="text-sm text-gray-600">Networking events happening near you</p>
+                </div>
+                <div className="space-y-4">
+                  {events.slice(0, 3).map((event, index) => (
+                  <div
+                    key={index}
+                    onClick={() => navigate(`/events/${event.id}`)}
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200 flex h-32"
+                  >
+                    {event.image && (
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        className="w-24 h-24 object-cover flex-shrink-0"
+                      />
+                    )}
+                    <div className="p-3 flex-1 min-w-0">
+                      <div className="flex items-start justify-between mb-1">
+                        <div className="flex-1 min-w-0">
+                          <span className="inline-block bg-black text-white text-xs px-2 py-0.5 rounded mb-1">{event.badge || 'In-Person'}</span>
+                          <h4 className="font-bold text-gray-900 text-sm line-clamp-2">{event.title}</h4>
+                        </div>
+                      </div>
+                      <div className="space-y-0.5 text-xs text-gray-600">
+                        <p className="font-semibold text-gray-700 truncate">🏢 {event.organizerName || 'Event Organizer'}</p>
+                        <p>📅 {event.date} • 🕐 {event.time}</p>
+                        <p className="truncate">📍 {event.fullAddress || event.location}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+                {/* View All Events Button */}
+                <div className="flex justify-center mt-6">
+                  <button
+                    onClick={() => setActiveTab('events')}
+                    className="px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors flex items-center gap-2 border-[3px] border-[#D0ED00] text-sm"
+                  >
+                    View All Events
+                    <img src="/BudE-favicon.png" alt="BudE" className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Potential Connections - Right Side */}
+              <div className="relative group">
+                <div className="mb-4">
+                  <h3 className="font-bold text-gray-900 text-lg">Potential Connections</h3>
+                  <p className="text-sm text-gray-600">People you might want to connect with</p>
+                </div>
+                <div className="space-y-4">
+                  {connections.map((person, index) => (
+                    <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 flex flex-col h-32">
+                      <div className="flex items-start gap-3 mb-3">
+                        <img
+                          src={person.image}
+                          alt={person.name}
+                          className="w-14 h-14 rounded-full object-cover flex-shrink-0"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-bold text-gray-900 text-sm">{person.name}</h4>
+                          <p className="text-xs text-gray-600 line-clamp-2">{person.title}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs text-gray-600">{person.similarity} compatible</span>
+                          <span className="text-xs text-blue-500">👥 {person.mutuals}</span>
+                        </div>
+                        <button className="px-3 py-1.5 bg-[#009900] border-2 border-[#D0ED00] text-white text-xs rounded-lg hover:bg-[#007700] flex-shrink-0 font-medium">
+                          Connect
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* View All Connections Button */}
+                <div className="flex justify-center mt-6">
+                  <button
+                    onClick={() => setActiveTab('connections')}
+                    className="px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors flex items-center gap-2 border-[3px] border-[#D0ED00] text-sm"
+                  >
+                    View All Connections
+                    <img src="/BudE-favicon.png" alt="BudE" className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Beta Testing Hover Message */}
+                <div className="absolute inset-0 bg-black/60 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none z-10">
+                  <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-4 md:p-6 max-w-2xl mx-4 flex flex-col md:flex-row items-center gap-3 md:gap-4 shadow-2xl border-4 border-[#D0ED00]">
+                    <img
+                      src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
+                      alt="Scientist at work"
+                      className="h-16 md:h-24 w-auto flex-shrink-0 rounded-lg object-cover"
+                    />
+                    <p className="text-green-800 font-medium text-sm md:text-base text-center md:text-left">
+                      Our scientists are hard at work finding connections for you. Look for an email from us soon!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Featured Content - Below Events and Connections */}
             <div>
-              <div className="mb-2">
+              <div className="mb-4">
                 <h3 className="font-bold text-gray-900 text-lg">Featured Content</h3>
                 <p className="text-sm text-gray-600">Curated content to help you grow</p>
               </div>
-              <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-                <div className="flex items-center justify-between mb-3">
+              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                   <button
                     onClick={() => setFeaturedContentIndex((featuredContentIndex - 1 + featuredContent.length) % featuredContent.length)}
-                    className="p-1 hover:bg-gray-100 rounded"
+                    className="p-2 hover:bg-gray-100 rounded"
                   >
-                    <ChevronLeft className="w-4 h-4" />
+                    <ChevronLeft className="w-5 h-5" />
                   </button>
-                  <span className="text-xs text-gray-600">{featuredContentIndex + 1} of {featuredContent.length}</span>
+                  <span className="text-sm text-gray-600 font-medium">{featuredContentIndex + 1} of {featuredContent.length}</span>
                   <button
                     onClick={() => setFeaturedContentIndex((featuredContentIndex + 1) % featuredContent.length)}
-                    className="p-1 hover:bg-gray-100 rounded"
+                    className="p-2 hover:bg-gray-100 rounded"
                   >
-                    <ChevronRight className="w-4 h-4" />
+                    <ChevronRight className="w-5 h-5" />
                   </button>
                 </div>
               </div>
@@ -194,30 +306,30 @@ const getGreeting = () => {
                     window.open(featuredContent[featuredContentIndex].url, '_blank');
                   }
                 }}
-                className="flex gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors -m-2 cursor-pointer"
+                className="flex gap-6 hover:bg-gray-50 p-3 rounded-lg transition-colors -m-3 cursor-pointer"
               >
                 <img
                   src={featuredContent[featuredContentIndex].image}
                   alt={featuredContent[featuredContentIndex].title}
-                  className="w-20 h-20 rounded-lg object-contain flex-shrink-0 bg-white"
+                  className="w-32 h-32 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm"
                 />
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-bold text-gray-900 mb-1 text-sm">{featuredContent[featuredContentIndex].title}</h4>
-                  <p className="text-xs text-gray-600 mb-2 line-clamp-2">{featuredContent[featuredContentIndex].description}</p>
+                  <h4 className="font-bold text-gray-900 mb-2 text-base">{featuredContent[featuredContentIndex].title}</h4>
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-3">{featuredContent[featuredContentIndex].description}</p>
                   <div className="flex items-center justify-between">
                     {featuredContent[featuredContentIndex].tags && (
-                      <div className="flex gap-1">
+                      <div className="flex gap-2">
                         {featuredContent[featuredContentIndex].tags.split(',').slice(0, 2).map((tag, i) => (
-                          <span key={i} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                          <span key={i} className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded">
                             {tag.trim()}
                           </span>
                         ))}
                       </div>
                     )}
                     {featuredContent[featuredContentIndex].sponsoredBy && (
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-2">
                         <span className="text-xs text-gray-400">Sponsored by</span>
-                        <span className="text-xs font-medium text-gray-700">{featuredContent[featuredContentIndex].sponsoredBy}</span>
+                        <span className="text-sm font-medium text-gray-700">{featuredContent[featuredContentIndex].sponsoredBy}</span>
                       </div>
                     )}
                   </div>
@@ -226,130 +338,12 @@ const getGreeting = () => {
               </div>
             </div>
 
-            <div className="relative group">
-              <div className="mb-3">
-                <h3 className="font-bold text-gray-900 text-lg">Potential Connections</h3>
-                <p className="text-sm text-gray-600">People you might want to connect with</p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {connections.map((person, index) => (
-                  <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 flex flex-col">
-                    <div className="flex items-start gap-3 mb-3">
-                      <img
-                        src={person.image}
-                        alt={person.name}
-                        className="w-14 h-14 rounded-full object-cover flex-shrink-0"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-gray-900 text-sm">{person.name}</h4>
-                        <p className="text-xs text-gray-600 line-clamp-2">{person.title}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex flex-col gap-1">
-                        <span className="text-xs text-gray-600">{person.similarity} compatible</span>
-                        <span className="text-xs text-blue-500">👥 {person.mutuals}</span>
-                      </div>
-                      <button className="px-3 py-1.5 bg-[#009900] border-2 border-[#D0ED00] text-white text-xs rounded hover:bg-[#007700] flex-shrink-0 font-medium">
-                        Connect
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* View All Connections Button */}
-              <div className="flex justify-center mt-6">
-                <button
-                  onClick={() => setActiveTab('connections')}
-                  className="px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors flex items-center gap-2 border-[3px] border-[#D0ED00] text-sm"
-                >
-                  View All Connections
-                  <img src="/BudE-favicon.png" alt="BudE" className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Beta Testing Hover Message */}
-              <div className="absolute inset-0 bg-black/60 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none z-10">
-                <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-4 md:p-6 max-w-2xl mx-4 flex flex-col md:flex-row items-center gap-3 md:gap-4 shadow-2xl border-4 border-[#D0ED00]">
-                  <img
-                    src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
-                    alt="Scientist at work"
-                    className="h-16 md:h-24 w-auto flex-shrink-0 rounded-lg object-cover"
-                  />
-                  <p className="text-green-800 font-medium text-sm md:text-base text-center md:text-left">
-                    Our scientists are hard at work finding connections for you. Look for an email from us soon!
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <div className="mb-4">
-                <h3 className="font-bold text-gray-900 text-lg">Upcoming Events</h3>
-                <p className="text-sm text-gray-600">Networking events happening near you</p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {events.map((event, index) => (
-                  <div
-                    key={index}
-                    onClick={() => navigate(`/events/${event.id}`)}
-                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200"
-                  >
-                    {event.image && (
-                      <img
-                        src={event.image}
-                        alt={event.title}
-                        className="w-full h-32 object-cover"
-                      />
-                    )}
-                    <div className="p-3">
-                      <div className="flex items-start justify-between mb-1">
-                        <div className="flex-1">
-                          <span className="inline-block bg-black text-white text-xs px-2 py-1 rounded mb-1">{event.badge || 'In-Person'}</span>
-                          <h4 className="font-bold text-gray-900 text-sm">{event.title}</h4>
-                        </div>
-                      </div>
-                      <div className="space-y-0.5 text-xs text-gray-600 mb-2">
-                        <p className="font-semibold text-gray-700">🏢 {event.organizerName || 'Event Organizer'}</p>
-                        <p>📅 {event.date}</p>
-                        <p>🕐 {event.time}</p>
-                        <p>📍 {event.fullAddress || event.location}</p>
-                      </div>
-                      <div className="flex justify-end">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/events/${event.id}`);
-                          }}
-                          className="text-[#009900] font-medium hover:text-[#007700] flex items-center gap-1 text-xs"
-                        >
-                          View Details
-                          <ExternalLink className="h-3 w-3" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* View All Events Button */}
-              <div className="flex justify-center mt-6">
-                <button
-                  onClick={() => setActiveTab('events')}
-                  className="px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors flex items-center gap-2 border-[3px] border-[#D0ED00] text-sm"
-                >
-                  View All Events
-                  <img src="/BudE-favicon.png" alt="BudE" className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-                    {/* Bottom Banner Ad */}
-            <div className="mt-12">
+            {/* Bottom Banner Ad */}
+            <div className="mt-8">
               {(() => {
                 const dashboardAd = JSON.parse(localStorage.getItem('ad_dashboardBottom') || 'null');
                 return dashboardAd?.image && dashboardAd?.url ? (<a
-                  
+
                     href={dashboardAd.url}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -358,15 +352,15 @@ const getGreeting = () => {
                     <img
                       src={dashboardAd.image}
                       alt="Advertisement"
-                      className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                      style={{ aspectRatio: '1200/300' }}
+                      className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow object-cover"
+                      style={{ maxHeight: '180px' }}
                     />
                   </a>
                 ) : (
                   <div
                     onClick={() => setShowAdInquiryModal(true)}
-                    className="rounded-lg p-12 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
-                    style={{ aspectRatio: '1200/300' }}
+                    className="rounded-lg p-8 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
+                    style={{ height: '180px' }}
                   >
                     <div
                       className="absolute inset-0 bg-cover opacity-30"
@@ -378,7 +372,8 @@ const getGreeting = () => {
                       }}
                     />
                     <div className="text-center relative z-10">
-                      <p className="text-gray-700 font-bold text-lg">Banner Ad Spot: Click to Inquire</p>
+                      <p className="text-gray-700 font-bold text-base">Banner Ad Spot: Click to Inquire</p>
+                      <p className="text-gray-600 text-sm mt-1">Recommended: 1200×180px</p>
                     </div>
                   </div>
                 );
@@ -441,12 +436,9 @@ default:
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
-    <div className="bg-gradient-to-r from-green-600 via-lime-400 to-yellow-400 text-white px-4 py-1 text-center text-sm md:text-base">
+    <div className="bg-gradient-to-r from-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
       <span className="font-medium">
-        Beta Testing - All Features Unlocked
-      </span>
-      <span className="mx-2">•</span>
-      <button
+        Beta Testing • All Features Unlocked • <button
         onClick={() => {
           localStorage.removeItem('onboardingCompleted');
           window.location.href = '/';
@@ -455,6 +447,7 @@ default:
       >
         Reset to Onboarding
       </button>
+      </span>
     </div>
     <div className="md:flex">
 
