@@ -235,8 +235,8 @@ export default function BudEOnboarding() {
  const renderWelcome = () => (
   <div className="h-full md:min-h-screen flex flex-col md:flex-row">
     {/* Left side - Images - Hidden on mobile */}
-    <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 p-12 items-start justify-end">
-      <div className="relative" style={{ marginTop: '1rem' }}>
+    <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 px-12 pb-12 items-start justify-end">
+      <div className="relative pt-8">
         {/* Large phone image - Increased 20% - Aligned with logo */}
         <div className="w-[600px] h-[744px] rounded-3xl overflow-hidden shadow-2xl relative">
           <img
