@@ -316,26 +316,26 @@ const getGreeting = () => {
                 <div className="space-y-4 flex-grow">
                   {connections.map((person, index) => (
                     <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px]">
-                      <div className="flex gap-4">
+                      <div className="flex gap-3 md:gap-4">
                         <img
                           src={person.image}
                           alt={person.name}
-                          className="w-24 h-24 rounded-full object-cover flex-shrink-0"
+                          className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover flex-shrink-0"
                         />
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-bold text-gray-900 text-lg">{person.name}</h4>
-                          <p className="text-sm text-gray-600 mb-3">{person.title}</p>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4 text-sm">
-                              <span className="font-medium">{person.similarity} compatible</span>
-                              <span className="text-blue-600">👥 {person.mutuals}</span>
+                          <h4 className="font-bold text-gray-900 text-base md:text-lg">{person.name}</h4>
+                          <p className="text-xs md:text-sm text-gray-600 mb-2">{person.title}</p>
+                          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                            <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm flex-wrap">
+                              <span className="font-medium whitespace-nowrap">{person.similarity} compatible</span>
+                              <span className="text-blue-600 whitespace-nowrap">👥 {person.mutuals}</span>
                             </div>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setShowScientistModal(true);
                               }}
-                              className="px-4 py-2 bg-[#009900] border-2 border-[#D0ED00] text-white text-sm rounded-lg hover:bg-[#007700] font-medium flex-shrink-0"
+                              className="px-3 md:px-4 py-1.5 md:py-2 bg-[#009900] border-2 border-[#D0ED00] text-white text-xs md:text-sm rounded-lg hover:bg-[#007700] font-medium flex-shrink-0 w-full md:w-auto"
                             >
                               Connect
                             </button>
