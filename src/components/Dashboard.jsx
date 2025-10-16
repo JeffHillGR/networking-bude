@@ -423,8 +423,8 @@ const getGreeting = () => {
                 <h3 className="font-bold text-gray-900 text-lg">Featured Content</h3>
                 <p className="text-sm text-gray-600">Curated content to help you grow</p>
               </div>
-              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-                <div className="flex items-center justify-between mb-4">
+              <div className="bg-white rounded-lg p-8 shadow-sm border border-gray-200">
+                <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-2">
                   <button
                     onClick={() => setFeaturedContentIndex((featuredContentIndex - 1 + featuredContent.length) % featuredContent.length)}
@@ -447,16 +447,16 @@ const getGreeting = () => {
                     window.open(featuredContent[featuredContentIndex].url, '_blank');
                   }
                 }}
-                className="flex gap-6 hover:bg-gray-50 p-3 rounded-lg transition-colors -m-3 cursor-pointer"
+                className="flex gap-6 hover:bg-gray-50 p-4 rounded-lg transition-colors -m-4 cursor-pointer"
               >
                 <img
                   src={featuredContent[featuredContentIndex].image}
                   alt={featuredContent[featuredContentIndex].title}
-                  className="w-32 h-32 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm"
+                  className="w-48 h-48 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm"
                 />
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-bold text-gray-900 mb-2 text-base">{featuredContent[featuredContentIndex].title}</h4>
-                  <p className="text-sm text-gray-600 mb-3 line-clamp-3">{featuredContent[featuredContentIndex].description}</p>
+                  <h4 className="font-bold text-gray-900 mb-3 text-lg">{featuredContent[featuredContentIndex].title}</h4>
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-4">{featuredContent[featuredContentIndex].description}</p>
                   <div className="flex items-center justify-between">
                     {featuredContent[featuredContentIndex].tags && (
                       <div className="flex gap-2">
