@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Home, Calendar, Heart, MessageCircle, User, ChevronLeft, ChevronRight, Users, ExternalLink } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
@@ -142,10 +142,14 @@ useEffect(() => {
   }
 }, []);
 
-// Scroll to top when active tab changes (not on every render)
+// Scroll to top when component first mounts only
+const hasScrolled = useRef(false);
 useEffect(() => {
-  window.scrollTo(0, 0);
-}, [activeTab]);
+  if (!hasScrolled.current) {
+    window.scrollTo(0, 0);
+    hasScrolled.current = true;
+  }
+}, []);
 
 // Get user's first name and time-based greeting
 const userFirstName = localStorage.getItem('userFirstName') || 'there';
@@ -512,7 +516,7 @@ default:
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24 md:pb-0">
+    <div className="min-h-screen bg-gray-50 pb-32 md:pb-0" style={{ overscrollBehavior: 'contain' }}>
     <div className="bg-gradient-to-r from-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
       <span className="font-medium">
         Beta Testing • All Features Unlocked • <button
