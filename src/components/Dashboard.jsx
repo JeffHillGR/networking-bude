@@ -253,12 +253,12 @@ const getGreeting = () => {
             {/* Events and Connections Side by Side */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Upcoming Events - Left Side */}
-              <div>
+              <div className="flex flex-col">
                 <div className="mb-4">
                   <h3 className="font-bold text-gray-900 text-lg">Upcoming Events</h3>
                   <p className="text-sm text-gray-600">Networking events happening near you</p>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-4 flex-grow">
                   {events.slice(0, 3).map((event, index) => (
                   <div
                     key={index}
@@ -302,14 +302,14 @@ const getGreeting = () => {
               </div>
 
               {/* Potential Connections - Right Side */}
-              <div>
+              <div className="flex flex-col">
                 <div className="mb-4">
                   <h3 className="font-bold text-gray-900 text-lg">Potential Connections</h3>
                   <p className="text-sm text-gray-600">People you might want to connect with</p>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-4 flex-grow">
                   {connections.map((person, index) => (
-                    <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                    <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px]">
                       <div className="flex gap-4">
                         <img
                           src={person.image}
