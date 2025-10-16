@@ -238,27 +238,30 @@ export default function BudEOnboarding() {
     <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 px-12 pb-12 items-start justify-end">
       <div className="relative pt-8">
         {/* Large phone image - Increased 20% - Aligned with logo */}
-        <div className="w-[600px] h-[744px] rounded-3xl overflow-hidden shadow-2xl relative">
-          <img
-            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/My-phone-2.jpg"
-            alt="BudE app on phone"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute top-6 left-6 text-white text-3xl font-bold drop-shadow-lg">
-          </div>
+        <div className="flex flex-col items-center">
+          <div className="w-[600px] h-[744px] rounded-3xl overflow-hidden shadow-2xl relative">
+            <img
+              src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/My-phone-2.jpg"
+              alt="BudE app on phone"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute top-6 left-6 text-white text-3xl font-bold drop-shadow-lg">
+            </div>
 
-          {/* Three small images stacked at bottom right inside phone - Increased further for better face visibility */}
-          <div className="absolute right-6 bottom-6 space-y-3">
-            <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
-             <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-1.png" alt="Networking" className="w-full h-full object-cover" />
-            </div>
-            <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
-             <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-3.png" alt="Networking" className="w-full h-full object-cover" />
-            </div>
-            <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
-              <img src="/People-networking-2.png" alt="Networking" className="w-full h-full object-cover" />
+            {/* Three small images stacked at bottom right inside phone - Increased further for better face visibility */}
+            <div className="absolute right-6 bottom-6 space-y-3">
+              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+               <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-1.png" alt="Networking" className="w-full h-full object-cover" />
+              </div>
+              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+               <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-3.png" alt="Networking" className="w-full h-full object-cover" />
+              </div>
+              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+                <img src="/People-networking-2.png" alt="Networking" className="w-full h-full object-cover" />
+              </div>
             </div>
           </div>
+          <p className="text-sm text-gray-600 mt-4">Networking BudE by The BudE System™</p>
         </div>
       </div>
     </div>
@@ -266,9 +269,8 @@ export default function BudEOnboarding() {
     {/* Right side - Form - Full width on mobile, half on desktop */}
     <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain' }}>
       <div className="max-w-lg w-full">
-        <div className="flex flex-col items-center mb-4 md:mb-6">
+        <div className="flex justify-center mb-4 md:mb-6">
           <BudELogo />
-          <p className="text-sm text-gray-600 mt-2">Networking BudE by The BudE System™</p>
         </div>
         <h1 className="text-2xl md:text-3xl font-bold text-center mb-4 md:mb-6">
           Welcome to<br />Networking BudE
