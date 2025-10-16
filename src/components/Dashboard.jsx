@@ -604,7 +604,7 @@ default:
       {/* Ad Inquiry Modal */}
       {showAdInquiryModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => !adInquirySubmitted && setShowAdInquiryModal(false)}>
-          <div className="bg-white rounded-lg shadow-2xl max-w-lg w-full p-6 relative border-4 border-[#D0ED00]" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-4 md:p-6 relative border-4 border-[#D0ED00]" onClick={(e) => e.stopPropagation()}>
             {adInquirySubmitted ? (
               // Success Message
               <div className="text-center py-12">
@@ -876,7 +876,7 @@ default:
       {/* Beta Feedback Form Modal */}
       {showFeedbackModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => !feedbackSubmitted && setShowFeedbackModal(false)}>
-          <div className="bg-white rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg p-4 md:p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             {feedbackSubmitted ? (
               <div className="text-center py-12">
                 <div className="mb-6">
@@ -898,8 +898,8 @@ default:
                     </svg>
                   </button>
                 </div>
-                <p className="text-gray-600 mb-6">Thank you for testing BudE! Your feedback is invaluable in helping us create the best networking platform.</p>
-                <form onSubmit={handleSubmitFeedback} className="space-y-6">
+                <p className="text-gray-600 mb-4">Thank you for testing BudE! Your feedback is invaluable in helping us create the best networking platform.</p>
+                <form onSubmit={handleSubmitFeedback} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
@@ -911,90 +911,90 @@ default:
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg mb-3">Onboarding & First Impressions</h3>
-                    <div className="space-y-4">
+                    <h3 className="font-bold text-lg mb-2">Onboarding & First Impressions</h3>
+                    <div className="space-y-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">How smooth was the sign-up or login process?</label>
-                        <textarea value={feedbackData.signUpSmoothness} onChange={(e) => setFeedbackData({...feedbackData, signUpSmoothness: e.target.value})} rows={2} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                        <textarea value={feedbackData.signUpSmoothness} onChange={(e) => setFeedbackData({...feedbackData, signUpSmoothness: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
                       </div>
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg mb-3">User Experience (UX)</h3>
-                    <div className="space-y-4">
+                    <h3 className="font-bold text-lg mb-2">User Experience (UX)</h3>
+                    <div className="space-y-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">How easy or intuitive is it to navigate the app?</label>
-                        <textarea value={feedbackData.navigationEase} onChange={(e) => setFeedbackData({...feedbackData, navigationEase: e.target.value})} rows={2} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                        <textarea value={feedbackData.navigationEase} onChange={(e) => setFeedbackData({...feedbackData, navigationEase: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Any steps that felt confusing or frustrating?</label>
-                        <textarea value={feedbackData.confusingSteps} onChange={(e) => setFeedbackData({...feedbackData, confusingSteps: e.target.value})} rows={2} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                        <textarea value={feedbackData.confusingSteps} onChange={(e) => setFeedbackData({...feedbackData, confusingSteps: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
                       </div>
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg mb-3">Design & Branding</h3>
-                    <div className="space-y-4">
+                    <h3 className="font-bold text-lg mb-2">Design & Branding</h3>
+                    <div className="space-y-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Visual appeal of the app (colors, fonts, imagery)</label>
-                        <textarea value={feedbackData.visualAppeal} onChange={(e) => setFeedbackData({...feedbackData, visualAppeal: e.target.value})} rows={2} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                        <textarea value={feedbackData.visualAppeal} onChange={(e) => setFeedbackData({...feedbackData, visualAppeal: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Does the brand feel clear, memorable, and consistent?</label>
-                        <textarea value={feedbackData.brandClarity} onChange={(e) => setFeedbackData({...feedbackData, brandClarity: e.target.value})} rows={2} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                        <textarea value={feedbackData.brandClarity} onChange={(e) => setFeedbackData({...feedbackData, brandClarity: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
                       </div>
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg mb-3">Performance & Speed</h3>
-                    <div className="space-y-4">
+                    <h3 className="font-bold text-lg mb-2">Performance & Speed</h3>
+                    <div className="space-y-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Loading times, responsiveness, lag</label>
-                        <textarea value={feedbackData.performance} onChange={(e) => setFeedbackData({...feedbackData, performance: e.target.value})} rows={2} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                        <textarea value={feedbackData.performance} onChange={(e) => setFeedbackData({...feedbackData, performance: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Any crashes, bugs, or slowdowns?</label>
-                        <textarea value={feedbackData.crashesOrBugs} onChange={(e) => setFeedbackData({...feedbackData, crashesOrBugs: e.target.value})} rows={2} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                        <textarea value={feedbackData.crashesOrBugs} onChange={(e) => setFeedbackData({...feedbackData, crashesOrBugs: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
                       </div>
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg mb-3">Features & Functionality</h3>
-                    <div className="space-y-4">
+                    <h3 className="font-bold text-lg mb-2">Features & Functionality</h3>
+                    <div className="space-y-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Which features were most useful or enjoyable?</label>
-                        <textarea value={feedbackData.usefulFeatures} onChange={(e) => setFeedbackData({...feedbackData, usefulFeatures: e.target.value})} rows={2} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                        <textarea value={feedbackData.usefulFeatures} onChange={(e) => setFeedbackData({...feedbackData, usefulFeatures: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Anything missing or not working as expected?</label>
-                        <textarea value={feedbackData.missingFeatures} onChange={(e) => setFeedbackData({...feedbackData, missingFeatures: e.target.value})} rows={2} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                        <textarea value={feedbackData.missingFeatures} onChange={(e) => setFeedbackData({...feedbackData, missingFeatures: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
                       </div>
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg mb-3">Value Proposition & Relevance</h3>
-                    <div className="space-y-4">
+                    <h3 className="font-bold text-lg mb-2">Value Proposition & Relevance</h3>
+                    <div className="space-y-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Did you understand the core purpose of the app right away?</label>
-                        <textarea value={feedbackData.corePurposeUnderstood} onChange={(e) => setFeedbackData({...feedbackData, corePurposeUnderstood: e.target.value})} rows={2} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                        <textarea value={feedbackData.corePurposeUnderstood} onChange={(e) => setFeedbackData({...feedbackData, corePurposeUnderstood: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Does the app solve a real problem for you?</label>
-                        <textarea value={feedbackData.solvesRealProblem} onChange={(e) => setFeedbackData({...feedbackData, solvesRealProblem: e.target.value})} rows={2} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                        <textarea value={feedbackData.solvesRealProblem} onChange={(e) => setFeedbackData({...feedbackData, solvesRealProblem: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Would you realistically use it or recommend it?</label>
-                        <textarea value={feedbackData.wouldUseOrRecommend} onChange={(e) => setFeedbackData({...feedbackData, wouldUseOrRecommend: e.target.value})} rows={2} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                        <textarea value={feedbackData.wouldUseOrRecommend} onChange={(e) => setFeedbackData({...feedbackData, wouldUseOrRecommend: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Does the app give you a reason to come back?</label>
-                        <textarea value={feedbackData.reasonToComeBack} onChange={(e) => setFeedbackData({...feedbackData, reasonToComeBack: e.target.value})} rows={2} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                        <textarea value={feedbackData.reasonToComeBack} onChange={(e) => setFeedbackData({...feedbackData, reasonToComeBack: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
                       </div>
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg mb-3">Overall Rating</h3>
-                    <div className="space-y-4">
+                    <h3 className="font-bold text-lg mb-2">Overall Rating</h3>
+                    <div className="space-y-3">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-3">Overall rating (1–10)</label>
                         <div className="flex flex-wrap gap-2">
