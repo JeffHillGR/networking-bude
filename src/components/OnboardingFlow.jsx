@@ -250,13 +250,13 @@ export default function BudEOnboarding() {
 
             {/* Three small images stacked at bottom right inside phone - Increased further for better face visibility */}
             <div className="absolute right-6 bottom-6 space-y-3">
-              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+              <div className="w-52 h-52 rounded-xl overflow-hidden shadow-lg border-3 border-white">
                <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-1.png" alt="Networking" className="w-full h-full object-cover" />
               </div>
-              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+              <div className="w-52 h-52 rounded-xl overflow-hidden shadow-lg border-3 border-white">
                <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-3.png" alt="Networking" className="w-full h-full object-cover" />
               </div>
-              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+              <div className="w-52 h-52 rounded-xl overflow-hidden shadow-lg border-3 border-white">
                 <img src="/People-networking-2.png" alt="Networking" className="w-full h-full object-cover" />
               </div>
             </div>
