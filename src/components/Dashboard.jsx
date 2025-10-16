@@ -407,7 +407,10 @@ const getGreeting = () => {
                 {/* View All Connections Button */}
                 <div className="flex justify-center mt-6">
                   <button
-                    onClick={() => setActiveTab('connections')}
+                    onClick={() => {
+                      setActiveTab('connections');
+                      window.scrollTo({ top: 0, behavior: 'instant' });
+                    }}
                     className="px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors flex items-center gap-2 border-[3px] border-[#D0ED00] text-sm"
                   >
                     View All Connections
@@ -540,7 +543,10 @@ const getGreeting = () => {
   return <Events />;
 
  case 'connections':
-  return <Connections />;
+  return <Connections onBackToDashboard={() => {
+    setActiveTab('dashboard');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }} />;
 
   case 'messages':
   return <Messages />;

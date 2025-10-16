@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { X, Clock, User, Users, TrendingUp } from 'lucide-react';
+import { X, Clock, User, Users, TrendingUp, ArrowLeft } from 'lucide-react';
 
-function Connections() {
+function Connections({ onBackToDashboard }) {
   const [activeTab, setActiveTab] = useState('recommended');
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
 
@@ -89,6 +89,14 @@ function Connections() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-8">
+        {/* Back to Dashboard Button - Mobile friendly */}
+        <button
+          onClick={onBackToDashboard}
+          className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 md:mb-6 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span>Back to Dashboard</span>
+        </button>
         <h1 className="text-3xl font-bold text-gray-900">Connections</h1>
         <p className="text-gray-600 mt-2">Discover and connect with professionals who share your interests</p>
       </div>
