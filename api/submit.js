@@ -75,8 +75,20 @@ export default async function handler(req, res) {
     const sheets = google.sheets({ version: 'v4', auth });
 
     // Prepare the row data to match form field order
+    const now = new Date();
+    const timestamp = now.toLocaleString('en-US', {
+      timeZone: 'America/Detroit',
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    });
+
     const rowData = [
-      new Date().toISOString(), // A: Timestamp
+      timestamp, // A: Timestamp
       formData.firstName || '', // B: First Name
       formData.lastName || '', // C: Last Name
       formData.username || '', // D: Username
