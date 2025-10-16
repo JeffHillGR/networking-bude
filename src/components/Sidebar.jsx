@@ -130,14 +130,14 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
               <p className="text-xs text-gray-600 truncate">{jobTitle}</p>
             </div>
           </div>
-          <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500">
+          <div className="flex items-center justify-center gap-1.5 text-xs text-gray-900">
            <button onClick={() => setActiveTab('terms')} className="hover:underline">Terms</button>
              <span>•</span>
            <button onClick={() => setActiveTab('privacy')} className="hover:underline">Privacy</button>
              <span>•</span>
            <button onClick={onContactUsClick} className="hover:underline">Contact Us</button>
           </div>
-          <p className="text-xs text-gray-500 mt-1 text-center">© 2025 The BudE System™</p>
+          <p className="text-xs text-gray-900 mt-1 text-center">© 2025 The BudE System™</p>
         </div>
       </div>
     </aside>

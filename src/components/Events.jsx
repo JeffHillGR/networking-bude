@@ -70,13 +70,13 @@ function Events() {
     },
     {
       id: 2,
-      title: 'OutPro Forum: Building Belonging',
-      description: 'Connect with LGBTQ+ professionals and allies at this networking forum focused on building belonging in West Michigan workplaces.',
-      date: '10/22/2025',
-      time: '11:00 AM - 1:00 PM',
+      title: 'Leadership Lesson Breakfast',
+      description: 'Join community leaders for valuable insights and networking. Features Joe Dyer (DISHER) on Steward Leadership and Lynne Ferrell-Robinson (Midwest Giving Strategies) on Leadership Lessons from the Field.',
+      date: '10/28/2025',
+      time: '7:30 AM - 9:00 AM',
       location: 'Grand Rapids Chamber',
       organizerName: 'Grand Rapids Chamber',
-      attendees: '75+',
+      attendees: '100+',
       image: 'https://grandrapids.org/wp-content/uploads/2025/01/Graphic-OutPro-10.22.25-1-1024x576.jpg',
       badge: 'In-Person'
     },

@@ -52,11 +52,11 @@ function EventDetail() {
     },
     2: {
       id: 2,
-      title: 'OutPro Forum',
-      description: 'Building Belonging: The OutPro Journey - A networking forum featuring Rick Baker discussing the history and impact of OutPro for LGBTQIA+ professionals.',
-      fullDescription: 'Join the Grand Rapids Chamber for "Building Belonging: The OutPro Journey," a powerful networking forum exploring workplace inclusion and professional development for LGBTQIA+ professionals.\n\nRick Baker, President & CEO of the Grand Rapids Chamber, will share insights on OutPro\'s evolution and its vital role in creating more inclusive workplaces across West Michigan. This forum brings together business leaders, HR professionals, and community members committed to fostering belonging in professional environments.\n\nConnect with allies and advocates while learning practical strategies for building truly inclusive organizations.',
-      date: 'Wednesday, October 22, 2025',
-      time: '11:00 AM - 1:00 PM',
+      title: 'Leadership Lesson Breakfast',
+      description: 'Community leaders sharing valuable leadership insights at this networking breakfast featuring two powerful presentations on leadership strategies.',
+      fullDescription: 'Join the Grand Rapids Chamber for the Leadership Lesson Breakfast, featuring two exceptional speakers sharing their leadership wisdom.\n\nJoe Dyer, President of DISHER, will present "Steward Leadership: Learning, Listening, and Influence," offering insights on servant leadership and building organizational culture through influence and active listening.\n\nLynne Ferrell-Robinson, CEO of Midwest Giving Strategies, will share "Leadership: Lessons from the Field," drawing on her extensive experience in non-profit leadership and strategic philanthropy.\n\nThese breakfast events offer strong community trustees and leaders sharing valuable leadership lessons along with networking opportunities. Cost: Members $40, Non-Members $55.\n\nOrganized by the Grand Rapids Chamber for talent development and professional growth.',
+      date: 'Tuesday, October 28, 2025',
+      time: '7:30 AM - 9:00 AM',
       location: 'Grand Rapids Chamber',
       fullAddress: '250 Monroe Ave, Grand Rapids, MI 49503',
       image: 'https://grandrapids.org/wp-content/uploads/2025/01/Graphic-OutPro-10.22.25-1-1024x576.jpg',
@@ -66,8 +66,8 @@ function EventDetail() {
         avatar: 'GR',
         description: 'The Grand Rapids Chamber advocates for business growth, economic development, and inclusive workplace cultures throughout West Michigan.'
       },
-      tags: ['Diversity', 'Inclusion', 'LGBTQIA+', 'Networking', 'Leadership'],
-      registrationUrl: 'https://grandrapids.org/event/outpro-forum-2025-10-22/'
+      tags: ['Leadership', 'Networking', 'Professional Development', 'Business', 'Talent Development'],
+      registrationUrl: 'https://grandrapids.org/event/leadership-lesson-breakfast-2025-10-28/'
     },
     3: {
       id: 3,
