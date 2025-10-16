@@ -12,42 +12,14 @@ export default function BudEOnboarding() {
       window.history.scrollRestoration = 'manual';
     }
 
-    // Lock viewport to prevent zoom and reduce keyboard jumping
+    // Set viewport to prevent zooming on input focus - this is KEY
     const viewport = document.querySelector('meta[name=viewport]');
     const originalContent = viewport?.getAttribute('content');
     if (viewport) {
       viewport.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
     }
 
-    // Prevent iOS Safari from scrolling page on input focus
-    let lastFocusedElement = null;
-
-    const handleFocus = (e) => {
-      if ((e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') && e.target !== lastFocusedElement) {
-        lastFocusedElement = e.target;
-
-        // Prevent the default scroll behavior on mobile
-        e.preventDefault();
-
-        // Small delay to let keyboard appear, then position input
-        setTimeout(() => {
-          const rect = e.target.getBoundingClientRect();
-          const offset = rect.top + window.pageYOffset - (window.innerHeight / 3);
-          window.scrollTo({ top: offset, behavior: 'instant' });
-        }, 100);
-      }
-    };
-
-    const handleBlur = () => {
-      lastFocusedElement = null;
-    };
-
-    document.addEventListener('focus', handleFocus, true);
-    document.addEventListener('blur', handleBlur, true);
-
     return () => {
-      document.removeEventListener('focus', handleFocus, true);
-      document.removeEventListener('blur', handleBlur, true);
       if (viewport && originalContent) {
         viewport.setAttribute('content', originalContent);
       }
@@ -308,8 +280,8 @@ export default function BudEOnboarding() {
     </div>
 
     {/* Right side - Form - Full width on mobile, half on desktop */}
-    <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain', minHeight: '100vh' }}>
-      <div className="max-w-lg w-full" style={{ paddingBottom: '50vh' }}>
+    <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain', minHeight: '100vh', touchAction: 'pan-y' }}>
+      <div className="max-w-lg w-full">
         <div className="flex justify-center mb-4 md:mb-6">
           <BudELogo />
         </div>
@@ -474,8 +446,8 @@ export default function BudEOnboarding() {
 </div>
 
       {/* Right side - Form - Full width on mobile */}
-      <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain', minHeight: '100vh' }}>
-        <div className="max-w-lg w-full" style={{ paddingBottom: '50vh' }}>
+      <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain', minHeight: '100vh', touchAction: 'pan-y' }}>
+        <div className="max-w-lg w-full">
           <div className="flex justify-center mb-6">
             <BudELogo />
           </div>
@@ -771,8 +743,8 @@ const renderStep2 = () => (
     </div>
 
     {/* Right side - Form - Full width on mobile */}
-    <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain', minHeight: '100vh' }}>
-      <div className="max-w-lg w-full" style={{ paddingBottom: '50vh' }}>
+    <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain', minHeight: '100vh', touchAction: 'pan-y' }}>
+      <div className="max-w-lg w-full">
         <div className="flex justify-center mb-6">
           <BudELogo />
         </div>
