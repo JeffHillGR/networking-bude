@@ -439,6 +439,11 @@ export default function BudEOnboarding() {
         <p className="text-center text-xs text-gray-600 mt-4">
           Already have an account? <button onClick={() => navigate('/dashboard')} className="text-blue-600 hover:underline">Go to Dashboard</button>
         </p>
+
+        {/* Mobile Branding - Only visible on mobile */}
+        <p className="md:hidden text-center text-xs text-gray-600 mt-6 pb-4">
+          Networking BudE by The BudE System™
+        </p>
       </div>
     </div>
   </div>
@@ -734,6 +739,11 @@ export default function BudEOnboarding() {
           <p className="text-center text-sm text-gray-600 mt-6">
             Already have an account? <button onClick={() => navigate('/dashboard')} className="text-blue-600 hover:underline">Go to Dashboard</button>
           </p>
+
+          {/* Mobile Branding - Only visible on mobile */}
+          <p className="md:hidden text-center text-xs text-gray-600 mt-6 pb-4">
+            Networking BudE by The BudE System™
+          </p>
         </div>
       </div>
     </div>
@@ -863,6 +873,11 @@ const renderStep2 = () => (
           >
             Beta Terms
           </button>
+        </p>
+
+        {/* Mobile Branding - Only visible on mobile */}
+        <p className="md:hidden text-center text-xs text-gray-600 mt-6 pb-4">
+          Networking BudE by The BudE System™
         </p>
       </div>
     </div>
