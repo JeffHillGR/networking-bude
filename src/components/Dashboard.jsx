@@ -369,7 +369,7 @@ const getGreeting = () => {
               <div className="flex flex-col">
                 <div className="mb-4">
                   <h3 className="font-bold text-gray-900 text-lg">Potential Connections</h3>
-                  <p className="text-sm text-gray-600">People you might want to connect with</p>
+                  <p className="text-sm text-gray-600">People you might want to connect with first</p>
                 </div>
                 <div className="space-y-4 flex-grow">
                   {connections.map((person, index) => (
