@@ -272,15 +272,6 @@ export default function BudEOnboarding() {
         <h1 className="text-2xl md:text-3xl font-bold text-center mb-4 md:mb-6">
           Welcome to<br />Networking BudE
         </h1>
-        <div className="bg-gray-50 rounded-xl p-4 md:p-5 mb-4 md:mb-6">
-          <h2 className="text-base md:text-lg font-semibold mb-2 text-center">What's this all about?</h2>
-          <p className="text-gray-700 mb-3 text-sm">
-            Networking BudE offers the ability to connect with others and attend events with people who share your networking goals:
-          </p>
-          <blockquote className="border-l-4 border-green-600 pl-3 italic text-gray-600 text-sm">
-            "I no longer feel awkward at events alone anymore. Thanks BudE!" - Meghan a Satisfied BudE User
-          </blockquote>
-        </div>
 
         <h3 className="text-sm md:text-base font-semibold text-center mb-4">Ready to jump in? Let's go!</h3>
 
