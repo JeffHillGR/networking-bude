@@ -11,6 +11,28 @@ export default function BudEOnboarding() {
     if ('scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual';
     }
+
+    // Prevent mobile keyboard from causing viewport jumps
+    const viewport = document.querySelector('meta[name=viewport]');
+    if (viewport) {
+      viewport.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
+    }
+
+    // Prevent body scroll when focusing on inputs on mobile
+    const preventBodyScroll = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+        // Scroll the input into view smoothly
+        setTimeout(() => {
+          e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+      }
+    };
+
+    document.addEventListener('focus', preventBodyScroll, true);
+
+    return () => {
+      document.removeEventListener('focus', preventBodyScroll, true);
+    };
   }, []);
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -267,8 +289,8 @@ export default function BudEOnboarding() {
     </div>
 
     {/* Right side - Form - Full width on mobile, half on desktop */}
-    <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain' }}>
-      <div className="max-w-lg w-full">
+    <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain', minHeight: '100vh' }}>
+      <div className="max-w-lg w-full" style={{ paddingBottom: '50vh' }}>
         <div className="flex justify-center mb-4 md:mb-6">
           <BudELogo />
         </div>
@@ -428,8 +450,8 @@ export default function BudEOnboarding() {
 </div>
 
       {/* Right side - Form - Full width on mobile */}
-      <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain' }}>
-        <div className="max-w-lg w-full">
+      <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain', minHeight: '100vh' }}>
+        <div className="max-w-lg w-full" style={{ paddingBottom: '50vh' }}>
           <div className="flex justify-center mb-6">
             <BudELogo />
           </div>
@@ -720,8 +742,8 @@ const renderStep2 = () => (
     </div>
 
     {/* Right side - Form - Full width on mobile */}
-    <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto">
-      <div className="max-w-lg w-full">
+    <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain', minHeight: '100vh' }}>
+      <div className="max-w-lg w-full" style={{ paddingBottom: '50vh' }}>
         <div className="flex justify-center mb-6">
           <BudELogo />
         </div>
