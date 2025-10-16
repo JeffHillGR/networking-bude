@@ -668,7 +668,7 @@ default:
       {/* Ad Inquiry Modal */}
       {showAdInquiryModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => !adInquirySubmitted && setShowAdInquiryModal(false)}>
-          <div className="bg-white rounded-lg shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-4 md:p-6 relative border-4 border-[#D0ED00]" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full max-h-[85vh] overflow-y-auto p-4 relative border-4 border-[#D0ED00]" onClick={(e) => e.stopPropagation()}>
             {adInquirySubmitted ? (
               // Success Message
               <div className="text-center py-12">
@@ -697,8 +697,8 @@ default:
                       </svg>
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">Advertise with BudE</h3>
-                  <p className="text-gray-600 mb-6 text-center">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">Advertise with BudE</h3>
+                  <p className="text-gray-600 text-sm mb-4 text-center">
                     Interested in advertising? Fill out this quick form and we'll get back to you soon!
                   </p>
                   <form
@@ -756,10 +756,10 @@ default:
                     setIsSubmittingAd(false);
                   }
                 }}
-                className="space-y-4"
+                className="space-y-3"
               >
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Name *</label>
                   <input
                     type="text"
                     name="name"
@@ -768,24 +768,24 @@ default:
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Email *</label>
                   <input
                     type="email"
                     name="email"
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Company</label>
                   <input
                     type="text"
                     name="company"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Phone</label>
                   <input
                     type="tel"
                     name="phone"
@@ -793,14 +793,14 @@ default:
                     onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value))}
                     placeholder="(555) 123-4567"
                     maxLength="14"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Ad Type of Interest</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Ad Type of Interest</label>
                   <select
                     name="adType"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                   >
                     <option value="">Select one...</option>
                     <option value="Dashboard Banner">Dashboard Banner</option>
@@ -813,11 +813,11 @@ default:
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Message</label>
                   <textarea
                     name="message"
-                    rows="3"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                    rows="2"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                     placeholder="Tell us about your advertising goals..."
                   ></textarea>
                 </div>
