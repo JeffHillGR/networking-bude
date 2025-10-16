@@ -426,8 +426,8 @@ const getGreeting = () => {
                 <h3 className="font-bold text-gray-900 text-lg">Featured Content</h3>
                 <p className="text-sm text-gray-600">Curated content to help you grow</p>
               </div>
-              <div className="bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-                <div className="flex items-center justify-between mb-6">
+              <div className="bg-white rounded-lg p-4 md:p-8 shadow-sm border border-gray-200">
+                <div className="flex items-center justify-between mb-4 md:mb-6">
                   <div className="flex items-center gap-2">
                   <button
                     onClick={() => setFeaturedContentIndex((featuredContentIndex - 1 + featuredContent.length) % featuredContent.length)}
@@ -450,21 +450,21 @@ const getGreeting = () => {
                     window.open(featuredContent[featuredContentIndex].url, '_blank');
                   }
                 }}
-                className="flex gap-6 hover:bg-gray-50 p-4 rounded-lg transition-colors -m-4 cursor-pointer"
+                className="flex flex-col md:flex-row gap-4 md:gap-6 hover:bg-gray-50 p-3 md:p-4 rounded-lg transition-colors -m-3 md:-m-4 cursor-pointer"
               >
                 <img
                   src={featuredContent[featuredContentIndex].image}
                   alt={featuredContent[featuredContentIndex].title}
-                  className="w-48 h-48 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm"
+                  className="w-full md:w-48 h-48 md:h-48 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm"
                 />
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-bold text-gray-900 mb-3 text-lg">{featuredContent[featuredContentIndex].title}</h4>
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-4">{featuredContent[featuredContentIndex].description}</p>
-                  <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-gray-900 mb-2 md:mb-3 text-base md:text-lg">{featuredContent[featuredContentIndex].title}</h4>
+                  <p className="text-xs md:text-sm text-gray-600 mb-3 md:mb-4 line-clamp-4">{featuredContent[featuredContentIndex].description}</p>
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                     {featuredContent[featuredContentIndex].tags && (
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap">
                         {featuredContent[featuredContentIndex].tags.split(',').slice(0, 2).map((tag, i) => (
-                          <span key={i} className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded">
+                          <span key={i} className="text-xs bg-gray-100 text-gray-600 px-2 md:px-3 py-1 rounded">
                             {tag.trim()}
                           </span>
                         ))}
@@ -473,7 +473,7 @@ const getGreeting = () => {
                     {featuredContent[featuredContentIndex].sponsoredBy && (
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-gray-400">Sponsored by</span>
-                        <span className="text-sm font-medium text-gray-700">{featuredContent[featuredContentIndex].sponsoredBy}</span>
+                        <span className="text-xs md:text-sm font-medium text-gray-700">{featuredContent[featuredContentIndex].sponsoredBy}</span>
                       </div>
                     )}
                   </div>
