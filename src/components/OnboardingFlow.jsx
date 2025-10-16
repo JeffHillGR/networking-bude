@@ -5,6 +5,13 @@ import { useNavigate } from 'react-router-dom';
 export default function BudEOnboarding() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
+
+  // Prevent scroll restoration on mobile
+  React.useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showJobTitleSuggestions, setShowJobTitleSuggestions] = useState(false);
@@ -257,7 +264,7 @@ export default function BudEOnboarding() {
     </div>
 
     {/* Right side - Form - Full width on mobile, half on desktop */}
-    <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center justify-center bg-white overflow-y-auto">
+    <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain' }}>
       <div className="max-w-lg w-full">
         <div className="flex justify-center mb-4 md:mb-6">
           <BudELogo />
@@ -427,7 +434,7 @@ export default function BudEOnboarding() {
 </div>
 
       {/* Right side - Form - Full width on mobile */}
-      <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto">
+      <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain' }}>
         <div className="max-w-lg w-full">
           <div className="flex justify-center mb-6">
             <BudELogo />
