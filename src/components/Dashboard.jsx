@@ -582,7 +582,7 @@ default:
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-32 md:pb-0" style={{ overscrollBehavior: 'contain' }}>
+    <div className="bg-gray-50 pb-32 md:pb-0" style={{ minHeight: '100dvh', WebkitOverflowScrolling: 'touch' }}>
     <div className="bg-gradient-to-r from-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
       <span className="font-medium">
         Beta Testing • All Features Unlocked • <button
