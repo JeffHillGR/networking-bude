@@ -1,4 +1,4 @@
-import { MessageCircle } from 'lucide-react';
+import { Lightbulb } from 'lucide-react';
 
 function FeedbackWidget({ onOpenFeedback }) {
   return (
@@ -7,9 +7,9 @@ function FeedbackWidget({ onOpenFeedback }) {
       <button
         onClick={onOpenFeedback}
         className="md:hidden fixed right-4 bottom-24 bg-[#D0ED00] text-gray-900 w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 border-[3px] border-[#009900] flex items-center justify-center z-40"
-        aria-label="Give Feedback"
+        aria-label="Share Your Ideas"
       >
-        <MessageCircle className="w-6 h-6" />
+        <Lightbulb className="w-6 h-6" />
       </button>
 
       {/* Desktop: Tab on right edge */}
@@ -26,7 +26,7 @@ function FeedbackWidget({ onOpenFeedback }) {
           aria-label="Give Feedback"
         >
           <div className="flex flex-col items-center gap-2 py-5 px-3">
-            <MessageCircle className="w-5 h-5" style={{ transform: 'rotate(90deg)' }} />
+            <Lightbulb className="w-5 h-5" style={{ transform: 'rotate(90deg)' }} />
             <span className="font-bold text-sm tracking-wider">
               FEEDBACK
             </span>
