@@ -280,8 +280,8 @@ export default function BudEOnboarding() {
     </div>
 
     {/* Right side - Form - Full width on mobile, half on desktop */}
-    <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain', minHeight: '100vh', touchAction: 'pan-y' }}>
-      <div className="max-w-lg w-full">
+    <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center justify-center bg-white overflow-y-auto min-h-screen">
+      <div className="max-w-lg w-full pb-8">
         <div className="flex justify-center mb-4 md:mb-6">
           <BudELogo />
         </div>
@@ -446,8 +446,8 @@ export default function BudEOnboarding() {
 </div>
 
       {/* Right side - Form - Full width on mobile */}
-      <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain', minHeight: '100vh', touchAction: 'pan-y' }}>
-        <div className="max-w-lg w-full">
+      <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto min-h-screen">
+        <div className="max-w-lg w-full pb-8">
           <div className="flex justify-center mb-6">
             <BudELogo />
           </div>
@@ -743,8 +743,8 @@ const renderStep2 = () => (
     </div>
 
     {/* Right side - Form - Full width on mobile */}
-    <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain', minHeight: '100vh', touchAction: 'pan-y' }}>
-      <div className="max-w-lg w-full">
+    <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto min-h-screen">
+      <div className="max-w-lg w-full pb-8">
         <div className="flex justify-center mb-6">
           <BudELogo />
         </div>
