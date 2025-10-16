@@ -919,7 +919,7 @@ default:
               />
             </div>
             <p className="text-green-800 font-medium text-base md:text-lg text-center mb-6">
-              Connection features will be available after beta testing. We'll notify you when they're ready!
+              Our scientists are hard at work finding connections for you. Look for an email from us during Beta testing!
             </p>
             <div className="flex justify-center">
               <button
