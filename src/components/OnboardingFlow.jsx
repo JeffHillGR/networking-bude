@@ -12,26 +12,45 @@ export default function BudEOnboarding() {
       window.history.scrollRestoration = 'manual';
     }
 
-    // Prevent mobile keyboard from causing viewport jumps
+    // Lock viewport to prevent zoom and reduce keyboard jumping
     const viewport = document.querySelector('meta[name=viewport]');
+    const originalContent = viewport?.getAttribute('content');
     if (viewport) {
       viewport.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
     }
 
-    // Prevent body scroll when focusing on inputs on mobile
-    const preventBodyScroll = (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-        // Scroll the input into view smoothly
+    // Prevent iOS Safari from scrolling page on input focus
+    let lastFocusedElement = null;
+
+    const handleFocus = (e) => {
+      if ((e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') && e.target !== lastFocusedElement) {
+        lastFocusedElement = e.target;
+
+        // Prevent the default scroll behavior on mobile
+        e.preventDefault();
+
+        // Small delay to let keyboard appear, then position input
         setTimeout(() => {
-          e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 300);
+          const rect = e.target.getBoundingClientRect();
+          const offset = rect.top + window.pageYOffset - (window.innerHeight / 3);
+          window.scrollTo({ top: offset, behavior: 'instant' });
+        }, 100);
       }
     };
 
-    document.addEventListener('focus', preventBodyScroll, true);
+    const handleBlur = () => {
+      lastFocusedElement = null;
+    };
+
+    document.addEventListener('focus', handleFocus, true);
+    document.addEventListener('blur', handleBlur, true);
 
     return () => {
-      document.removeEventListener('focus', preventBodyScroll, true);
+      document.removeEventListener('focus', handleFocus, true);
+      document.removeEventListener('blur', handleBlur, true);
+      if (viewport && originalContent) {
+        viewport.setAttribute('content', originalContent);
+      }
     };
   }, []);
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
