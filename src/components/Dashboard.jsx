@@ -26,6 +26,14 @@ const [isSubmittingAd, setIsSubmittingAd] = useState(false);
 const [showScientistModal, setShowScientistModal] = useState(false);
 const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+const [showContactModal, setShowContactModal] = useState(false);
+const [contactSubmitted, setContactSubmitted] = useState(false);
+const [isSubmittingContact, setIsSubmittingContact] = useState(false);
+const [contactData, setContactData] = useState({
+  name: '',
+  email: '',
+  message: ''
+});
 const [feedbackData, setFeedbackData] = useState({
   name: '',
   email: '',
@@ -121,6 +129,55 @@ const handleSubmitFeedback = async (e) => {
     } else {
       alert('There was an error submitting your feedback. Please try again or contact support if the problem persists.');
     }
+  }
+};
+
+// Handle contact form submission
+const handleSubmitContact = async (e) => {
+  e.preventDefault();
+  setIsSubmittingContact(true);
+
+  try {
+    const response = await fetch('/api/submitContact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...contactData,
+        submittedAt: new Date().toISOString()
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Failed to submit contact form');
+    }
+
+    // Show success message in modal
+    setContactSubmitted(true);
+
+    // Reset form after 3 seconds and close modal
+    setTimeout(() => {
+      setContactSubmitted(false);
+      setShowContactModal(false);
+      setContactData({
+        name: '',
+        email: '',
+        message: ''
+      });
+    }, 3000);
+  } catch (error) {
+    console.error('Error submitting contact form:', error);
+
+    // Check if we're on localhost
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      alert('API endpoints are not available on localhost. Please test on the Vercel deployment.\n\nFor now, please email grjeff@gmail.com directly.');
+    } else {
+      alert('There was an error submitting your message. Please email grjeff@gmail.com directly.');
+    }
+  } finally {
+    setIsSubmittingContact(false);
   }
 };
 
@@ -534,7 +591,7 @@ default:
     </div>
     <div className="md:flex">
 
-    <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+    <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onContactUsClick={() => setShowContactModal(true)} />
 
           <main className="flex-1 w-full overflow-x-hidden">
           <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
@@ -1019,6 +1076,104 @@ default:
                   <div className="flex gap-3 pt-4">
                     <button type="button" onClick={() => setShowFeedbackModal(false)} className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">Cancel</button>
                     <button type="submit" className="flex-1 px-4 py-3 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00]">Submit Feedback</button>
+                  </div>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Contact Us Modal */}
+      {showContactModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => !contactSubmitted && setShowContactModal(false)}>
+          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 relative border-4 border-[#D0ED00]" onClick={(e) => e.stopPropagation()}>
+            {contactSubmitted ? (
+              <div className="text-center py-12">
+                <div className="mb-6">
+                  <svg className="w-20 h-20 mx-auto text-[#009900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Message Sent!</h2>
+                <p className="text-lg text-gray-600 mb-2">Thank you for contacting us.</p>
+                <p className="text-gray-500">We'll get back to you soon!</p>
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={() => setShowContactModal(false)}
+                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                >
+                  ×
+                </button>
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Contact Us</h3>
+                  <p className="text-gray-600">Have a question or feedback? We'd love to hear from you!</p>
+                </div>
+                <form onSubmit={handleSubmitContact} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={contactData.name}
+                      onChange={(e) => setContactData({...contactData, name: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                    <input
+                      type="email"
+                      required
+                      value={contactData.email}
+                      onChange={(e) => setContactData({...contactData, email: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Message *</label>
+                    <textarea
+                      required
+                      rows="5"
+                      value={contactData.message}
+                      onChange={(e) => setContactData({...contactData, message: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      placeholder="How can we help you?"
+                    ></textarea>
+                  </div>
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowContactModal(false)}
+                      disabled={isSubmittingContact}
+                      className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmittingContact}
+                      className="flex-1 px-4 py-3 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {isSubmittingContact ? (
+                        <>
+                          <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Sending...
+                        </>
+                      ) : (
+                        'Send Message'
+                      )}
+                    </button>
                   </div>
                 </form>
               </>
