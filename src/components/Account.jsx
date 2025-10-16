@@ -155,10 +155,10 @@ function Account() {
 
               <div className="flex gap-3">
                 <button
-                  onClick={() => setActiveTab('plans')}
-                  className="px-6 py-2 bg-[#009900] text-white rounded-lg border-[3px] border-[#D0ED00] hover:bg-[#007700] transition-colors"
+                  disabled
+                  className="px-6 py-2 bg-gray-100 text-gray-500 rounded-lg cursor-not-allowed"
                 >
-                  Upgrade Plan
+                  Coming Soon
                 </button>
                 <button
                   onClick={() => setShowCancelChangeModal(true)}
@@ -278,18 +278,10 @@ function Account() {
                   </ul>
 
                   <button
-                    onClick={() => {
-                      setSelectedPlan(plan);
-                      setActiveTab('payment');
-                    }}
-                    className={`w-full py-2 rounded-lg font-medium transition-colors ${
-                      plan.id === 'free'
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-[#009900] text-white border-[3px] border-[#D0ED00] hover:bg-[#007700]'
-                    }`}
-                    disabled={plan.id === 'free'}
+                    disabled
+                    className="w-full py-2 rounded-lg font-medium transition-colors bg-gray-100 text-gray-500 cursor-not-allowed"
                   >
-                    {plan.id === 'free' ? 'Current Plan' : 'Select Plan'}
+                    {plan.id === 'free' ? 'Current Plan' : 'Coming Soon'}
                   </button>
                 </div>
               ))}

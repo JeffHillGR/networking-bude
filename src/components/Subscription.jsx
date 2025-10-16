@@ -197,26 +197,12 @@ function Subscription({ onSelectPlan }) {
                     </div>
                   )}
 
-                  {/* CTA Button */}
+                  {/* CTA Button - BETA: Disabled for beta launch */}
                   <button
-                    onClick={() => handleSelectPlan(plan.id)}
-                    disabled={isFreePlan}
-                    className={`w-full py-3 px-6 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
-                      isFreePlan
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : plan.popular
-                        ? 'bg-[#009900] text-white hover:bg-[#007700] shadow-lg hover:shadow-xl'
-                        : 'bg-gray-900 text-white hover:bg-gray-800'
-                    }`}
+                    disabled
+                    className="w-full py-3 px-6 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 bg-gray-100 text-gray-500 cursor-not-allowed"
                   >
-                    {isFreePlan ? (
-                      'Current Plan'
-                    ) : (
-                      <>
-                        Select Plan
-                        <ArrowRight className="w-5 h-5" />
-                      </>
-                    )}
+                    {isFreePlan ? 'Current Plan' : 'Coming Soon'}
                   </button>
                 </div>
               </div>
