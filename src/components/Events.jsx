@@ -318,7 +318,7 @@ function Events() {
                           }}
                           className="text-[#009900] font-medium hover:text-[#007700] flex items-center gap-1"
                         >
-                          View Details
+                          See Details & Who's Going
                           <ExternalLink className="h-4 w-4" />
                         </button>
                       </div>
@@ -386,7 +386,7 @@ function Events() {
                             }}
                             className="flex items-center gap-2 text-[#009900] font-medium hover:text-[#007700] text-sm md:text-base whitespace-nowrap"
                           >
-                            View Details
+                            See Details & Who's Going
                             <ExternalLink className="h-4 w-4" />
                           </button>
                         </div>
