@@ -77,7 +77,7 @@ function Events() {
       location: 'Grand Rapids Chamber',
       organizerName: 'Grand Rapids Chamber',
       attendees: '100+',
-      image: 'https://grandrapids.org/wp-content/uploads/2025/01/Graphic-OutPro-10.22.25-1-1024x576.jpg',
+      image: 'https://grandrapids.org/wp-content/uploads/2025/01/GRC_LLB-October-e1737397882767.jpg',
       badge: 'In-Person'
     },
     {

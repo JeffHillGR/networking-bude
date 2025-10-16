@@ -59,7 +59,7 @@ function EventDetail() {
       time: '7:30 AM - 9:00 AM',
       location: 'Grand Rapids Chamber',
       fullAddress: '250 Monroe Ave, Grand Rapids, MI 49503',
-      image: 'https://grandrapids.org/wp-content/uploads/2025/01/Graphic-OutPro-10.22.25-1-1024x576.jpg',
+      image: 'https://grandrapids.org/wp-content/uploads/2025/01/GRC_LLB-October-e1737397882767.jpg',
       badge: 'In-Person',
       organizer: {
         name: 'Grand Rapids Chamber',
