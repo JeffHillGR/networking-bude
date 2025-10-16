@@ -142,10 +142,10 @@ useEffect(() => {
   }
 }, []);
 
-// Scroll to top when dashboard loads
+// Scroll to top when active tab changes (not on every render)
 useEffect(() => {
   window.scrollTo(0, 0);
-}, []);
+}, [activeTab]);
 
 // Get user's first name and time-based greeting
 const userFirstName = localStorage.getItem('userFirstName') || 'there';
@@ -512,7 +512,7 @@ default:
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
+    <div className="min-h-screen bg-gray-50 pb-24 md:pb-0">
     <div className="bg-gradient-to-r from-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
       <span className="font-medium">
         Beta Testing • All Features Unlocked • <button
