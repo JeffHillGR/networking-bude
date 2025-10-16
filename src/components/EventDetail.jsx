@@ -244,7 +244,7 @@ function EventDetail() {
         <div className="bg-white border-b border-gray-200">
           <div className="px-4 py-4">
             <button
-              onClick={() => navigate(-1)}
+              onClick={() => navigate('/dashboard', { state: { activeTab: 'events' } })}
               className="flex items-center gap-2 px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] mb-4"
             >
               <ArrowLeft className="w-5 h-5" />
