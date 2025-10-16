@@ -235,8 +235,8 @@ export default function BudEOnboarding() {
  const renderWelcome = () => (
   <div className="h-full md:min-h-screen flex flex-col md:flex-row">
     {/* Left side - Images - Hidden on mobile */}
-    <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 p-12 items-start justify-end pt-12">
-      <div className="relative pt-4">
+    <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 p-12 items-start justify-end">
+      <div className="relative" style={{ marginTop: '1rem' }}>
         {/* Large phone image - Increased 20% - Aligned with logo */}
         <div className="w-[600px] h-[744px] rounded-3xl overflow-hidden shadow-2xl relative">
           <img
@@ -247,15 +247,15 @@ export default function BudEOnboarding() {
           <div className="absolute top-6 left-6 text-white text-3xl font-bold drop-shadow-lg">
           </div>
 
-          {/* Three small images stacked at bottom right inside phone - Increased 30% */}
+          {/* Three small images stacked at bottom right inside phone - Increased further for better face visibility */}
           <div className="absolute right-6 bottom-6 space-y-3">
-            <div className="w-32 h-32 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+            <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
              <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-1.png" alt="Networking" className="w-full h-full object-cover" />
             </div>
-            <div className="w-32 h-32 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+            <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
              <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-3.png" alt="Networking" className="w-full h-full object-cover" />
             </div>
-            <div className="w-32 h-32 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+            <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
               <img src="/People-networking-2.png" alt="Networking" className="w-full h-full object-cover" />
             </div>
           </div>

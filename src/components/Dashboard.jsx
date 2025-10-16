@@ -847,30 +847,27 @@ default:
       {/* Scientist Modal - Shown when clicking Connect */}
       {showScientistModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowScientistModal(false)}>
-          <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-8 max-w-2xl w-full shadow-2xl border-4 border-[#D0ED00] relative" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 md:p-8 max-w-xl w-full shadow-2xl border-4 border-[#D0ED00] relative" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setShowScientistModal(false)}
               className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-3xl font-bold leading-none"
             >
               ×
             </button>
-            <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold text-green-900 mb-2">Thanks for your interest!</h3>
-            </div>
             <div className="flex items-center justify-center gap-6 mb-6">
               <img
                 src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
                 alt="Scientist at work"
-                className="h-32 w-auto flex-shrink-0 rounded-lg object-cover shadow-lg"
+                className="h-24 md:h-32 w-auto flex-shrink-0 rounded-lg object-cover shadow-lg"
               />
             </div>
-            <p className="text-green-800 font-medium text-lg text-center mb-8">
+            <p className="text-green-800 font-medium text-base md:text-lg text-center mb-6">
               Connection features will be available after beta testing. We'll notify you when they're ready!
             </p>
             <div className="flex justify-center">
               <button
                 onClick={() => setShowScientistModal(false)}
-                className="px-8 py-3 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
+                className="px-6 md:px-8 py-2 md:py-3 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
               >
                 Got it!
               </button>
