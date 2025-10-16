@@ -11,6 +11,7 @@ function EventDetail() {
   const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
   const [adInquirySubmitted, setAdInquirySubmitted] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [showScientistModal, setShowScientistModal] = useState(false);
 
   // Format phone number as user types: (XXX) XXX-XXXX
   const formatPhoneNumber = (value) => {
@@ -388,12 +389,12 @@ function EventDetail() {
               </div>
 
               {/* Suggested Connections */}
-              <div className="bg-white rounded-lg shadow-sm p-6 relative group">
+              <div className="bg-white rounded-lg shadow-sm p-6">
                 <h3 className="text-lg font-bold text-gray-900 mb-2">Connect Before the Event</h3>
                 <p className="text-gray-600 text-sm mb-4">These people share your interests, take a look</p>
                 <div className="space-y-3">
                   {suggestedConnections.map((person, index) => (
-                    <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                    <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
                       <img
                         src={person.image}
                         alt={person.name}
@@ -402,7 +403,7 @@ function EventDetail() {
                       <div className="flex-1 min-w-0">
                         <h4 className="font-bold text-gray-900 text-sm">{person.name}</h4>
                         <p className="text-xs text-gray-600 line-clamp-1">{person.title}</p>
-                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                        <div className="flex flex-wrap items-center gap-2 mt-1 mb-2">
                           <span className="text-xs text-green-600 flex items-center gap-1">
                             <TrendingUp className="w-3 h-3" />{person.compatibility}
                           </span>
@@ -415,23 +416,15 @@ function EventDetail() {
                             </span>
                           )}
                         </div>
+                        <button
+                          onClick={() => setShowScientistModal(true)}
+                          className="w-full px-3 py-1.5 bg-[#009900] text-white rounded-lg text-xs font-medium hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
+                        >
+                          Connect
+                        </button>
                       </div>
                     </div>
                   ))}
-                </div>
-
-                {/* Beta Testing Hover Message */}
-                <div className="absolute inset-0 bg-black/60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none z-10">
-                  <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-4 max-w-sm mx-4 flex flex-col items-center gap-3 shadow-2xl border-4 border-[#D0ED00]">
-                    <img
-                      src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
-                      alt="Scientist at work"
-                      className="h-16 w-auto flex-shrink-0 rounded-lg object-cover"
-                    />
-                    <p className="text-green-800 font-medium text-sm text-center">
-                      Our scientists are hard at work finding connections for you. Look for an email from us soon!
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>
@@ -732,6 +725,38 @@ function EventDetail() {
                 </div>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Scientist Modal */}
+      {showScientistModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowScientistModal(false)}>
+          <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 max-w-md w-full shadow-2xl border-4 border-[#D0ED00]" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setShowScientistModal(false)}
+              className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-2xl font-bold"
+            >
+              ×
+            </button>
+            <div className="flex items-center justify-center gap-6 mb-6">
+              <img
+                src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
+                alt="Scientist at work"
+                className="h-24 md:h-32 w-auto flex-shrink-0 rounded-lg object-cover shadow-lg"
+              />
+            </div>
+            <p className="text-green-800 font-medium text-base md:text-lg text-center mb-6">
+              Our scientists are hard at work finding connections for you. Look for an email from us during Beta testing!
+            </p>
+            <div className="flex justify-center">
+              <button
+                onClick={() => setShowScientistModal(false)}
+                className="px-6 md:px-8 py-2 md:py-3 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
+              >
+                Got it!
+              </button>
+            </div>
           </div>
         </div>
       )}
