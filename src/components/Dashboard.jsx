@@ -142,13 +142,15 @@ useEffect(() => {
   }
 }, []);
 
-// Scroll to top when component first mounts only
-const hasScrolled = useRef(false);
+// Prevent scroll restoration and bounce-to-top on mobile
 useEffect(() => {
-  if (!hasScrolled.current) {
-    window.scrollTo(0, 0);
-    hasScrolled.current = true;
+  // Disable automatic scroll restoration
+  if ('scrollRestoration' in window.history) {
+    window.history.scrollRestoration = 'manual';
   }
+
+  // Scroll to top only on first mount
+  window.scrollTo(0, 0);
 }, []);
 
 // Get user's first name and time-based greeting

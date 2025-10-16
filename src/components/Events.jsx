@@ -219,8 +219,8 @@ function Events() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Search and Filters */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+        {/* BETA: Search and Filters Hidden - Re-enable for production */}
+        {/* <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -266,7 +266,7 @@ function Events() {
               <option>AI Community Bay Area</option>
             </select>
           </div>
-        </div>
+        </div> */}
 
         {/* Main content with sidebar */}
         <div className="flex gap-6">
