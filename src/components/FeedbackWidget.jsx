@@ -2,15 +2,11 @@ import { MessageCircle } from 'lucide-react';
 
 function FeedbackWidget({ onOpenFeedback }) {
   return (
-    <div className="fixed right-0 bottom-24 md:bottom-8 z-40">
+    <div className="fixed right-2 md:right-0 bottom-24 md:bottom-8 z-40">
       <button
         onClick={onOpenFeedback}
-        className="bg-[#D0ED00] text-gray-900 shadow-lg hover:shadow-xl transition-all duration-200 border-[3px] border-[#D0ED00] border-r-0 flex items-center justify-center group hover:-translate-x-1"
+        className="bg-[#D0ED00] text-gray-900 shadow-lg hover:shadow-xl transition-all duration-200 border-[3px] border-[#D0ED00] md:border-r-0 flex items-center justify-center group hover:-translate-x-1 rounded-l-xl md:rounded-r-none"
         style={{
-          borderTopLeftRadius: '12px',
-          borderTopRightRadius: '0',
-          borderBottomLeftRadius: '12px',
-          borderBottomRightRadius: '0',
           writingMode: 'vertical-rl',
           textOrientation: 'mixed'
         }}
