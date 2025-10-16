@@ -49,7 +49,7 @@ export default function BudEOnboarding() {
     'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
     'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo',
     'Hello West Michigan', 'CARWM', 'Creative Mornings', 'Athena',
-    'Inforum', 'Start Garden', 'GRABB', 'WMPRSA', 'Crain\'s GR Business'
+    'Inforum', 'Start Garden', 'GRABB', 'WMPRSA', 'Crain\'s GR Business', 'AIGA - WM'
   ];
 
   const professionalInterestOptions = [
@@ -273,7 +273,7 @@ export default function BudEOnboarding() {
           Welcome to<br />Networking BudE
         </h1>
 
-        <h3 className="text-sm md:text-base font-semibold text-center mb-4">Ready to jump in? Let's go!</h3>
+        <h3 className="text-sm md:text-base font-semibold text-center mb-4">Ready to jump in? Let's set up your profile.</h3>
 
         {/* Beta Device Notice */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
@@ -606,7 +606,7 @@ export default function BudEOnboarding() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-3">Organizations That Have Events I Like To Attend</label>
+              <label className="block text-sm font-semibold mb-3">Where You Can Find Me Networking Now</label>
               <div className="flex flex-wrap gap-2">
                 {organizations.map(org => (
                   <button
