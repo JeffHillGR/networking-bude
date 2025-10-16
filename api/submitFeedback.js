@@ -32,50 +32,63 @@ export default async function handler(req, res) {
     const nextColumnIndex = existingColumns.length > 0 ? existingColumns.length : 1; // Start at B (index 1) if empty
     const nextColumnLetter = String.fromCharCode(65 + nextColumnIndex); // Convert index to letter (B, C, D, etc.)
 
+    // Format timestamp
+    const timestamp = new Date(feedbackData.submittedAt || new Date()).toLocaleString('en-US', {
+      timeZone: 'America/Detroit',
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    });
+
     // Prepare column data - each response goes in a separate row within the same column
     // Based on your Google Sheet structure from the screenshots
     const columnData = [
       [feedbackData.name || ''],                      // Row 1 - Name
       [feedbackData.email || ''],                     // Row 2 - Email
-      [''],                                           // Row 3 - empty
-      [''],                                           // Row 4 - Onboarding & First Impressions header
-      [''],                                           // Row 5 - Question text
-      [feedbackData.signUpSmoothness || ''],         // Row 6 - Answer
-      [''],                                           // Row 7 - empty
-      [''],                                           // Row 8 - User Experience (UX) header
-      [feedbackData.navigationEase || ''],           // Row 9 - Answer
-      [feedbackData.confusingSteps || ''],           // Row 10 - Answer
-      [''],                                           // Row 11 - empty
-      [''],                                           // Row 12 - Design & Branding header
-      [feedbackData.visualAppeal || ''],             // Row 13 - Answer
-      [feedbackData.brandClarity || ''],             // Row 14 - Answer
-      [''],                                           // Row 15 - empty
-      [''],                                           // Row 16 - Performance & Speed header
-      [feedbackData.performance || ''],              // Row 17 - Answer
-      [feedbackData.crashesOrBugs || ''],            // Row 18 - Answer
-      [''],                                           // Row 19 - empty
-      [''],                                           // Row 20 - Features & Functionality header
-      [feedbackData.usefulFeatures || ''],           // Row 21 - Answer
-      [feedbackData.missingFeatures || ''],          // Row 22 - Answer
-      [''],                                           // Row 23 - empty
-      [feedbackData.corePurposeUnderstood || ''],    // Row 24 - Did users understand core purpose
-      [''],                                           // Row 25 - Value Proposition & Relevance header
-      [''],                                           // Row 26 - empty
-      [''],                                           // Row 27 - Does app solve real problem header
-      [feedbackData.solvesRealProblem || ''],        // Row 28 - Answer
-      [''],                                           // Row 29 - empty
-      [''],                                           // Row 30 - Does app give reason to come back header
-      [feedbackData.reasonToComeBack || ''],         // Row 31 - Answer (moved from row 31 header)
-      [''],                                           // Row 32 - empty
-      [''],                                           // Row 33 - Overall rating header
-      [feedbackData.overallRating || ''],            // Row 34 - Answer
-      [feedbackData.netPromoterScore || ''],         // Row 35 - NPS Answer
+      [timestamp],                                    // Row 3 - Timestamp
+      [''],                                           // Row 4 - empty
+      [''],                                           // Row 5 - Onboarding & First Impressions header
+      [''],                                           // Row 6 - Question text
+      [feedbackData.signUpSmoothness || ''],         // Row 7 - Answer
+      [''],                                           // Row 8 - empty
+      [''],                                           // Row 9 - User Experience (UX) header
+      [feedbackData.navigationEase || ''],           // Row 10 - Answer
+      [feedbackData.confusingSteps || ''],           // Row 11 - Answer
+      [''],                                           // Row 12 - empty
+      [''],                                           // Row 13 - Design & Branding header
+      [feedbackData.visualAppeal || ''],             // Row 14 - Answer
+      [feedbackData.brandClarity || ''],             // Row 15 - Answer
+      [''],                                           // Row 16 - empty
+      [''],                                           // Row 17 - Performance & Speed header
+      [feedbackData.performance || ''],              // Row 18 - Answer
+      [feedbackData.crashesOrBugs || ''],            // Row 19 - Answer
+      [''],                                           // Row 20 - empty
+      [''],                                           // Row 21 - Features & Functionality header
+      [feedbackData.usefulFeatures || ''],           // Row 22 - Answer
+      [feedbackData.missingFeatures || ''],          // Row 23 - Answer
+      [''],                                           // Row 24 - empty
+      [feedbackData.corePurposeUnderstood || ''],    // Row 25 - Did users understand core purpose
+      [''],                                           // Row 26 - Value Proposition & Relevance header
+      [''],                                           // Row 27 - empty
+      [''],                                           // Row 28 - Does app solve real problem header
+      [feedbackData.solvesRealProblem || ''],        // Row 29 - Answer
+      [''],                                           // Row 30 - empty
+      [''],                                           // Row 31 - Does app give reason to come back header
+      [feedbackData.reasonToComeBack || ''],         // Row 32 - Answer
+      [''],                                           // Row 33 - empty
+      [''],                                           // Row 34 - Overall rating header
+      [feedbackData.overallRating || ''],            // Row 35 - Answer
+      [feedbackData.netPromoterScore || ''],         // Row 36 - NPS Answer
     ];
 
     // Write to the next available column starting from row 1
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `Beta_Feedback!${nextColumnLetter}1:${nextColumnLetter}35`,
+      range: `Beta_Feedback!${nextColumnLetter}1:${nextColumnLetter}36`,
       valueInputOption: 'RAW',
       resource: {
         values: columnData,
