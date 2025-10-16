@@ -855,7 +855,7 @@ default:
               ×
             </button>
             <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold text-green-900 mb-2">Connection Request Noted!</h3>
+              <h3 className="text-2xl font-bold text-green-900 mb-2">Thanks for your interest!</h3>
             </div>
             <div className="flex items-center justify-center gap-6 mb-6">
               <img
@@ -865,7 +865,7 @@ default:
               />
             </div>
             <p className="text-green-800 font-medium text-lg text-center mb-8">
-              Our scientists are hard at work finding connections for you. Look for an email from us soon!
+              Connection features will be available after beta testing. We'll notify you when they're ready!
             </p>
             <div className="flex justify-center">
               <button
