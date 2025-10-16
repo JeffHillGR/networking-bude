@@ -266,8 +266,9 @@ export default function BudEOnboarding() {
     {/* Right side - Form - Full width on mobile, half on desktop */}
     <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center justify-center bg-white overflow-y-auto" style={{ overscrollBehavior: 'contain' }}>
       <div className="max-w-lg w-full">
-        <div className="flex justify-center mb-4 md:mb-6">
+        <div className="flex flex-col items-center mb-4 md:mb-6">
           <BudELogo />
+          <p className="text-sm text-gray-600 mt-2">Networking BudE by The BudE System™</p>
         </div>
         <h1 className="text-2xl md:text-3xl font-bold text-center mb-4 md:mb-6">
           Welcome to<br />Networking BudE
