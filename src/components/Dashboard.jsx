@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, Calendar, Heart, MessageCircle, User, ChevronLeft, ChevronRight, Users, ExternalLink } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
 import Events from './Events';
@@ -14,7 +14,8 @@ import ArchivePage from './ArchivePage';
 import FeedbackWidget from './FeedbackWidget';
 function Dashboard() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'dashboard');
 const [selectedPlan, setSelectedPlan] = useState(null);
 const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
 const [showSponsorModal, setShowSponsorModal] = useState(false);
