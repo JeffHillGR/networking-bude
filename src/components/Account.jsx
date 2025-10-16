@@ -110,14 +110,14 @@ function Account() {
 
       {/* Tabs */}
       <div className="max-w-6xl mx-auto">
-        <div className="flex gap-2 mb-6 border-b border-gray-200">
+        <div className="bg-gray-100 rounded-full p-1 mb-8 flex">
           {['overview', 'plans', 'payment', 'history'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-3 font-medium capitalize transition-colors ${
+              className={`flex-1 px-6 py-3 rounded-full font-medium capitalize transition-colors ${
                 activeTab === tab
-                  ? 'text-[#009900] border-b-2 border-[#009900]'
+                  ? 'bg-white text-black shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
