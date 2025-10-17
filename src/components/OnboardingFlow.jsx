@@ -282,23 +282,23 @@ export default function BudEOnboarding() {
     {/* Right side - Form - Full width on mobile, half on desktop */}
     <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center justify-center bg-white overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch', minHeight: '100dvh' }}>
       <div className="max-w-lg w-full pb-16">
-        <div className="flex justify-center mb-4 md:mb-6">
+        <div className="flex justify-center mb-3">
           <BudELogo />
         </div>
-        <h1 className="text-2xl md:text-3xl font-bold text-center mb-4 md:mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold text-center mb-3">
           Welcome to<br />Networking BudE
         </h1>
 
-        <h3 className="text-sm md:text-base font-semibold text-center mb-4">Ready to jump in? Let's set up your profile.</h3>
+        <h3 className="text-sm md:text-base font-semibold text-center mb-3">Ready to jump in? Let's set up your profile.</h3>
 
         {/* Beta Device Notice */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2.5 mb-3">
           <p className="text-xs md:text-sm text-blue-800 text-center">
             <span className="font-semibold">Beta Testing:</span> Please use the same device and browser to access your account during the beta period.
           </p>
         </div>
 
-        <div className="w-full h-2 bg-gray-200 rounded-full mb-6">
+        <div className="w-full h-2 bg-gray-200 rounded-full mb-4">
           <div className="w-1/3 h-full bg-black rounded-full"></div>
         </div>
 
@@ -390,7 +390,7 @@ export default function BudEOnboarding() {
           </div>
         </div>
 
-        <div className="flex justify-end mt-6">
+        <div className="flex justify-end mt-4">
           <button
             onClick={() => {
               if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
@@ -447,23 +447,23 @@ export default function BudEOnboarding() {
       {/* Right side - Form - Full width on mobile */}
       <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch', minHeight: '100dvh' }}>
         <div className="max-w-lg w-full pb-16">
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-4">
             <BudELogo />
           </div>
 
-          <h1 className="text-3xl font-bold text-center mb-8">
+          <h1 className="text-3xl font-bold text-center mb-5">
             Welcome to<br />Networking BudE
           </h1>
 
-          <div className="flex gap-2 mb-8">
+          <div className="flex gap-2 mb-5">
             <div className="flex-1 h-2 bg-black rounded-full"></div>
             <div className="flex-1 h-2 bg-black rounded-full"></div>
             <div className="flex-1 h-2 bg-gray-200 rounded-full"></div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             <div>
-              <label className="block text-sm font-semibold mb-1.5">Job Title</label>
+              <label className="block text-sm font-semibold mb-1">Job Title</label>
               <input
                 type="text"
                 className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
@@ -503,11 +503,10 @@ export default function BudEOnboarding() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-1.5">Company (optional)</label>
+              <label className="block text-sm font-semibold mb-1">Company (optional)</label>
               <input
                 type="text"
                 className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                placeholder="e.g., Acme Corp, Self-employed, Freelance"
                 value={formData.company}
                 onChange={(e) => handleChange('company', e.target.value)}
               />
@@ -515,7 +514,7 @@ export default function BudEOnboarding() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-semibold mb-1.5">Industry (optional)</label>
+                <label className="block text-sm font-semibold mb-1">Industry (optional)</label>
                 <select
                   className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                   value={formData.industry}
@@ -542,7 +541,7 @@ export default function BudEOnboarding() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1.5">Same Industry Connect</label>
+                <label className="block text-sm font-semibold mb-1">Same Industry Connect</label>
                 <select
                   className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                   value={formData.sameIndustry}
@@ -558,7 +557,7 @@ export default function BudEOnboarding() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-semibold mb-1.5">Gender (optional)</label>
+                <label className="block text-sm font-semibold mb-1">Gender (optional)</label>
                 <select
                   className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                   value={formData.gender}
@@ -572,7 +571,7 @@ export default function BudEOnboarding() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1.5">Gender Preference Connect?</label>
+                <label className="block text-sm font-semibold mb-1">Gender Preference Connect?</label>
                 <select
                   className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                   value={formData.genderPreference}
@@ -588,7 +587,7 @@ export default function BudEOnboarding() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-semibold mb-1.5">DOB (optional)</label>
+                <label className="block text-sm font-semibold mb-1">DOB (optional)</label>
                 <input
                   type="date"
                   className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
@@ -597,7 +596,7 @@ export default function BudEOnboarding() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1.5">DOB Connect?</label>
+                <label className="block text-sm font-semibold mb-1">DOB Connect?</label>
                 <select
                   className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                   value={formData.dobPreference}
@@ -614,11 +613,10 @@ export default function BudEOnboarding() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-1.5">Zip Code</label>
+              <label className="block text-sm font-semibold mb-1">Zip Code</label>
               <input
                 type="text"
                 className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                placeholder="e.g., 49503"
                 value={formData.zipCode}
                 onChange={(e) => handleChange('zipCode', e.target.value)}
                 maxLength={10}
@@ -626,7 +624,7 @@ export default function BudEOnboarding() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2">Where You Can Find Me Networking Now</label>
+              <label className="block text-sm font-semibold mb-1.5">Where You Can Find Me Networking Now</label>
               <div className="flex flex-wrap gap-1.5">
                 {organizations.map(org => (
                   <button
@@ -654,7 +652,7 @@ export default function BudEOnboarding() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2">Organizations That I've Wanted to Check Out</label>
+              <label className="block text-sm font-semibold mb-1.5">Organizations That I've Wanted to Check Out</label>
               <div className="flex flex-wrap gap-1.5">
                 {organizations.map(org => (
                   <button
@@ -689,7 +687,7 @@ export default function BudEOnboarding() {
             </div>
           </div>
 
-          <div className="flex justify-between mt-8">
+          <div className="flex justify-between mt-6">
             <button
               onClick={() => setStep(0)}
               className="px-8 py-3 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
@@ -744,24 +742,24 @@ const renderStep2 = () => (
     {/* Right side - Form - Full width on mobile */}
     <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch', minHeight: '100dvh' }}>
       <div className="max-w-lg w-full pb-16">
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-4">
           <BudELogo />
         </div>
 
-        <h1 className="text-3xl font-bold text-center mb-8">
+        <h1 className="text-3xl font-bold text-center mb-5">
           Welcome to<br />Networking BudE
         </h1>
 
-        <div className="flex gap-2 mb-8">
+        <div className="flex gap-2 mb-5">
           <div className="flex-1 h-2 bg-black rounded-full"></div>
           <div className="flex-1 h-2 bg-black rounded-full"></div>
           <div className="flex-1 h-2 bg-black rounded-full"></div>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div>
-            <h2 className="text-xl font-bold mb-2">Professional Interests</h2>
-            <p className="text-gray-600 mb-3 text-sm">Select the professional areas that interest you most</p>
+            <h2 className="text-xl font-bold mb-1.5">Professional Interests</h2>
+            <p className="text-gray-600 mb-2 text-sm">Select the professional areas that interest you most</p>
             <div className="flex flex-wrap gap-1.5">
               {professionalInterestOptions.map(interest => (
                 <button
@@ -777,7 +775,7 @@ const renderStep2 = () => (
                 </button>
               ))}
             </div>
-            <div className="mt-3">
+            <div className="mt-2">
               <input
                 type="text"
                 placeholder="Other professional interest (please specify)"
@@ -789,10 +787,9 @@ const renderStep2 = () => (
           </div>
 
           <div>
-            <h2 className="text-xl font-bold mb-2">Personal Interests</h2>
-            <p className="text-gray-600 mb-3 text-sm">
-              What keeps you busy in your spare time? Share your hobbies, activities, or passions outside of work.
-              This helps create more meaningful connections beyond just professional interests.
+            <h2 className="text-xl font-bold mb-1.5">Personal Interests</h2>
+            <p className="text-gray-600 mb-2 text-sm">
+              What keeps you busy in your spare time? This helps create more meaningful connections beyond just professional interests.
             </p>
             <textarea
               className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-24 text-sm"
@@ -805,13 +802,10 @@ const renderStep2 = () => (
           </div>
 
           <div>
-            <h2 className="text-xl font-bold mb-2">Networking Goals</h2>
-            <p className="text-gray-600 mb-3 text-sm">
-              What are your goals and frustrations with traditional networking?
-            </p>
+            <h2 className="text-xl font-bold mb-2">Networking Goal</h2>
             <textarea
               className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-24 text-sm"
-              placeholder="Tell us what you're looking for..."
+              placeholder="What are you looking for?"
               value={formData.networkingGoals}
               onChange={(e) => handleChange('networkingGoals', e.target.value)}
               maxLength={500}
@@ -820,7 +814,7 @@ const renderStep2 = () => (
           </div>
         </div>
 
-        <div className="flex justify-between mt-8">
+        <div className="flex justify-between mt-6">
           <button
             onClick={() => setStep(1)}
             className="px-8 py-3 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
