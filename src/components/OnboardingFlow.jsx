@@ -250,9 +250,9 @@ export default function BudEOnboarding() {
     {/* Left side - Images - Hidden on mobile */}
     <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 px-12 pb-12 items-start justify-end">
       <div className="relative pt-8">
-        {/* Large phone image - Increased 20% - Aligned with logo */}
+        {/* Large phone image */}
         <div className="flex flex-col items-center">
-          <div className="w-[600px] h-[744px] rounded-3xl overflow-hidden shadow-2xl relative">
+          <div className="w-[500px] h-[620px] rounded-3xl overflow-hidden shadow-2xl relative">
             <img
               src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/My-phone-2.jpg"
               alt="BudE app on phone"
@@ -261,15 +261,15 @@ export default function BudEOnboarding() {
             <div className="absolute top-6 left-6 text-white text-3xl font-bold drop-shadow-lg">
             </div>
 
-            {/* Three small images stacked at bottom right inside phone - Increased further for better face visibility */}
+            {/* Three small images stacked at bottom right inside phone */}
             <div className="absolute right-6 bottom-6 space-y-3">
-              <div className="w-52 h-52 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
                <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-1.png" alt="Networking" className="w-full h-full object-cover" />
               </div>
-              <div className="w-52 h-52 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
                <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-3.png" alt="Networking" className="w-full h-full object-cover" />
               </div>
-              <div className="w-52 h-52 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
                 <img src="/People-networking-2.png" alt="Networking" className="w-full h-full object-cover" />
               </div>
             </div>
@@ -422,24 +422,27 @@ export default function BudEOnboarding() {
   const renderStep1 = () => (
     <div className="h-full md:min-h-screen flex flex-col md:flex-row">
    {/* Left side - Images - Hidden on mobile */}
-   <div className="hidden md:flex md:w-1/2 relative p-12 items-start justify-end pt-16 overflow-hidden">
-  <div className="absolute inset-0">
-    <img
-      src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry.jpg"
-      alt="Background"
-      className="w-full h-full object-cover opacity-30"
-    />
-  </div>
-
-  {/* Main image on top */}
-  <div className="rounded-3xl overflow-hidden shadow-2xl relative z-10">
-    <img
-      src="/People-networking-1.png"
-      alt="People networking"
-      className="w-[500px] h-auto"
-    />
-  </div>
-</div>
+   <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 px-12 pb-12 items-start justify-end">
+      <div className="relative pt-8">
+        {/* Phone image with single inset */}
+        <div className="flex flex-col items-center">
+          <div className="w-[500px] h-[620px] rounded-3xl overflow-hidden shadow-2xl relative">
+            <img
+              src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/My-phone-2.jpg"
+              alt="BudE app on phone"
+              className="w-full h-full object-cover"
+            />
+            {/* Single inset image at bottom right inside phone */}
+            <div className="absolute right-6 bottom-6">
+              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+               <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-1.png" alt="Networking" className="w-full h-full object-cover" />
+              </div>
+            </div>
+          </div>
+          <p className="text-sm text-gray-600 mt-4">Networking BudE by The BudE System™</p>
+        </div>
+      </div>
+    </div>
 
       {/* Right side - Form - Full width on mobile */}
       <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch', minHeight: '100dvh' }}>
@@ -458,12 +461,12 @@ export default function BudEOnboarding() {
             <div className="flex-1 h-2 bg-gray-200 rounded-full"></div>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div>
-              <label className="block text-sm font-semibold mb-2">Job Title</label>
+              <label className="block text-sm font-semibold mb-1.5">Job Title</label>
               <input
                 type="text"
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                 placeholder="Or what you are known for"
                 value={formData.jobTitle}
                 onChange={(e) => handleJobTitleChange(e.target.value)}
@@ -500,21 +503,21 @@ export default function BudEOnboarding() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2">Company (optional)</label>
+              <label className="block text-sm font-semibold mb-1.5">Company (optional)</label>
               <input
                 type="text"
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                 placeholder="e.g., Acme Corp, Self-employed, Freelance"
                 value={formData.company}
                 onChange={(e) => handleChange('company', e.target.value)}
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-semibold mb-2">Industry (optional)</label>
+                <label className="block text-sm font-semibold mb-1.5">Industry (optional)</label>
                 <select
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                   value={formData.industry}
                   onChange={(e) => handleChange('industry', e.target.value)}
                 >
@@ -539,9 +542,9 @@ export default function BudEOnboarding() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-2">Same Industry Connect</label>
+                <label className="block text-sm font-semibold mb-1.5">Same Industry Connect</label>
                 <select
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                   value={formData.sameIndustry}
                   onChange={(e) => handleChange('sameIndustry', e.target.value)}
                 >
@@ -553,11 +556,11 @@ export default function BudEOnboarding() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-semibold mb-2">Gender (optional)</label>
+                <label className="block text-sm font-semibold mb-1.5">Gender (optional)</label>
                 <select
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                   value={formData.gender}
                   onChange={(e) => handleChange('gender', e.target.value)}
                 >
@@ -569,9 +572,9 @@ export default function BudEOnboarding() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-2">Gender Preference Connect?</label>
+                <label className="block text-sm font-semibold mb-1.5">Gender Preference Connect?</label>
                 <select
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                   value={formData.genderPreference}
                   onChange={(e) => handleChange('genderPreference', e.target.value)}
                 >
@@ -583,20 +586,20 @@ export default function BudEOnboarding() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-semibold mb-2">DOB (optional)</label>
+                <label className="block text-sm font-semibold mb-1.5">DOB (optional)</label>
                 <input
                   type="date"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                   value={formData.dob}
                   onChange={(e) => handleChange('dob', e.target.value)}
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-2">DOB Connect?</label>
+                <label className="block text-sm font-semibold mb-1.5">DOB Connect?</label>
                 <select
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                   value={formData.dobPreference}
                   onChange={(e) => handleChange('dobPreference', e.target.value)}
                 >
@@ -611,10 +614,10 @@ export default function BudEOnboarding() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2">Zip Code</label>
+              <label className="block text-sm font-semibold mb-1.5">Zip Code</label>
               <input
                 type="text"
-                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                 placeholder="e.g., 49503"
                 value={formData.zipCode}
                 onChange={(e) => handleChange('zipCode', e.target.value)}
@@ -623,13 +626,13 @@ export default function BudEOnboarding() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-3">Where You Can Find Me Networking Now</label>
-              <div className="flex flex-wrap gap-2">
+              <label className="block text-sm font-semibold mb-2">Where You Can Find Me Networking Now</label>
+              <div className="flex flex-wrap gap-1.5">
                 {organizations.map(org => (
                   <button
                     key={org}
                     onClick={() => toggleOrganization(org)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                       formData.organizations.includes(org)
                         ? 'bg-black text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -639,11 +642,11 @@ export default function BudEOnboarding() {
                   </button>
                 ))}
               </div>
-              <div className="mt-3">
+              <div className="mt-2">
                 <input
                   type="text"
                   placeholder="Other organization (please specify)"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-base"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                   value={formData.organizationsOther}
                   onChange={(e) => handleChange('organizationsOther', e.target.value)}
                 />
@@ -651,8 +654,8 @@ export default function BudEOnboarding() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-3">Organizations That I've Wanted to Check Out</label>
-              <div className="flex flex-wrap gap-2">
+              <label className="block text-sm font-semibold mb-2">Organizations That I've Wanted to Check Out</label>
+              <div className="flex flex-wrap gap-1.5">
                 {organizations.map(org => (
                   <button
                     key={`checkout-${org}`}
@@ -664,7 +667,7 @@ export default function BudEOnboarding() {
                           : [...(prev.organizationsToCheckOut || []), org]
                       }));
                     }}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                       formData.organizationsToCheckOut?.includes(org)
                         ? 'bg-black text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -674,11 +677,11 @@ export default function BudEOnboarding() {
                   </button>
                 ))}
               </div>
-              <div className="mt-3">
+              <div className="mt-2">
                 <input
                   type="text"
                   placeholder="Other organization (please specify)"
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-base"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                   value={formData.organizationsToCheckOutOther}
                   onChange={(e) => handleChange('organizationsToCheckOutOther', e.target.value)}
                 />
@@ -715,22 +718,26 @@ export default function BudEOnboarding() {
 
 const renderStep2 = () => (
   <div className="h-full md:min-h-screen flex flex-col md:flex-row">
-    {/* Left side - Image with blurred background - Hidden on mobile */}
-    <div className="hidden md:flex md:w-1/2 relative p-12 items-start justify-end pt-16 overflow-hidden">
-      <div className="absolute inset-0">
-        <img
-          src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry.jpg"
-          alt="Background"
-          className="w-full h-full object-cover opacity-30"
-        />
-      </div>
-
-      <div className="rounded-3xl overflow-hidden shadow-2xl relative z-10">
-        <img
-          src="/People-networking-2.png"
-          alt="People networking"
-          className="w-[500px] h-auto"
-        />
+    {/* Left side - Images - Hidden on mobile */}
+    <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 px-12 pb-12 items-start justify-end">
+      <div className="relative pt-8">
+        {/* Phone image with single inset */}
+        <div className="flex flex-col items-center">
+          <div className="w-[500px] h-[620px] rounded-3xl overflow-hidden shadow-2xl relative">
+            <img
+              src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/My-phone-2.jpg"
+              alt="BudE app on phone"
+              className="w-full h-full object-cover"
+            />
+            {/* Single inset image at bottom right inside phone */}
+            <div className="absolute right-6 bottom-6">
+              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+               <img src="/People-networking-2.png" alt="Networking" className="w-full h-full object-cover" />
+              </div>
+            </div>
+          </div>
+          <p className="text-sm text-gray-600 mt-4">Networking BudE by The BudE System™</p>
+        </div>
       </div>
     </div>
 
@@ -751,30 +758,30 @@ const renderStep2 = () => (
           <div className="flex-1 h-2 bg-black rounded-full"></div>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-6">
           <div>
-            <h2 className="text-2xl font-bold mb-3">Professional Interests</h2>
-            <p className="text-gray-600 mb-4">Select the professional areas that interest you most</p>
-            <div className="flex flex-wrap gap-3">
+            <h2 className="text-xl font-bold mb-2">Professional Interests</h2>
+            <p className="text-gray-600 mb-3 text-sm">Select the professional areas that interest you most</p>
+            <div className="flex flex-wrap gap-1.5">
               {professionalInterestOptions.map(interest => (
                 <button
                   key={interest}
                   onClick={() => toggleProfessionalInterest(interest)}
-                  className={`px-5 py-2.5 rounded-full text-sm font-medium transition-colors ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                     formData.professionalInterests.includes(interest)
                       ? 'bg-black text-white'
-                      : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-gray-400'
+                      : 'bg-white border border-gray-300 text-gray-700 hover:border-gray-400'
                   }`}
                 >
                   {interest}
                 </button>
               ))}
             </div>
-            <div className="mt-4">
+            <div className="mt-3">
               <input
                 type="text"
                 placeholder="Other professional interest (please specify)"
-                className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-base"
+                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                 value={formData.professionalInterestsOther}
                 onChange={(e) => handleChange('professionalInterestsOther', e.target.value)}
               />
@@ -782,13 +789,13 @@ const renderStep2 = () => (
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold mb-3">Personal Interests</h2>
-            <p className="text-gray-600 mb-4">
+            <h2 className="text-xl font-bold mb-2">Personal Interests</h2>
+            <p className="text-gray-600 mb-3 text-sm">
               What keeps you busy in your spare time? Share your hobbies, activities, or passions outside of work.
               This helps create more meaningful connections beyond just professional interests.
             </p>
             <textarea
-              className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-32"
+              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-24 text-sm"
               placeholder="Tell us about your personal interests..."
               value={formData.personalInterests}
               onChange={(e) => handleChange('personalInterests', e.target.value)}
@@ -798,12 +805,12 @@ const renderStep2 = () => (
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold mb-3">Networking Goals</h2>
-            <p className="text-gray-600 mb-4">
+            <h2 className="text-xl font-bold mb-2">Networking Goals</h2>
+            <p className="text-gray-600 mb-3 text-sm">
               What are your goals and frustrations with traditional networking?
             </p>
             <textarea
-              className="w-full px-4 py-3 bg-white border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-32"
+              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-24 text-sm"
               placeholder="Tell us what you're looking for..."
               value={formData.networkingGoals}
               onChange={(e) => handleChange('networkingGoals', e.target.value)}
