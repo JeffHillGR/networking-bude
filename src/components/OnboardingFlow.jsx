@@ -535,6 +535,9 @@ export default function BudEOnboarding() {
                   <option value="consulting">Consulting</option>
                   <option value="professional development">Professional Development</option>
                   <option value="recruiting">Recruiting</option>
+                  <option value="events">Events</option>
+                  <option value="entertainment">Entertainment</option>
+                  <option value="media">Media</option>
                   <option value="entrepreneur">Entrepreneur/Business Owner</option>
                   <option value="startup">Startup/Founder</option>
                   <option value="other">Other</option>
