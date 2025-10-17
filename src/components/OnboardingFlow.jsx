@@ -408,10 +408,6 @@ export default function BudEOnboarding() {
           </button>
         </div>
 
-        <p className="text-center text-xs text-gray-600 mt-4">
-          Already have an account? <button onClick={() => navigate('/dashboard')} className="text-blue-600 hover:underline">Go to Dashboard</button>
-        </p>
-
         {/* Mobile Branding - Only visible on mobile */}
         <p className="md:hidden text-center text-xs text-gray-600 mt-6 pb-4">
           Networking BudE by The BudE System™
@@ -707,10 +703,6 @@ export default function BudEOnboarding() {
   Continue
 </button>
           </div>
-
-          <p className="text-center text-sm text-gray-600 mt-6">
-            Already have an account? <button onClick={() => navigate('/dashboard')} className="text-blue-600 hover:underline">Go to Dashboard</button>
-          </p>
 
           {/* Mobile Branding - Only visible on mobile */}
           <p className="md:hidden text-center text-xs text-gray-600 mt-6 pb-4">
