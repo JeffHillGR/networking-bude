@@ -523,7 +523,7 @@ export default function BudEOnboarding() {
                   
                   <option value="">Select your industry</option>
                   <option value="accounting">Accounting</option>
-                  <option value="construction">Consulting</option>
+                  <option value="construction">Construction</option>
                   <option value="consulting">Consulting</option>
                   <option value="education">Education</option>
                   <option value="entertainment">Entertainment</option>
