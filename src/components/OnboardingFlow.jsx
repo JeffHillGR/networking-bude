@@ -520,26 +520,27 @@ export default function BudEOnboarding() {
                   value={formData.industry}
                   onChange={(e) => handleChange('industry', e.target.value)}
                 >
+                  
                   <option value="">Select your industry</option>
-                  <option value="technology">Technology</option>
-                  <option value="healthcare">Healthcare</option>
-                  <option value="finance">Finance</option>
-                  <option value="education">Education</option>
-                  <option value="manufacturing">Manufacturing</option>
-                  <option value="marketing">Marketing</option>
-                  <option value="real estate">Real Estate</option>
-                  <option value="law">Law</option>
-                  <option value="non-profit">Non-Profit</option>
-                  <option value="government">Government</option>
                   <option value="accounting">Accounting</option>
                   <option value="consulting">Consulting</option>
-                  <option value="professional development">Professional Development</option>
-                  <option value="recruiting">Recruiting</option>
-                  <option value="events">Events</option>
+                  <option value="education">Education</option>
                   <option value="entertainment">Entertainment</option>
-                  <option value="media">Media</option>
                   <option value="entrepreneur">Entrepreneur/Business Owner</option>
+                  <option value="events">Events</option>
+                  <option value="healthcare">Healthcare</option>
+                  <option value="finance">Finance</option>
+                  <option value="government">Government</option>
+                  <option value="law">Law</option>
+                  <option value="manufacturing">Manufacturing</option>
+                  <option value="marketing">Marketing</option>
+                  <option value="media">Media</option>
+                  <option value="non-profit">Non-Profit</option>
+                  <option value="professional development">Professional Development</option>
+                  <option value="real estate">Real Estate</option>
+                  <option value="recruiting">Recruiting</option>
                   <option value="startup">Startup/Founder</option>
+                  <option value="technology">Technology</option>
                   <option value="other">Other</option>
                 </select>
               </div>
