@@ -592,16 +592,18 @@ export default function BudEOnboarding() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-semibold mb-1">DOB (optional)</label>
+                <label className="block text-sm font-semibold mb-1">Year Born (optional)</label>
                 <input
-                  type="date"
+                  type="text"
                   className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                  placeholder="YYYY"
+                  maxLength={4}
                   value={formData.dob}
                   onChange={(e) => handleChange('dob', e.target.value)}
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-1">DOB Connect?</label>
+                <label className="block text-sm font-semibold mb-1">Age Connect?</label>
                 <select
                   className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                   value={formData.dobPreference}
