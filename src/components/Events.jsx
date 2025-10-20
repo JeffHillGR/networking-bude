@@ -214,8 +214,12 @@ function Events() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-8">
-        <h1 className="text-3xl font-bold text-gray-900">Networking Events</h1>
-        <p className="text-gray-600 mt-2">These are real events. Check them out!</p>
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
+            <h1 className="text-4xl md:text-5xl font-bold text-black">Networking Events</h1>
+          </div>
+          <p className="text-gray-600 mt-2">These are real events. Check them out!</p>
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">

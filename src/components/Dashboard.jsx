@@ -297,7 +297,7 @@ const getGreeting = () => {
       case 'dashboard':
         return (
           <div className="space-y-4">
-            <div className="relative h-32 rounded-lg overflow-hidden shadow-lg bg-gradient-to-r from-green-600 to-lime-400">
+            <div className="relative h-48 rounded-lg overflow-hidden shadow-lg bg-gradient-to-r from-green-600 to-lime-400">
               <img
                 src="/Tech-Week-rooftop.jpg"
                 alt="Networking Event at Sunset"
@@ -318,8 +318,10 @@ const getGreeting = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Upcoming Events - Left Side */}
               <div className="flex flex-col">
-                <div className="mb-4">
-                  <h3 className="font-bold text-gray-900 text-lg">Upcoming Events</h3>
+                <div className="mb-4 text-center">
+                  <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black mb-2">
+                    <h3 className="font-bold text-black text-lg">Upcoming Events</h3>
+                  </div>
                   <p className="text-sm text-gray-600">Networking events happening near you</p>
                 </div>
                 <div className="space-y-4 flex-grow">
@@ -367,8 +369,10 @@ const getGreeting = () => {
 
               {/* Potential Connections - Right Side */}
               <div className="flex flex-col">
-                <div className="mb-4">
-                  <h3 className="font-bold text-gray-900 text-lg">Potential Connections</h3>
+                <div className="mb-4 text-center">
+                  <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black mb-2">
+                    <h3 className="font-bold text-black text-lg">Potential Connections</h3>
+                  </div>
                   <p className="text-sm text-gray-600">People you might want to connect with first</p>
                 </div>
                 <div className="space-y-4 flex-grow">
@@ -422,8 +426,10 @@ const getGreeting = () => {
 
             {/* Featured Content - Below Events and Connections */}
             <div>
-              <div className="mb-4">
-                <h3 className="font-bold text-gray-900 text-lg">Featured Content</h3>
+              <div className="mb-4 text-center">
+                <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black mb-2">
+                  <h3 className="font-bold text-black text-lg">Featured Content</h3>
+                </div>
                 <p className="text-sm text-gray-600">Curated content to help you grow</p>
               </div>
               <div className="bg-white rounded-lg p-4 md:p-8 shadow-sm border border-gray-200">

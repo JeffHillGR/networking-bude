@@ -97,7 +97,9 @@ function Connections({ onBackToDashboard }) {
           <ArrowLeft className="w-5 h-5" />
           <span>Back to Dashboard</span>
         </button>
-        <h1 className="text-3xl font-bold text-gray-900">Connections</h1>
+        <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
+          <h1 className="text-3xl font-bold text-black">Connections</h1>
+        </div>
         <p className="text-gray-600 mt-2">Discover and connect with professionals who share your interests</p>
       </div>
 
@@ -129,7 +131,11 @@ function Connections({ onBackToDashboard }) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative">
           {/* Large Card View */}
           <div className="lg:col-span-2">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Discover New Connections</h2>
+            <div className="text-center mb-4">
+              <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black">
+                <h2 className="text-xl font-bold text-black">Discover New Connections</h2>
+              </div>
+            </div>
 
             <div className="bg-white rounded-lg shadow-lg overflow-hidden relative group">
               {/* Card Header */}
@@ -232,7 +238,11 @@ function Connections({ onBackToDashboard }) {
 
           {/* All Recommendations List */}
           <div className="relative">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">All Recommendations</h2>
+            <div className="text-center mb-4">
+              <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black">
+                <h2 className="text-xl font-bold text-black">All Recommendations</h2>
+              </div>
+            </div>
             <div className="space-y-3 relative">
               {connections.map((person) => (
                 <div key={person.id} className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
