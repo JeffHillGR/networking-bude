@@ -167,6 +167,7 @@ function Events() {
       price: 'Free',
       badge: 'In-Person',
       isTrending: true,
+      soldOut: true,
       image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1115649073%2F978818167483%2F1%2Foriginal.20250905-182811?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.557271596548&fp-y=0.544888875326&s=f63fa760ac5800775ace7493cbe92039'
     },
     {
@@ -295,6 +296,11 @@ function Events() {
                       <div className="absolute top-4 left-4 bg-black text-white px-3 py-1 rounded-full text-sm font-medium">
                         {event.badge}
                       </div>
+                      {event.soldOut && (
+                        <div className="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg">
+                          SOLD OUT
+                        </div>
+                      )}
                     </div>
                     <div className="p-6">
                       <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>
