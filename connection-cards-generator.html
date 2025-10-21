@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BudE Connection Cards Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #009900 0%, #D0ED00 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            color: #009900;
+            margin-bottom: 10px;
+        }
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #009900;
+        }
+        select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        button {
+            background: #009900;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #007700;
+        }
+        .copy-btn {
+            background: #D0ED00;
+            color: black;
+            font-weight: bold;
+        }
+        .copy-btn:hover {
+            background: #bfd400;
+        }
+        #preview {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            min-height: 200px;
+        }
+        .success {
+            background: #D0ED00;
+            color: #009900;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 BudE Connection Cards Generator</h1>
+        <p>Generate personalized connection emails with beautiful cards</p>
+
+        <div class="section">
+            <h3>Step 1: Select Recipient</h3>
+            <select id="recipientSelect">
+                <option value="">-- Choose recipient --</option>
+            </select>
+            <div id="recipientInfo" style="margin-top: 10px; font-size: 14px; color: #666;"></div>
+        </div>
+
+        <div class="section">
+            <h3>Step 2: Personalize Opening Message (Optional)</h3>
+            <textarea id="personalMessage" rows="3" style="width: 100%; padding: 10px; border-radius: 4px; border: 2px solid #ddd;">Hi [Name],
+
+We're excited to introduce you to some amazing professionals in your network!</textarea>
+        </div>
+
+        <div class="section">
+            <button onclick="generateEmail()">✨ Generate Email HTML</button>
+            <button class="copy-btn" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+        </div>
+
+        <div id="successMsg" style="display: none;" class="success">
+            ✅ HTML copied! Now paste into Outlook (Ctrl+V)
+        </div>
+
+        <div id="preview"></div>
+    </div>
+
+    <script>
+        // Connection data from your spreadsheet
+        const connections = [
+            {recipient: "kristina.colby@gmail.com", connections: ["mel.trombley@christmanco.com", "russ@tiberiusimages.com"]},
+            {recipient: "mdyoder@michaelyodergr.com", connections: ["julie@julielankes.com", "mindy@minmiller.com"]},
+            {recipient: "mindy@minmiller.com", connections: ["mdyoder@michaelyodergr.com", "ken@netplusconnections.com", "julie@grandrapids.org"]},
+            {recipient: "christine@avidmarketingalliance.com", connections: ["dlawson@salesindex.ai", "rob.geer@randstaddigital.com"]},
+            {recipient: "Keri@specialoccasionsmi.com", connections: ["ricktreur@gmail.com", "julie@grandrapids.org", "ken@netplusconnections.com"]},
+            {recipient: "arian@hillislandfinancial.com", connections: ["ricktreur@gmail.com", "julie@grandrapids.org", "dlawson@salesindex.ai"]},
+            {recipient: "julie@julielankes.com", connections: ["julie@grandrapids.org", "ricktreur@gmail.com", "mdyoder@michaelyodergr.com"]},
+            {recipient: "russ@tiberiusimages.com", connections: ["kristina.colby@gmail.com", "ricktreur@gmail.com"]},
+            {recipient: "ricktreur@gmail.com", connections: ["arian@hillislandfinancial.com", "julie@julielankes.com", "russ@tiberiusimages.com", "rob.geer@randstaddigital.com"]},
+            {recipient: "rob.geer@randstaddigital.com", connections: ["julie@grandrapids.org", "ricktreur@gmail.com"]},
+            {recipient: "julie@grandrapids.org", connections: ["arian@hillislandfinancial.com", "julie@julielankes.com", "rob.geer@randstaddigital.com", "mel.trombley@christmanco.com"]},
+            {recipient: "dlawson@salesindex.ai", connections: ["christine@avidmarketingalliance.com", "arian@hillislandfinancial.com", "ken@netplusconnections.com"]},
+            {recipient: "mel.trombley@christmanco.com", connections: ["kristina.colby@gmail.com", "julie@grandrapids.org", "ken@netplusconnections.com"]},
+            {recipient: "ken@netplusconnections.com", connections: ["mindy@minmiller.com", "dlawson@salesindex.ai", "mel.trombley@christmanco.com"]}
+        ];
+
+        // User profiles from your spreadsheet
+        const users = [
+            {firstName: "Kristina", lastName: "colby", email: "kristina.colby@gmail.com", jobTitle: "Chief Operating Officer", company: "Folc Strategies", industry: "consulting", orgsAttend: "Creative Mornings, Start Garden", orgsCheckOut: "GR Chamber of Commerce, Rotary Club, Right Place, Inforum", professionalInterests: "Technology, Consulting, Startup, Leadership", professionalInterestsOther: "Non-profit; Public Administration; the arts", personalInterests: "travel, running, cycling, nature, backpacking, kayaking, gardening, community, volunteering, vintage", networkingGoals: "Goals - Expand my network for mutual benefit! \nFrustrations - Having to pay to play, not actually meeting new people"},
+            {firstName: "Michael", lastName: "Yoder", email: "mdyoder@michaelyodergr.com", jobTitle: "Social Media Strategist", company: "", industry: "marketing", orgsAttend: "", orgsCheckOut: "", professionalInterests: "Marketing, Healthcare, Consulting", professionalInterestsOther: "", personalInterests: "", networkingGoals: ""},
+            {firstName: "Mindy", lastName: "Miller", email: "mindy@minmiller.com", jobTitle: "Sales Director", company: "Witte Tours", industry: "other", orgsAttend: "GR Chamber of Commerce", orgsCheckOut: "", professionalInterests: "Marketing, Sales, Leadership", professionalInterestsOther: "", personalInterests: "Sailing, skiing, gardening", networkingGoals: "Continue to meet more people and make meaningful connections that help build resources and relationships for my business, and others."},
+            {firstName: "Christine", lastName: "Morse", email: "christine@avidmarketingalliance.com", jobTitle: "Sales Growth", company: "Avid Marketing Alliance", industry: "marketing", orgsAttend: "Inforum", orgsCheckOut: "Economic Club of Grand Rapids, Right Place, Hello West Michigan, Creative Mornings, Rotary Club, GR Chamber of Commerce", professionalInterests: "Marketing, Sustainability, Sales, Consulting, Leadership, AI, Technology, Finance, Healthcare", professionalInterestsOther: "", personalInterests: "Lunch or dinner, 1.1 coffee connections, Connecting on socials, Festivals, Grand Opening Events, Art Exhibits, Rosa Parks Events", networkingGoals: "Ideal Clients, Strategic Alliance Partners, Referral Sources"},
+            {firstName: "Keri", lastName: "Kujala", email: "Keri@specialoccasionsmi.", jobTitle: "Owner", company: "Special Occassions", industry: "other", orgsAttend: "GR Chamber of Commerce, Econ Club, Athena", orgsCheckOut: "Inforum", professionalInterests: "Marketing, Design, Media", professionalInterestsOther: "", personalInterests: "Being a mom to three kids, Meeting others that I can assist with their events!", networkingGoals: ""},
+            {firstName: "Arian", lastName: "Nelson", email: "arian@hillislandfinancial.com", jobTitle: "Private Wealth Manager", company: "", industry: "finance", orgsAttend: "", orgsCheckOut: "", professionalInterests: "Technology, Finance, Sales, Healthcare", professionalInterestsOther: "", personalInterests: "Pickleball!", networkingGoals: ""},
+            {firstName: "Julie", lastName: "Lankes", email: "julie@julielankes.com", jobTitle: "Strategist", company: "", industry: "Marketing", orgsAttend: "GR Chamber of Commerce, Right Place, Creative Mornings, Create Great Leaders, Atehna, StartGarden, GRABB", orgsCheckOut: "Rotary Club, Economic Club of Grand Rapids, Bamboo, Hello West Michigan, Crain's GR Business, AIGA - WM", professionalInterests: "Technology, Marketing, Design, Product Management, Engineering, Consulting, Media, Startup, AI/ML, Sustainability, Leadership, AI", professionalInterestsOther: "", personalInterests: "Hiking, working, exploring the city", networkingGoals: "Meeting new people, creating genuine connections and friends"},
+            {firstName: "Russell", lastName: "Climie", email: "russ@tiberiusimages.com", jobTitle: "Owner & Photographer", company: "", industry: "entrepreneur", orgsAttend: "Economic Club of Grand Rapids, Hello West Michigan, Crain's GR Business", orgsCheckOut: "Bamboo, CARWM, Inforum, WMPRSA, AIGA - WM", professionalInterests: "Marketing, Sales, Real Estate, Startup, Blockchain, Leadership", professionalInterestsOther: "", personalInterests: "Father of 6 year old, love to travel and fly fish", networkingGoals: "Looking for new friends. Who knows, maybe this works."},
+            {firstName: "Rick", lastName: "Treur", email: "ricktreur@gmail.com", jobTitle: "Director of Talent & Leadership", company: "Grand Rapids Chamber", industry: "professional development", orgsAttend: "GR Chamber of Commerce, Rotary Club, Create Great Leaders, Economic Club of Grand Rapids, Athena", orgsCheckOut: "Creative Mornings, Crain's GR Business, Bamboo", professionalInterests: "", professionalInterestsOther: "", personalInterests: "Serving on the Grand Rapids Planning Commission and the ICCF Board.  I also perform with River City Improv.", networkingGoals: "Building my network."},
+            {firstName: "Rob", lastName: "Geer", email: "rob.geer@randstaddigital.com", jobTitle: "Principal Account Manager", company: "Randstad Digital", industry: "technology", orgsAttend: "Inforum, Right Place, Hello West Michigan", orgsCheckOut: "Economic Club of Grand Rapids", professionalInterests: "Technology, Marketing, Data Science, Consulting, AI/ML", professionalInterestsOther: "", personalInterests: "Outdoor cooking, biking, walking, travel, sunshine and beaches", networkingGoals: "grow my network, help others network better, grow my business"},
+            {firstName: "Julie", lastName: "VanGessel", email: "julie@grandrapids.org", jobTitle: "SR.Membership Engagement Manager", company: "Grand Rapids Chamber", industry: "", orgsAttend: "GR Chamber of Commerce, Economic Club of Grand Rapids, Athena, Inforum, Crain's GR Business, Create Great Leaders, Right Place", orgsCheckOut: "", professionalInterests: "Marketing, Finance, Sales, Real Estate, Media, Startup, Sustainability, Leadership", professionalInterestsOther: "", personalInterests: "Supporting local businesses \nActive on 3 boards - YMCA, Revive and Thrive Project and MWF \nLocal bars and restaurants \nGolf \nPickleball", networkingGoals: "Community connections \nBuilding positive relationships \nHelping businesses make connections"},
+            {firstName: "Daryn", lastName: "Lawson", email: "dlawson@salesindex.ai", jobTitle: "Sales Director", company: "SalesIndex", industry: "professional development", orgsAttend: "", orgsCheckOut: "", professionalInterests: "", professionalInterestsOther: "", personalInterests: "Golf, working out", networkingGoals: "introductions to companies building sales teams"},
+            {firstName: "Mel", lastName: "Trombley", email: "mel.trombley@christmanco.com", jobTitle: "Business Development Director", company: "The Christman Company", industry: "other", orgsAttend: "GR Chamber of Commerce, Economic Club of Grand Rapids, Create Great Leaders, Right Place, Athena, Crain's GR Business", orgsCheckOut: "", professionalInterests: "Leadership, Real Estate, Engineering, Design", professionalInterestsOther: "", personalInterests: "Soccer, Community Engagement/Leadership, Women Empowerment", networkingGoals: "Connecting and growing from leaders around me."},
+            {firstName: "Ken", lastName: "Fortier", email: "ken@netplusconnections.com", jobTitle: "Chief Revenue Officer", company: "Nexus Benefit Solutions", industry: "healthcare", orgsAttend: "Economic Club of Grand Rapids, Right Place, Crain's GR Business", orgsCheckOut: "", professionalInterests: "", professionalInterestsOther: "", personalInterests: "Love to play golf and meet up with friends.  Mega 80s!", networkingGoals: "Expand my network of local business owners"}
+        ];
+
+        let currentHTML = '';
+
+        // Populate recipient dropdown
+        window.onload = function() {
+            const select = document.getElementById('recipientSelect');
+            connections.forEach(conn => {
+                const user = users.find(u => u.email === conn.recipient);
+                if (user) {
+                    const option = document.createElement('option');
+                    option.value = conn.recipient;
+                    option.textContent = `${user.firstName} ${user.lastName} (${conn.recipient})`;
+                    select.appendChild(option);
+                }
+            });
+
+            select.addEventListener('change', function() {
+                const user = users.find(u => u.email === this.value);
+                const conn = connections.find(c => c.recipient === this.value);
+                if (user && conn) {
+                    document.getElementById('recipientInfo').innerHTML =
+                        `<strong>${user.firstName} ${user.lastName}</strong> will receive <strong>${conn.connections.length} connection card(s)</strong>`;
+                }
+            });
+        };
+
+        function getUserByEmail(email) {
+            return users.find(u => u.email === email);
+        }
+
+        function createConnectionCard(user) {
+            if (!user) return '';
+
+            let cardHTML = `
+                <div style="background: white; border: 2px solid #D0ED00; border-radius: 12px; padding: 24px; margin: 20px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    <h3 style="color: #009900; margin: 0 0 16px 0; font-size: 22px;">${user.firstName} ${user.lastName}</h3>
+            `;
+
+            // Add fields only if they have data
+            if (user.jobTitle) {
+                cardHTML += `<p style="margin: 8px 0; color: #333;"><strong>Job Title:</strong> ${user.jobTitle}</p>`;
+            }
+            if (user.company) {
+                cardHTML += `<p style="margin: 8px 0; color: #333;"><strong>Company:</strong> ${user.company}</p>`;
+            }
+            if (user.email) {
+                cardHTML += `<p style="margin: 8px 0; color: #333;"><strong>Email:</strong> <a href="mailto:${user.email}" style="color: #009900;">${user.email}</a></p>`;
+            }
+            if (user.industry) {
+                cardHTML += `<p style="margin: 8px 0; color: #333;"><strong>Industry:</strong> ${user.industry}</p>`;
+            }
+            if (user.orgsAttend) {
+                cardHTML += `<p style="margin: 8px 0; color: #333;"><strong>Organizations That Have Events I Like To Attend:</strong> ${user.orgsAttend}</p>`;
+            }
+            if (user.orgsCheckOut) {
+                cardHTML += `<p style="margin: 8px 0; color: #333;"><strong>Organizations I've Wanted to Check Out:</strong> ${user.orgsCheckOut}</p>`;
+            }
+            if (user.professionalInterests) {
+                cardHTML += `<p style="margin: 8px 0; color: #333;"><strong>Professional Interests:</strong> ${user.professionalInterests}</p>`;
+            }
+            if (user.professionalInterestsOther) {
+                cardHTML += `<p style="margin: 8px 0; color: #333;"><strong>Professional Interests Other:</strong> ${user.professionalInterestsOther}</p>`;
+            }
+            if (user.personalInterests) {
+                cardHTML += `<p style="margin: 8px 0; color: #333;"><strong>Personal Interests:</strong> ${user.personalInterests}</p>`;
+            }
+            if (user.networkingGoals) {
+                cardHTML += `<p style="margin: 8px 0; color: #333;"><strong>Networking Goals:</strong> ${user.networkingGoals}</p>`;
+            }
+
+            cardHTML += `</div>`;
+            return cardHTML;
+        }
+
+        function generateEmail() {
+            const recipientEmail = document.getElementById('recipientSelect').value;
+            if (!recipientEmail) {
+                alert('Please select a recipient first!');
+                return;
+            }
+
+            const recipient = getUserByEmail(recipientEmail);
+            const connectionData = connections.find(c => c.recipient === recipientEmail);
+
+            if (!recipient || !connectionData) {
+                alert('Error finding recipient data!');
+                return;
+            }
+
+            // Get personalized message and replace [Name] with actual first name
+            let personalMessage = document.getElementById('personalMessage').value;
+            personalMessage = personalMessage.replace('[Name]', recipient.firstName);
+
+            // Build email HTML
+            let emailHTML = `
+                <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 700px; margin: 0 auto; padding: 20px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h1 style="color: #009900; margin: 0;">Networking BudE</h1>
+                        <p style="color: #666; margin: 10px 0 0 0;">Connecting professionals who share your interests</p>
+                    </div>
+
+                    <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <p style="margin: 0; color: #333; line-height: 1.6; white-space: pre-line;">${personalMessage}</p>
+                    </div>
+
+                    <h2 style="color: #009900; margin: 30px 0 20px 0;">Your Connections:</h2>
+            `;
+
+            // Add connection cards (only for valid connections)
+            connectionData.connections.forEach(connEmail => {
+                const connUser = getUserByEmail(connEmail);
+                if (connUser) {
+                    emailHTML += createConnectionCard(connUser);
+                }
+            });
+
+            // Add footer
+            emailHTML += `
+                    <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #D0ED00; text-align: center;">
+                        <p style="color: #666; margin: 0;">Best regards,</p>
+                        <p style="color: #009900; font-weight: bold; margin: 10px 0;">Jeff Hill</p>
+                        <p style="color: #009900; font-weight: bold; margin: 0;">Networking BudE</p>
+                        <p style="color: #999; font-size: 12px; margin: 20px 0 0 0;">Making networking less awkward, one connection at a time.</p>
+                    </div>
+                </div>
+            `;
+
+            currentHTML = emailHTML;
+            document.getElementById('preview').innerHTML = emailHTML;
+            document.getElementById('successMsg').style.display = 'none';
+        }
+
+        function copyToClipboard() {
+            if (!currentHTML) {
+                alert('Please generate an email first!');
+                return;
+            }
+
+            // Create temporary element to copy HTML
+            const temp = document.createElement('div');
+            temp.innerHTML = currentHTML;
+            document.body.appendChild(temp);
+
+            const range = document.createRange();
+            range.selectNode(temp);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+
+            try {
+                document.execCommand('copy');
+                document.getElementById('successMsg').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('successMsg').style.display = 'none';
+                }, 3000);
+            } catch (err) {
+                alert('Failed to copy. Please manually select and copy the preview below.');
+            }
+
+            window.getSelection().removeAllRanges();
+            document.body.removeChild(temp);
+        }
+    </script>
+</body>
+</html>

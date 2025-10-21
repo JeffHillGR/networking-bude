@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BudE Connection Email Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-number {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .help-text {
+            color: #666;
+            font-size: 14px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .help-text::before {
+            content: "💡";
+        }
+
+        .field-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .checkbox-group:hover {
+            background: #f0f0f0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            cursor: pointer;
+            font-size: 14px;
+            user-select: none;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .preview {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            min-height: 200px;
+        }
+
+        .preview-empty {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-style: italic;
+        }
+
+        .copy-btn {
+            background: #10b981;
+            margin-top: 15px;
+        }
+
+        .copy-btn:hover {
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .success-message {
+            background: #10b981;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* Email Preview Styles */
+        .email-card {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .email-card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .email-card-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .email-card-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .email-card-title {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .email-card-field {
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .email-card-field:last-child {
+            border-bottom: none;
+        }
+
+        .email-card-field strong {
+            color: #667eea;
+            min-width: 100px;
+        }
+
+        .why-connect {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .why-connect strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .intro-text {
+            margin-bottom: 20px;
+        }
+
+        .intro-text textarea {
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤝 BudE Connection Email Generator</h1>
+            <p>Create personalized connection emails for your beta testers</p>
+        </div>
+
+        <div class="content">
+            <!-- Step 1a: Paste User Profile Data -->
+            <div class="section">
+                <h2>
+                    <span class="section-number">1a</span>
+                    Paste User Profile Data (Form_Responses)
+                </h2>
+                <textarea id="sheetData" placeholder="Copy your Form_Responses sheet data from Google Sheets and paste here...
+
+Include these columns:
+First Name, Last Name, Email, Job Title, Company, Industry, Professional Interests, Personal Interests, Networking Goals
+
+You can copy multiple rows - the tool will parse them automatically."></textarea>
+                <p class="help-text">
+                    In Google Sheets: Go to Form_Responses tab → Select all rows with data → Copy (Ctrl+C) → Paste here
+                </p>
+                <button onclick="parseSheetData()">Parse User Data</button>
+                <div id="parseSuccess" class="success-message">
+                    ✅ Successfully loaded <span id="userCount">0</span> users!
+                </div>
+            </div>
+
+            <!-- Step 1b: Paste Connections Data -->
+            <div class="section">
+                <h2>
+                    <span class="section-number">1b</span>
+                    Paste Connections Data (Connections tab)
+                </h2>
+                <textarea id="connectionsData" placeholder="Copy your Connections sheet data from Google Sheets and paste here...
+
+Include these columns:
+Recipient Email, Connection 1 Email, Connection 2 Email, Why Connect 1, Why Connect 2, (optional: Connection 3 Email, Connection 4 Email, Why 3, Why 4)
+
+This will AUTO-POPULATE connections and 'why connect' text for each person!"></textarea>
+                <p class="help-text">
+                    In Google Sheets: Go to Connections tab → Select all rows with data → Copy (Ctrl+C) → Paste here
+                </p>
+                <button onclick="parseConnectionsData()">Parse Connections</button>
+                <div id="connectionsSuccess" class="success-message">
+                    ✅ Successfully loaded connections for <span id="connectionsCount">0</span> people!
+                </div>
+            </div>
+
+            <!-- Step 2: Select Fields to Show -->
+            <div class="section">
+                <h2>
+                    <span class="section-number">2</span>
+                    Choose Fields to Display on Cards
+                </h2>
+                <p style="margin-bottom: 15px; color: #666;">Select which information should appear on the connection cards:</p>
+                <div class="field-selection">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="field_name" checked disabled>
+                        <label for="field_name">Name (required)</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="field_title" checked>
+                        <label for="field_title">Job Title</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="field_company" checked>
+                        <label for="field_company">Company</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="field_industry" checked>
+                        <label for="field_industry">Industry</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="field_prof_interests" checked>
+                        <label for="field_prof_interests">Professional Interests</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="field_personal_interests">
+                        <label for="field_personal_interests">Personal Interests</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="field_goals">
+                        <label for="field_goals">Networking Goals</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="field_email">
+                        <label for="field_email">Email</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Select People -->
+            <div class="section">
+                <h2>
+                    <span class="section-number">3</span>
+                    Select Recipient and Connections
+                </h2>
+                <div class="selection-grid">
+                    <div class="select-wrapper">
+                        <label>Send email to:</label>
+                        <select id="recipientSelect" onchange="updateConnectionOptions()">
+                            <option value="">-- Select recipient --</option>
+                        </select>
+                    </div>
+                    <div class="select-wrapper">
+                        <label>Connection #1:</label>
+                        <select id="connection1Select">
+                            <option value="">-- Select first connection --</option>
+                        </select>
+                    </div>
+                    <div class="select-wrapper">
+                        <label>Connection #2:</label>
+                        <select id="connection2Select">
+                            <option value="">-- Select second connection --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Personalize -->
+            <div class="section">
+                <h2>
+                    <span class="section-number">4</span>
+                    Add Personal Touch
+                </h2>
+                <div class="intro-text">
+                    <label style="font-weight: 600; display: block; margin-bottom: 8px;">Opening message:</label>
+                    <textarea id="introMessage" placeholder="Hi {name},
+
+I've been looking through our Networking BudE community and found two people I think you'd really connect with:"></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Why connect with #1:</label>
+                        <textarea id="whyConnect1" placeholder="You both work in marketing and share an interest in..."></textarea>
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; display: block; margin-bottom: 8px;">Why connect with #2:</label>
+                        <textarea id="whyConnect2" placeholder="Their experience in tech aligns perfectly with..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Generate -->
+            <div class="section">
+                <h2>
+                    <span class="section-number">5</span>
+                    Generate Email
+                </h2>
+                <button onclick="generateEmail()">✨ Generate Connection Email</button>
+
+                <div id="preview" class="preview">
+                    <div class="preview-empty">
+                        Email preview will appear here after you click "Generate Connection Email"
+                    </div>
+                </div>
+
+                <button class="copy-btn" onclick="copyToClipboard()" style="display: none;" id="copyBtn">
+                    📋 Copy HTML to Clipboard
+                </button>
+                <div id="copySuccess" class="success-message">
+                    ✅ Copied! Paste into Gmail (Ctrl+V)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let users = [];
+        let connections = {}; // Maps recipient email to their connections
+        let generatedHTML = '';
+
+        function parseConnectionsData() {
+            const data = document.getElementById('connectionsData').value.trim();
+            if (!data) {
+                alert('Please paste your Connections sheet data first!');
+                return;
+            }
+
+            const lines = data.split('\n');
+            connections = {};
+            let count = 0;
+
+            lines.forEach(line => {
+                const cols = line.split('\t'); // Tab-separated values from Google Sheets
+                if (cols.length >= 5) { // Need at least recipient, 2 connections, and 2 why texts
+                    const recipientEmail = (cols[0] || '').trim().toLowerCase();
+                    if (recipientEmail && recipientEmail.includes('@')) {
+                        connections[recipientEmail] = {
+                            connection1Email: (cols[1] || '').trim().toLowerCase(),
+                            connection2Email: (cols[2] || '').trim().toLowerCase(),
+                            connection3Email: (cols[3] || '').trim().toLowerCase(),
+                            connection4Email: (cols[4] || '').trim().toLowerCase(),
+                            why1: cols[5] || '',
+                            why2: cols[6] || '',
+                            why3: cols[7] || '',
+                            why4: cols[8] || ''
+                        };
+                        count++;
+                    }
+                }
+            });
+
+            if (count === 0) {
+                alert('No valid connection data found. Make sure to copy the data rows (not just headers) from the Connections sheet.');
+                return;
+            }
+
+            // Update UI
+            document.getElementById('connectionsCount').textContent = count;
+            document.getElementById('connectionsSuccess').classList.add('show');
+            setTimeout(() => {
+                document.getElementById('connectionsSuccess').classList.remove('show');
+            }, 3000);
+
+            console.log('Loaded connections:', connections);
+        }
+
+        function parseSheetData() {
+            const data = document.getElementById('sheetData').value.trim();
+            if (!data) {
+                alert('Please paste your Google Sheet data first!');
+                return;
+            }
+
+            const lines = data.split('\n');
+            users = [];
+
+            lines.forEach(line => {
+                const cols = line.split('\t'); // Tab-separated values from Google Sheets
+                if (cols.length >= 3) { // At minimum need name
+                    users.push({
+                        firstName: cols[0] || '',
+                        lastName: cols[1] || '',
+                        email: '', // Email not in this sheet
+                        jobTitle: cols[2] || '',
+                        company: cols[3] || '',
+                        industry: cols[4] || '',
+                        industryOther: cols[5] || '',
+                        orgsAttend: cols[6] || '',
+                        orgsCheckOut: cols[7] || '',
+                        profInterests: cols[8] || '',
+                        personalInterests: cols[9] || '',
+                        goals: cols[10] || ''
+                    });
+                }
+            });
+
+            if (users.length === 0) {
+                alert('No valid user data found. Make sure to copy the data rows (not just headers) from Google Sheets.');
+                return;
+            }
+
+            // Update UI
+            document.getElementById('userCount').textContent = users.length;
+            document.getElementById('parseSuccess').classList.add('show');
+            setTimeout(() => {
+                document.getElementById('parseSuccess').classList.remove('show');
+            }, 3000);
+
+            // Populate dropdowns
+            populateDropdowns();
+        }
+
+        function populateDropdowns() {
+            const recipientSelect = document.getElementById('recipientSelect');
+            const connection1Select = document.getElementById('connection1Select');
+            const connection2Select = document.getElementById('connection2Select');
+
+            // Clear existing options
+            recipientSelect.innerHTML = '<option value="">-- Select recipient --</option>';
+            connection1Select.innerHTML = '<option value="">-- Select first connection --</option>';
+            connection2Select.innerHTML = '<option value="">-- Select second connection --</option>';
+
+            users.forEach((user, index) => {
+                const name = `${user.firstName} ${user.lastName}`;
+                const option = new Option(name, index);
+                recipientSelect.add(option.cloneNode(true));
+                connection1Select.add(option.cloneNode(true));
+                connection2Select.add(option.cloneNode(true));
+            });
+        }
+
+        function updateConnectionOptions() {
+            const recipientIndex = document.getElementById('recipientSelect').value;
+            if (recipientIndex && users[recipientIndex]) {
+                const recipient = users[recipientIndex];
+                const introText = document.getElementById('introMessage');
+                const defaultIntro = `Hi ${recipient.firstName},
+
+I've been looking through our Networking BudE community and found two people I think you'd really connect with:`;
+                if (!introText.value || introText.value.includes('{name}')) {
+                    introText.value = defaultIntro;
+                }
+            }
+        }
+
+        function generateEmail() {
+            const recipientIndex = document.getElementById('recipientSelect').value;
+            const connection1Index = document.getElementById('connection1Select').value;
+            const connection2Index = document.getElementById('connection2Select').value;
+
+            if (!recipientIndex || !connection1Index || !connection2Index) {
+                alert('Please select a recipient and two connections!');
+                return;
+            }
+
+            if (connection1Index === connection2Index) {
+                alert('Please select two different people for the connections!');
+                return;
+            }
+
+            const recipient = users[recipientIndex];
+            const connection1 = users[connection1Index];
+            const connection2 = users[connection2Index];
+
+            const intro = document.getElementById('introMessage').value;
+            const why1 = document.getElementById('whyConnect1').value;
+            const why2 = document.getElementById('whyConnect2').value;
+
+            // Generate HTML
+            generatedHTML = generateHTMLEmail(recipient, connection1, connection2, intro, why1, why2);
+
+            // Show preview
+            document.getElementById('preview').innerHTML = generatedHTML;
+            document.getElementById('copyBtn').style.display = 'block';
+        }
+
+        function generateHTMLEmail(recipient, conn1, conn2, intro, why1, why2) {
+            const showTitle = document.getElementById('field_title').checked;
+            const showCompany = document.getElementById('field_company').checked;
+            const showIndustry = document.getElementById('field_industry').checked;
+            const showProfInterests = document.getElementById('field_prof_interests').checked;
+            const showPersonalInterests = document.getElementById('field_personal_interests').checked;
+            const showGoals = document.getElementById('field_goals').checked;
+            const showEmail = document.getElementById('field_email').checked;
+
+            function generateCard(person, whyConnect) {
+                const initials = `${person.firstName[0]}${person.lastName[0]}`;
+                let fields = '';
+
+                if (showTitle && person.jobTitle) {
+                    fields += `<div class="email-card-field"><strong>Title:</strong> ${person.jobTitle}</div>`;
+                }
+                if (showCompany && person.company) {
+                    fields += `<div class="email-card-field"><strong>Company:</strong> ${person.company}</div>`;
+                }
+                if (showIndustry && person.industry) {
+                    fields += `<div class="email-card-field"><strong>Industry:</strong> ${person.industry}</div>`;
+                }
+                if (showProfInterests && person.profInterests) {
+                    fields += `<div class="email-card-field"><strong>Interests:</strong> ${person.profInterests}</div>`;
+                }
+                if (showPersonalInterests && person.personalInterests) {
+                    fields += `<div class="email-card-field"><strong>Hobbies:</strong> ${person.personalInterests}</div>`;
+                }
+                if (showGoals && person.goals) {
+                    fields += `<div class="email-card-field"><strong>Goals:</strong> ${person.goals}</div>`;
+                }
+                if (showEmail && person.email) {
+                    fields += `<div class="email-card-field"><strong>Email:</strong> ${person.email}</div>`;
+                }
+
+                return `
+                    <div class="email-card">
+                        <div class="email-card-header">
+                            <div class="email-card-avatar">${initials}</div>
+                            <div>
+                                <div class="email-card-name">${person.firstName} ${person.lastName}</div>
+                                ${showTitle && person.jobTitle ? `<div class="email-card-title">${person.jobTitle}${showCompany && person.company ? ' at ' + person.company : ''}</div>` : ''}
+                            </div>
+                        </div>
+                        ${fields}
+                        ${whyConnect ? `
+                        <div class="why-connect">
+                            <strong>Why I'm connecting you:</strong>
+                            ${whyConnect}
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+
+            return `
+                <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <p style="white-space: pre-line; margin-bottom: 20px;">${intro}</p>
+
+                    ${generateCard(conn1, why1)}
+                    ${generateCard(conn2, why2)}
+
+                    <p style="margin-top: 20px; margin-bottom: 20px;">
+                        I can introduce you to either or both - just reply and let me know!
+                    </p>
+
+                    <p style="margin-top: 30px;">
+                        Best,<br>
+                        Kristina<br>
+                        <span style="color: #667eea; font-weight: 600;">Networking BudE</span>
+                    </p>
+                </div>
+            `;
+        }
+
+        function copyToClipboard() {
+            const html = generatedHTML;
+
+            // Create a temporary element
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+            document.body.appendChild(temp);
+
+            // Select the content
+            const range = document.createRange();
+            range.selectNode(temp);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+
+            // Copy
+            try {
+                document.execCommand('copy');
+                document.getElementById('copySuccess').classList.add('show');
+                setTimeout(() => {
+                    document.getElementById('copySuccess').classList.remove('show');
+                }, 3000);
+            } catch (err) {
+                alert('Failed to copy. Please select the text manually and copy it.');
+            }
+
+            // Cleanup
+            window.getSelection().removeAllRanges();
+            document.body.removeChild(temp);
+        }
+
+        // Auto-fill sample data on load for testing
+        window.addEventListener('load', () => {
+            const defaultIntro = `Hi {name},
+
+I've been looking through our Networking BudE community and found two people I think you'd really connect with:`;
+            document.getElementById('introMessage').value = defaultIntro;
+        });
+    </script>
+</body>
+</html>
