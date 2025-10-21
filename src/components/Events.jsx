@@ -58,14 +58,14 @@ function Events() {
   const defaultFeaturedEvents = [
     {
       id: 1,
-      title: 'Salim Ismail – Founder, OpenExO and Author',
-      description: 'Join us for an inspiring lunch with Salim Ismail, entrepreneur, author, and global innovation expert. Hear insights on exponential technologies and organizational transformation.',
-      date: '10/20/2025',
-      time: '11:30 AM - 1:30 PM',
-      location: 'JW Marriott Grand Rapids',
-      organizerName: 'The Economic Club of Grand Rapids',
-      attendees: '250+',
-      image: 'https://econclub.net/wp-content/uploads/2025/06/Salim-Ismail-cropped.jpg',
+      title: 'Bamboo Grand Rapids: Grand Opening Celebration',
+      description: 'Celebrate the grand opening of Bamboo Grand Rapids, a new center for entrepreneurship, creativity, and innovation in downtown Grand Rapids.',
+      date: '12/4/2025',
+      time: '4:00 PM - 8:00 PM',
+      location: '2 Fulton Street West',
+      organizerName: 'Bamboo Detroit',
+      attendees: '500',
+      image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1120287333%2F84709515697%2F1%2Foriginal.20250910-174858?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.208333333333&fp-y=0.621848739496&s=9f37de221b0249dee8dd7ee347395056',
       badge: 'In-Person'
     },
     {
