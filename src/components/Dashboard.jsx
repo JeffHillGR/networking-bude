@@ -232,10 +232,10 @@ const getGreeting = () => {
 
   const defaultFeaturedContent = [
     {
-      image: 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts125/v4/64/64/19/646419d8-0249-3aa6-22e1-cf481814a28d/mza_16901703840593164642.png/540x540bb.webp',
-      title: 'Networking For People Who Hate Networking',
-      description: 'Listen to this episode from Worklife with Adam Grant on Spotify. Ditch your business cards. There are more effective, less awkward strategies for building your connections. This episode is made possible with the support of Bonobos, Accenture, Hilton, and JPMorgan Chase & Co.',
-      url: 'https://open.spotify.com/episode/4RiIYoe4tBKgzPoN2IZezV?si=lwRhg5HVTh-7LmDu4JUWKg&dl_branch=1&nd=1&dlsi=4f0333bb1555420b',
+      image: 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/52/2c/26/522c2689-01a0-f2c4-37b9-20034b428603/mza_15419489958704245485.jpg/540x540bb.webp',
+      title: 'The Not Perfect Networking Podcast',
+      description: 'Networking doesn\'t have to be perfect to be powerful. Join us for real conversations about building genuine connections in business and life. Perfect for professionals who want to network authentically.',
+      url: 'https://podcasts.apple.com/us/podcast/the-not-perfect-networking-podcast/id1802926391',
       tags: 'Networking, Professional Development',
       sponsoredBy: ''
     },
