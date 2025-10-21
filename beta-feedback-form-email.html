@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BudE Beta Feedback Form</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(to right, #009900, #D0ED00);
+      padding: 30px 20px;
+      text-align: center;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .header p {
+      font-size: 16px;
+      opacity: 0.95;
+    }
+
+    .form-content {
+      padding: 30px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #1f2937;
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 3px solid #D0ED00;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #009900;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .rating-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .rating-btn {
+      width: 45px;
+      height: 45px;
+      border: 2px solid #d1d5db;
+      background: white;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .rating-btn:hover {
+      border-color: #009900;
+      background: #f9fafb;
+    }
+
+    .rating-btn.selected {
+      background: #009900;
+      color: white;
+      border-color: #D0ED00;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 153, 0, 0.3);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background: #009900;
+      color: white;
+      border: 3px solid #D0ED00;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 20px;
+    }
+
+    .submit-btn:hover {
+      background: #007700;
+    }
+
+    .submit-btn:disabled {
+      background: #9ca3af;
+      border-color: #d1d5db;
+      cursor: not-allowed;
+    }
+
+    .success-message {
+      display: none;
+      text-align: center;
+      padding: 60px 30px;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: #009900;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-center;
+      color: white;
+      font-size: 40px;
+    }
+
+    .success-message h2 {
+      font-size: 32px;
+      color: #1f2937;
+      margin-bottom: 10px;
+    }
+
+    .success-message p {
+      font-size: 18px;
+      color: #6b7280;
+    }
+
+    .required {
+      color: #ef4444;
+    }
+
+    @media (max-width: 600px) {
+      .form-content {
+        padding: 20px;
+      }
+
+      .rating-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎉 BudE Beta Feedback</h1>
+      <p>Help us make BudE better for everyone!</p>
+    </div>
+
+    <div class="form-content" id="formContent">
+      <form id="feedbackForm">
+        <!-- Contact Information -->
+        <div class="section">
+          <div class="form-group">
+            <label>Name <span class="required">*</span></label>
+            <input type="text" name="name" required>
+          </div>
+          <div class="form-group">
+            <label>Email <span class="required">*</span></label>
+            <input type="email" name="email" required>
+          </div>
+        </div>
+
+        <!-- Onboarding & First Impressions -->
+        <div class="section">
+          <h3 class="section-title">Onboarding & First Impressions</h3>
+          <div class="form-group">
+            <label>How smooth was the sign-up or login process?</label>
+            <textarea name="signUpSmoothness" rows="3"></textarea>
+          </div>
+        </div>
+
+        <!-- User Experience (UX) -->
+        <div class="section">
+          <h3 class="section-title">User Experience (UX)</h3>
+          <div class="form-group">
+            <label>How easy or intuitive is it to navigate the app?</label>
+            <textarea name="navigationEase" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Any steps that felt confusing or frustrating?</label>
+            <textarea name="confusingSteps" rows="3"></textarea>
+          </div>
+        </div>
+
+        <!-- Design & Branding -->
+        <div class="section">
+          <h3 class="section-title">Design & Branding</h3>
+          <div class="form-group">
+            <label>Visual appeal of the app (colors, fonts, imagery)</label>
+            <textarea name="visualAppeal" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Does the brand feel clear, memorable, and consistent?</label>
+            <textarea name="brandClarity" rows="3"></textarea>
+          </div>
+        </div>
+
+        <!-- Performance & Speed -->
+        <div class="section">
+          <h3 class="section-title">Performance & Speed</h3>
+          <div class="form-group">
+            <label>Loading times, responsiveness, lag</label>
+            <textarea name="performance" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Any crashes, bugs, or slowdowns?</label>
+            <textarea name="crashesOrBugs" rows="3"></textarea>
+          </div>
+        </div>
+
+        <!-- Features & Functionality -->
+        <div class="section">
+          <h3 class="section-title">Features & Functionality</h3>
+          <div class="form-group">
+            <label>Which features were most useful or enjoyable?</label>
+            <textarea name="usefulFeatures" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Anything missing or not working as expected?</label>
+            <textarea name="missingFeatures" rows="3"></textarea>
+          </div>
+        </div>
+
+        <!-- Value Proposition & Relevance -->
+        <div class="section">
+          <h3 class="section-title">Value Proposition & Relevance</h3>
+          <div class="form-group">
+            <label>Did you understand the core purpose of the app right away?</label>
+            <textarea name="corePurposeUnderstood" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Does the app solve a real problem for you?</label>
+            <textarea name="solvesRealProblem" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Would you realistically use it or recommend it?</label>
+            <textarea name="wouldUseOrRecommend" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Does the app give you a reason to come back?</label>
+            <textarea name="reasonToComeBack" rows="3"></textarea>
+          </div>
+        </div>
+
+        <!-- Overall Rating -->
+        <div class="section">
+          <h3 class="section-title">Overall Rating</h3>
+          <div class="form-group">
+            <label>Overall rating (1–10)</label>
+            <div class="rating-buttons" id="overallRating">
+              <button type="button" class="rating-btn" data-value="1">1</button>
+              <button type="button" class="rating-btn" data-value="2">2</button>
+              <button type="button" class="rating-btn" data-value="3">3</button>
+              <button type="button" class="rating-btn" data-value="4">4</button>
+              <button type="button" class="rating-btn" data-value="5">5</button>
+              <button type="button" class="rating-btn" data-value="6">6</button>
+              <button type="button" class="rating-btn" data-value="7">7</button>
+              <button type="button" class="rating-btn" data-value="8">8</button>
+              <button type="button" class="rating-btn" data-value="9">9</button>
+              <button type="button" class="rating-btn" data-value="10">10</button>
+            </div>
+            <input type="hidden" name="overallRating" id="overallRatingValue">
+          </div>
+          <div class="form-group">
+            <label>Would you recommend this app to a friend or colleague? (1-10 scale)</label>
+            <div class="rating-buttons" id="npsRating">
+              <button type="button" class="rating-btn" data-value="1">1</button>
+              <button type="button" class="rating-btn" data-value="2">2</button>
+              <button type="button" class="rating-btn" data-value="3">3</button>
+              <button type="button" class="rating-btn" data-value="4">4</button>
+              <button type="button" class="rating-btn" data-value="5">5</button>
+              <button type="button" class="rating-btn" data-value="6">6</button>
+              <button type="button" class="rating-btn" data-value="7">7</button>
+              <button type="button" class="rating-btn" data-value="8">8</button>
+              <button type="button" class="rating-btn" data-value="9">9</button>
+              <button type="button" class="rating-btn" data-value="10">10</button>
+            </div>
+            <input type="hidden" name="netPromoterScore" id="npsRatingValue">
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">Submit Feedback</button>
+      </form>
+    </div>
+
+    <div class="success-message" id="successMessage">
+      <div class="success-icon">✓</div>
+      <h2>Thank You!</h2>
+      <p>Your feedback has been submitted successfully.</p>
+      <p style="margin-top: 10px; color: #9ca3af;">This helps us make BudE better for everyone!</p>
+    </div>
+  </div>
+
+  <script>
+    // Rating button handling
+    function setupRatingButtons(containerId, hiddenInputId) {
+      const container = document.getElementById(containerId);
+      const hiddenInput = document.getElementById(hiddenInputId);
+      const buttons = container.querySelectorAll('.rating-btn');
+
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          buttons.forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          hiddenInput.value = btn.dataset.value;
+        });
+      });
+    }
+
+    setupRatingButtons('overallRating', 'overallRatingValue');
+    setupRatingButtons('npsRating', 'npsRatingValue');
+
+    // Form submission
+    document.getElementById('feedbackForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      const formData = new FormData(e.target);
+      const data = {
+        submittedAt: new Date().toISOString()
+      };
+
+      // Collect all form data
+      for (let [key, value] of formData.entries()) {
+        data[key] = value;
+      }
+
+      try {
+        const response = await fetch('https://networking-bude.vercel.app/api/submitFeedback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to submit feedback');
+        }
+
+        // Show success message
+        document.getElementById('formContent').style.display = 'none';
+        document.getElementById('successMessage').classList.add('show');
+      } catch (error) {
+        console.error('Error:', error);
+        alert('There was an error submitting your feedback. Please try again or email grjeff@gmail.com directly.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Feedback';
+      }
+    });
+  </script>
+</body>
+</html>

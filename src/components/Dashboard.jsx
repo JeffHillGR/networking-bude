@@ -275,7 +275,7 @@ const getGreeting = () => {
 
   // Featured events - Real Grand Rapids networking events
   const events = [
-    { id: 1, title: 'Salim Ismail – Founder, OpenExO and Author', date: '10/20/2025', time: '11:30 AM - 1:30 PM', location: 'JW Marriott Grand Rapids', organizerName: 'The Economic Club of Grand Rapids', fullAddress: 'International Ballroom, JW Marriott, Grand Rapids, MI', image: 'https://econclub.net/wp-content/uploads/2025/06/Salim-Ismail-cropped.jpg', badge: 'In-Person' },
+    { id: 1, title: 'Bamboo Grand Rapids: Grand Opening Celebration', date: '12/4/2025', time: '4:00 PM - 8:00 PM', location: '2 Fulton Street West', organizerName: 'Bamboo Detroit', fullAddress: '2 Fulton Street West, Grand Rapids, MI 49503', image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1120287333%2F84709515697%2F1%2Foriginal.20250910-174858?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.208333333333&fp-y=0.621848739496&s=9f37de221b0249dee8dd7ee347395056', badge: 'In-Person', tags: ['Entrepreneurship', 'Innovation', 'Startup'] },
     { id: 2, title: 'Leadership Lesson Breakfast', date: '10/28/2025', time: '7:30 AM - 9:00 AM', location: 'Grand Rapids Chamber', organizerName: 'Grand Rapids Chamber', fullAddress: '250 Monroe Ave, Grand Rapids, MI 49503', image: 'https://grandrapids.org/wp-content/uploads/2025/01/GRC_LLB-October-e1737397882767.jpg', badge: 'In-Person' },
     { id: 3, title: '17th Annual Jay & Betty Van Andel Legacy Awards Gala', date: '11/12/2025', time: 'Evening Event', location: 'JW Marriott Grand Rapids', organizerName: 'Grand Rapids Public Museum', fullAddress: 'JW Marriott Grand Rapids, MI', image: 'https://i0.wp.com/www.grpm.org/wp-content/uploads/2025/06/2025_Gala_Web-Header_Option-05.png', badge: 'In-Person' },
     { id: 4, title: 'Place Matters Summit 2025', date: '11/6/2025', time: '12:00 PM - 5:00 PM', location: 'The Rockford Corner Bar', organizerName: 'The Right Place', fullAddress: 'The Rockford Corner Bar, Rockford, MI', image: 'https://web.cvent.com/event_guestside_app/_next/image?url=https%3A%2F%2Fimages.cvent.com%2Fc49e750ef94b4a73879b4e57ae9c1393%2Fa261375d7d47fd2cd2c68c3a86dd821f%2Fd978795e378242b5af5233c775c250e4%2Ff65bb8e0f27745f5bcf821b889bc6407!_!eb5aa18403450c956b23c2a0b455af07.jpeg&w=3840&q=75', badge: 'In-Person' }
@@ -346,9 +346,9 @@ const getGreeting = () => {
                         </div>
                       </div>
                       <div className="space-y-0.5 text-xs text-gray-600">
-                        <p className="font-semibold text-gray-700 truncate">🏢 {event.organizerName || 'Event Organizer'}</p>
-                        <p>📅 {event.date} • 🕐 {event.time}</p>
-                        <p className="truncate">📍 {event.fullAddress || event.location}</p>
+                        <p className="font-semibold text-gray-700 truncate">{event.organizerName || 'Event Organizer'}</p>
+                        <p>{event.date} • {event.time}</p>
+                        <p className="truncate">{event.fullAddress || event.location}</p>
                       </div>
                     </div>
                   </div>

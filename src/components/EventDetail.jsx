@@ -34,22 +34,22 @@ function EventDetail() {
   const defaultEventData = {
     1: {
       id: 1,
-      title: 'Salim Ismail – Founder, OpenExO and Author',
-      description: 'Business strategist speaking about innovation and exponential technologies. Founder of OpenExO with experience working with Procter & Gamble, HP, and Visa.',
-      fullDescription: 'Join The Economic Club of Grand Rapids for an inspiring presentation by Salim Ismail, a leading voice in exponential technologies and business innovation.\n\nSalim Ismail speaks globally about how organizations can leverage exponential technologies to transform their business models. As Founder of OpenExO, he helps companies understand and implement strategies for exponential growth. This is a rare opportunity to learn from someone who has advised Fortune 500 companies on navigating rapid technological change and building future-ready organizations.\n\nAvailable in-person at the JW Marriott or via Zoom livestream.',
-      date: 'Monday, October 20, 2025',
-      time: '11:30 AM - 1:30 PM',
-      location: 'JW Marriott Grand Rapids',
-      fullAddress: 'International Ballroom, JW Marriott, Grand Rapids, MI',
-      image: 'https://econclub.net/wp-content/uploads/2025/06/Salim-Ismail-cropped.jpg',
+      title: 'Bamboo Grand Rapids: Grand Opening Celebration',
+      description: 'Celebrate the grand opening of Bamboo Grand Rapids, a new center for entrepreneurship, creativity, and innovation in downtown Grand Rapids.',
+      fullDescription: 'Join us for the grand opening celebration of Bamboo Grand Rapids - a transformative new entrepreneurship hub in the heart of downtown Grand Rapids!\n\nAfter a year of renovations, the former art gallery at 2 Fulton Street West has been reimagined as a vibrant center for entrepreneurship, creativity, and innovation. This free event offers the first look at our newly reopened gallery, theater, and the new Start Garden incubator facility.\n\nBamboo Grand Rapids is open to everyone - members, neighbors, students, artists, founders, and funders. This celebration marks the beginning of a statewide collaborative entrepreneurship ecosystem, connecting West Michigan to communities across Michigan.\n\nCome meet the tenants and members who will make Bamboo their home, explore the transformed space, and be part of this exciting new chapter in Grand Rapids\' entrepreneurial community.\n\nThis event is made possible through partnerships with the City of Grand Rapids, Michigan Economic Development Corporation, and multiple regional organizations committed to fostering innovation and creativity.',
+      date: 'Thursday, December 4, 2025',
+      time: '4:00 PM - 8:00 PM',
+      location: '2 Fulton Street West',
+      fullAddress: '2 Fulton Street West, Grand Rapids, MI 49503',
+      image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1120287333%2F84709515697%2F1%2Foriginal.20250910-174858?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.208333333333&fp-y=0.621848739496&s=9f37de221b0249dee8dd7ee347395056',
       badge: 'In-Person',
       organizer: {
-        name: 'The Economic Club of Grand Rapids',
-        avatar: 'EC',
-        description: 'The Economic Club brings world-class speakers to Grand Rapids to inspire business leaders and drive community dialogue on critical issues.'
+        name: 'Bamboo Detroit',
+        avatar: 'BD',
+        description: 'Bamboo Detroit creates spaces and programs that support entrepreneurs, artists, and innovators across Michigan, fostering a collaborative ecosystem for creativity and business growth.'
       },
-      tags: ['Innovation', 'Technology', 'Leadership', 'Business Strategy', 'Networking'],
-      registrationUrl: 'https://econclub.net/salim-ismail/'
+      tags: ['Entrepreneurship', 'Innovation', 'Startup'],
+      registrationUrl: 'https://www.eventbrite.com/e/bamboo-grand-rapids-grand-opening-celebration-tickets-1685330421659'
     },
     2: {
       id: 2,
