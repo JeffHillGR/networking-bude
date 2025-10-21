@@ -546,7 +546,10 @@ const getGreeting = () => {
         );
 
   case 'events':
-  return <Events />;
+  return <Events onBackToDashboard={() => {
+    setActiveTab('dashboard');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }} />;
 
  case 'connections':
   return <Connections onBackToDashboard={() => {
@@ -555,10 +558,16 @@ const getGreeting = () => {
   }} />;
 
   case 'messages':
-  return <Messages />;
+  return <Messages onBackToDashboard={() => {
+    setActiveTab('dashboard');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }} />;
 
   case 'settings':
-  return <Settings autoOpenFeedback={showFeedbackPrompt} onFeedbackClose={() => setShowFeedbackPrompt(false)} />;
+  return <Settings autoOpenFeedback={showFeedbackPrompt} onFeedbackClose={() => setShowFeedbackPrompt(false)} onBackToDashboard={() => {
+    setActiveTab('dashboard');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }} />;
 
   case 'subscription':
   return <Subscription onSelectPlan={(planId, isYearly) => {
@@ -567,7 +576,10 @@ const getGreeting = () => {
   }} />;
 
   case 'payment':
-  return <Account />;
+  return <Account onBackToDashboard={() => {
+    setActiveTab('dashboard');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }} />;
 
   case 'terms':
   return <TermsPage />;
@@ -576,7 +588,10 @@ const getGreeting = () => {
   return <PrivacyPage />;
 
   case 'archive':
-  return <ArchivePage />;
+  return <ArchivePage onBackToDashboard={() => {
+    setActiveTab('dashboard');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }} />;
 
 default:
         return (

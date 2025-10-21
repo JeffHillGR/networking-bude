@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ArrowLeft, CreditCard, Calendar, Shield, CheckCircle, Crown, Star, Users, X, Tag } from 'lucide-react';
 
-function Account() {
+function Account({ onBackToDashboard }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [isYearly, setIsYearly] = useState(false);
   const [promoCode, setPromoCode] = useState('');
@@ -83,33 +83,27 @@ function Account() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="max-w-6xl mx-auto mb-8">
-        <div className="flex items-center gap-4 mb-2">
-
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Account</h1>
-            <p className="text-gray-600 mt-1">Manage your subscription, payment methods, and billing</p>
+      <div className="bg-white border-b border-gray-200 px-6 py-8">
+        {/* Back to Dashboard Button */}
+        <button
+          onClick={onBackToDashboard}
+          className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 md:mb-6 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span>Back to Dashboard</span>
+        </button>
+        <div className="text-center">
+          <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
+            <h1 className="text-3xl font-bold text-black">Account</h1>
           </div>
+          <p className="text-gray-600 mt-2">Manage your subscription, payment methods, and billing</p>
         </div>
       </div>
 
-      {/* Security Notice */}
-      <div className="max-w-6xl mx-auto mb-6">
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3">
-          <Shield className="w-5 h-5 text-green-600 mt-0.5" />
-          <div>
-            <h4 className="font-medium text-green-900">Enterprise-Grade Security</h4>
-            <p className="text-sm text-green-700 mt-1">
-              Powered by Stripe. Your payment data is encrypted with bank-level security. We never store your card details.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        {/* Tabs */}
         <div className="bg-gray-100 rounded-full p-1 mb-8 flex">
           {['overview', 'plans', 'payment', 'history'].map((tab) => (
             <button

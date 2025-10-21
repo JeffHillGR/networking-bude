@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Home, Calendar, Heart, MessageCircle, User, Settings as SettingsIcon, CreditCard, Archive, Activity } from 'lucide-react';
+import { Home, Calendar, Heart, MessageCircle, User, CreditCard, Archive, Activity } from 'lucide-react';
 
 function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
   // Get user data from localStorage
@@ -90,14 +90,6 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
                     </div>
                   </div>
                 )}
-
-                <button
-                  onClick={() => setActiveTab('settings')}
-                  className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors text-gray-500 hover:bg-gray-100"
-                >
-                <SettingsIcon className="w-4 h-4" />
-                  <span>Settings</span>
-                </button>
 
                 <button
                   onClick={() => setActiveTab('payment')}

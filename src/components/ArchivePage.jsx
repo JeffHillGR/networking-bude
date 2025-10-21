@@ -1,8 +1,6 @@
-import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
-function ArchivePage() {
-  const navigate = useNavigate();
+function ArchivePage({ onBackToDashboard }) {
 
   const archivedContent = [
     {
@@ -36,19 +34,26 @@ function ArchivePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-6xl mx-auto">
-        {/* Back Button */}
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 px-6 py-8">
+        {/* Back to Dashboard Button */}
         <button
-          onClick={() => navigate('/dashboard')}
-          className="flex items-center gap-2 px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] mb-6"
+          onClick={onBackToDashboard}
+          className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 md:mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
-          Back to Dashboard
+          <span>Back to Dashboard</span>
         </button>
+        <div className="text-center">
+          <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
+            <h1 className="text-3xl font-bold text-black">Content Archive</h1>
+          </div>
+          <p className="text-gray-600 mt-2">Browse our collection of professional development content</p>
+        </div>
+      </div>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Content Archive</h1>
-        <p className="text-gray-600 mb-8">Browse our collection of professional development content</p>
+      <div className="max-w-6xl mx-auto px-6 py-8">
 
         <div className="grid md:grid-cols-2 gap-6">
           {archivedContent.map((item) => (

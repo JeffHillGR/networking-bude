@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Search, Phone, Video, MoreVertical, Paperclip, Smile, Send } from 'lucide-react';
+import { Search, Phone, Video, MoreVertical, Paperclip, Smile, Send, ArrowLeft } from 'lucide-react';
 
-function Messages() {
+function Messages({ onBackToDashboard }) {
   const [selectedChat, setSelectedChat] = useState(1);
   const [messageInput, setMessageInput] = useState('');
 
@@ -75,9 +75,21 @@ function Messages() {
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-6 flex-shrink-0">
-        <h1 className="text-3xl font-bold text-gray-900">Messages</h1>
-        <p className="text-gray-600 mt-2">Connect and chat with your professional network</p>
+      <div className="bg-white border-b border-gray-200 px-6 py-8 flex-shrink-0">
+        {/* Back to Dashboard Button */}
+        <button
+          onClick={onBackToDashboard}
+          className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 md:mb-6 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span>Back to Dashboard</span>
+        </button>
+        <div className="text-center">
+          <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
+            <h1 className="text-3xl font-bold text-black">Messages</h1>
+          </div>
+          <p className="text-gray-600 mt-2">Connect and chat with your professional network</p>
+        </div>
       </div>
 
       <div className="flex flex-1 overflow-hidden">
