@@ -426,14 +426,14 @@ const getGreeting = () => {
 
             {/* Featured Content - Below Events and Connections */}
             <div>
-              <div className="mb-4 text-center">
-                <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black mb-2">
-                  <h3 className="font-bold text-black text-lg">Featured Content</h3>
+              <div className="bg-white rounded-lg p-4 md:p-6 shadow-sm border border-gray-200">
+                <div className="mb-1 text-center">
+                  <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black">
+                    <h3 className="font-bold text-black text-lg">Featured Content</h3>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-0.5">Curated content to help you grow</p>
                 </div>
-                <p className="text-sm text-gray-600">Curated content to help you grow</p>
-              </div>
-              <div className="bg-white rounded-lg p-4 md:p-8 shadow-sm border border-gray-200">
-                <div className="flex items-center justify-between mb-4 md:mb-6">
+                <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
                   <button
                     onClick={() => setFeaturedContentIndex((featuredContentIndex - 1 + featuredContent.length) % featuredContent.length)}
