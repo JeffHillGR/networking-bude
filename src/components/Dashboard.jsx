@@ -368,7 +368,7 @@ const getGreeting = () => {
               </div>
 
               {/* Potential Connections - Right Side */}
-              <div className="flex flex-col">
+              <div className="flex flex-col relative group">
                 <div className="mb-4 text-center">
                   <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black mb-2">
                     <h3 className="font-bold text-black text-lg">Potential Connections</h3>
@@ -420,6 +420,23 @@ const getGreeting = () => {
                     View All Connections
                     <img src="/BudE-favicon.png" alt="BudE" className="w-4 h-4" />
                   </button>
+                </div>
+
+                {/* Beta Testing Overlay for Connections - Fades in on hover */}
+                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                  <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 md:p-8 mx-4 text-center shadow-2xl border-4 border-[#D0ED00] max-w-sm">
+                    <img
+                      src="/BudE-favicon.png"
+                      alt="BudE"
+                      className="h-16 w-16 md:h-20 md:w-20 mx-auto mb-4 object-contain"
+                    />
+                    <p className="text-green-800 font-bold text-lg md:text-xl mb-2">
+                      Beta Version
+                    </p>
+                    <p className="text-green-700 font-medium text-sm md:text-base">
+                      You'll get an email from us with suggested connections soon!
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
