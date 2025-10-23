@@ -431,7 +431,7 @@ const getGreeting = () => {
                       className="h-16 w-16 md:h-20 md:w-20 mx-auto mb-4 object-contain"
                     />
                     <p className="text-green-800 font-bold text-lg md:text-xl mb-2">
-                      Beta Version
+                      Connections Database Not Live Yet
                     </p>
                     <p className="text-green-700 font-medium text-sm md:text-base">
                       You'll get an email from us with suggested connections soon!
