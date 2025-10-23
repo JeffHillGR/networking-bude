@@ -34,14 +34,30 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
   // Load profile data from localStorage on mount
   const loadProfileFromStorage = () => {
     const savedProfile = localStorage.getItem('settingsProfile');
+    const onboardingDataStr = localStorage.getItem('onboardingData');
+
     if (savedProfile) {
-      return JSON.parse(savedProfile);
+      const profile = JSON.parse(savedProfile);
+
+      // Migration: If personalInterests or networkingGoals are missing, pull from onboarding
+      if (onboardingDataStr && (!profile.personalInterests || !profile.networkingGoals)) {
+        const data = JSON.parse(onboardingDataStr);
+        if (!profile.personalInterests && data.personalInterests) {
+          profile.personalInterests = data.personalInterests;
+        }
+        if (!profile.networkingGoals && data.networkingGoals) {
+          profile.networkingGoals = data.networkingGoals;
+        }
+        // Save the migrated data back
+        localStorage.setItem('settingsProfile', JSON.stringify(profile));
+      }
+
+      return profile;
     }
 
     // Try to get full onboarding data first
-    const onboardingData = localStorage.getItem('onboardingData');
-    if (onboardingData) {
-      const data = JSON.parse(onboardingData);
+    if (onboardingDataStr) {
+      const data = JSON.parse(onboardingDataStr);
       return {
         fullName: `${data.firstName || ''} ${data.lastName || ''}`.trim() || 'User Name',
         email: data.email || 'user@example.com',
