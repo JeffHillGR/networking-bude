@@ -228,7 +228,7 @@ function Connections({ onBackToDashboard }) {
                     className="h-16 w-16 md:h-20 md:w-20 mx-auto mb-4 object-contain"
                   />
                   <p className="text-green-800 font-bold text-lg md:text-xl mb-2">
-                    Beta Version
+                    Connections Database Not Live Yet
                   </p>
                   <p className="text-green-700 font-medium text-sm md:text-base">
                     Look for an email from us soon!
@@ -311,7 +311,7 @@ function Connections({ onBackToDashboard }) {
                     className="h-12 w-12 md:h-16 md:w-16 mx-auto mb-3 object-contain"
                   />
                   <p className="text-green-800 font-bold text-base md:text-lg mb-1">
-                    Beta Version
+                    Connections Database Not Live Yet
                   </p>
                   <p className="text-green-700 font-medium text-xs md:text-sm">
                     Look for an email from us soon!
