@@ -623,29 +623,34 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
                 </div>
               </div>
 
-              {/* Personal Interests Section */}
+              {/* Personal Interests and Networking Goals Section */}
               <div className="border-t border-gray-200 pt-6 mt-6">
-                <h3 className="font-bold text-gray-900 mb-4">Personal Interests</h3>
-                <div>
-                  <label className="block font-medium text-gray-900 mb-2">What keeps you busy in your spare time?</label>
-                  <textarea
-                    value={profile.personalInterests}
-                    onChange={(e) => setProfile({...profile, personalInterests: e.target.value})}
-                    rows={3}
-                    className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
-                    placeholder="Share your hobbies and activities..."
-                  />
-                </div>
-              </div>
+                <h3 className="font-bold text-gray-900 mb-4">About You</h3>
+                <div className="space-y-6">
+                  <div>
+                    <label className="block font-medium text-gray-900 mb-2">Personal Interests</label>
+                    <p className="text-sm text-gray-600 mb-2">What keeps you busy in your spare time?</p>
+                    <textarea
+                      value={profile.personalInterests}
+                      onChange={(e) => setProfile({...profile, personalInterests: e.target.value})}
+                      rows={3}
+                      className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
+                      placeholder="Share your hobbies and activities..."
+                    />
+                  </div>
 
-              <div>
-                <label className="block font-medium text-gray-900 mb-2">Professional Bio</label>
-                <textarea
-                  value={profile.bio}
-                  onChange={(e) => setProfile({...profile, bio: e.target.value})}
-                  rows={5}
-                  className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
-                />
+                  <div>
+                    <label className="block font-medium text-gray-900 mb-2">Networking Goals</label>
+                    <p className="text-sm text-gray-600 mb-2">What are you hoping to achieve through networking?</p>
+                    <textarea
+                      value={profile.networkingGoals}
+                      onChange={(e) => setProfile({...profile, networkingGoals: e.target.value})}
+                      rows={3}
+                      className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
+                      placeholder="Share your networking objectives..."
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Professional Interests */}
