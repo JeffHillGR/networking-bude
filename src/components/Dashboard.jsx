@@ -274,9 +274,9 @@ const getGreeting = () => {
   const featuredContent = [slot1, slot2, slot3];
 
   const connections = [
-    { name: 'Maria Rodriguez', title: 'Marketing Director at Spotify', similarity: '88%', mutuals: '5 mutual connections', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=faces' },
-    { name: 'Alex Chen', title: 'Senior Developer at Google', similarity: '95%', mutuals: '3 mutual connections', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=faces' },
-    { name: 'David Kim', title: 'Product Manager at Meta', similarity: '92%', mutuals: '2 mutual connections', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&h=200&fit=crop&crop=faces' }
+    { name: 'Maria Rodriguez', title: 'Marketing Director at Spotify', similarity: '88%', professionalInterests: 'Marketing, Design, Media, Leadership', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=faces' },
+    { name: 'Alex Chen', title: 'Senior Developer at Google', similarity: '95%', professionalInterests: 'Technology, AI/ML, Engineering, Product Management', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=faces' },
+    { name: 'David Kim', title: 'Product Manager at Meta', similarity: '92%', professionalInterests: 'Product Management, Design, Technology, Leadership', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&h=200&fit=crop&crop=faces' }
   ];
 
   // Load admin-created events from localStorage
@@ -416,7 +416,14 @@ const getGreeting = () => {
                 </div>
                 <div className="space-y-4 flex-grow">
                   {connections.map((person, index) => (
-                    <div key={index} className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px]">
+                    <div
+                      key={index}
+                      onClick={() => {
+                        setActiveTab('connections');
+                        window.scrollTo({ top: 0, behavior: 'instant' });
+                      }}
+                      className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px] cursor-pointer hover:shadow-md hover:border-[#009900] transition-all"
+                    >
                       <div className="flex gap-3 md:gap-4">
                         <img
                           src={person.image}
@@ -426,21 +433,15 @@ const getGreeting = () => {
                         <div className="flex-1 min-w-0">
                           <h4 className="font-bold text-gray-900 text-base md:text-lg">{person.name}</h4>
                           <p className="text-xs md:text-sm text-gray-600 mb-2">{person.title}</p>
-                          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                            <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm flex-wrap">
-                              <span className="font-medium whitespace-nowrap">{person.similarity} compatible</span>
-                              <span className="text-blue-600 whitespace-nowrap">👥 {person.mutuals}</span>
-                            </div>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setShowScientistModal(true);
-                              }}
-                              className="px-3 md:px-4 py-1.5 md:py-2 bg-[#009900] border-2 border-[#D0ED00] text-white text-xs md:text-sm rounded-lg hover:bg-[#007700] font-medium flex-shrink-0 w-full md:w-auto"
-                            >
-                              Connect
-                            </button>
+                          <div className="flex items-center gap-2 text-xs flex-wrap mb-2">
+                            <span className="font-medium whitespace-nowrap text-[#009900]">{person.similarity} compatible</span>
+                            {person.professionalInterests && person.professionalInterests.split(',').slice(0, 2).map((interest, idx) => (
+                              <span key={idx} className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded">
+                                {interest.trim()}
+                              </span>
+                            ))}
                           </div>
+                          <p className="text-xs text-gray-500">Click to view full profile</p>
                         </div>
                       </div>
                     </div>
@@ -461,22 +462,6 @@ const getGreeting = () => {
                   </button>
                 </div>
 
-                {/* Beta Testing Overlay for Connections - Fades in on hover */}
-                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                  <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 md:p-8 mx-4 text-center shadow-2xl border-4 border-[#D0ED00] max-w-sm">
-                    <img
-                      src="/BudE-favicon.png"
-                      alt="BudE"
-                      className="h-16 w-16 md:h-20 md:w-20 mx-auto mb-4 object-contain"
-                    />
-                    <p className="text-green-800 font-bold text-lg md:text-xl mb-2">
-                      Connections Database Not Live Yet
-                    </p>
-                    <p className="text-green-700 font-medium text-sm md:text-base">
-                      You'll get an email from us with suggested connections soon!
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
 
