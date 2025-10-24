@@ -216,11 +216,15 @@ function Connections({ onBackToDashboard }) {
   };
 
   const nextCard = () => {
-    if (currentCardIndex < connections.length - 1) {
-      setCurrentCardIndex(currentCardIndex + 1);
-    } else {
+    // After filtering, we need to check against the filtered connections
+    const filtered = getFilteredConnections();
+
+    // If current index is now out of bounds or at the last card, reset to 0
+    if (currentCardIndex >= filtered.length - 1) {
       setCurrentCardIndex(0);
     }
+    // Otherwise just stay at the same index (the next card will naturally show)
+    // No need to increment because filtering removes the current card
   };
 
   return (
