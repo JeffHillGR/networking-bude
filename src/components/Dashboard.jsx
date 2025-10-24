@@ -485,7 +485,7 @@ const getGreeting = () => {
               <div className="bg-white rounded-lg p-4 md:p-6 shadow-sm border border-gray-200">
                 <div className="mb-1 text-center">
                   <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black">
-                    <h3 className="font-bold text-black text-lg">Featured Content</h3>
+                    <h3 className="font-bold text-black text-lg">Networking Tips</h3>
                   </div>
                   <p className="text-xs text-gray-500 mt-0.5">Curated content to help you grow</p>
                 </div>
