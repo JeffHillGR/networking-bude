@@ -5,6 +5,7 @@ function Connections({ onBackToDashboard }) {
   const [activeTab, setActiveTab] = useState('recommended');
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showConnectModal, setShowConnectModal] = useState(false);
+  const [showComingSoonModal, setShowComingSoonModal] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState('');
   const [selectedConnection, setSelectedConnection] = useState(null); // For Saved tab connections
 
@@ -137,75 +138,12 @@ function Connections({ onBackToDashboard }) {
     setShowConnectModal(true);
   };
 
-  const handleSendConnectionRequest = async () => {
-    try {
-      // Use selectedConnection if available (from Saved tab), otherwise use currentCard (from Recommended tab)
-      const person = selectedConnection || currentCard;
-
-      // Get user's info from localStorage
-      const onboardingData = localStorage.getItem('onboardingData');
-      const userData = onboardingData ? JSON.parse(onboardingData) : {};
-
-      const senderName = `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'BudE User';
-      const senderEmail = userData.email || '';
-      const senderTitle = userData.jobTitle || '';
-      const senderCompany = userData.company || '';
-
-      // Send connection request to API
-      const response = await fetch('/api/submitConnectionRequest', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          senderName,
-          senderEmail,
-          senderTitle,
-          senderCompany,
-          recipientName: person.name,
-          recipientEmail: person.email,
-          message: connectionMessage,
-          submittedAt: new Date().toISOString()
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send connection request');
-      }
-
-      // Add to pending connections
-      setPendingConnections(prev => [...prev, {
-        id: person.id,
-        email: person.email,
-        name: person.name,
-        title: person.title,
-        company: person.company,
-        image: person.image,
-        connectionScore: person.connectionScore,
-        professionalInterests: person.professionalInterests,
-        message: connectionMessage,
-        sentAt: new Date().toISOString()
-      }]);
-
-      // If connecting from Saved tab, remove from saved connections
-      if (selectedConnection) {
-        setSavedConnections(prev => prev.filter(c => c.id !== person.id));
-      }
-
-      // Close modal and clear state
-      setShowConnectModal(false);
-      setConnectionMessage('');
-      setSelectedConnection(null);
-
-      // Only move to next card if we're in the Recommended tab
-      if (!selectedConnection) {
-        nextCard();
-      }
-
-      console.log('✅ Connection request sent to:', person.email);
-    } catch (error) {
-      console.error('Error sending connection request:', error);
-    }
+  const handleSendConnectionRequest = () => {
+    // Close the connect modal and show the coming soon message
+    setShowConnectModal(false);
+    setConnectionMessage('');
+    setSelectedConnection(null);
+    setShowComingSoonModal(true);
   };
 
   const handlePerhaps = () => {
@@ -642,6 +580,40 @@ function Connections({ onBackToDashboard }) {
         </div>
         );
       })()}
+
+      {/* Coming Soon Modal */}
+      {showComingSoonModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="font-bold text-xl text-gray-900">Feature Coming Soon</h3>
+              <button
+                onClick={() => setShowComingSoonModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <p className="text-gray-700 mb-4">
+              Messaging/connect function coming soon. In the meantime email us at{' '}
+              <a
+                href="mailto:connections@networkingbude.com"
+                className="text-[#009900] hover:text-[#007700] font-medium"
+              >
+                connections@networkingbude.com
+              </a>
+            </p>
+
+            <button
+              onClick={() => setShowComingSoonModal(false)}
+              className="w-full px-4 py-2 bg-[#009900] text-white rounded-lg hover:bg-[#007700] transition-colors font-medium"
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
