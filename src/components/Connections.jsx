@@ -6,6 +6,7 @@ function Connections({ onBackToDashboard }) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showConnectModal, setShowConnectModal] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState('');
+  const [selectedConnection, setSelectedConnection] = useState(null); // For Saved tab connections
 
   // localStorage state for tracking actions
   const [passedConnections, setPassedConnections] = useState(() => {
@@ -138,6 +139,9 @@ function Connections({ onBackToDashboard }) {
 
   const handleSendConnectionRequest = async () => {
     try {
+      // Use selectedConnection if available (from Saved tab), otherwise use currentCard (from Recommended tab)
+      const person = selectedConnection || currentCard;
+
       // Get user's info from localStorage
       const onboardingData = localStorage.getItem('onboardingData');
       const userData = onboardingData ? JSON.parse(onboardingData) : {};
@@ -158,8 +162,8 @@ function Connections({ onBackToDashboard }) {
           senderEmail,
           senderTitle,
           senderCompany,
-          recipientName: currentCard.name,
-          recipientEmail: currentCard.email,
+          recipientName: person.name,
+          recipientEmail: person.email,
           message: connectionMessage,
           submittedAt: new Date().toISOString()
         })
@@ -171,24 +175,34 @@ function Connections({ onBackToDashboard }) {
 
       // Add to pending connections
       setPendingConnections(prev => [...prev, {
-        id: currentCard.id,
-        email: currentCard.email,
-        name: currentCard.name,
-        title: currentCard.title,
-        company: currentCard.company,
-        image: currentCard.image,
-        connectionScore: currentCard.connectionScore,
-        professionalInterests: currentCard.professionalInterests,
+        id: person.id,
+        email: person.email,
+        name: person.name,
+        title: person.title,
+        company: person.company,
+        image: person.image,
+        connectionScore: person.connectionScore,
+        professionalInterests: person.professionalInterests,
         message: connectionMessage,
         sentAt: new Date().toISOString()
       }]);
 
-      // Close modal and move to next card
+      // If connecting from Saved tab, remove from saved connections
+      if (selectedConnection) {
+        setSavedConnections(prev => prev.filter(c => c.id !== person.id));
+      }
+
+      // Close modal and clear state
       setShowConnectModal(false);
       setConnectionMessage('');
-      nextCard();
+      setSelectedConnection(null);
 
-      console.log('✅ Connection request sent to:', currentCard.email);
+      // Only move to next card if we're in the Recommended tab
+      if (!selectedConnection) {
+        nextCard();
+      }
+
+      console.log('✅ Connection request sent to:', person.email);
     } catch (error) {
       console.error('Error sending connection request:', error);
     }
@@ -535,7 +549,7 @@ function Connections({ onBackToDashboard }) {
                             </button>
                             <button
                               onClick={() => {
-                                setCurrentCardIndex(connections.findIndex(c => c.id === person.id));
+                                setSelectedConnection(person);
                                 setShowConnectModal(true);
                               }}
                               className="flex-1 px-4 py-2 text-sm bg-[#009900] border-2 border-[#D0ED00] text-white rounded hover:bg-[#007700] transition-colors font-medium"
@@ -564,24 +578,27 @@ function Connections({ onBackToDashboard }) {
       </div>
 
       {/* Connect Modal */}
-      {showConnectModal && currentCard && (
+      {showConnectModal && (selectedConnection || currentCard) && (() => {
+        const person = selectedConnection || currentCard;
+        return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <div className="flex items-start gap-4 mb-4">
               <img
-                src={currentCard.image}
-                alt={currentCard.name}
+                src={person.image}
+                alt={person.name}
                 className="w-16 h-16 rounded-full object-cover"
               />
               <div className="flex-1">
-                <h3 className="font-bold text-lg text-gray-900">{currentCard.name}</h3>
-                <p className="text-sm text-gray-600">{currentCard.title}</p>
-                <p className="text-sm text-gray-500">{currentCard.company}</p>
+                <h3 className="font-bold text-lg text-gray-900">{person.name}</h3>
+                <p className="text-sm text-gray-600">{person.title}</p>
+                <p className="text-sm text-gray-500">{person.company}</p>
               </div>
               <button
                 onClick={() => {
                   setShowConnectModal(false);
                   setConnectionMessage('');
+                  setSelectedConnection(null);
                 }}
                 className="text-gray-400 hover:text-gray-600"
               >
@@ -607,6 +624,7 @@ function Connections({ onBackToDashboard }) {
                 onClick={() => {
                   setShowConnectModal(false);
                   setConnectionMessage('');
+                  setSelectedConnection(null);
                 }}
                 className="flex-1 px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
               >
