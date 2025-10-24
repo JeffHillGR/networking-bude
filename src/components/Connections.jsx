@@ -144,9 +144,30 @@ function Connections({ onBackToDashboard }) {
 
       const senderName = `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'BudE User';
       const senderEmail = userData.email || '';
+      const senderTitle = userData.jobTitle || '';
+      const senderCompany = userData.company || '';
 
-      // Send connection request email (will implement API later)
-      // For now, just add to pending and show success
+      // Send connection request to API
+      const response = await fetch('/api/submitConnectionRequest', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          senderName,
+          senderEmail,
+          senderTitle,
+          senderCompany,
+          recipientName: currentCard.name,
+          recipientEmail: currentCard.email,
+          message: connectionMessage,
+          submittedAt: new Date().toISOString()
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send connection request');
+      }
 
       // Add to pending connections
       setPendingConnections(prev => [...prev, {
@@ -156,6 +177,8 @@ function Connections({ onBackToDashboard }) {
         title: currentCard.title,
         company: currentCard.company,
         image: currentCard.image,
+        connectionScore: currentCard.connectionScore,
+        professionalInterests: currentCard.professionalInterests,
         message: connectionMessage,
         sentAt: new Date().toISOString()
       }]);
@@ -165,8 +188,7 @@ function Connections({ onBackToDashboard }) {
       setConnectionMessage('');
       nextCard();
 
-      // TODO: Actually send email via API
-      console.log('Connection request sent to:', currentCard.email);
+      console.log('✅ Connection request sent to:', currentCard.email);
     } catch (error) {
       console.error('Error sending connection request:', error);
     }
