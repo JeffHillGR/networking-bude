@@ -640,7 +640,8 @@ function Connections({ onBackToDashboard }) {
             </div>
           </div>
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
