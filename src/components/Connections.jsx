@@ -182,7 +182,7 @@ function Connections({ onBackToDashboard }) {
       company: currentCard.company,
       image: currentCard.image,
       connectionScore: currentCard.connectionScore,
-      tags: currentCard.tags
+      professionalInterests: currentCard.professionalInterests
     }]);
     nextCard();
   };
