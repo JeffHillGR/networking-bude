@@ -6,6 +6,7 @@ function Connections({ onBackToDashboard }) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showConnectModal, setShowConnectModal] = useState(false);
   const [showComingSoonModal, setShowComingSoonModal] = useState(false);
+  const [showAlgorithmModal, setShowAlgorithmModal] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState('');
   const [selectedConnection, setSelectedConnection] = useState(null); // For Saved tab connections
 
@@ -250,7 +251,11 @@ function Connections({ onBackToDashboard }) {
                   <p className="text-gray-500 text-lg">No more recommendations right now. Check back later!</p>
                 </div>
               ) : (
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden relative group">
+            <div
+              className="bg-white rounded-lg shadow-lg overflow-hidden relative group"
+              onMouseEnter={() => setShowAlgorithmModal(true)}
+              onMouseLeave={() => setShowAlgorithmModal(false)}
+            >
               {/* Card Header */}
               <div className="relative bg-gradient-to-br from-blue-50 to-blue-100 p-8 pb-16">
                 {currentCard.isOnline && (
@@ -376,6 +381,32 @@ function Connections({ onBackToDashboard }) {
                   </button>
                 </div>
               </div>
+
+              {/* Algorithm Under Construction Overlay - Positioned over this card */}
+              {showAlgorithmModal && (
+                <div className="absolute inset-0 bg-black/30 z-10 flex items-center justify-center p-4 animate-fadeIn">
+                  <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 max-w-md w-full shadow-2xl border-4 border-[#D0ED00]">
+                    <div className="flex items-center justify-center gap-6 mb-4">
+                      <img
+                        src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
+                        alt="Scientist at work"
+                        className="h-20 w-auto flex-shrink-0 rounded-lg object-cover shadow-lg"
+                      />
+                    </div>
+                    <p className="text-green-800 font-medium text-base text-center mb-4">
+                      Our connection algorithm is currently under construction and we are manually building connections for you. Look for an email from <span className="font-bold">networkingbude.com</span>!
+                    </p>
+                    <div className="flex justify-center">
+                      <button
+                        onClick={() => setShowAlgorithmModal(false)}
+                        className="px-6 py-2 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
+                      >
+                        Got it!
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
             </div>
             )}
