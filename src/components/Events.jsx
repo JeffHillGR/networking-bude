@@ -162,11 +162,11 @@ function Events({ onBackToDashboard }) {
       date: '11/4/2025',
       time: '3:00 PM - 5:00 PM',
       location: 'The High Five GR',
+      organizerName: 'Grand Rapids Chamber',
       attendees: '100+',
-      organizer: 'Grand Rapids Chamber',
       price: 'Registration Required',
       badge: 'In-Person',
-      image: 'https://grandrapids.org/wp-content/uploads/2025/01/GRC_ATHENA-Nov-2025.jpg'
+      image: 'https://grandrapids.org/wp-content/uploads/2025/01/Graphic-ATHENA-Leadership-Forum-11.04.25-1536x864.jpg'
     },
     {
       id: 6,

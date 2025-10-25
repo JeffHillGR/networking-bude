@@ -91,23 +91,22 @@ function EventDetail() {
     },
     5: {
       id: 5,
-      title: 'UNFILTERED Gen3: Unapologetic Underdogs Unleashed',
-      description: 'Born underground. Built on grit. Back, and louder than ever - fearless storytelling with zero vulnerability.',
-      fullDescription: 'UNFILTERED returns with Gen3—an evening of raw, authentic storytelling that breaks down barriers and celebrates the underdog spirit.\n\nThis unique event features speakers sharing their unfiltered journeys, struggles, and triumphs. No polish, no pretense—just real stories from real people who\'ve overcome adversity and built something meaningful.\n\nJoin fellow entrepreneurs, creatives, and change-makers at City Built Brewing Company for an evening of connection, inspiration, and community. Tickets are free, with optional donations supporting local non-profits.\n\nCome ready to be inspired, challenged, and reminded that your story matters.',
-      date: 'Friday, October 24, 2025',
-      time: '7:00 PM - 9:00 PM',
-      location: 'City Built Brewing Company',
-      fullAddress: '820 Monroe Avenue Northwest #STE 155, Grand Rapids, MI 49503',
-      image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1115649073%2F978818167483%2F1%2Foriginal.20250905-182811?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.557271596548&fp-y=0.544888875326&s=f63fa760ac5800775ace7493cbe92039',
+      title: 'ATHENA Leadership Forum 2025',
+      description: 'Leading Through Connection: The Role of Mentorship in Every Season of Life. This final ATHENA Leadership Forum explores mentorship\'s transformative impact on leadership and personal growth.',
+      fullDescription: 'Join the Grand Rapids Chamber for the final ATHENA Leadership Forum of 2025, "Leading Through Connection: The Role of Mentorship in Every Season of Life."\n\nThis engaging forum features Megan Rydecki, Director of the Hauenstein Center for Presidential Studies at Grand Valley State University, who will explore how mentorship shapes leadership development throughout different life stages.\n\nWhether you\'re seeking a mentor, currently mentoring others, or interested in understanding how mentorship drives personal and professional growth, this forum offers valuable insights and networking opportunities.\n\nThe ATHENA Leadership Forum series celebrates and supports women leaders while fostering inclusive leadership development across all sectors. Join fellow professionals at The High Five GR for an afternoon of learning, connection, and inspiration.\n\nRegistration required. Event is open to all professionals interested in leadership development and mentorship.',
+      date: 'Tuesday, November 4, 2025',
+      time: '3:00 PM - 5:00 PM',
+      location: 'The High Five GR',
+      fullAddress: 'The High Five GR, Grand Rapids, MI',
+      image: 'https://grandrapids.org/wp-content/uploads/2025/01/Graphic-ATHENA-Leadership-Forum-11.04.25-1536x864.jpg',
       badge: 'In-Person',
-      soldOut: true,
       organizer: {
-        name: 'UNFILTERED',
-        avatar: 'UF',
-        description: 'UNFILTERED creates spaces for authentic storytelling and community connection, celebrating the underdog spirit and real human experiences.'
+        name: 'Grand Rapids Chamber',
+        avatar: 'GR',
+        description: 'The Grand Rapids Chamber advocates for business growth, economic development, and inclusive workplace cultures throughout West Michigan.'
       },
-      tags: ['Storytelling', 'Community', 'Entrepreneurship', 'Inspiration', 'Networking'],
-      registrationUrl: 'https://www.eventbrite.com/e/unfiltered-gen3-unapologetic-underdogs-unleashed-tickets-1669603973429'
+      tags: ['Leadership', 'Mentorship', 'Women in Leadership', 'Professional Development', 'Networking'],
+      registrationUrl: 'https://grandrapids.org/event/athena-leadership-forum-2025-11-04/'
     },
     6: {
       id: 6,
