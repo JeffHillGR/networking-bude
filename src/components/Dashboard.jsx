@@ -241,19 +241,19 @@ const getGreeting = () => {
 
   const defaultFeaturedContent = [
     {
+      image: 'https://travischappell.com/wp-content/uploads/2023/08/phone-img-podcast.png',
+      title: 'How to Lose Everything and Come Back Even Stronger with Annette Raynor',
+      description: 'Travis Chappell interviews Annette Raynor, who brings two decades of IT experience. Learn about resilience through economic downturns, building enterprises, and the lessons learned from overcoming significant financial setbacks.',
+      url: 'https://travischappell.com/travis_podcast/047-how-to-lose-everything-and-come-back-even-stronger-with-annette-raynor/',
+      tags: 'Resilience, Entrepreneurship',
+      sponsoredBy: ''
+    },
+    {
       image: 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/52/2c/26/522c2689-01a0-f2c4-37b9-20034b428603/mza_15419489958704245485.jpg/540x540bb.webp',
       title: 'The Not Perfect Networking Podcast',
       description: 'Networking doesn\'t have to be perfect to be powerful. Join us for real conversations about building genuine connections in business and life. Perfect for professionals who want to network authentically.',
       url: 'https://podcasts.apple.com/us/podcast/the-not-perfect-networking-podcast/id1802926391',
       tags: 'Networking, Professional Development',
-      sponsoredBy: ''
-    },
-    {
-      image: 'https://m.media-amazon.com/images/I/411o1ZnXQsL._SY445_SX342_ControlCacheEqualizer_.jpg',
-      title: 'Superconnector: Stop Networking And Start Building Relationships',
-      description: 'By Scott Gerber and Ryan Paugh. Learn how to build, manage, and maximize the value of a professional community. Discover the secrets to creating meaningful relationships that drive business success.',
-      url: 'https://superconnectorbook.com/',
-      tags: 'Networking, Relationship Building',
       sponsoredBy: ''
     },
     {
@@ -468,64 +468,72 @@ const getGreeting = () => {
             {/* Featured Content - Below Events and Connections */}
             <div>
               <div className="bg-white rounded-lg p-4 md:p-6 shadow-sm border border-gray-200">
-                <div className="mb-1 text-center">
+                <div className="mb-3 text-center">
                   <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black">
                     <h3 className="font-bold text-black text-lg">Networking Tips</h3>
                   </div>
                   <p className="text-xs text-gray-500 mt-0.5">Curated content to help you grow</p>
                 </div>
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-2">
+
+                {/* Carousel Navigation */}
+                <div className="flex items-center justify-start gap-4 mb-4">
                   <button
                     onClick={() => setFeaturedContentIndex((featuredContentIndex - 1 + featuredContent.length) % featuredContent.length)}
-                    className="p-2 hover:bg-gray-100 rounded"
+                    className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                    aria-label="Previous tip"
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="w-6 h-6 text-gray-700" />
                   </button>
-                  <span className="text-sm text-gray-600 font-medium">{featuredContentIndex + 1} of {featuredContent.length}</span>
+
+                  <span className="text-lg font-medium text-gray-800 px-4 py-2 bg-gray-100 rounded-lg">
+                    {featuredContentIndex + 1} of {featuredContent.length}
+                  </span>
+
                   <button
                     onClick={() => setFeaturedContentIndex((featuredContentIndex + 1) % featuredContent.length)}
-                    className="p-2 hover:bg-gray-100 rounded"
+                    className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                    aria-label="Next tip"
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="w-6 h-6 text-gray-700" />
                   </button>
                 </div>
-              </div>
-              <div
-                onClick={() => {
-                  if (featuredContent[featuredContentIndex].url) {
-                    window.open(featuredContent[featuredContentIndex].url, '_blank');
-                  }
-                }}
-                className="flex flex-col md:flex-row gap-4 md:gap-6 hover:bg-gray-50 p-3 md:p-4 rounded-lg transition-colors -m-3 md:-m-4 cursor-pointer"
-              >
-                <img
-                  src={featuredContent[featuredContentIndex].image}
-                  alt={featuredContent[featuredContentIndex].title}
-                  className="w-full md:w-48 h-48 md:h-48 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm"
-                />
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-bold text-gray-900 mb-2 md:mb-3 text-base md:text-lg">{featuredContent[featuredContentIndex].title}</h4>
-                  <p className="text-xs md:text-sm text-gray-600 mb-3 md:mb-4 line-clamp-4">{featuredContent[featuredContentIndex].description}</p>
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                    {featuredContent[featuredContentIndex].tags && (
-                      <div className="flex gap-2 flex-wrap">
-                        {featuredContent[featuredContentIndex].tags.split(',').slice(0, 2).map((tag, i) => (
-                          <span key={i} className="text-xs bg-gray-100 text-gray-600 px-2 md:px-3 py-1 rounded">
-                            {tag.trim()}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    {featuredContent[featuredContentIndex].sponsoredBy && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-400">Sponsored by</span>
-                        <span className="text-xs md:text-sm font-medium text-gray-700">{featuredContent[featuredContentIndex].sponsoredBy}</span>
-                      </div>
-                    )}
+
+                {/* Carousel Content */}
+                <div
+                  onClick={() => {
+                    if (featuredContent[featuredContentIndex].url) {
+                      window.open(featuredContent[featuredContentIndex].url, '_blank');
+                    }
+                  }}
+                  className="flex flex-col md:flex-row gap-4 md:gap-6 hover:bg-gray-50 p-3 md:p-4 rounded-lg transition-colors cursor-pointer"
+                >
+                  <img
+                    src={featuredContent[featuredContentIndex].image}
+                    alt={featuredContent[featuredContentIndex].title}
+                    className="w-full md:w-48 h-48 md:h-48 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold text-gray-900 mb-2 md:mb-3 text-base md:text-lg">{featuredContent[featuredContentIndex].title}</h4>
+                    <p className="text-sm md:text-base text-gray-600 mb-3 md:mb-4 line-clamp-4">{featuredContent[featuredContentIndex].description}</p>
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                      {featuredContent[featuredContentIndex].tags && (
+                        <div className="flex gap-2 flex-wrap">
+                          {featuredContent[featuredContentIndex].tags.split(',').slice(0, 2).map((tag, i) => (
+                            <span key={i} className="text-xs bg-gray-100 text-gray-600 px-2 md:px-3 py-1 rounded">
+                              {tag.trim()}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {featuredContent[featuredContentIndex].sponsoredBy && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-400">Sponsored by</span>
+                          <span className="text-xs md:text-sm font-medium text-gray-700">{featuredContent[featuredContentIndex].sponsoredBy}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
               </div>
             </div>
 
