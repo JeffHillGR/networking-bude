@@ -157,18 +157,16 @@ function Events({ onBackToDashboard }) {
   const moreEvents = [
     {
       id: 5,
-      title: 'UNFILTERED Gen3: Unapologetic Underdogs Unleashed',
-      description: 'Born underground. Built on grit. Back, and louder than ever. Experience fearless storytelling with zero filter at this unique evening event.',
-      date: '10/24/2025',
-      time: '7:00 PM - 9:00 PM',
-      location: 'City Built Brewing Company',
+      title: 'ATHENA Leadership Forum 2025',
+      description: 'Leading Through Connection: The Role of Mentorship in Every Season of Life. This final ATHENA Leadership Forum explores mentorship\'s transformative impact on leadership and personal growth, featuring Megan Rydecki, Director of the Hauenstein Center for Presidential Studies.',
+      date: '11/4/2025',
+      time: '3:00 PM - 5:00 PM',
+      location: 'The High Five GR',
       attendees: '100+',
-      organizer: 'UNFILTERED',
-      price: 'Free',
+      organizer: 'Grand Rapids Chamber',
+      price: 'Registration Required',
       badge: 'In-Person',
-      isTrending: true,
-      soldOut: true,
-      image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1115649073%2F978818167483%2F1%2Foriginal.20250905-182811?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.557271596548&fp-y=0.544888875326&s=f63fa760ac5800775ace7493cbe92039'
+      image: 'https://grandrapids.org/wp-content/uploads/2025/01/GRC_ATHENA-Nov-2025.jpg'
     },
     {
       id: 6,
@@ -195,19 +193,6 @@ function Events({ onBackToDashboard }) {
       price: 'Free',
       badge: 'In-Person',
       image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1150451263%2F2284555542733%2F1%2Foriginal.20251010-230321?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.506&fp-y=0.098&s=99803e3fd6bb96e6dee48880e089b619'
-    },
-    {
-      id: 8,
-      title: 'Crain\'s Grand Rapids Business 40 Under 40 Celebration',
-      description: 'Join us to celebrate 40 outstanding business professionals under 40 in the Grand Rapids area. An evening of networking and recognition.',
-      date: '10/22/2025',
-      time: '5:30 PM - 9:00 PM',
-      location: 'Amway Grand Plaza Hotel',
-      attendees: '200+',
-      organizer: 'Crain\'s Grand Rapids Business',
-      price: 'Registration Required',
-      badge: 'In-Person',
-      image: 'https://images.cvent.com/81fd802d90fc4485ad7e62818fc2f0f4/pix/cea3e653a8704097b40d96720419d46e!_!ece8983ef528374c785e8d0c594591f1.png?f=webp'
     }
   ];
 
