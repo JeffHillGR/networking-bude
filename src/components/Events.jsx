@@ -106,8 +106,16 @@ function Events({ onBackToDashboard }) {
     }
   ];
 
-  // Always use default featured events (real Grand Rapids events)
-  const featuredEvents = defaultFeaturedEvents;
+  // Helper function to parse date strings (MM/DD/YYYY) into Date objects for sorting
+  const parseEventDate = (dateString) => {
+    const [month, day, year] = dateString.split('/');
+    return new Date(year, month - 1, day);
+  };
+
+  // Sort featured events chronologically (earliest first)
+  const featuredEvents = [...defaultFeaturedEvents].sort((a, b) =>
+    parseEventDate(a.date) - parseEventDate(b.date)
+  );
 
   const handleSubmitEvent = async (e) => {
     e.preventDefault();
@@ -337,7 +345,7 @@ function Events({ onBackToDashboard }) {
             <div>
               <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6">More Events</h2>
               <div className="space-y-4">
-                {moreEvents.map((event) => (
+                {[...moreEvents].sort((a, b) => parseEventDate(a.date) - parseEventDate(b.date)).map((event) => (
                   <div
                     key={event.id}
                     onClick={() => navigate(`/events/${event.id}`)}
