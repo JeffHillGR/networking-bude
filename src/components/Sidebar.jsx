@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Home, Calendar, Heart, MessageCircle, User, CreditCard, Archive, Activity } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext.jsx';
+import { supabase } from '../lib/supabase.js';
 
 function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
   // Get user data from localStorage
@@ -7,6 +9,26 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
   const lastName = localStorage.getItem('userLastName') || 'Name';
   const jobTitle = localStorage.getItem('userJobTitle') || 'Job Title';
   const fullName = `${firstName} ${lastName}`;
+  const { user } = useAuth();
+  const [photoUrl, setPhotoUrl] = useState(null);
+
+  // Fetch user's profile photo
+  useEffect(() => {
+    async function fetchPhotoUrl() {
+      if (user?.id) {
+        const { data, error } = await supabase
+          .from('users')
+          .select('photo_url')
+          .eq('id', user.id)
+          .single();
+
+        if (data?.photo_url) {
+          setPhotoUrl(data.photo_url);
+        }
+      }
+    }
+    fetchPhotoUrl();
+  }, [user]);
 
   const [showActivity, setShowActivity] = useState(false);
 
@@ -116,9 +138,17 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
         {/* Fixed user profile section at bottom */}
         <div className="border-t border-gray-200 p-4 flex-shrink-0">
           <div className="flex items-center gap-2 mb-3 p-2 bg-gray-100 rounded-lg">
-            <div className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-white" />
-            </div>
+            {photoUrl ? (
+              <img
+                src={photoUrl}
+                alt={fullName}
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center">
+                <User className="w-4 h-4 text-white" />
+              </div>
+            )}
             <div className="flex-1 min-w-0">
               <p className="font-medium text-gray-900 truncate text-sm">{fullName}</p>
               <p className="text-xs text-gray-600 truncate">{jobTitle}</p>

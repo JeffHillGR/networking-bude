@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User, Shield, Bell, Lock, Upload, X, ArrowLeft } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
   const [activeTab, setActiveTab] = useState('profile');
@@ -9,6 +10,8 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
   const [leaveBetaReason, setLeaveBetaReason] = useState('');
   const [showFeedbackModal, setShowFeedbackModal] = useState(autoOpenFeedback);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState(null);
   const [feedbackData, setFeedbackData] = useState({
     name: '',
     email: '',
@@ -38,6 +41,11 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
 
     if (savedProfile) {
       const profile = JSON.parse(savedProfile);
+
+      // Load photo URL if available
+      if (profile.photoUrl) {
+        setPhotoUrl(profile.photoUrl);
+      }
 
       // Migration: If personalInterests or networkingGoals are missing, pull from onboarding
       if (onboardingDataStr && (!profile.personalInterests || !profile.networkingGoals)) {
@@ -221,7 +229,8 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
 
   const handleSaveProfile = () => {
     // Save to localStorage
-    localStorage.setItem('settingsProfile', JSON.stringify(profile));
+    const profileWithPhoto = { ...profile, photoUrl };
+    localStorage.setItem('settingsProfile', JSON.stringify(profileWithPhoto));
     localStorage.setItem('settingsInterests', JSON.stringify(selectedInterests));
 
     // Also update the main user data used by other components
@@ -236,6 +245,122 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
     localStorage.setItem('userCompany', profile.company);
 
     showSuccess('Profile updated successfully!');
+  };
+
+  // Compress image before upload (LinkedIn-style profile picture optimization)
+  const compressImage = async (file, maxWidth = 400, maxHeight = 400, quality = 0.85) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Calculate new dimensions while maintaining aspect ratio
+          if (width > height) {
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = (width * maxHeight) / height;
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convert to blob
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                resolve(new File([blob], file.name, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now(),
+                }));
+              } else {
+                reject(new Error('Canvas to Blob conversion failed'));
+              }
+            },
+            'image/jpeg',
+            quality
+          );
+        };
+        img.onerror = () => reject(new Error('Image load failed'));
+      };
+      reader.onerror = () => reject(new Error('File read failed'));
+    });
+  };
+
+  const handlePhotoUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      alert('Please upload a valid image file (JPG, PNG, or WebP)');
+      return;
+    }
+
+    // Validate file size (10MB max for original - will be compressed)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Image must be less than 10MB');
+      return;
+    }
+
+    setUploadingPhoto(true);
+
+    try {
+      // Compress image for profile picture (400x400 max, like LinkedIn)
+      console.log(`Original image size: ${(file.size / 1024).toFixed(2)} KB`);
+      const compressedFile = await compressImage(file);
+      console.log(`Compressed image size: ${(compressedFile.size / 1024).toFixed(2)} KB`);
+
+      // Generate a unique filename
+      const fileName = `profile.jpg`; // Always save as JPG after compression
+
+      // For now, use email as user ID (will use real auth user ID later)
+      const userId = profile.email.replace(/[^a-zA-Z0-9]/g, '_');
+      const filePath = `${userId}/${fileName}`;
+
+      // Upload compressed image to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('profile-photos')
+        .upload(filePath, compressedFile, {
+          cacheControl: '3600',
+          upsert: true // Replace if exists
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('profile-photos')
+        .getPublicUrl(filePath);
+
+      setPhotoUrl(publicUrl);
+
+      // Save to localStorage immediately
+      const updatedProfile = { ...profile, photoUrl: publicUrl };
+      localStorage.setItem('settingsProfile', JSON.stringify(updatedProfile));
+
+      showSuccess('Photo uploaded successfully!');
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+      alert(`Error uploading photo: ${error.message}`);
+    } finally {
+      setUploadingPhoto(false);
+    }
   };
 
   const handleChangePassword = () => {
@@ -420,17 +545,34 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
             <div className="mb-8">
               <label className="block font-medium text-gray-900 mb-3">Profile Picture</label>
               <div className="flex items-center gap-4">
-                <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-2xl font-bold text-gray-600">
-                  {profile.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U'}
+                <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-2xl font-bold text-gray-600 overflow-hidden">
+                  {photoUrl ? (
+                    <img src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    profile.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U'
+                  )}
                 </div>
-                <div className="relative">
-                  <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed" disabled>
+                <div>
+                  <input
+                    type="file"
+                    id="photo-upload"
+                    accept="image/jpeg,image/jpg,image/png,image/webp"
+                    className="hidden"
+                    onChange={handlePhotoUpload}
+                    disabled={uploadingPhoto}
+                  />
+                  <label
+                    htmlFor="photo-upload"
+                    className={`flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg ${
+                      uploadingPhoto
+                        ? 'bg-gray-100 text-gray-400 cursor-wait'
+                        : 'bg-white text-gray-700 hover:bg-gray-50 cursor-pointer'
+                    } transition-colors`}
+                  >
                     <Upload className="w-4 h-4" />
-                    Upload Photo
-                  </button>
-                  <div className="absolute -top-2 -right-2 bg-[#D0ED00] text-black px-2 py-0.5 rounded-full text-xs font-bold shadow-sm">
-                    Coming Soon
-                  </div>
+                    {uploadingPhoto ? 'Uploading...' : photoUrl ? 'Change Photo' : 'Upload Photo'}
+                  </label>
+                  <p className="text-xs text-gray-500 mt-1">JPG, PNG or WebP. Max 5MB.</p>
                 </div>
               </div>
             </div>
