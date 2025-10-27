@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
 import { User, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 export default function BudEOnboarding() {
   const navigate = useNavigate();
+  const { signUp, user } = useAuth();
   const [step, setStep] = useState(0);
+  const [justSignedUp, setJustSignedUp] = useState(false);
+
+  // Redirect already logged-in users to dashboard (but not during signup process)
+  React.useEffect(() => {
+    if (user && !justSignedUp && step === 0) {
+      navigate('/dashboard');
+    }
+  }, [user, justSignedUp, step, navigate]);
 
   // Prevent scroll restoration on mobile
   React.useEffect(() => {
@@ -44,8 +54,8 @@ export default function BudEOnboarding() {
     sameIndustry: '',
     gender: '',
     genderPreference: '',
-    dob: '',
-    dobPreference: '',
+    yearBorn: '',
+    yearBornConnect: '',
     zipCode: '',
     radius: '',
     organizations: [],
@@ -168,34 +178,42 @@ export default function BudEOnboarding() {
     setIsSubmitting(true);
 
     try {
-      // Submit to Google Sheets via Vercel serverless function
-      console.log('📤 Submitting form data to Google Sheets API...');
+      // Create Supabase auth user and profile
+      console.log('📤 Creating Supabase user...');
 
-      const response = await fetch('/api/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
+      const { data, error } = await signUp(formData.email, formData.password, {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        name: `${formData.firstName} ${formData.lastName}`,
+        username: formData.username,
+        title: formData.jobTitle,
+        company: formData.company,
+        industry: formData.industry,
+        zip_code: formData.zipCode,
+        location: formData.zipCode,
+        year_born: formData.yearBorn ? parseInt(formData.yearBorn, 10) : null,
+        year_born_connect: formData.yearBornConnect,
+        gender: formData.gender,
+        gender_preference: formData.genderPreference,
+        same_industry_preference: formData.sameIndustry,
+        organizations_current: formData.organizations,
+        organizations_other: formData.organizationsOther,
+        organizations_interested: formData.organizationsToCheckOut,
+        organizations_to_check_out_other: formData.organizationsToCheckOutOther,
+        professional_interests: formData.professionalInterests,
+        professional_interests_other: formData.professionalInterestsOther,
+        personal_interests: formData.personalInterests ? [formData.personalInterests] : [],
+        networking_goals: formData.networkingGoals,
+        connection_count: 0,
+        max_connections: 10
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to submit form');
-      }
+      if (error) throw error;
 
-      const result = await response.json();
-      console.log('✅ Form submitted successfully:', result);
+      console.log('✅ User created in Supabase');
 
-      // Save to localStorage (existing behavior)
-      localStorage.setItem('onboardingCompleted', 'true');
-      localStorage.setItem('userFirstName', formData.firstName);
-      localStorage.setItem('userLastName', formData.lastName);
-      localStorage.setItem('userJobTitle', formData.jobTitle);
-      localStorage.setItem('userIndustry', formData.industry);
-
-      // Save complete onboarding data for profile page
-      localStorage.setItem('onboardingData', JSON.stringify(formData));
+      // Mark that we just signed up (prevents immediate redirect)
+      setJustSignedUp(true);
 
       // Show success popup
       setShowSuccessPopup(true);
@@ -205,32 +223,8 @@ export default function BudEOnboarding() {
         navigate('/dashboard');
       }, 4000);
     } catch (error) {
-      console.error('❌ Error submitting to Google Sheets:', error);
-
-      // Store form data in localStorage as backup
-      localStorage.setItem('lastFormSubmission', JSON.stringify({
-        ...formData,
-        submittedAt: new Date().toISOString(),
-        error: error.message
-      }));
-
-      // Still save user data to localStorage for dashboard access
-      localStorage.setItem('onboardingCompleted', 'true');
-      localStorage.setItem('userFirstName', formData.firstName);
-      localStorage.setItem('userLastName', formData.lastName);
-      localStorage.setItem('userJobTitle', formData.jobTitle);
-      localStorage.setItem('userIndustry', formData.industry);
-
-      // Save complete onboarding data for profile page
-      localStorage.setItem('onboardingData', JSON.stringify(formData));
-
-      // Show success popup even if API fails (data is saved locally)
-      setShowSuccessPopup(true);
-
-      // Navigate to dashboard after 4 seconds
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 4000);
+      console.error('❌ Error creating user:', error);
+      alert(`Failed to create account: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -598,16 +592,16 @@ export default function BudEOnboarding() {
                   className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                   placeholder="YYYY"
                   maxLength={4}
-                  value={formData.dob}
-                  onChange={(e) => handleChange('dob', e.target.value)}
+                  value={formData.yearBorn}
+                  onChange={(e) => handleChange('yearBorn', e.target.value)}
                 />
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-1">Age Connect?</label>
                 <select
                   className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                  value={formData.dobPreference}
-                  onChange={(e) => handleChange('dobPreference', e.target.value)}
+                  value={formData.yearBornConnect}
+                  onChange={(e) => handleChange('yearBornConnect', e.target.value)}
                 >
                   <option value="">Select age preference</option>
                   <option value="similar5">Similar Age (+/- 5 Years)</option>
