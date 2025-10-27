@@ -12,6 +12,7 @@ import TermsPage from './TermsPage';
 import PrivacyPage from './PrivacyPage';
 import ArchivePage from './ArchivePage';
 import FeedbackWidget from './FeedbackWidget';
+
 function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
