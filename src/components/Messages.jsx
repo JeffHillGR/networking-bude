@@ -73,7 +73,7 @@ function Messages({ onBackToDashboard }) {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="h-screen flex flex-col bg-gray-50 relative">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-8 flex-shrink-0">
         {/* Back to Dashboard Button */}
@@ -139,23 +139,6 @@ function Messages({ onBackToDashboard }) {
                 </div>
               </button>
             ))}
-          </div>
-
-          {/* Beta Testing Blur Overlay for Conversations */}
-          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10">
-            <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 md:p-8 mx-4 text-center shadow-2xl border-4 border-[#D0ED00] max-w-xs">
-              <img
-                src="/BudE-favicon.png"
-                alt="BudE"
-                className="h-16 w-16 md:h-20 md:w-20 mx-auto mb-4 object-contain"
-              />
-              <p className="text-green-800 font-bold text-lg md:text-xl mb-2">
-                Beta Version
-              </p>
-              <p className="text-green-700 font-medium text-sm md:text-base">
-                Look for an email from us soon!
-              </p>
-            </div>
           </div>
         </div>
 
@@ -251,23 +234,26 @@ function Messages({ onBackToDashboard }) {
               </button>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Beta Testing Blur Overlay for Chat */}
-          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10">
-            <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 md:p-8 mx-4 text-center shadow-2xl border-4 border-[#D0ED00] max-w-md">
-              <img
-                src="/BudE-favicon.png"
-                alt="BudE"
-                className="h-16 w-16 md:h-20 md:w-20 mx-auto mb-4 object-contain"
-              />
-              <p className="text-green-800 font-bold text-lg md:text-xl mb-2">
-                Beta Version
-              </p>
-              <p className="text-green-700 font-medium text-sm md:text-base">
-                Look for an email from us soon!
-              </p>
-            </div>
-          </div>
+      {/* Full Page Coming Soon Overlay */}
+      <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-8 md:p-12 mx-4 text-center shadow-2xl border-4 border-[#D0ED00] max-w-lg">
+          <img
+            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
+            alt="Scientist at work"
+            className="h-32 w-auto mx-auto mb-6 rounded-lg object-cover shadow-lg"
+          />
+          <p className="text-green-800 font-bold text-xl md:text-2xl mb-4">
+            Our scientists are building the messaging system.
+          </p>
+          <p className="text-green-700 font-semibold text-lg md:text-xl">
+            Coming Soon
+          </p>
+          <p className="text-green-700 font-medium text-base md:text-lg mt-3">
+            (everything will be through email until then)
+          </p>
         </div>
       </div>
     </div>

@@ -207,7 +207,7 @@ function Connections({ onBackToDashboard }) {
             onClick={() => setActiveTab('recommended')}
             className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors ${
               activeTab === 'recommended'
-                ? 'bg-[#009900] text-white shadow-sm'
+                ? 'bg-[#009900] text-white shadow-sm border-2 border-[#D0ED00]'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -217,7 +217,7 @@ function Connections({ onBackToDashboard }) {
             onClick={() => setActiveTab('saved')}
             className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors ${
               activeTab === 'saved'
-                ? 'bg-[#009900] text-white shadow-sm'
+                ? 'bg-[#009900] text-white shadow-sm border-2 border-[#D0ED00]'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -227,7 +227,7 @@ function Connections({ onBackToDashboard }) {
             onClick={() => setActiveTab('pending')}
             className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors ${
               activeTab === 'pending'
-                ? 'bg-[#009900] text-white shadow-sm'
+                ? 'bg-[#009900] text-white shadow-sm border-2 border-[#D0ED00]'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
