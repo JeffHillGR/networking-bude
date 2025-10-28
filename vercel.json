@@ -9,6 +9,10 @@
     {
       "path": "/api/resetConnections",
       "schedule": "0 6 * * 1"
+    },
+    {
+      "path": "/api/sendDailyDigest",
+      "schedule": "0 8 * * *"
     }
   ]
 }
