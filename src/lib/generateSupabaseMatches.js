@@ -14,14 +14,33 @@ import { dirname, resolve } from 'path';
 // Load environment variables
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-dotenv.config({ path: resolve(__dirname, '../../.env.local') });
+const envPath = resolve(__dirname, '../../.env.local');
+console.log('Loading .env from:', envPath);
+const result = dotenv.config({ path: envPath });
+
+if (result.error) {
+  console.error('Error loading .env.local:', result.error);
+}
+
+console.log('Environment variables loaded:');
+console.log('- VITE_SUPABASE_URL:', process.env.VITE_SUPABASE_URL ? 'Found' : 'Missing');
+console.log('- VITE_SUPABASE_ANON_KEY:', process.env.VITE_SUPABASE_ANON_KEY ? 'Found' : 'Missing');
+console.log('- VITE_SUPABASE_SERVICE_ROLE_KEY:', process.env.VITE_SUPABASE_SERVICE_ROLE_KEY ? 'Found' : 'Missing');
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+// Try to use service role key first (for admin operations), fall back to anon key
+const supabaseKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
   console.error('❌ Missing Supabase credentials in .env.local');
+  console.error('   Need VITE_SUPABASE_URL and either VITE_SUPABASE_SERVICE_ROLE_KEY or VITE_SUPABASE_ANON_KEY');
   process.exit(1);
+}
+
+if (process.env.VITE_SUPABASE_SERVICE_ROLE_KEY) {
+  console.log('✅ Using service role key (bypasses RLS policies)');
+} else {
+  console.log('⚠️  Using anon key - may hit RLS restrictions. Add VITE_SUPABASE_SERVICE_ROLE_KEY to .env.local for admin operations.');
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -77,28 +96,44 @@ async function fetchAllUsers() {
   }
 
   console.log(`✅ Fetched ${data.length} users from Supabase`);
-  return data.map(transformUser);
+
+  // Return both the raw data (with IDs) and transformed data
+  return {
+    rawUsers: data,
+    transformedUsers: data.map(transformUser)
+  };
 }
 
 /**
  * Find top matches for each user
  */
-function findMatchesForAllUsers(users, minScore = 70, maxMatches = 5) {
+function findMatchesForAllUsers(users, usersWithIds, minScore = 70, maxMatches = 5) {
   console.log(`\n🔍 Calculating matches (min score: ${minScore}, max per user: ${maxMatches})...\n`);
 
   const allMatches = {};
 
   users.forEach((user, index) => {
     const matches = [];
+    const userRecord = usersWithIds.find(u => u.email === user.email);
+
+    if (!userRecord) {
+      console.warn(`⚠️  No user record found for ${user.email}`);
+      return;
+    }
 
     // Compare with all other users
     users.forEach((candidate, candidateIndex) => {
       if (index === candidateIndex) return; // Skip self
 
+      const candidateRecord = usersWithIds.find(u => u.email === candidate.email);
+      if (!candidateRecord) return;
+
       const result = calculateCompatibility(user, candidate);
 
       if (result.score >= minScore) {
         matches.push({
+          userId: userRecord.id,
+          matchedUserId: candidateRecord.id,
           email: candidate.email,
           name: candidate.name,
           jobTitle: candidate.jobTitle,
@@ -119,6 +154,66 @@ function findMatchesForAllUsers(users, minScore = 70, maxMatches = 5) {
   });
 
   return allMatches;
+}
+
+/**
+ * Insert matches into Supabase matches table
+ */
+async function insertMatchesToSupabase(allMatches) {
+  console.log('\n💾 Inserting matches into Supabase...\n');
+
+  // First, clear existing matches
+  const { error: deleteError } = await supabase
+    .from('matches')
+    .delete()
+    .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
+
+  if (deleteError) {
+    console.error('❌ Error clearing old matches:', deleteError);
+    throw deleteError;
+  }
+
+  console.log('✅ Cleared old matches');
+
+  // Prepare all match records for insertion
+  const matchRecords = [];
+  Object.entries(allMatches).forEach(([email, matches]) => {
+    matches.forEach(match => {
+      matchRecords.push({
+        user_id: match.userId,
+        matched_user_id: match.matchedUserId,
+        compatibility_score: match.score,
+        match_reasons: match.matches,
+        status: 'recommended'
+      });
+    });
+  });
+
+  if (matchRecords.length === 0) {
+    console.log('⚠️  No matches to insert');
+    return;
+  }
+
+  // Insert in batches of 100
+  const batchSize = 100;
+  let insertedCount = 0;
+
+  for (let i = 0; i < matchRecords.length; i += batchSize) {
+    const batch = matchRecords.slice(i, i + batchSize);
+    const { error: insertError } = await supabase
+      .from('matches')
+      .insert(batch);
+
+    if (insertError) {
+      console.error(`❌ Error inserting batch ${Math.floor(i / batchSize) + 1}:`, insertError);
+      throw insertError;
+    }
+
+    insertedCount += batch.length;
+    console.log(`✅ Inserted batch ${Math.floor(i / batchSize) + 1}: ${batch.length} matches`);
+  }
+
+  console.log(`\n✅ Total matches inserted: ${insertedCount}`);
 }
 
 /**
@@ -148,15 +243,23 @@ async function main() {
     console.log('=' .repeat(60));
 
     // Fetch users
-    const users = await fetchAllUsers();
+    const { rawUsers, transformedUsers } = await fetchAllUsers();
 
-    if (users.length === 0) {
+    if (transformedUsers.length === 0) {
       console.log('⚠️  No users found in Supabase');
       return;
     }
 
     // Generate matches
-    const allMatches = findMatchesForAllUsers(users, 70, 3);
+    // TODO: INCREASE THRESHOLD when user base grows
+    // Current: 60% min score, 5 max matches (BETA - ensures everyone gets matches)
+    // Recommended at 100+ users: 70% min score, 3 max matches (PRODUCTION)
+    const MIN_SCORE = 60;  // Lower for beta to ensure engagement
+    const MAX_MATCHES = 5; // More matches for beta users to explore
+    const allMatches = findMatchesForAllUsers(transformedUsers, rawUsers, MIN_SCORE, MAX_MATCHES);
+
+    // Insert matches into Supabase
+    await insertMatchesToSupabase(allMatches);
 
     // Show summary
     console.log('\n' + '='.repeat(60));
@@ -166,19 +269,10 @@ async function main() {
     const totalMatches = Object.values(allMatches).reduce((sum, matches) => sum + matches.length, 0);
     const usersWithMatches = Object.values(allMatches).filter(matches => matches.length > 0).length;
 
-    console.log(`Total users: ${users.length}`);
+    console.log(`Total users: ${transformedUsers.length}`);
     console.log(`Users with matches: ${usersWithMatches}`);
     console.log(`Total connections: ${totalMatches}`);
-    console.log(`Average matches per user: ${(totalMatches / users.length).toFixed(1)}`);
-
-    // Format for email generator
-    console.log('\n' + '='.repeat(60));
-    console.log('📧 EMAIL GENERATOR FORMAT');
-    console.log('='.repeat(60));
-    console.log('\nCopy this into connection-cards-generator.html:\n');
-
-    const emailFormat = formatForEmailGenerator(allMatches);
-    console.log('const connections = ' + JSON.stringify(emailFormat, null, 2) + ';');
+    console.log(`Average matches per user: ${(totalMatches / transformedUsers.length).toFixed(1)}`);
 
     // Show detailed matches for first 3 users
     console.log('\n' + '='.repeat(60));
@@ -192,7 +286,7 @@ async function main() {
       });
     });
 
-    console.log('\n✅ Done! Use the connections array above in your email generator.\n');
+    console.log('\n✅ Done! Matches have been saved to Supabase.\n');
 
   } catch (error) {
     console.error('❌ Error:', error);

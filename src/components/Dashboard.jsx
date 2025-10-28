@@ -602,10 +602,16 @@ const getGreeting = () => {
   }} />;
 
  case 'connections':
-  return <Connections onBackToDashboard={() => {
-    setActiveTab('dashboard');
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }} />;
+  return <Connections
+    onBackToDashboard={() => {
+      setActiveTab('dashboard');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }}
+    onNavigateToSettings={() => {
+      setActiveTab('settings');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }}
+  />;
 
   case 'messages':
   return <Messages onBackToDashboard={() => {
@@ -614,18 +620,7 @@ const getGreeting = () => {
   }} />;
 
   case 'settings':
-  return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-    <div className="text-center">
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">Profile Settings</h1>
-      <p className="text-gray-600 mb-6">Coming back soon! We're fixing some issues.</p>
-      <button
-        onClick={() => setActiveTab('dashboard')}
-        className="px-6 py-3 bg-[#009900] text-white rounded-lg font-semibold hover:bg-[#007700] border-2 border-[#D0ED00]"
-      >
-        Back to Dashboard
-      </button>
-    </div>
-  </div>;
+  return <Settings onBackToDashboard={() => setActiveTab('dashboard')} />;
 
   case 'subscription':
   return <Subscription onSelectPlan={(planId, isYearly) => {

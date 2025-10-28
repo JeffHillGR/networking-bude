@@ -229,24 +229,62 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
     }, 3000);
   };
 
-  const handleSaveProfile = () => {
-    // Save to localStorage
-    const profileWithPhoto = { ...profile, photoUrl };
-    localStorage.setItem('settingsProfile', JSON.stringify(profileWithPhoto));
-    localStorage.setItem('settingsInterests', JSON.stringify(selectedInterests));
+  const handleSaveProfile = async () => {
+    try {
+      // Split full name into first and last
+      const names = (profile.fullName || '').split(' ');
+      const firstName = names[0] || '';
+      const lastName = names.slice(1).join(' ') || '';
 
-    // Also update the main user data used by other components
-    const names = (profile.fullName || '').split(' ');
-    const firstName = names[0] || '';
-    const lastName = names.slice(1).join(' ') || '';
+      // Update Supabase database
+      if (user?.id) {
+        const { error } = await supabase
+          .from('users')
+          .update({
+            first_name: firstName,
+            last_name: lastName,
+            name: profile.fullName,
+            title: profile.jobTitle,
+            company: profile.company,
+            industry: profile.industry,
+            zip_code: profile.zipCode || '',
+            organizations_current: profile.organizations || [],
+            organizations_interested: profile.organizationsToCheckOut || [],
+            organizations_other: profile.organizationsOther || '',
+            organizations_to_check_out_other: profile.organizationsToCheckOutOther || '',
+            professional_interests: Array.isArray(selectedInterests) ? selectedInterests : [],
+            professional_interests_other: profile.professionalInterestsOther || '',
+            personal_interests: profile.personalInterests || '',
+            networking_goals: profile.networkingGoals || '',
+            same_industry_preference: profile.sameIndustry || '',
+            gender: profile.gender || '',
+            gender_preference: profile.genderPreference || '',
+            year_born: profile.dob ? new Date(profile.dob).getFullYear() : null,
+            year_born_connect: profile.dobPreference || ''
+          })
+          .eq('id', user.id);
 
-    localStorage.setItem('userFirstName', firstName);
-    localStorage.setItem('userLastName', lastName);
-    localStorage.setItem('userEmail', profile.email);
-    localStorage.setItem('userJobTitle', profile.jobTitle);
-    localStorage.setItem('userCompany', profile.company);
+        if (error) {
+          console.error('Error updating Supabase:', error);
+          throw error;
+        }
+      }
 
-    showSuccess('Profile updated successfully!');
+      // Save to localStorage as backup
+      const profileWithPhoto = { ...profile, photoUrl };
+      localStorage.setItem('settingsProfile', JSON.stringify(profileWithPhoto));
+      localStorage.setItem('settingsInterests', JSON.stringify(selectedInterests));
+      localStorage.setItem('userFirstName', firstName);
+      localStorage.setItem('userLastName', lastName);
+      localStorage.setItem('userEmail', profile.email);
+      localStorage.setItem('userJobTitle', profile.jobTitle);
+      localStorage.setItem('userCompany', profile.company);
+
+      showSuccess('Profile updated successfully!');
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      alert('Error saving profile. Please try again.');
+    }
   };
 
   // Compress image before upload (LinkedIn-style profile picture optimization)
@@ -304,6 +342,11 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
   };
 
   const handlePhotoUpload = async (event) => {
+    // DISABLED FOR NOW - Photo upload causing crashes
+    alert('Photo upload is temporarily disabled. Coming soon!');
+    return;
+
+    /* COMMENTED OUT UNTIL FIX
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -338,7 +381,7 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
       const filePath = `${user.id}/${fileName}`;
 
       // Upload compressed image to Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError} = await supabase.storage
         .from('profile-photos')
         .upload(filePath, compressedFile, {
           cacheControl: '3600',
@@ -376,6 +419,7 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
     } finally {
       setUploadingPhoto(false);
     }
+    */
   };
 
   const handleChangePassword = () => {
@@ -560,11 +604,8 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
             <div className="mb-8">
               <label className="block font-medium text-gray-900 mb-3">Profile Picture</label>
               <div className="flex items-center gap-4">
-                <div className="w-20 h-20 bg-[#D0ED00] rounded-full flex items-center justify-center text-2xl font-bold text-white border-2 border-[#009900]">
+                <div className="w-20 h-20 bg-[#D0ED00] rounded-full flex items-center justify-center text-2xl font-bold text-[#009900] border-4 border-[#009900]">
                   {(profile.fullName || 'User Name').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'UN'}
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Photo upload coming soon!</p>
                 </div>
               </div>
             </div>
@@ -613,12 +654,13 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
                 </div>
 
                 <div>
-                  <label className="block font-medium text-gray-900 mb-2">Location</label>
+                  <label className="block font-medium text-gray-900 mb-2">Zip Code</label>
                   <input
                     type="text"
-                    value={profile.location}
-                    onChange={(e) => setProfile({...profile, location: e.target.value})}
+                    value={profile.zipCode}
+                    onChange={(e) => setProfile({...profile, zipCode: e.target.value})}
                     className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
+                    placeholder="e.g., 49503"
                   />
                 </div>
 
@@ -657,52 +699,65 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
               {/* Onboarding Preferences Section */}
               <div className="border-t border-gray-200 pt-6 mt-6">
                 <h3 className="font-bold text-gray-900 mb-4">Connection Preferences</h3>
+                <p className="text-sm text-gray-600 mb-4">Update your networking preferences to help us find better matches for you</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block font-medium text-gray-900 mb-2">Same Industry Connect</label>
-                    <input
-                      type="text"
-                      value={profile.sameIndustry}
+                    <label className="block font-medium text-gray-900 mb-2">Same Industry Preference</label>
+                    <select
+                      value={profile.sameIndustry || ''}
                       onChange={(e) => setProfile({...profile, sameIndustry: e.target.value})}
                       className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
-                      placeholder="Your preference"
-                      readOnly
-                    />
+                    >
+                      <option value="">Select your preference</option>
+                      <option value="yes">Yes, prefer same industry</option>
+                      <option value="no">No preference</option>
+                      <option value="different">Prefer different industries</option>
+                    </select>
                   </div>
 
                   <div>
-                    <label className="block font-medium text-gray-900 mb-2">Gender Preference</label>
-                    <input
-                      type="text"
-                      value={profile.genderPreference}
+                    <label className="block font-medium text-gray-900 mb-2">Gender</label>
+                    <select
+                      value={profile.gender || ''}
+                      onChange={(e) => setProfile({...profile, gender: e.target.value})}
+                      className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
+                    >
+                      <option value="">Prefer not to say</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="non-binary">Non-binary</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block font-medium text-gray-900 mb-2">Gender Preference for Connections</label>
+                    <select
+                      value={profile.genderPreference || ''}
                       onChange={(e) => setProfile({...profile, genderPreference: e.target.value})}
                       className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
-                      placeholder="Your preference"
-                      readOnly
-                    />
+                    >
+                      <option value="">No preference</option>
+                      <option value="male">Prefer male connections</option>
+                      <option value="female">Prefer female connections</option>
+                      <option value="non-binary">Prefer non-binary connections</option>
+                      <option value="same">Prefer same gender as mine</option>
+                    </select>
                   </div>
 
                   <div>
-                    <label className="block font-medium text-gray-900 mb-2">DOB Preference</label>
-                    <input
-                      type="text"
-                      value={profile.dobPreference}
+                    <label className="block font-medium text-gray-900 mb-2">Age Group Preference</label>
+                    <select
+                      value={profile.dobPreference || ''}
                       onChange={(e) => setProfile({...profile, dobPreference: e.target.value})}
                       className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
-                      placeholder="Your preference"
-                      readOnly
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-medium text-gray-900 mb-2">Zip Code</label>
-                    <input
-                      type="text"
-                      value={profile.zipCode}
-                      onChange={(e) => setProfile({...profile, zipCode: e.target.value})}
-                      className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
-                      placeholder="e.g., 49503"
-                    />
+                    >
+                      <option value="">No preference</option>
+                      <option value="similar">Similar age (+/- 10 years)</option>
+                      <option value="younger">Prefer younger connections</option>
+                      <option value="older">Prefer older connections</option>
+                      <option value="any">Any age group</option>
+                    </select>
                   </div>
                 </div>
               </div>

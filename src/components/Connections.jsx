@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { X, Clock, User, TrendingUp, ArrowLeft, Send } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
-function Connections({ onBackToDashboard }) {
+function Connections({ onBackToDashboard, onNavigateToSettings }) {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('recommended');
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showConnectModal, setShowConnectModal] = useState(false);
@@ -9,6 +12,8 @@ function Connections({ onBackToDashboard }) {
   const [showAlgorithmModal, setShowAlgorithmModal] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState('');
   const [selectedConnection, setSelectedConnection] = useState(null); // For Saved tab connections
+  const [connections, setConnections] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // localStorage state for tracking actions
   const [passedConnections, setPassedConnections] = useState(() => {
@@ -39,80 +44,97 @@ function Connections({ onBackToDashboard }) {
     localStorage.setItem('connections_pending', JSON.stringify(pendingConnections));
   }, [pendingConnections]);
 
-  const connections = [
-    {
-      id: 1,
-      name: 'Maria Rodriguez',
-      title: 'Marketing Director',
-      company: 'Spotify',
-      email: 'grjeff@gmail.com',
-      industry: 'media',
-      connectionScore: 88,
-      tags: ['Marketing', 'Media'],
-      orgsAttend: 'GR Chamber of Commerce, Inforum',
-      orgsCheckOut: 'Economic Club of Grand Rapids, Creative Mornings',
-      professionalInterests: 'Marketing, Design, Media, Leadership',
-      professionalInterestsOther: '',
-      personalInterests: 'Love connecting with creative professionals, exploring new restaurants, and traveling.',
-      networkingGoals: 'Experienced marketing leader focused on brand strategy and digital transformation. Looking to connect with other marketing professionals and creative leaders.',
-      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=faces',
-      isOnline: false
-    },
-    {
-      id: 2,
-      name: 'Alex Chen',
-      title: 'Senior Software Engineer',
-      company: 'Google',
-      email: 'grjeff@gmail.com',
-      industry: 'technology',
-      connectionScore: 95,
-      tags: ['Technology', 'AI/ML'],
-      orgsAttend: 'Start Garden, Right Place',
-      orgsCheckOut: 'Bamboo, Hello West Michigan',
-      professionalInterests: 'Technology, AI/ML, Engineering, Product Management',
-      professionalInterestsOther: '',
-      personalInterests: 'Building scalable systems, cloud architecture, hiking, and playing guitar.',
-      networkingGoals: 'Passionate about leading engineering teams and discussing the latest in cloud architecture and AI applications. Looking to mentor junior engineers.',
-      image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=faces',
-      isOnline: true
-    },
-    {
-      id: 3,
-      name: 'David Kim',
-      title: 'Product Manager',
-      company: 'Meta',
-      email: 'grjeff@gmail.com',
-      industry: 'technology',
-      connectionScore: 92,
-      tags: ['Product Management', 'Design'],
-      orgsAttend: 'Economic Club of Grand Rapids, AIGA - WM',
-      orgsCheckOut: 'Rotary Club, Crain\'s GR Business',
-      professionalInterests: 'Product Management, Design, Technology, Leadership',
-      professionalInterestsOther: '',
-      personalInterests: 'Building user-centric products, mentoring aspiring PMs, cycling, and photography.',
-      networkingGoals: 'Product leader with 10+ years experience. Passionate about mentoring aspiring PMs and sharing product development insights.',
-      image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&h=200&fit=crop&crop=faces',
-      isOnline: true
-    },
-    {
-      id: 4,
-      name: 'Jennifer Walsh',
-      title: 'VP of Sales',
-      company: 'Salesforce',
-      email: 'grjeff@gmail.com',
-      industry: 'technology',
-      connectionScore: 85,
-      tags: ['Sales', 'Leadership'],
-      orgsAttend: 'GR Chamber of Commerce, Athena',
-      orgsCheckOut: 'Inforum, Create Great Leaders',
-      professionalInterests: 'Sales, Leadership, Finance, Consulting',
-      professionalInterestsOther: '',
-      personalInterests: 'Building high-performing sales teams, golf, and community volunteering.',
-      networkingGoals: 'Sales executive specializing in enterprise SaaS. Always happy to share insights on building high-performing sales teams and SaaS sales strategies.',
-      image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=faces',
-      isOnline: false
+  // Fetch matches from Supabase
+  useEffect(() => {
+    async function fetchMatches() {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Fetch user's ID from public.users table
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', user.email)
+          .single();
+
+        if (userError) throw userError;
+
+        // Fetch matches for this user with matched user details
+        const { data: matchesData, error: matchesError } = await supabase
+          .from('matches')
+          .select(`
+            id,
+            matched_user_id,
+            compatibility_score,
+            match_reasons,
+            status,
+            matched_user:users!matches_matched_user_id_fkey (
+              id,
+              email,
+              first_name,
+              last_name,
+              name,
+              title,
+              company,
+              industry,
+              organizations_current,
+              organizations_interested,
+              professional_interests,
+              professional_interests_other,
+              personal_interests,
+              networking_goals,
+              profile_image
+            )
+          `)
+          .eq('user_id', userData.id)
+          .eq('status', 'recommended')
+          .order('compatibility_score', { ascending: false });
+
+        if (matchesError) throw matchesError;
+
+        // Transform Supabase data to component format
+        const transformedConnections = matchesData.map((match) => {
+          const matchedUser = match.matched_user;
+          return {
+            id: match.matched_user_id,
+            name: matchedUser.name || `${matchedUser.first_name} ${matchedUser.last_name}`,
+            title: matchedUser.title || '',
+            company: matchedUser.company || '',
+            email: matchedUser.email,
+            industry: matchedUser.industry || '',
+            connectionScore: match.compatibility_score,
+            tags: [], // Could derive from professional_interests
+            orgsAttend: Array.isArray(matchedUser.organizations_current)
+              ? matchedUser.organizations_current.join(', ')
+              : matchedUser.organizations_current || '',
+            orgsCheckOut: Array.isArray(matchedUser.organizations_interested)
+              ? matchedUser.organizations_interested.join(', ')
+              : matchedUser.organizations_interested || '',
+            professionalInterests: Array.isArray(matchedUser.professional_interests)
+              ? matchedUser.professional_interests.join(', ')
+              : matchedUser.professional_interests || '',
+            professionalInterestsOther: matchedUser.professional_interests_other || '',
+            personalInterests: matchedUser.personal_interests || '',
+            networkingGoals: matchedUser.networking_goals || '',
+            image: matchedUser.profile_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(matchedUser.name || matchedUser.first_name)}&size=200&background=random`,
+            isOnline: false // Could add online status tracking later
+          };
+        });
+
+        setConnections(transformedConnections);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching matches:', error);
+        setConnections([]);
+        setLoading(false);
+      }
     }
-  ];
+
+    fetchMatches();
+  }, [user]);
 
   // Filter connections based on active tab and actions taken
   const getFilteredConnections = () => {
@@ -132,7 +154,19 @@ function Connections({ onBackToDashboard }) {
   };
 
   const filteredConnections = getFilteredConnections();
-  const currentCard = filteredConnections[currentCardIndex];
+
+  // Calculate how many placeholders to show (minimum 3 cards total)
+  const MIN_CARDS = 3;
+  const realConnectionsCount = filteredConnections.length;
+  const placeholdersNeeded = Math.max(0, MIN_CARDS - realConnectionsCount);
+
+  // Create array combining real connections and placeholders
+  const allCards = [
+    ...filteredConnections,
+    ...Array(placeholdersNeeded).fill({ isPlaceholder: true })
+  ];
+
+  const currentCard = allCards[currentCardIndex];
 
   const handleConnect = () => {
     // Open modal to send connection request
@@ -246,7 +280,7 @@ function Connections({ onBackToDashboard }) {
                 </div>
               </div>
 
-              {filteredConnections.length === 0 ? (
+              {currentCard?.isPlaceholder ? (
                 /* Blurred Placeholder Card */
                 <div className="relative bg-white rounded-lg shadow-lg overflow-hidden">
                   {/* Blurred Mock Card Content */}
@@ -280,19 +314,41 @@ function Connections({ onBackToDashboard }) {
                     </div>
                   </div>
 
-                  {/* Overlay Message */}
+                  {/* Overlay Message - Different message for zero vs few connections */}
                   <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-                    <div className="bg-white rounded-xl p-8 shadow-2xl border-2 border-[#D0ED00] max-w-md mx-4 text-center">
-                      <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                        We're building more connections for you
-                      </h3>
-                      <p className="text-gray-600 text-lg">
-                        Stay tuned!
-                      </p>
-                    </div>
+                    {connections.length === 0 ? (
+                      /* Zero connections - encourage profile completion */
+                      <div className="bg-white rounded-xl p-8 shadow-2xl border-2 border-[#D0ED00] max-w-md mx-4 text-center">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                          Help Us Find Your Compatible Connections
+                        </h3>
+                        <p className="text-gray-700 text-base mb-4 leading-relaxed">
+                          Complete your profile to unlock meaningful connections with other professionals in your community.
+                        </p>
+                        <p className="text-[#009900] font-semibold text-base mb-6">
+                          💡 Networking Goals is the most important aspect of making meaningful connections
+                        </p>
+                        <button
+                          onClick={onNavigateToSettings}
+                          className="bg-[#009900] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#007700] transition-colors"
+                        >
+                          Complete Your Profile
+                        </button>
+                      </div>
+                    ) : (
+                      /* Has some connections, just showing placeholders */
+                      <div className="bg-white rounded-xl p-8 shadow-2xl border-2 border-[#D0ED00] max-w-md mx-4 text-center">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                          We're building more connections for you
+                        </h3>
+                        <p className="text-gray-600 text-lg">
+                          Stay tuned!
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
-              ) : (
+              ) : currentCard ? (
             <div
               className="bg-white rounded-lg shadow-lg overflow-hidden relative group"
               onMouseEnter={() => setShowAlgorithmModal(true)}
@@ -451,7 +507,7 @@ function Connections({ onBackToDashboard }) {
               )}
 
             </div>
-            )}
+              ) : null}
           </div>
 
           {/* All Recommendations List */}
@@ -462,49 +518,71 @@ function Connections({ onBackToDashboard }) {
               </div>
             </div>
             <div className="space-y-3 relative">
-              {filteredConnections.map((person, index) => (
+              {allCards.map((person, index) => (
                 <div
-                  key={person.id}
+                  key={person.isPlaceholder ? `placeholder-${index}` : person.id}
                   onClick={() => setCurrentCardIndex(index)}
-                  className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                  className={`bg-white rounded-lg p-4 shadow-sm transition-shadow ${person.isPlaceholder ? 'cursor-default opacity-60' : 'hover:shadow-md cursor-pointer'}`}
                 >
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className="relative">
-                      <img
-                        src={person.image}
-                        alt={person.name}
-                        className="w-12 h-12 rounded-full object-cover flex-shrink-0"
-                      />
-                      {person.isOnline && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
-                      )}
+                  {person.isPlaceholder ? (
+                    /* Placeholder sidebar card */
+                    <div className="filter blur-sm pointer-events-none">
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="w-12 h-12 rounded-full bg-gray-300 flex-shrink-0"></div>
+                        <div className="flex-1 min-w-0">
+                          <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+                          <div className="h-3 bg-gray-200 rounded w-full mb-1"></div>
+                          <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 mb-3">
+                        <div className="h-6 bg-gray-200 rounded-full w-20"></div>
+                        <div className="h-6 bg-gray-200 rounded-full w-24"></div>
+                      </div>
+                      <div className="h-3 bg-gray-200 rounded w-32"></div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-gray-900">{person.name}</h3>
-                      <p className="text-sm text-gray-600 truncate">{person.title}</p>
-                      <p className="text-xs text-gray-500">{person.company}</p>
-                    </div>
-                    <button className="flex-shrink-0 p-2 hover:bg-gray-100 rounded-full">
-                      <User className="w-5 h-5 text-gray-400" />
-                    </button>
-                  </div>
-                  
-                  <div className="flex gap-2 mb-3 flex-wrap">
-                    {person.professionalInterests && person.professionalInterests.split(',').slice(0, 3).map((interest, index) => (
-                      <span key={index} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                        {interest.trim()}
-                      </span>
-                    ))}
-                  </div>
+                  ) : (
+                    /* Real connection sidebar card */
+                    <>
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="relative">
+                          <img
+                            src={person.image}
+                            alt={person.name}
+                            className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                          />
+                          {person.isOnline && (
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-gray-900">{person.name}</h3>
+                          <p className="text-sm text-gray-600 truncate">{person.title}</p>
+                          <p className="text-xs text-gray-500">{person.company}</p>
+                        </div>
+                        <button className="flex-shrink-0 p-2 hover:bg-gray-100 rounded-full">
+                          <User className="w-5 h-5 text-gray-400" />
+                        </button>
+                      </div>
 
-                  <div className="flex items-center text-xs text-gray-600 mb-2">
-                    <span className="flex items-center gap-1">
-                      <TrendingUp className="w-3 h-3 text-green-600" />
-                      {person.connectionScore}% compatible
-                    </span>
-                  </div>
+                      <div className="flex gap-2 mb-3 flex-wrap">
+                        {person.professionalInterests && person.professionalInterests.split(',').slice(0, 3).map((interest, index) => (
+                          <span key={index} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                            {interest.trim()}
+                          </span>
+                        ))}
+                      </div>
 
-                  <p className="text-xs text-gray-500">Click to view full profile</p>
+                      <div className="flex items-center text-xs text-gray-600 mb-2">
+                        <span className="flex items-center gap-1">
+                          <TrendingUp className="w-3 h-3 text-green-600" />
+                          {person.connectionScore}% compatible
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-gray-500">Click to view full profile</p>
+                    </>
+                  )}
                 </div>
               ))}
 

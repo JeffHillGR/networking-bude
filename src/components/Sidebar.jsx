@@ -149,7 +149,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
         <div className="border-t border-gray-200 p-4 flex-shrink-0">
           <div className="flex items-center gap-2 mb-3 p-2 bg-gray-100 rounded-lg">
             <div className="w-8 h-8 bg-[#D0ED00] rounded-full flex items-center justify-center border-2 border-[#009900]">
-              <span className="text-white font-bold text-xs">
+              <span className="text-[#009900] font-bold text-xs">
                 {firstName.charAt(0).toUpperCase()}{lastName.charAt(0).toUpperCase()}
               </span>
             </div>
