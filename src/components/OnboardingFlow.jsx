@@ -5,9 +5,14 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 
 export default function BudEOnboarding() {
   const navigate = useNavigate();
-  const { signUp, user } = useAuth();
+  const { signUp, signIn, user } = useAuth();
   const [step, setStep] = useState(0);
   const [justSignedUp, setJustSignedUp] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   // TODO: Re-enable after adding login functionality
   // Redirect already logged-in users to dashboard (but not during signup process)
@@ -134,6 +139,28 @@ export default function BudEOnboarding() {
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoginError('');
+
+    if (!loginEmail || !loginPassword) {
+      setLoginError('Please enter both email and password');
+      return;
+    }
+
+    const { data, error } = await signIn(loginEmail, loginPassword);
+
+    if (error) {
+      setLoginError(error.message || 'Invalid email or password');
+      return;
+    }
+
+    if (data?.user) {
+      // Successfully logged in, navigate to dashboard
+      navigate('/dashboard');
+    }
   };
 
   const handleJobTitleChange = (value) => {
@@ -401,6 +428,19 @@ export default function BudEOnboarding() {
           >
             Continue
           </button>
+        </div>
+
+        {/* Login Link */}
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-600">
+            Already have an account?{' '}
+            <button
+              onClick={() => setShowLoginModal(true)}
+              className="text-[#009900] font-semibold hover:underline"
+            >
+              Login here
+            </button>
+          </p>
         </div>
 
         {/* Mobile Branding - Only visible on mobile */}
@@ -923,6 +963,86 @@ const renderStep2 = () => (
                 Got it!
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Login Modal */}
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full">
+            <h2 className="text-2xl font-bold text-center mb-6">Login to BudE</h2>
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold mb-2">Email</label>
+                <input
+                  type="email"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2">Password</label>
+                <div className="relative">
+                  <input
+                    type={showLoginPassword ? "text" : "password"}
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    className="w-full px-4 py-3 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="Enter your password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showLoginPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+              </div>
+
+              {loginError && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-sm text-red-600">{loginError}</p>
+                </div>
+              )}
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowLoginModal(false);
+                    setLoginEmail('');
+                    setLoginPassword('');
+                    setLoginError('');
+                  }}
+                  className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-6 py-3 bg-[#009900] text-white rounded-lg font-semibold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
+                >
+                  Login
+                </button>
+              </div>
+
+              <div className="text-center mt-4">
+                <button
+                  type="button"
+                  className="text-sm text-[#009900] hover:underline font-semibold"
+                >
+                  Forgot Password?
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
