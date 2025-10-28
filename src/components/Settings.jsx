@@ -44,11 +44,6 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
     if (savedProfile) {
       const profile = JSON.parse(savedProfile);
 
-      // Load photo URL if available
-      if (profile.photoUrl) {
-        setPhotoUrl(profile.photoUrl);
-      }
-
       // Migration: If personalInterests or networkingGoals are missing, pull from onboarding
       if (onboardingDataStr && (!profile.personalInterests || !profile.networkingGoals)) {
         const data = JSON.parse(onboardingDataStr);
@@ -147,6 +142,17 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
   // Profile state
   const [profile, setProfile] = useState(loadProfileFromStorage());
   const [selectedInterests, setSelectedInterests] = useState(loadInterestsFromStorage());
+
+  // Load photo URL after component mounts
+  useEffect(() => {
+    const savedProfile = localStorage.getItem('settingsProfile');
+    if (savedProfile) {
+      const profileData = JSON.parse(savedProfile);
+      if (profileData.photoUrl) {
+        setPhotoUrl(profileData.photoUrl);
+      }
+    }
+  }, []);
 
   const availableInterests = [
     'Technology', 'Marketing', 'Finance', 'Design', 'Sales', 'HR',
