@@ -348,11 +348,6 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
   };
 
   const handlePhotoUpload = async (event) => {
-    // DISABLED FOR NOW - Photo upload causing crashes
-    alert('Photo upload is temporarily disabled. Coming soon!');
-    return;
-
-    /* COMMENTED OUT UNTIL FIX
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -401,14 +396,14 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
         .from('profile-photos')
         .getPublicUrl(filePath);
 
-      // Update user's photo_url in the database
+      // Update user's photo in the database
       const { error: updateError } = await supabase
         .from('users')
-        .update({ photo_url: publicUrl })
+        .update({ photo: publicUrl })
         .eq('id', user.id);
 
       if (updateError) {
-        console.error('Error updating photo_url in database:', updateError);
+        console.error('Error updating photo in database:', updateError);
         throw updateError;
       }
 
@@ -425,7 +420,6 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
     } finally {
       setUploadingPhoto(false);
     }
-    */
   };
 
   const handleChangePassword = () => {
@@ -610,8 +604,28 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
             <div className="mb-8">
               <label className="block font-medium text-gray-900 mb-3">Profile Picture</label>
               <div className="flex items-center gap-4">
-                <div className="w-20 h-20 bg-[#D0ED00] rounded-full flex items-center justify-center text-2xl font-bold text-[#009900] border-4 border-[#009900]">
-                  {(profile.fullName || 'User Name').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'UN'}
+                {photoUrl ? (
+                  <img src={photoUrl} alt="Profile" className="w-20 h-20 rounded-full object-cover border-4 border-[#009900]" />
+                ) : (
+                  <div className="w-20 h-20 bg-[#D0ED00] rounded-full flex items-center justify-center text-2xl font-bold text-[#009900] border-4 border-[#009900]">
+                    {(profile.fullName || 'User Name').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'UN'}
+                  </div>
+                )}
+                <div>
+                  <input
+                    type="file"
+                    id="photo-upload"
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="photo-upload"
+                    className="cursor-pointer inline-block bg-[#009900] text-white px-4 py-2 rounded-lg hover:bg-[#007700] transition-colors"
+                  >
+                    {uploadingPhoto ? 'Uploading...' : 'Upload Photo'}
+                  </label>
+                  <p className="text-xs text-gray-500 mt-2">JPG, PNG or WebP (max 10MB)</p>
                 </div>
               </div>
             </div>
