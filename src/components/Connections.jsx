@@ -9,11 +9,11 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showConnectModal, setShowConnectModal] = useState(false);
   const [showComingSoonModal, setShowComingSoonModal] = useState(false);
-  const [showAlgorithmModal, setShowAlgorithmModal] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState('');
   const [selectedConnection, setSelectedConnection] = useState(null); // For Saved tab connections
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   // localStorage state for tracking actions
   const [passedConnections, setPassedConnections] = useState(() => {
@@ -53,7 +53,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
       }
 
       try {
-        // Fetch user's ID from public.users table
+        // Optimized: Fetch only user ID once, with minimal data
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select('id')
@@ -62,51 +62,57 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
 
         if (userError) throw userError;
 
-        // Fetch matches for this user with matched user details
-        const { data: matchesData, error: matchesError } = await supabase
+        // Store current user ID for sending connection requests
+        setCurrentUserId(userData.id);
+
+        // Fetch all matches with different statuses
+        const { data: allMatchesData, error: matchesError } = await supabase
           .from('matches')
           .select(`
-            id,
             matched_user_id,
             compatibility_score,
-            match_reasons,
             status,
             matched_user:users!matches_matched_user_id_fkey (
-              id,
-              email,
               first_name,
               last_name,
               name,
+              email,
               title,
               company,
               industry,
+              photo,
               organizations_current,
               organizations_interested,
               professional_interests,
-              professional_interests_other,
               personal_interests,
-              networking_goals,
-              profile_image
+              networking_goals
             )
           `)
           .eq('user_id', userData.id)
-          .eq('status', 'recommended')
+          .in('status', ['recommended', 'pending', 'saved', 'connected'])
           .order('compatibility_score', { ascending: false });
 
         if (matchesError) throw matchesError;
 
-        // Transform Supabase data to component format
-        const transformedConnections = matchesData.map((match) => {
+        // Transform Supabase data to component format and separate by status
+        const recommended = [];
+        const pending = [];
+        const saved = [];
+
+        allMatchesData.forEach((match) => {
           const matchedUser = match.matched_user;
-          return {
+          const fullName = matchedUser.name || `${matchedUser.first_name} ${matchedUser.last_name}`;
+          const initials = fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+          const connectionData = {
             id: match.matched_user_id,
-            name: matchedUser.name || `${matchedUser.first_name} ${matchedUser.last_name}`,
+            name: fullName,
+            email: matchedUser.email || '',
             title: matchedUser.title || '',
             company: matchedUser.company || '',
-            email: matchedUser.email,
             industry: matchedUser.industry || '',
+            photo: matchedUser.photo || null,
             connectionScore: match.compatibility_score,
-            tags: [], // Could derive from professional_interests
             orgsAttend: Array.isArray(matchedUser.organizations_current)
               ? matchedUser.organizations_current.join(', ')
               : matchedUser.organizations_current || '',
@@ -116,15 +122,26 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
             professionalInterests: Array.isArray(matchedUser.professional_interests)
               ? matchedUser.professional_interests.join(', ')
               : matchedUser.professional_interests || '',
-            professionalInterestsOther: matchedUser.professional_interests_other || '',
             personalInterests: matchedUser.personal_interests || '',
             networkingGoals: matchedUser.networking_goals || '',
-            image: matchedUser.profile_image || `https://ui-avatars.com/api/?name=${encodeURIComponent(matchedUser.name || matchedUser.first_name)}&size=200&background=random`,
-            isOnline: false // Could add online status tracking later
+            initials: initials,
+            isOnline: false,
+            isMutual: match.status === 'connected'
           };
+
+          // Separate by status
+          if (match.status === 'recommended') {
+            recommended.push(connectionData);
+          } else if (match.status === 'pending') {
+            pending.push(connectionData);
+          } else if (match.status === 'saved' || match.status === 'connected') {
+            saved.push(connectionData);
+          }
         });
 
-        setConnections(transformedConnections);
+        setConnections(recommended);
+        setPendingConnections(pending);
+        setSavedConnections(saved);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching matches:', error);
@@ -140,11 +157,14 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
   const getFilteredConnections = () => {
     if (activeTab === 'recommended') {
       // Show connections that haven't been passed, saved, or pending
-      return connections.filter(conn =>
-        !passedConnections.includes(conn.id) &&
-        !savedConnections.some(s => s.id === conn.id) &&
-        !pendingConnections.some(p => p.id === conn.id)
-      );
+      // Limit to top 5 by compatibility score to avoid overwhelming users
+      return connections
+        .filter(conn =>
+          !passedConnections.includes(conn.id) &&
+          !savedConnections.some(s => s.id === conn.id) &&
+          !pendingConnections.some(p => p.id === conn.id)
+        )
+        .slice(0, 5); // Show top 5 at a time
     } else if (activeTab === 'saved') {
       return savedConnections;
     } else if (activeTab === 'pending') {
@@ -173,33 +193,135 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
     setShowConnectModal(true);
   };
 
-  const handleSendConnectionRequest = () => {
-    // Close the connect modal and show the coming soon message
-    setShowConnectModal(false);
-    setConnectionMessage('');
-    setSelectedConnection(null);
-    setShowComingSoonModal(true);
+  const handleSendConnectionRequest = async () => {
+    const person = selectedConnection || currentCard;
+
+    try {
+      // Call Supabase function to handle mutual connection logic
+      const { data: connectionResult, error: dbError } = await supabase
+        .rpc('handle_connection_request', {
+          p_user_id: currentUserId,
+          p_matched_user_id: person.id
+        });
+
+      if (dbError) throw dbError;
+
+      // Send email notification
+      const response = await fetch('/api/sendConnectionEmail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          senderName: user?.user_metadata?.full_name || user?.email,
+          senderEmail: user?.email,
+          senderId: currentUserId,
+          recipientName: person.name,
+          recipientEmail: person.email,
+          message: connectionMessage,
+          connectionScore: person.connectionScore
+        })
+      });
+
+      if (!response.ok) {
+        console.error('Failed to send email, but connection status updated');
+      }
+
+      // Check if connection became mutual
+      if (connectionResult === 'connected') {
+        // Mutual connection! Add to saved connections
+        setSavedConnections(prev => [...prev, {
+          id: person.id,
+          email: person.email,
+          name: person.name,
+          title: person.title,
+          company: person.company,
+          photo: person.photo,
+          initials: person.initials,
+          connectionScore: person.connectionScore,
+          professionalInterests: person.professionalInterests,
+          isMutual: true
+        }]);
+      } else {
+        // Add to pending connections (waiting for them to connect back)
+        setPendingConnections(prev => [...prev, {
+          id: person.id,
+          email: person.email,
+          name: person.name,
+          title: person.title,
+          company: person.company,
+          photo: person.photo,
+          initials: person.initials,
+          connectionScore: person.connectionScore,
+          professionalInterests: person.professionalInterests
+        }]);
+      }
+
+      // Close modal and reset
+      setShowConnectModal(false);
+      setConnectionMessage('');
+      setSelectedConnection(null);
+
+      // Move to next card
+      nextCard();
+
+    } catch (error) {
+      console.error('Error sending connection request:', error);
+      // Show error modal
+      setShowConnectModal(false);
+      setConnectionMessage('');
+      setSelectedConnection(null);
+      setShowComingSoonModal(true);
+    }
   };
 
-  const handlePerhaps = () => {
-    // Add to saved connections
-    setSavedConnections(prev => [...prev, {
-      id: currentCard.id,
-      email: currentCard.email,
-      name: currentCard.name,
-      title: currentCard.title,
-      company: currentCard.company,
-      image: currentCard.image,
-      connectionScore: currentCard.connectionScore,
-      professionalInterests: currentCard.professionalInterests
-    }]);
-    nextCard();
+  const handlePerhaps = async () => {
+    try {
+      // Update match status to 'saved' in database
+      const { error } = await supabase
+        .from('matches')
+        .update({ status: 'saved' })
+        .eq('user_id', currentUserId)
+        .eq('matched_user_id', currentCard.id);
+
+      if (error) throw error;
+
+      // Add to saved connections
+      setSavedConnections(prev => [...prev, {
+        id: currentCard.id,
+        email: currentCard.email,
+        name: currentCard.name,
+        title: currentCard.title,
+        company: currentCard.company,
+        photo: currentCard.photo,
+        initials: currentCard.initials,
+        connectionScore: currentCard.connectionScore,
+        professionalInterests: currentCard.professionalInterests,
+        isMutual: false
+      }]);
+      nextCard();
+    } catch (error) {
+      console.error('Error saving connection:', error);
+    }
   };
 
-  const handleNoThanks = () => {
-    // Add to passed connections
-    setPassedConnections(prev => [...prev, currentCard.id]);
-    nextCard();
+  const handleNoThanks = async () => {
+    try {
+      // Update match status to 'passed' in database
+      const { error } = await supabase
+        .from('matches')
+        .update({ status: 'passed' })
+        .eq('user_id', currentUserId)
+        .eq('matched_user_id', currentCard.id);
+
+      if (error) throw error;
+
+      // Add to passed connections
+      setPassedConnections(prev => [...prev, currentCard.id]);
+      nextCard();
+    } catch (error) {
+      console.error('Error passing connection:', error);
+    }
   };
 
   const nextCard = () => {
@@ -351,8 +473,6 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
               ) : currentCard ? (
             <div
               className="bg-white rounded-lg shadow-lg overflow-hidden relative group"
-              onMouseEnter={() => setShowAlgorithmModal(true)}
-              onMouseLeave={() => setShowAlgorithmModal(false)}
             >
               {/* Card Header */}
               <div className="relative bg-gradient-to-br from-blue-50 to-blue-100 p-8 pb-16">
@@ -364,11 +484,11 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
                 )}
                 
                 <div className="flex flex-col items-center">
-                  <img
-                    src={currentCard.image}
-                    alt={currentCard.name}
-                    className="w-32 h-32 rounded-full object-cover mb-4 shadow-lg border-4 border-white"
-                  />
+                  <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center mb-4 shadow-lg border-4 border-black">
+                    <span className="text-[#009900] font-bold text-4xl">
+                      {currentCard.initials}
+                    </span>
+                  </div>
                   <h3 className="text-2xl font-bold text-gray-900">{currentCard.name}</h3>
                   <p className="text-gray-600 mt-1">{currentCard.title}</p>
                   <p className="text-gray-500 text-sm">{currentCard.company}</p>
@@ -454,14 +574,14 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
                   )}
                 </div>
 
-                {/* Action Buttons */}
+                {/* Action Buttons - Reading left to right: Connect is primary action */}
                 <div className="flex gap-3">
                   <button
-                    onClick={handleNoThanks}
-                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border-2 border-[#009900] text-[#009900] rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    onClick={handleConnect}
+                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#009900] border-2 border-[#D0ED00] text-white rounded-lg hover:bg-[#007700] transition-colors font-medium"
                   >
-                    <X className="w-5 h-5" />
-                    No Thanks
+                    <User className="w-5 h-5" />
+                    Connect
                   </button>
                   <button
                     onClick={handlePerhaps}
@@ -471,40 +591,15 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
                     Perhaps
                   </button>
                   <button
-                    onClick={handleConnect}
-                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#009900] border-2 border-[#D0ED00] text-white rounded-lg hover:bg-[#007700] transition-colors font-medium"
+                    onClick={handleNoThanks}
+                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border-2 border-[#009900] text-[#009900] rounded-lg hover:bg-gray-50 transition-colors font-medium"
                   >
-                    <User className="w-5 h-5" />
-                    Connect
+                    <X className="w-5 h-5" />
+                    No Thanks
                   </button>
                 </div>
               </div>
 
-              {/* Algorithm Under Construction Overlay - Positioned over this card */}
-              {showAlgorithmModal && (
-                <div className="absolute inset-0 bg-black/30 z-10 flex items-center justify-center p-4 animate-fadeIn">
-                  <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 max-w-md w-full shadow-2xl border-4 border-[#D0ED00]">
-                    <div className="flex items-center justify-center gap-6 mb-4">
-                      <img
-                        src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
-                        alt="Scientist at work"
-                        className="h-20 w-auto flex-shrink-0 rounded-lg object-cover shadow-lg"
-                      />
-                    </div>
-                    <p className="text-green-800 font-medium text-base text-center mb-4">
-                      Our connection algorithm is currently under construction and we are manually building connections for you. Look for an email from <span className="font-bold">networkingbude.com</span>!
-                    </p>
-                    <div className="flex justify-center">
-                      <button
-                        onClick={() => setShowAlgorithmModal(false)}
-                        className="px-6 py-2 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
-                      >
-                        Got it!
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
 
             </div>
               ) : null}
@@ -546,11 +641,11 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
                     <>
                       <div className="flex items-start gap-3 mb-3">
                         <div className="relative">
-                          <img
-                            src={person.image}
-                            alt={person.name}
-                            className="w-12 h-12 rounded-full object-cover flex-shrink-0"
-                          />
+                          <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center flex-shrink-0 border-2 border-black">
+                            <span className="text-[#009900] font-bold text-sm">
+                              {person.initials}
+                            </span>
+                          </div>
                           {person.isOnline && (
                             <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                           )}
@@ -608,11 +703,19 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
                     className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-all"
                   >
                     <div className="flex gap-4">
-                      <img
-                        src={person.image}
-                        alt={person.name}
-                        className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover flex-shrink-0"
-                      />
+                      {person.photo ? (
+                        <img
+                          src={person.photo}
+                          alt={person.name}
+                          className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover flex-shrink-0 border-2 border-black"
+                        />
+                      ) : (
+                        <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white flex items-center justify-center flex-shrink-0 border-2 border-black">
+                          <span className="text-[#009900] font-bold text-xl md:text-2xl">
+                            {person.initials}
+                          </span>
+                        </div>
+                      )}
                       <div className="flex-1 min-w-0">
                         <h4 className="font-bold text-gray-900 text-lg">{person.name}</h4>
                         <p className="text-sm text-gray-600 mb-2">{person.title} at {person.company}</p>
@@ -626,26 +729,47 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
                         </div>
 
                         {activeTab === 'saved' && (
-                          <div className="flex gap-2 mt-3">
-                            <button
-                              onClick={() => {
-                                // Remove from saved
-                                setSavedConnections(prev => prev.filter(c => c.id !== person.id));
-                              }}
-                              className="px-4 py-2 text-sm border-2 border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors"
-                            >
-                              Remove
-                            </button>
-                            <button
-                              onClick={() => {
-                                setSelectedConnection(person);
-                                setShowConnectModal(true);
-                              }}
-                              className="flex-1 px-4 py-2 text-sm bg-[#009900] border-2 border-[#D0ED00] text-white rounded hover:bg-[#007700] transition-colors font-medium"
-                            >
-                              Connect
-                            </button>
-                          </div>
+                          <>
+                            {person.isMutual ? (
+                              /* Mutual Connection - Show badge and messaging option */
+                              <div className="mt-3">
+                                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 border-2 border-[#009900] text-[#009900] rounded text-sm font-semibold">
+                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                  </svg>
+                                  Mutual Connection
+                                </span>
+                                <p className="text-xs text-gray-500 mt-2">Both of you clicked Connect!</p>
+                              </div>
+                            ) : (
+                              /* Saved for Later - Show connect button */
+                              <div className="flex gap-2 mt-3">
+                                <button
+                                  onClick={async () => {
+                                    // Remove from saved (update database)
+                                    await supabase
+                                      .from('matches')
+                                      .update({ status: 'recommended' })
+                                      .eq('user_id', currentUserId)
+                                      .eq('matched_user_id', person.id);
+                                    setSavedConnections(prev => prev.filter(c => c.id !== person.id));
+                                  }}
+                                  className="px-4 py-2 text-sm border-2 border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors"
+                                >
+                                  Remove
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setSelectedConnection(person);
+                                    setShowConnectModal(true);
+                                  }}
+                                  className="flex-1 px-4 py-2 text-sm bg-[#009900] border-2 border-[#D0ED00] text-white rounded hover:bg-[#007700] transition-colors font-medium"
+                                >
+                                  Connect
+                                </button>
+                              </div>
+                            )}
+                          </>
                         )}
 
                         {activeTab === 'pending' && (
@@ -673,11 +797,11 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <div className="flex items-start gap-4 mb-4">
-              <img
-                src={person.image}
-                alt={person.name}
-                className="w-16 h-16 rounded-full object-cover"
-              />
+              <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center border-2 border-black">
+                <span className="text-[#009900] font-bold text-xl">
+                  {person.initials}
+                </span>
+              </div>
               <div className="flex-1">
                 <h3 className="font-bold text-lg text-gray-900">{person.name}</h3>
                 <p className="text-sm text-gray-600">{person.title}</p>
