@@ -14,6 +14,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [showMondayBanner, setShowMondayBanner] = useState(false);
 
   // localStorage state for tracking actions
   const [passedConnections, setPassedConnections] = useState(() => {
@@ -152,6 +153,20 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
 
     fetchMatches();
   }, [user]);
+
+  // Check if today is Monday and show banner
+  useEffect(() => {
+    const today = new Date();
+    const isMonday = today.getDay() === 1; // 0 = Sunday, 1 = Monday
+    const hasSeenMondayBanner = localStorage.getItem('hasSeenMondayBanner');
+    const lastBannerDate = localStorage.getItem('lastMondayBannerDate');
+    const todayString = today.toDateString();
+
+    // Show banner if it's Monday and they haven't seen it today
+    if (isMonday && lastBannerDate !== todayString) {
+      setShowMondayBanner(true);
+    }
+  }, []);
 
   // Filter connections based on active tab and actions taken
   const getFilteredConnections = () => {
@@ -357,6 +372,40 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Monday Reset Banner */}
+        {showMondayBanner && (
+          <div className="mb-6 bg-gradient-to-r from-[#009900] to-[#D0ED00] rounded-lg p-4 shadow-lg">
+            <div className="flex items-start justify-between">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0">
+                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-white font-bold text-lg mb-1">Fresh Start Monday!</h3>
+                  <p className="text-white text-sm">
+                    Your saved-for-later connections are back in Recommended for a second look.
+                    Take another look before Tuesday's email blast!
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setShowMondayBanner(false);
+                  localStorage.setItem('lastMondayBannerDate', new Date().toDateString());
+                }}
+                className="flex-shrink-0 ml-3 text-white hover:text-gray-200 transition-colors"
+                aria-label="Dismiss"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Tabs */}
         <div className="flex gap-4 mb-8">
           <button
