@@ -331,7 +331,7 @@ function Events({ onBackToDashboard }) {
                           }}
                           className="text-[#009900] font-medium hover:text-[#007700] flex items-center gap-1"
                         >
-                          See Details & Who's Going
+                          See Details & Who May Be Going
                           <ExternalLink className="h-4 w-4" />
                         </button>
                       </div>
@@ -399,7 +399,7 @@ function Events({ onBackToDashboard }) {
                             }}
                             className="flex items-center gap-2 text-[#009900] font-medium hover:text-[#007700] text-sm md:text-base whitespace-nowrap"
                           >
-                            See Details & Who's Going
+                            See Details & Who May Be Going
                             <ExternalLink className="h-4 w-4" />
                           </button>
                         </div>

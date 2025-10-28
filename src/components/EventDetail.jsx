@@ -205,33 +205,8 @@ function EventDetail() {
     event = defaultEventData[eventId] || defaultEventData[1];
   }
 
-  // Mock suggested connections
-  const suggestedConnections = [
-    {
-      name: 'Sarah Chen',
-      title: 'VP Engineering at Stripe',
-      compatibility: '92%',
-      mutualConnections: 4,
-      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=faces',
-      attending: true
-    },
-    {
-      name: 'Michael Torres',
-      title: 'CTO at Airbnb',
-      compatibility: '88%',
-      mutualConnections: 6,
-      image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=faces',
-      attending: true
-    },
-    {
-      name: 'Emily Rodriguez',
-      title: 'Product Director at Google',
-      compatibility: '85%',
-      mutualConnections: 3,
-      image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=faces',
-      attending: true
-    }
-  ];
+  // Suggested connections - currently disabled (will show real connections in future)
+  const suggestedConnections = [];
 
   return (
     <div className="flex min-h-screen bg-gray-50">
