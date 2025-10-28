@@ -247,8 +247,50 @@ function Connections({ onBackToDashboard }) {
               </div>
 
               {filteredConnections.length === 0 ? (
-                <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-                  <p className="text-gray-500 text-lg">No more recommendations right now. Check back later!</p>
+                /* Blurred Placeholder Card */
+                <div className="relative bg-white rounded-lg shadow-lg overflow-hidden">
+                  {/* Blurred Mock Card Content */}
+                  <div className="filter blur-sm pointer-events-none">
+                    {/* Card Header */}
+                    <div className="relative bg-gradient-to-br from-blue-50 to-blue-100 p-8 pb-16">
+                      <div className="flex flex-col items-center">
+                        <div className="w-32 h-32 rounded-full bg-gray-300 mb-4 shadow-lg border-4 border-white"></div>
+                        <div className="h-6 w-48 bg-gray-300 rounded mb-2"></div>
+                        <div className="h-4 w-32 bg-gray-200 rounded mb-1"></div>
+                        <div className="h-4 w-40 bg-gray-200 rounded"></div>
+                      </div>
+                    </div>
+
+                    {/* Card Content */}
+                    <div className="p-6">
+                      <div className="flex items-center justify-center gap-6 mb-6 pb-6 border-b border-gray-200">
+                        <div className="text-center">
+                          <div className="h-8 w-20 bg-gray-300 rounded mb-1 mx-auto"></div>
+                          <div className="h-3 w-32 bg-gray-200 rounded"></div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="h-4 w-full bg-gray-200 rounded"></div>
+                        <div className="h-4 w-5/6 bg-gray-200 rounded"></div>
+                        <div className="h-4 w-4/6 bg-gray-200 rounded"></div>
+                        <div className="h-4 w-full bg-gray-200 rounded"></div>
+                        <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Overlay Message */}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                    <div className="bg-white rounded-xl p-8 shadow-2xl border-2 border-[#D0ED00] max-w-md mx-4 text-center">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                        We're building more connections for you
+                      </h3>
+                      <p className="text-gray-600 text-lg">
+                        Stay tuned!
+                      </p>
+                    </div>
+                  </div>
                 </div>
               ) : (
             <div
