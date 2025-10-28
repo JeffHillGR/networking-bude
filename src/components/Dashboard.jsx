@@ -12,11 +12,16 @@ import TermsPage from './TermsPage';
 import PrivacyPage from './PrivacyPage';
 import ArchivePage from './ArchivePage';
 import FeedbackWidget from './FeedbackWidget';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 function Dashboard() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'dashboard');
+  const [connections, setConnections] = useState([]);
+  const [loadingConnections, setLoadingConnections] = useState(true);
 const [selectedPlan, setSelectedPlan] = useState(null);
 const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
 const [showSponsorModal, setShowSponsorModal] = useState(false);
@@ -25,7 +30,6 @@ const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
 const [adInquirySubmitted, setAdInquirySubmitted] = useState(false);
 const [phoneNumber, setPhoneNumber] = useState('');
 const [isSubmittingAd, setIsSubmittingAd] = useState(false);
-const [showScientistModal, setShowScientistModal] = useState(false);
 const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 const [showContactModal, setShowContactModal] = useState(false);
@@ -274,11 +278,80 @@ const getGreeting = () => {
 
   const featuredContent = [slot1, slot2, slot3];
 
-  const connections = [
-    { name: 'Maria Rodriguez', title: 'Marketing Director at Spotify', similarity: '88%', professionalInterests: 'Marketing, Design, Media, Leadership', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=faces' },
-    { name: 'Alex Chen', title: 'Senior Developer at Google', similarity: '95%', professionalInterests: 'Technology, AI/ML, Engineering, Product Management', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&h=200&fit=crop&crop=faces' },
-    { name: 'David Kim', title: 'Product Manager at Meta', similarity: '92%', professionalInterests: 'Product Management, Design, Technology, Leadership', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&h=200&fit=crop&crop=faces' }
-  ];
+  // Fetch real connections from database
+  useEffect(() => {
+    async function fetchConnections() {
+      if (!user) {
+        setLoadingConnections(false);
+        return;
+      }
+
+      try {
+        // Get user ID
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', user.email)
+          .single();
+
+        if (userError) throw userError;
+
+        // Fetch top 3 matches
+        const { data: matchesData, error: matchesError } = await supabase
+          .from('matches')
+          .select(`
+            matched_user_id,
+            compatibility_score,
+            matched_user:users!matches_matched_user_id_fkey (
+              first_name,
+              last_name,
+              name,
+              title,
+              company,
+              professional_interests
+            )
+          `)
+          .eq('user_id', userData.id)
+          .eq('status', 'recommended')
+          .order('compatibility_score', { ascending: false })
+          .limit(3);
+
+        if (matchesError) throw matchesError;
+
+        // Transform to component format
+        const transformedConnections = matchesData.map((match) => {
+          const matchedUser = match.matched_user;
+          const fullName = matchedUser.name || `${matchedUser.first_name} ${matchedUser.last_name}`;
+          const initials = fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+          return {
+            name: fullName,
+            title: `${matchedUser.title || ''} at ${matchedUser.company || ''}`.trim(),
+            similarity: `${match.compatibility_score}%`,
+            professionalInterests: Array.isArray(matchedUser.professional_interests)
+              ? matchedUser.professional_interests.join(', ')
+              : matchedUser.professional_interests || '',
+            initials: initials,
+            isReal: true
+          };
+        });
+
+        // Only set connections if we got data, otherwise keep empty array
+        if (transformedConnections.length > 0) {
+          setConnections(transformedConnections);
+        } else {
+          setConnections([]);
+        }
+        setLoadingConnections(false);
+      } catch (error) {
+        console.error('Error fetching connections:', error);
+        setConnections([]);
+        setLoadingConnections(false);
+      }
+    }
+
+    fetchConnections();
+  }, [user]);
 
   // Load admin-created events from localStorage
   const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
@@ -416,37 +489,74 @@ const getGreeting = () => {
                   <p className="text-sm text-gray-600">People you might want to connect with first</p>
                 </div>
                 <div className="space-y-4 flex-grow">
-                  {connections.map((person, index) => (
-                    <div
-                      key={index}
-                      onClick={() => {
-                        setActiveTab('connections');
-                        window.scrollTo({ top: 0, behavior: 'instant' });
-                      }}
-                      className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px] cursor-pointer hover:shadow-md hover:border-[#009900] transition-all"
-                    >
-                      <div className="flex gap-3 md:gap-4">
-                        <img
-                          src={person.image}
-                          alt={person.name}
-                          className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover flex-shrink-0"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-bold text-gray-900 text-base md:text-lg">{person.name}</h4>
-                          <p className="text-xs md:text-sm text-gray-600 mb-2">{person.title}</p>
-                          <div className="flex items-center gap-2 text-xs flex-wrap mb-2">
-                            <span className="font-medium whitespace-nowrap text-[#009900]">{person.similarity} compatible</span>
-                            {person.professionalInterests && person.professionalInterests.split(',').slice(0, 2).map((interest, idx) => (
-                              <span key={idx} className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded">
-                                {interest.trim()}
-                              </span>
-                            ))}
+                  {/* Show real connections + placeholders to fill 3 spots */}
+                  {[0, 1, 2].map((index) => {
+                    const person = connections[index];
+                    const isPlaceholder = !person;
+
+                    if (isPlaceholder) {
+                      // Blurred placeholder card
+                      return (
+                        <div
+                          key={`placeholder-${index}`}
+                          onClick={() => {
+                            setActiveTab('settings');
+                            window.scrollTo({ top: 0, behavior: 'instant' });
+                          }}
+                          className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px] cursor-pointer hover:shadow-md hover:border-[#009900] transition-all relative overflow-hidden"
+                        >
+                          <div className="absolute inset-0 backdrop-blur-sm bg-white/60 flex items-center justify-center z-10">
+                            <div className="text-center px-4">
+                              <p className="font-bold text-gray-900 text-sm mb-1">Complete Your Profile</p>
+                              <p className="text-xs text-gray-600">to find more connections</p>
+                            </div>
                           </div>
-                          <p className="text-xs text-gray-500">Click to view full profile</p>
+                          <div className="flex gap-3 md:gap-4 filter blur-sm">
+                            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gray-200 flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <div className="h-5 bg-gray-200 rounded w-3/4 mb-2" />
+                              <div className="h-4 bg-gray-200 rounded w-full mb-2" />
+                              <div className="h-3 bg-gray-200 rounded w-1/2" />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    // Real connection card
+                    return (
+                      <div
+                        key={index}
+                        onClick={() => {
+                          setActiveTab('connections');
+                          window.scrollTo({ top: 0, behavior: 'instant' });
+                        }}
+                        className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px] cursor-pointer hover:shadow-md hover:border-[#009900] transition-all"
+                      >
+                        <div className="flex gap-3 md:gap-4">
+                          {/* Profile placeholder with initials */}
+                          <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white flex items-center justify-center flex-shrink-0 border-4 border-black">
+                            <span className="text-[#009900] font-bold text-2xl md:text-3xl">
+                              {person.initials}
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-bold text-gray-900 text-base md:text-lg">{person.name}</h4>
+                            <p className="text-xs md:text-sm text-gray-600 mb-2">{person.title}</p>
+                            <div className="flex items-center gap-2 text-xs flex-wrap mb-2">
+                              <span className="font-medium whitespace-nowrap text-[#009900]">{person.similarity} compatible</span>
+                              {person.professionalInterests && person.professionalInterests.split(',').slice(0, 2).map((interest, idx) => (
+                                <span key={idx} className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded">
+                                  {interest.trim()}
+                                </span>
+                              ))}
+                            </div>
+                            <p className="text-xs text-gray-500">Click to view full profile</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* View All Connections Button */}
@@ -982,37 +1092,6 @@ default:
         </div>
       )}
 
-      {/* Scientist Modal - Shown when clicking Connect */}
-      {showScientistModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowScientistModal(false)}>
-          <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 md:p-8 max-w-xl w-full shadow-2xl border-4 border-[#D0ED00] relative" onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={() => setShowScientistModal(false)}
-              className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-3xl font-bold leading-none"
-            >
-              ×
-            </button>
-            <div className="flex items-center justify-center gap-6 mb-6">
-              <img
-                src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
-                alt="Scientist at work"
-                className="h-24 md:h-32 w-auto flex-shrink-0 rounded-lg object-cover shadow-lg"
-              />
-            </div>
-            <p className="text-green-800 font-medium text-base md:text-lg text-center mb-6">
-              Our scientists are hard at work finding connections for you. Look for an email from us during Beta testing!
-            </p>
-            <div className="flex justify-center">
-              <button
-                onClick={() => setShowScientistModal(false)}
-                className="px-6 md:px-8 py-2 md:py-3 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
-              >
-                Got it!
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Beta Feedback Form Modal */}
       {showFeedbackModal && (
