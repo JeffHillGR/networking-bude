@@ -560,34 +560,11 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
             <div className="mb-8">
               <label className="block font-medium text-gray-900 mb-3">Profile Picture</label>
               <div className="flex items-center gap-4">
-                <div className="w-20 h-20 bg-gradient-to-br from-green-600 to-green-700 rounded-full flex items-center justify-center text-2xl font-bold text-white overflow-hidden">
-                  {photoUrl ? (
-                    <img src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    (profile.fullName || 'User Name').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'UN'
-                  )}
+                <div className="w-20 h-20 bg-[#D0ED00] rounded-full flex items-center justify-center text-2xl font-bold text-white border-2 border-[#009900]">
+                  {(profile.fullName || 'User Name').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'UN'}
                 </div>
                 <div>
-                  <input
-                    type="file"
-                    id="photo-upload"
-                    accept="image/jpeg,image/jpg,image/png,image/webp"
-                    className="hidden"
-                    onChange={handlePhotoUpload}
-                    disabled={uploadingPhoto}
-                  />
-                  <label
-                    htmlFor="photo-upload"
-                    className={`flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg ${
-                      uploadingPhoto
-                        ? 'bg-gray-100 text-gray-400 cursor-wait'
-                        : 'bg-white text-gray-700 hover:bg-gray-50 cursor-pointer'
-                    } transition-colors`}
-                  >
-                    <Upload className="w-4 h-4" />
-                    {uploadingPhoto ? 'Uploading...' : photoUrl ? 'Change Photo' : 'Upload Photo'}
-                  </label>
-                  <p className="text-xs text-gray-500 mt-1">JPG, PNG or WebP. Max 5MB.</p>
+                  <p className="text-sm text-gray-600">Photo upload coming soon!</p>
                 </div>
               </div>
             </div>
