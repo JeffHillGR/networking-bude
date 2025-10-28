@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 
 export default function BudEOnboarding() {
   const navigate = useNavigate();
-  const { signUp, signIn, user } = useAuth();
+  const { signUp, signIn, resetPassword, user } = useAuth();
   const [step, setStep] = useState(0);
   const [justSignedUp, setJustSignedUp] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -13,6 +13,10 @@ export default function BudEOnboarding() {
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetSuccess, setResetSuccess] = useState(false);
+  const [resetError, setResetError] = useState('');
 
   // TODO: Re-enable after adding login functionality
   // Redirect already logged-in users to dashboard (but not during signup process)
@@ -161,6 +165,26 @@ export default function BudEOnboarding() {
       // Successfully logged in, navigate to dashboard
       navigate('/dashboard');
     }
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setResetError('');
+    setResetSuccess(false);
+
+    if (!resetEmail || !isValidEmail(resetEmail)) {
+      setResetError('Please enter a valid email address');
+      return;
+    }
+
+    const { error } = await resetPassword(resetEmail);
+
+    if (error) {
+      setResetError(error.message || 'Failed to send reset email');
+      return;
+    }
+
+    setResetSuccess(true);
   };
 
   const handleJobTitleChange = (value) => {
@@ -1037,12 +1061,92 @@ const renderStep2 = () => (
               <div className="text-center mt-4">
                 <button
                   type="button"
+                  onClick={() => {
+                    setShowLoginModal(false);
+                    setShowForgotPasswordModal(true);
+                    setResetEmail(loginEmail); // Pre-fill with login email if available
+                  }}
                   className="text-sm text-[#009900] hover:underline font-semibold"
                 >
                   Forgot Password?
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Forgot Password Modal */}
+      {showForgotPasswordModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full">
+            <h2 className="text-2xl font-bold text-center mb-4">Reset Password</h2>
+            <p className="text-gray-600 text-center mb-6">
+              Enter your email address and we'll send you a link to reset your password.
+            </p>
+
+            {!resetSuccess ? (
+              <form onSubmit={handleForgotPassword} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Email</label>
+                  <input
+                    type="email"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    className="w-full px-4 py-3 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="your@email.com"
+                    required
+                  />
+                </div>
+
+                {resetError && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <p className="text-sm text-red-600">{resetError}</p>
+                  </div>
+                )}
+
+                <div className="flex gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowForgotPasswordModal(false);
+                      setResetEmail('');
+                      setResetError('');
+                      setResetSuccess(false);
+                    }}
+                    className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-6 py-3 bg-[#009900] text-white rounded-lg font-semibold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
+                  >
+                    Send Reset Link
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="text-center">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                  <p className="text-sm text-green-700">
+                    ✓ Password reset email sent! Check your inbox for instructions.
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowForgotPasswordModal(false);
+                    setResetEmail('');
+                    setResetError('');
+                    setResetSuccess(false);
+                    setShowLoginModal(true); // Go back to login
+                  }}
+                  className="w-full px-6 py-3 bg-[#009900] text-white rounded-lg font-semibold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
+                >
+                  Back to Login
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
