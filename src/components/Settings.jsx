@@ -236,7 +236,7 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
     localStorage.setItem('settingsInterests', JSON.stringify(selectedInterests));
 
     // Also update the main user data used by other components
-    const names = profile.fullName.split(' ');
+    const names = (profile.fullName || '').split(' ');
     const firstName = names[0] || '';
     const lastName = names.slice(1).join(' ') || '';
 
@@ -564,7 +564,7 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
                   {photoUrl ? (
                     <img src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
-                    profile.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'UN'
+                    (profile.fullName || 'User Name').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'UN'
                   )}
                 </div>
                 <div>
