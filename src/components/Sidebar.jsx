@@ -9,7 +9,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
   const lastName = localStorage.getItem('userLastName') || 'Name';
   const jobTitle = localStorage.getItem('userJobTitle') || 'Job Title';
   const fullName = `${firstName} ${lastName}`;
-  // const { user } = useAuth();
+  const { user, signOut } = useAuth();
   // const [photoUrl, setPhotoUrl] = useState(null);
 
   // TODO: Re-enable photo fetch after fixing permissions
@@ -148,7 +148,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
         {/* Fixed user profile section at bottom */}
         <div className="border-t border-gray-200 p-4 flex-shrink-0">
           <div className="flex items-center gap-2 mb-3 p-2 bg-gray-100 rounded-lg">
-            <div className="w-8 h-8 bg-[#D0ED00] rounded-full flex items-center justify-center border-2 border-[#009900]">
+            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center border-2 border-black">
               <span className="text-[#009900] font-bold text-xs">
                 {firstName.charAt(0).toUpperCase()}{lastName.charAt(0).toUpperCase()}
               </span>
@@ -158,14 +158,23 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
               <p className="text-xs text-gray-600 truncate">{jobTitle}</p>
             </div>
           </div>
-          <div className="flex items-center justify-center gap-1.5 text-xs text-gray-900">
+          <div className="flex items-center justify-center gap-1.5 text-xs text-gray-900 mb-2">
            <button onClick={() => setActiveTab('terms')} className="hover:underline">Terms</button>
              <span>•</span>
            <button onClick={() => setActiveTab('privacy')} className="hover:underline">Privacy</button>
              <span>•</span>
            <button onClick={onContactUsClick} className="hover:underline">Contact Us</button>
           </div>
-          <p className="text-xs text-gray-900 mt-1 text-center">© 2025 The BudE System™</p>
+          <button
+            onClick={async () => {
+              await signOut();
+              window.location.href = '/';
+            }}
+            className="w-full py-2 text-xs text-gray-600 hover:text-[#009900] hover:bg-gray-50 rounded transition-colors mb-1"
+          >
+            Logout
+          </button>
+          <p className="text-xs text-gray-900 text-center">© 2025 The BudE System™</p>
         </div>
       </div>
     </aside>
