@@ -16,14 +16,23 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
   useEffect(() => {
     async function fetchPhotoUrl() {
       if (user?.id) {
-        const { data, error } = await supabase
-          .from('users')
-          .select('photo_url')
-          .eq('id', user.id)
-          .single();
+        try {
+          const { data, error } = await supabase
+            .from('users')
+            .select('photo_url')
+            .eq('id', user.id)
+            .single();
 
-        if (data?.photo_url) {
-          setPhotoUrl(data.photo_url);
+          if (error) {
+            console.log('Error fetching photo URL:', error);
+            return;
+          }
+
+          if (data?.photo_url) {
+            setPhotoUrl(data.photo_url);
+          }
+        } catch (err) {
+          console.error('Error in fetchPhotoUrl:', err);
         }
       }
     }
