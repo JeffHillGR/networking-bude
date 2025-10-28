@@ -9,12 +9,13 @@ export default function BudEOnboarding() {
   const [step, setStep] = useState(0);
   const [justSignedUp, setJustSignedUp] = useState(false);
 
+  // TODO: Re-enable after adding login functionality
   // Redirect already logged-in users to dashboard (but not during signup process)
-  React.useEffect(() => {
-    if (user && !justSignedUp && step === 0) {
-      navigate('/dashboard');
-    }
-  }, [user, justSignedUp, step, navigate]);
+  // React.useEffect(() => {
+  //   if (user && !justSignedUp && step === 0) {
+  //     navigate('/dashboard');
+  //   }
+  // }, [user, justSignedUp, step, navigate]);
 
   // Prevent scroll restoration on mobile
   React.useEffect(() => {
