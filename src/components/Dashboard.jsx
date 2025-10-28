@@ -40,10 +40,6 @@ const [contactData, setContactData] = useState({
   email: '',
   message: ''
 });
-const [showReturningUserBanner, setShowReturningUserBanner] = useState(() => {
-  // Only show if user has onboarding data and hasn't dismissed the banner
-  return localStorage.getItem('onboardingData') && !localStorage.getItem('hasSeenReturningUserBanner');
-});
 const [feedbackData, setFeedbackData] = useState({
   name: '',
   email: '',
@@ -143,8 +139,9 @@ const handleSubmitFeedback = async (e) => {
 };
 
 // Handle contact form submission
+// Removed returning user banner - data is now saved to Supabase
 const handleDismissReturningUserBanner = () => {
-  localStorage.setItem('hasSeenReturningUserBanner', 'true');
+  // Deprecated - keeping for backwards compatibility
   setShowReturningUserBanner(false);
 };
 
@@ -367,7 +364,7 @@ const getGreeting = () => {
   const navItems = [
     { id: 'dashboard', icon: Home, label: 'Dashboard' },
     { id: 'events', icon: Calendar, label: 'Events' },
-    { id: 'connections', icon: Heart, label: 'Connections' },
+    { id: 'connections', icon: Users, label: 'Connections' },
     { id: 'messages', icon: MessageCircle, label: 'Messages' },
     { id: 'settings', icon: User, label: 'Profile' }
   ];
@@ -397,35 +394,6 @@ const getGreeting = () => {
               <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
             </div>
 
-            {/* Returning User Banner */}
-            {showReturningUserBanner && (
-              <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg shadow-sm">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0">
-                      <svg className="w-5 h-5 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-sm font-semibold text-blue-900 mb-1">Welcome back!</h3>
-                      <p className="text-sm text-blue-800">
-                        Your profile data is stored locally on this device. To keep your information, please continue using the same device and browser.
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={handleDismissReturningUserBanner}
-                    className="flex-shrink-0 ml-3 text-blue-400 hover:text-blue-600 transition-colors"
-                    aria-label="Dismiss"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            )}
 
             {/* Events and Connections Side by Side */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -801,21 +769,20 @@ default:
         </main>
       </div>
 
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-2 py-2 z-20">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-1 py-2 z-20">
         <div className="flex items-center justify-around">
           {navItems.map((item) => (
             <button
-              key
-              ={item.id}
+              key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex flex-col items-center px-3 py-2 rounded-lg transition-colors ${
+              className={`flex flex-col items-center px-1 py-2 rounded-lg transition-colors min-w-0 ${
                 activeTab === item.id
                   ? 'text-blue-600 bg-blue-50'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              <item.icon className="h-5 w-5" />
-              <span className="text-xs mt-1">{item.label}</span>
+              <item.icon className="h-5 w-5 flex-shrink-0" />
+              <span className="text-[10px] mt-1 truncate max-w-full">{item.label}</span>
             </button>
           ))}
         </div>

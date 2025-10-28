@@ -123,7 +123,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
             professionalInterests: Array.isArray(matchedUser.professional_interests)
               ? matchedUser.professional_interests.join(', ')
               : matchedUser.professional_interests || '',
-            personalInterests: matchedUser.personal_interests || '',
+            personalInterests: (matchedUser.personal_interests || '').replace(/^{|}$/g, '').replace(/^"|"$/g, ''),
             networkingGoals: matchedUser.networking_goals || '',
             initials: initials,
             isOnline: false,
@@ -407,10 +407,10 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
         )}
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-8">
+        <div className="flex gap-2 mb-8">
           <button
             onClick={() => setActiveTab('recommended')}
-            className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors ${
+            className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-colors ${
               activeTab === 'recommended'
                 ? 'bg-[#009900] text-white shadow-sm border-2 border-[#D0ED00]'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -420,7 +420,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
           </button>
           <button
             onClick={() => setActiveTab('saved')}
-            className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors ${
+            className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-colors ${
               activeTab === 'saved'
                 ? 'bg-[#009900] text-white shadow-sm border-2 border-[#D0ED00]'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -430,7 +430,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
           </button>
           <button
             onClick={() => setActiveTab('pending')}
-            className={`flex-1 py-3 px-6 rounded-lg font-medium transition-colors ${
+            className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-colors ${
               activeTab === 'pending'
                 ? 'bg-[#009900] text-white shadow-sm border-2 border-[#D0ED00]'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -624,27 +624,27 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
                 </div>
 
                 {/* Action Buttons - Reading left to right: Connect is primary action */}
-                <div className="flex gap-3">
+                <div className="flex gap-2">
                   <button
                     onClick={handleConnect}
-                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#009900] border-2 border-[#D0ED00] text-white rounded-lg hover:bg-[#007700] transition-colors font-medium"
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-3 bg-[#009900] border-2 border-[#D0ED00] text-white rounded-lg hover:bg-[#007700] transition-colors font-medium text-sm"
                   >
-                    <User className="w-5 h-5" />
-                    Connect
+                    <User className="w-4 h-4" />
+                    <span className="hidden sm:inline">Connect</span>
                   </button>
                   <button
                     onClick={handlePerhaps}
-                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border-2 border-[#D0ED00] bg-[#D0ED00] text-black rounded-lg hover:bg-[#bfd400] transition-colors font-medium"
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-3 border-2 border-[#D0ED00] bg-[#D0ED00] text-black rounded-lg hover:bg-[#bfd400] transition-colors font-medium text-sm"
                   >
-                    <Clock className="w-5 h-5" />
-                    Perhaps
+                    <Clock className="w-4 h-4" />
+                    <span className="hidden sm:inline">Perhaps</span>
                   </button>
                   <button
                     onClick={handleNoThanks}
-                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border-2 border-[#009900] text-[#009900] rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-3 border-2 border-[#009900] text-[#009900] rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm"
                   >
-                    <X className="w-5 h-5" />
-                    No Thanks
+                    <X className="w-4 h-4" />
+                    <span className="hidden sm:inline">No Thanks</span>
                   </button>
                 </div>
               </div>
