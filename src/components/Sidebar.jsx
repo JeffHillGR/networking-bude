@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Home, Calendar, Heart, MessageCircle, User, CreditCard, Archive, Activity } from 'lucide-react';
+import { Home, Calendar, Users, MessageCircle, User, CreditCard, Archive, Activity } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { supabase } from '../lib/supabase.js';
 
@@ -45,7 +45,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
   const navItems = [
     { id: 'dashboard', icon: Home, label: 'Dashboard' },
     { id: 'events', icon: Calendar, label: 'Events' },
-    { id: 'connections', icon: Heart, label: 'Connections' },
+    { id: 'connections', icon: Users, label: 'Connections' },
     { id: 'messages', icon: MessageCircle, label: 'Messages' },
     { id: 'settings', icon: User, label: 'Profile' }
   ];
