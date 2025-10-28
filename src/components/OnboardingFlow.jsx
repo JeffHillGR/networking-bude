@@ -455,16 +455,18 @@ export default function BudEOnboarding() {
         </div>
 
         {/* Login Link */}
-        <div className="text-center mt-4">
-          <p className="text-sm text-gray-600">
-            Already have an account?{' '}
+        <div className="text-center mt-6">
+          <div className="inline-block bg-white border-2 border-[#009900] rounded-lg px-6 py-4 shadow-md">
+            <p className="text-base text-gray-900 mb-2 font-medium">
+              Already have an account?
+            </p>
             <button
               onClick={() => setShowLoginModal(true)}
-              className="text-[#009900] font-semibold hover:underline"
+              className="w-full px-6 py-3 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00] text-lg"
             >
-              Login here
+              Login Here
             </button>
-          </p>
+          </div>
         </div>
 
         {/* Mobile Branding - Only visible on mobile */}
