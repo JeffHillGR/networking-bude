@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { User, Shield, Bell, Lock, Upload, X, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -329,9 +331,11 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
       // Generate a unique filename
       const fileName = `profile.jpg`; // Always save as JPG after compression
 
-      // For now, use email as user ID (will use real auth user ID later)
-      const userId = profile.email.replace(/[^a-zA-Z0-9]/g, '_');
-      const filePath = `${userId}/${fileName}`;
+      // Use authenticated user ID for file path
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
+      const filePath = `${user.id}/${fileName}`;
 
       // Upload compressed image to Supabase Storage
       const { data: uploadData, error: uploadError } = await supabase.storage
@@ -347,6 +351,17 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
       const { data: { publicUrl } } = supabase.storage
         .from('profile-photos')
         .getPublicUrl(filePath);
+
+      // Update user's photo_url in the database
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ photo_url: publicUrl })
+        .eq('id', user.id);
+
+      if (updateError) {
+        console.error('Error updating photo_url in database:', updateError);
+        throw updateError;
+      }
 
       setPhotoUrl(publicUrl);
 
