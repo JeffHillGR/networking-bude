@@ -560,11 +560,11 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
             <div className="mb-8">
               <label className="block font-medium text-gray-900 mb-3">Profile Picture</label>
               <div className="flex items-center gap-4">
-                <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-2xl font-bold text-gray-600 overflow-hidden">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-600 to-green-700 rounded-full flex items-center justify-center text-2xl font-bold text-white overflow-hidden">
                   {photoUrl ? (
                     <img src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
-                    profile.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U'
+                    profile.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'UN'
                   )}
                 </div>
                 <div>

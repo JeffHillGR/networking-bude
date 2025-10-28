@@ -148,8 +148,10 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
         {/* Fixed user profile section at bottom */}
         <div className="border-t border-gray-200 p-4 flex-shrink-0">
           <div className="flex items-center gap-2 mb-3 p-2 bg-gray-100 rounded-lg">
-            <div className="w-8 h-8 bg-gray-900 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-green-700 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-xs">
+                {firstName.charAt(0).toUpperCase()}{lastName.charAt(0).toUpperCase()}
+              </span>
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-gray-900 truncate text-sm">{fullName}</p>
