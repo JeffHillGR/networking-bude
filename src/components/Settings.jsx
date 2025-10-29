@@ -511,7 +511,7 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
     }
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     // Validate passwords match
     if (security.newPassword !== security.confirmPassword) {
       alert('New passwords do not match');
@@ -521,9 +521,21 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
       alert('Password must be at least 8 characters');
       return;
     }
-    // In a real app, this would call a backend API
-    showSuccess('Password changed successfully!');
-    setSecurity({ currentPassword: '', newPassword: '', confirmPassword: '' });
+
+    try {
+      // Update password in Supabase
+      const { error } = await supabase.auth.updateUser({
+        password: security.newPassword
+      });
+
+      if (error) throw error;
+
+      showSuccess('Password changed successfully!');
+      setSecurity({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (error) {
+      console.error('Error changing password:', error);
+      alert('Failed to change password. Please try again.');
+    }
   };
 
   const handleSaveNotifications = async () => {
