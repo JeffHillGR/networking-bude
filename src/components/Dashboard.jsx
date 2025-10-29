@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Calendar, Heart, MessageCircle, User, ChevronLeft, ChevronRight, Users, ExternalLink } from 'lucide-react';
+import { Home, Calendar, Heart, MessageCircle, User, ChevronLeft, ChevronRight, Users, ExternalLink, Menu, X as XIcon } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
 import Events from './Events';
 import Connections from './Connections';
@@ -36,6 +36,7 @@ const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 const [showContactModal, setShowContactModal] = useState(false);
 const [contactSubmitted, setContactSubmitted] = useState(false);
 const [isSubmittingContact, setIsSubmittingContact] = useState(false);
+const [showMobileMenu, setShowMobileMenu] = useState(false);
 const [contactData, setContactData] = useState({
   name: '',
   email: '',
@@ -752,7 +753,13 @@ default:
           {/* Mobile Header */}
           <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
             <div className="flex items-center justify-between">
-              <div className="w-10"></div> {/* Spacer for centering */}
+              <button
+                onClick={() => setShowMobileMenu(true)}
+                className="p-2 text-gray-600 hover:text-gray-900"
+                aria-label="Menu"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
               <img
                 src="/BudE-Logo-Final.png"
                 alt="BudE Logo"
@@ -762,15 +769,13 @@ default:
             </div>
           </div>
 
-          {/* Desktop Header */}
-          <div className="hidden md:block bg-white border-b border-gray-200 sticky top-0 z-10">
-            <div className="max-w-6xl mx-auto px-8 py-4 flex items-center justify-between">
-              <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
-              <NotificationBell />
-            </div>
-          </div>
-
           <div className="p-4 md:p-8 max-w-6xl mx-auto w-full">
+            {/* Desktop greeting header - only show on desktop dashboard */}
+            {activeTab === 'dashboard' && (
+              <div className="hidden md:block mb-6">
+                <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
+              </div>
+            )}
             {renderContent()}
           </div>
         </main>
@@ -1312,6 +1317,58 @@ default:
                 </form>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Menu Modal */}
+      {showMobileMenu && (
+        <div className="fixed inset-0 bg-black/50 z-50 md:hidden" onClick={() => setShowMobileMenu(false)}>
+          <div
+            className="fixed right-0 top-0 bottom-0 w-64 bg-white shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="font-bold text-gray-900">Menu</h3>
+              <button
+                onClick={() => setShowMobileMenu(false)}
+                className="p-2 text-gray-600 hover:text-gray-900"
+              >
+                <XIcon className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-4 space-y-2">
+              <button
+                onClick={() => {
+                  setActiveTab('terms');
+                  setShowMobileMenu(false);
+                }}
+                className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Terms of Service
+              </button>
+              <button
+                onClick={() => {
+                  setActiveTab('privacy');
+                  setShowMobileMenu(false);
+                }}
+                className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Privacy Policy
+              </button>
+              <button
+                onClick={() => {
+                  setShowContactModal(true);
+                  setShowMobileMenu(false);
+                }}
+                className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Contact Us
+              </button>
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
+              <p className="text-xs text-gray-500 text-center">© 2025 The BudE System™</p>
+            </div>
           </div>
         </div>
       )}
