@@ -172,10 +172,11 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
           .from('notification_preferences')
           .select('*')
           .eq('user_id', userData.id)
-          .single();
+          .maybeSingle(); // Use maybeSingle() instead of single() to handle no rows gracefully
 
-        if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
-          throw error;
+        if (error) {
+          console.log('No notification preferences found yet - will use defaults');
+          return; // Silently use defaults
         }
 
         if (prefs) {
@@ -188,9 +189,10 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
             weeklyDigest: prefs.weekly_digest
           });
         }
-        // If no prefs found, defaults from trigger will be created on first save
+        // If no prefs found, defaults from state will be used until first save
       } catch (error) {
-        console.error('Error loading notification preferences:', error);
+        // Silently fail - user will get defaults
+        console.log('Using default notification preferences');
       }
     }
 
