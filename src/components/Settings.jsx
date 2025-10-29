@@ -220,13 +220,13 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
     confirmPassword: ''
   });
 
-  // Notifications state
+  // Notifications state - Default: ALL OFF (connection requests always show in bell regardless)
   const [notifications, setNotifications] = useState({
-    emailNotifications: true,
-    pushNotifications: true,
-    newMessages: true,
-    newMatches: true,
-    eventReminders: true,
+    emailNotifications: false,
+    pushNotifications: false,
+    newMessages: false,
+    newMatches: false,  // User can opt-in to get emails when algorithm finds new matches
+    eventReminders: false,
     weeklyDigest: false
   });
 

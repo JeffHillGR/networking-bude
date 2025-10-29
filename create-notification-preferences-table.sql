@@ -2,10 +2,10 @@
 CREATE TABLE IF NOT EXISTS public.notification_preferences (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE UNIQUE,
-  email_notifications BOOLEAN DEFAULT TRUE,
+  email_notifications BOOLEAN DEFAULT FALSE,
   push_notifications BOOLEAN DEFAULT FALSE,
   new_messages BOOLEAN DEFAULT FALSE, -- Not used yet, but ready for future
-  new_matches BOOLEAN DEFAULT TRUE,
+  new_matches BOOLEAN DEFAULT FALSE,  -- All OFF by default - user opts in
   event_reminders BOOLEAN DEFAULT FALSE,
   weekly_digest BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -37,11 +37,12 @@ CREATE POLICY "Users can insert their own notification preferences"
   WITH CHECK (auth.uid() = user_id);
 
 -- Function to create default notification preferences when a new user signs up
+-- Default: ALL OFF - Connection requests ALWAYS show in bell regardless of settings
 CREATE OR REPLACE FUNCTION create_default_notification_preferences()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.notification_preferences (user_id, email_notifications, new_matches)
-  VALUES (NEW.id, TRUE, TRUE)
+  INSERT INTO public.notification_preferences (user_id)
+  VALUES (NEW.id)
   ON CONFLICT (user_id) DO NOTHING;
   RETURN NEW;
 END;
@@ -54,4 +55,4 @@ CREATE TRIGGER trigger_create_notification_preferences
   FOR EACH ROW
   EXECUTE FUNCTION create_default_notification_preferences();
 
-COMMENT ON TABLE public.notification_preferences IS 'Stores user notification preferences with defaults: email_notifications=true, new_matches=true, rest=false';
+COMMENT ON TABLE public.notification_preferences IS 'Stores user notification preferences - ALL default to FALSE. Connection request notifications ALWAYS show in bell regardless of settings to avoid notification fatigue.';
