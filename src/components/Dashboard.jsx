@@ -420,9 +420,10 @@ const getGreeting = () => {
               </div>
             </div>
 
-            {/* Desktop greeting - show below hero banner on desktop only */}
-            <div className="hidden md:block">
+            {/* Desktop greeting with notification bell - show below hero banner on desktop only */}
+            <div className="hidden md:flex items-center justify-between">
               <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
+              <NotificationBell />
             </div>
 
             {/* Events and Connections Side by Side */}
