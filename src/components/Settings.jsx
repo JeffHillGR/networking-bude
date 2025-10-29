@@ -154,6 +154,68 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
     }
   }, []);
 
+  // Load profile from Supabase if localStorage is empty
+  useEffect(() => {
+    async function loadProfileFromSupabase() {
+      if (!user) return;
+
+      // Check if we already have profile data from localStorage
+      if (profile.fullName !== 'User Name' && profile.email !== 'user@example.com') {
+        return; // Already have data, don't overwrite
+      }
+
+      try {
+        const { data: userData, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('email', user.email)
+          .single();
+
+        if (error) {
+          console.error('Error loading profile from Supabase:', error);
+          return;
+        }
+
+        if (userData) {
+          console.log('✅ Loaded profile from Supabase:', userData);
+          setProfile({
+            fullName: userData.name || `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || 'User Name',
+            email: userData.email || 'user@example.com',
+            jobTitle: userData.title || 'Job Title',
+            company: userData.company || 'Company',
+            location: userData.zip_code ? `Zip Code: ${userData.zip_code}` : 'Location',
+            website: userData.website || '',
+            phone: userData.phone || '',
+            bio: userData.networking_goals || '',
+            industry: userData.industry || '',
+            sameIndustry: userData.same_industry_preference || '',
+            gender: userData.gender || '',
+            genderPreference: userData.gender_preference || '',
+            dob: userData.year_born ? String(userData.year_born) : '',
+            dobPreference: userData.year_born_connect || '',
+            zipCode: userData.zip_code || '',
+            organizations: userData.organizations_current || [],
+            organizationsOther: userData.organizations_other || '',
+            organizationsToCheckOut: userData.organizations_interested || [],
+            organizationsToCheckOutOther: userData.organizations_to_check_out_other || '',
+            personalInterests: Array.isArray(userData.personal_interests)
+              ? userData.personal_interests.join(', ')
+              : (userData.personal_interests || ''),
+            networkingGoals: userData.networking_goals || ''
+          });
+
+          if (userData.professional_interests && Array.isArray(userData.professional_interests)) {
+            setSelectedInterests(userData.professional_interests);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    }
+
+    loadProfileFromSupabase();
+  }, [user]);
+
   const availableInterests = [
     'Technology', 'Marketing', 'Finance', 'Design', 'Sales', 'HR',
     'Product Management', 'Data Science', 'Engineering', 'Consulting',
