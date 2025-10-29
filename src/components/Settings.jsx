@@ -178,7 +178,8 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
 
         if (userData) {
           console.log('✅ Loaded profile from Supabase:', userData);
-          setProfile({
+
+          const loadedProfile = {
             fullName: userData.name || `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || 'User Name',
             email: userData.email || 'user@example.com',
             jobTitle: userData.title || 'Job Title',
@@ -202,10 +203,23 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
               ? userData.personal_interests.join(', ')
               : (userData.personal_interests || ''),
             networkingGoals: userData.networking_goals || ''
-          });
+          };
+
+          setProfile(loadedProfile);
+
+          // Also save to localStorage so other components can access it
+          const firstName = userData.first_name || '';
+          const lastName = userData.last_name || '';
+          localStorage.setItem('userFirstName', firstName);
+          localStorage.setItem('userLastName', lastName);
+          localStorage.setItem('userEmail', userData.email || '');
+          localStorage.setItem('userJobTitle', userData.title || '');
+          localStorage.setItem('userCompany', userData.company || '');
+          localStorage.setItem('settingsProfile', JSON.stringify(loadedProfile));
 
           if (userData.professional_interests && Array.isArray(userData.professional_interests)) {
             setSelectedInterests(userData.professional_interests);
+            localStorage.setItem('settingsInterests', JSON.stringify(userData.professional_interests));
           }
         }
       } catch (error) {

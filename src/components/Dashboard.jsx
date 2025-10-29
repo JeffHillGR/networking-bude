@@ -23,6 +23,7 @@ function Dashboard() {
   const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'dashboard');
   const [connections, setConnections] = useState([]);
   const [loadingConnections, setLoadingConnections] = useState(true);
+  const [userFirstName, setUserFirstName] = useState('there');
 const [selectedPlan, setSelectedPlan] = useState(null);
 const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
 const [showSponsorModal, setShowSponsorModal] = useState(false);
@@ -224,13 +225,40 @@ useEffect(() => {
   window.scrollTo(0, 0);
 }, []);
 
-// Get user's first name and time-based greeting
-const userFirstName = localStorage.getItem('userFirstName') || 'there';
+// Load user's first name from Supabase
+useEffect(() => {
+  async function loadUserName() {
+    if (!user) return;
+
+    try {
+      const { data: userData, error } = await supabase
+        .from('users')
+        .select('first_name')
+        .eq('email', user.email)
+        .single();
+
+      if (error) {
+        console.error('Error loading user name:', error);
+        return;
+      }
+
+      if (userData && userData.first_name) {
+        setUserFirstName(userData.first_name);
+      }
+    } catch (error) {
+      console.error('Error loading user name:', error);
+    }
+  }
+
+  loadUserName();
+}, [user]);
+
+// Get time-based greeting
 const getGreeting = () => {
   const hour = new Date().getHours();
-  if (hour < 12) return 'Good morning';
-  if (hour < 18) return 'Good afternoon';
-  return 'Good evening';
+  if (hour < 12) return 'Good Morning';
+  if (hour < 18) return 'Good Afternoon';
+  return 'Good Evening';
 };
 
   // Load admin-created featured content from localStorage
@@ -374,7 +402,7 @@ const getGreeting = () => {
   const renderContent = () => {
 
   console.log('Current activeTab:', activeTab);
-  
+
     switch(activeTab) {
       case 'dashboard':
         return (
@@ -390,6 +418,11 @@ const getGreeting = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-4 text-white">
                 <h2 className="text-xl md:text-2xl font-bold tracking-tight">Discover. Connect. Grow.</h2>
               </div>
+            </div>
+
+            {/* Desktop greeting - show below hero banner on desktop only */}
+            <div className="hidden md:block">
+              <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
             </div>
 
             {/* Events and Connections Side by Side */}
@@ -770,12 +803,6 @@ default:
           </div>
 
           <div className="p-4 md:p-8 max-w-6xl mx-auto w-full">
-            {/* Desktop greeting header - only show on desktop dashboard */}
-            {activeTab === 'dashboard' && (
-              <div className="hidden md:block mb-6">
-                <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
-              </div>
-            )}
             {renderContent()}
           </div>
         </main>
