@@ -528,7 +528,7 @@ const getGreeting = () => {
                               <p className="text-xs text-gray-600">to find more connections</p>
                             </div>
                           </div>
-                          <div className="flex gap-3 md:gap-4 filter blur-sm">
+                          <div className="flex gap-3 md:gap-4 filter blur-[3px]">
                             <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gray-200 flex-shrink-0" />
                             <div className="flex-1 min-w-0">
                               <div className="h-5 bg-gray-200 rounded w-3/4 mb-2" />

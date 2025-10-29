@@ -6,6 +6,7 @@ import AdminPanel from './components/AdminPanel.jsx';
 import Events from './components/Events.jsx';
 import EventDetail from './components/EventDetail.jsx';
 import Settings from './components/Settings.jsx';
+import ResetPassword from './components/ResetPassword.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
       <ScrollToTop />
       <Routes>
         <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route
           path="/"
           element={<OnboardingFlow />}
