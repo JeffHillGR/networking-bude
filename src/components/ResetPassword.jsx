@@ -14,17 +14,22 @@ function ResetPassword() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check for recovery token in URL on mount
+  // Check for recovery token in URL on mount - don't show error, just check if present
   useEffect(() => {
+    // Check both hash params and query params
     const hashParams = new URLSearchParams(location.hash.substring(1));
-    const accessToken = hashParams.get('access_token');
-    const type = hashParams.get('type');
+    const queryParams = new URLSearchParams(location.search);
 
-    if (type === 'recovery' && accessToken) {
+    const token = hashParams.get('access_token') || queryParams.get('token');
+    const type = hashParams.get('type') || queryParams.get('type');
+
+    if (type === 'recovery' && token) {
       // Token is valid, user can reset password
-      console.log('Recovery token found');
+      console.log('Recovery token found:', token);
+      // Allow password reset - don't show error
     } else {
-      setError('Invalid or expired reset link. Please request a new password reset.');
+      // Still allow them to try, maybe they navigated directly
+      console.log('No token in URL, but allowing password reset attempt');
     }
   }, [location]);
 
