@@ -154,6 +154,49 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
     }
   }, []);
 
+  // Load notification preferences from Supabase
+  useEffect(() => {
+    async function loadNotificationPreferences() {
+      if (!user) return;
+
+      try {
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', user.email)
+          .single();
+
+        if (userError) throw userError;
+
+        const { data: prefs, error } = await supabase
+          .from('notification_preferences')
+          .select('*')
+          .eq('user_id', userData.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+          throw error;
+        }
+
+        if (prefs) {
+          setNotifications({
+            emailNotifications: prefs.email_notifications,
+            pushNotifications: prefs.push_notifications,
+            newMessages: prefs.new_messages,
+            newMatches: prefs.new_matches,
+            eventReminders: prefs.event_reminders,
+            weeklyDigest: prefs.weekly_digest
+          });
+        }
+        // If no prefs found, defaults from trigger will be created on first save
+      } catch (error) {
+        console.error('Error loading notification preferences:', error);
+      }
+    }
+
+    loadNotificationPreferences();
+  }, [user]);
+
   const availableInterests = [
     'Technology', 'Marketing', 'Finance', 'Design', 'Sales', 'HR',
     'Product Management', 'Data Science', 'Engineering', 'Consulting',
@@ -450,9 +493,40 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
     setSecurity({ currentPassword: '', newPassword: '', confirmPassword: '' });
   };
 
-  const handleSaveNotifications = () => {
-    // In a real app, this would save to a backend
-    showSuccess('Notification preferences saved!');
+  const handleSaveNotifications = async () => {
+    try {
+      // Get current user ID
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', user.email)
+        .single();
+
+      if (userError) throw userError;
+
+      // Save notification preferences to Supabase
+      const { error } = await supabase
+        .from('notification_preferences')
+        .upsert({
+          user_id: userData.id,
+          email_notifications: notifications.emailNotifications,
+          push_notifications: notifications.pushNotifications,
+          new_messages: notifications.newMessages,
+          new_matches: notifications.newMatches,
+          event_reminders: notifications.eventReminders,
+          weekly_digest: notifications.weeklyDigest,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (error) throw error;
+
+      showSuccess('Notification preferences saved!');
+    } catch (error) {
+      console.error('Error saving notification preferences:', error);
+      showError('Failed to save notification preferences. Please try again.');
+    }
   };
 
   const handleSavePrivacy = () => {
@@ -1016,23 +1090,6 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
               <h2 className="text-xl font-bold text-gray-900">Notification Preferences</h2>
             </div>
             <p className="text-gray-600 mb-6">Choose what notifications you want to receive</p>
-
-            {/* Beta Overlay */}
-            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-lg flex items-center justify-center z-10">
-              <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 max-w-md mx-4 text-center shadow-2xl border-4 border-[#D0ED00]">
-                <img
-                  src="/BudE-favicon.png"
-                  alt="BudE"
-                  className="h-16 w-16 mx-auto mb-4 object-contain"
-                />
-                <p className="text-green-800 font-bold text-xl mb-2">
-                  Beta Version
-                </p>
-                <p className="text-green-700 font-medium text-base">
-                  Notification settings coming soon!
-                </p>
-              </div>
-            </div>
 
             <div className="space-y-1">
               <ToggleSetting
