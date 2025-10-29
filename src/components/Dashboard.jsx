@@ -488,13 +488,31 @@ const getGreeting = () => {
                   <p className="text-sm text-gray-600">People you might want to connect with first</p>
                 </div>
                 <div className="space-y-4 flex-grow">
-                  {/* Show real connections + placeholders to fill 3 spots */}
-                  {[0, 1, 2].map((index) => {
-                    const person = connections[index];
-                    const isPlaceholder = !person;
+                  {/* Show loading state, then real connections, then placeholders */}
+                  {loadingConnections ? (
+                    // Loading skeleton
+                    [0, 1, 2].map((index) => (
+                      <div
+                        key={`loading-${index}`}
+                        className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px] animate-pulse"
+                      >
+                        <div className="flex gap-3 md:gap-4">
+                          <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gray-200 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <div className="h-5 bg-gray-200 rounded w-3/4 mb-2" />
+                            <div className="h-4 bg-gray-200 rounded w-full mb-2" />
+                            <div className="h-3 bg-gray-200 rounded w-1/2" />
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    [0, 1, 2].map((index) => {
+                      const person = connections[index];
+                      const isPlaceholder = !person;
 
-                    if (isPlaceholder) {
-                      // Blurred placeholder card
+                      if (isPlaceholder) {
+                        // Blurred placeholder card
                       return (
                         <div
                           key={`placeholder-${index}`}
@@ -555,7 +573,8 @@ const getGreeting = () => {
                         </div>
                       </div>
                     );
-                  })}
+                    })
+                  )}
                 </div>
 
                 {/* View All Connections Button */}
