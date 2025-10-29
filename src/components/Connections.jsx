@@ -242,6 +242,28 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
         console.error('Failed to send email, but connection status updated');
       }
 
+      // Create in-app notification for the recipient
+      try {
+        const senderName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Someone';
+
+        const { error: notificationError } = await supabase
+          .from('notifications')
+          .insert({
+            user_id: person.id,
+            type: 'connection_request',
+            title: 'New Connection Request',
+            message: `${senderName} wants to connect with you`,
+            related_user_id: currentUserId,
+            is_read: false
+          });
+
+        if (notificationError) {
+          console.error('Failed to create notification:', notificationError);
+        }
+      } catch (notifError) {
+        console.error('Error creating notification:', notifError);
+      }
+
       // Check if connection became mutual
       if (connectionResult === 'connected') {
         // Mutual connection! Add to saved connections

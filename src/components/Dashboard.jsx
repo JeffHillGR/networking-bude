@@ -12,6 +12,7 @@ import TermsPage from './TermsPage';
 import PrivacyPage from './PrivacyPage';
 import ArchivePage from './ArchivePage';
 import FeedbackWidget from './FeedbackWidget';
+import NotificationBell from './NotificationBell.jsx';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -390,11 +391,6 @@ const getGreeting = () => {
               </div>
             </div>
 
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
-            </div>
-
-
             {/* Events and Connections Side by Side */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Upcoming Events - Left Side */}
@@ -753,13 +749,24 @@ default:
     <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onContactUsClick={() => setShowContactModal(true)} />
 
           <main className="flex-1 w-full overflow-x-hidden">
+          {/* Mobile Header */}
           <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-between">
+              <div className="w-10"></div> {/* Spacer for centering */}
               <img
                 src="/BudE-Logo-Final.png"
                 alt="BudE Logo"
                 className="h-16 w-auto"
               />
+              <NotificationBell />
+            </div>
+          </div>
+
+          {/* Desktop Header */}
+          <div className="hidden md:block bg-white border-b border-gray-200 sticky top-0 z-10">
+            <div className="max-w-6xl mx-auto px-8 py-4 flex items-center justify-between">
+              <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
+              <NotificationBell />
             </div>
           </div>
 

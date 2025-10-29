@@ -243,7 +243,20 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
       const lastName = names.slice(1).join(' ') || '';
 
       // Update Supabase database
-      if (user?.id) {
+      if (user?.email) {
+        // First, get the user's database ID from their email
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', user.email)
+          .single();
+
+        if (userError) {
+          console.error('Error finding user:', userError);
+          throw new Error('Could not find your user profile');
+        }
+
+        // Now update with the correct database user ID
         const { error } = await supabase
           .from('users')
           .update({
@@ -268,7 +281,7 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
             year_born: profile.dob ? new Date(profile.dob).getFullYear() : null,
             year_born_connect: profile.dobPreference || ''
           })
-          .eq('id', user.id);
+          .eq('id', userData.id);
 
         if (error) {
           console.error('Error updating Supabase:', error);
@@ -605,9 +618,9 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
               <label className="block font-medium text-gray-900 mb-3">Profile Picture</label>
               <div className="flex items-center gap-4">
                 {photoUrl ? (
-                  <img src={photoUrl} alt="Profile" className="w-20 h-20 rounded-full object-cover border-4 border-[#009900]" />
+                  <img src={photoUrl} alt="Profile" className="w-20 h-20 rounded-full object-cover border-4 border-black" />
                 ) : (
-                  <div className="w-20 h-20 bg-[#D0ED00] rounded-full flex items-center justify-center text-2xl font-bold text-[#009900] border-4 border-[#009900]">
+                  <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-2xl font-bold text-[#009900] border-4 border-black">
                     {(profile.fullName || 'User Name').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'UN'}
                   </div>
                 )}
