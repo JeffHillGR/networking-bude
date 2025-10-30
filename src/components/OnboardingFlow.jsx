@@ -848,7 +848,7 @@ const renderStep2 = () => (
           </div>
 
           <div>
-            <h2 className="text-xl font-bold mb-1.5">Personal Interests</h2>
+            <h2 className="text-xl font-bold mb-1.5">Personal Interests <span className="text-red-500">*</span></h2>
             <p className="text-gray-600 mb-2 text-sm">
               What keeps you busy in your spare time? This helps create more meaningful connections beyond just professional interests.
             </p>
@@ -858,6 +858,7 @@ const renderStep2 = () => (
               value={formData.personalInterests}
               onChange={(e) => handleChange('personalInterests', e.target.value)}
               maxLength={500}
+              required
             />
             <p className="text-sm text-gray-500 mt-2">{formData.personalInterests.length}/500 characters</p>
           </div>
@@ -866,7 +867,7 @@ const renderStep2 = () => (
             <h2 className="text-xl font-bold mb-2">Networking Goals <span className="text-red-500">*</span></h2>
             <textarea
               className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-24 text-sm"
-              placeholder="What are you looking for?"
+              placeholder="• What frustrates you most about traditional networking?&#10;• In a perfect world what would networking look like to you?&#10;• The more descriptive the better."
               value={formData.networkingGoals}
               onChange={(e) => handleChange('networkingGoals', e.target.value)}
               maxLength={500}
@@ -885,7 +886,9 @@ const renderStep2 = () => (
           </button>
           <button
             onClick={() => {
-              if (!formData.networkingGoals || formData.networkingGoals.trim() === '') {
+              if (!formData.personalInterests || formData.personalInterests.trim() === '') {
+                alert('Please fill in your Personal Interests before submitting');
+              } else if (!formData.networkingGoals || formData.networkingGoals.trim() === '') {
                 alert('Please fill in your Networking Goals before submitting');
               } else {
                 handleFinalSubmit();
