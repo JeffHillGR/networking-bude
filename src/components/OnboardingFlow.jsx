@@ -300,8 +300,8 @@ export default function BudEOnboarding() {
         <div className="flex flex-col items-center">
           <div className="w-[500px] h-[620px] rounded-3xl overflow-hidden shadow-2xl relative">
             <img
-              src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/My-phone-2.jpg"
-              alt="BudE app on phone"
+              src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Large_crowd_networking_2.jpg"
+              alt="Networking crowd"
               className="w-full h-full object-cover"
             />
           </div>
@@ -320,7 +320,7 @@ export default function BudEOnboarding() {
           Traditional networking not working<br />for you? Let us help.
         </h1>
 
-        <h3 className="text-sm md:text-base font-semibold text-center mb-2">Let's set up your profile.</h3>
+        <h3 className="text-sm md:text-base font-semibold text-center mb-2">Let's set up your profile and find some meaningful connections.</h3>
 
         <div className="w-full h-2 bg-gray-200 rounded-full mb-3">
           <div className="w-1/3 h-full bg-black rounded-full"></div>
@@ -471,9 +471,9 @@ export default function BudEOnboarding() {
               alt="BudE app on phone"
               className="w-full h-full object-cover"
             />
-            {/* Single inset image at bottom right inside phone */}
-            <div className="absolute right-6 bottom-6">
-              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+            {/* Single inset image at top right inside phone */}
+            <div className="absolute right-6 top-6">
+              <div className="w-60 h-60 rounded-xl overflow-hidden shadow-lg border-3 border-white">
                <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-1.png" alt="Networking" className="w-full h-full object-cover" />
               </div>
             </div>
@@ -769,9 +769,9 @@ const renderStep2 = () => (
               alt="BudE app on phone"
               className="w-full h-full object-cover"
             />
-            {/* Single inset image at bottom right inside phone */}
-            <div className="absolute right-6 bottom-6">
-              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
+            {/* Single inset image at top right inside phone */}
+            <div className="absolute right-6 top-6">
+              <div className="w-60 h-60 rounded-xl overflow-hidden shadow-lg border-3 border-white">
                <img src="/People-networking-2.png" alt="Networking" className="w-full h-full object-cover" />
               </div>
             </div>
