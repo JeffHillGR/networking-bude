@@ -335,45 +335,30 @@ export default function BudEOnboarding() {
           Welcome to<br />Networking BudE
         </h1>
 
-        <h3 className="text-sm md:text-base font-semibold text-center mb-3">Ready to jump in? Let's set up your profile.</h3>
+        <h3 className="text-sm md:text-base font-semibold text-center mb-2">Ready to jump in? Let's set up your profile.</h3>
 
-        {/* Login Link */}
-        <div className="text-center mb-4">
-          <div className="inline-block bg-white border-2 border-[#009900] rounded-lg px-6 py-3 shadow-md">
-            <p className="text-sm text-gray-900 mb-2 font-medium">
-              Already have an account?
-            </p>
-            <button
-              onClick={() => setShowLoginModal(true)}
-              className="w-full px-6 py-2.5 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00] text-base"
-            >
-              Login Here
-            </button>
-          </div>
-        </div>
-
-        <div className="w-full h-2 bg-gray-200 rounded-full mb-4">
+        <div className="w-full h-2 bg-gray-200 rounded-full mb-3">
           <div className="w-1/3 h-full bg-black rounded-full"></div>
         </div>
 
-        <div className="space-y-2">
-          <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-sm font-semibold mb-1">First Name <span className="text-red-500">*</span></label>
+              <label className="block text-xs font-semibold mb-0.5">First Name <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 required
-                className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-base"
+                className="w-full px-2.5 py-1.5 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                 value={formData.firstName}
                 onChange={(e) => handleChange('firstName', e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-1">Last Name <span className="text-red-500">*</span></label>
+              <label className="block text-xs font-semibold mb-0.5">Last Name <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 required
-                className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-base"
+                className="w-full px-2.5 py-1.5 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                 value={formData.lastName}
                 onChange={(e) => handleChange('lastName', e.target.value)}
               />
@@ -381,29 +366,29 @@ export default function BudEOnboarding() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold mb-1">Preferred Username</label>
+            <label className="block text-xs font-semibold mb-0.5">Preferred Username</label>
             <input
               type="text"
-              className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-base"
+              className="w-full px-2.5 py-1.5 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
               value={formData.username}
               onChange={(e) => handleChange('username', e.target.value)}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold mb-1">Email <span className="text-red-500">*</span></label>
+            <label className="block text-xs font-semibold mb-0.5">Email <span className="text-red-500">*</span></label>
             <input
               type="email"
               required
-              className="w-full px-3 py-2 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-base"
+              className="w-full px-2.5 py-1.5 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
               value={formData.email}
               onChange={(e) => handleChange('email', e.target.value)}
             />
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-semibold">Password <span className="text-red-500">*</span></label>
+            <div className="flex items-center justify-between mb-0.5">
+              <label className="block text-xs font-semibold">Password <span className="text-red-500">*</span></label>
               <button
                 type="button"
                 onClick={() => setShowPasswordRequirements(!showPasswordRequirements)}
@@ -417,23 +402,23 @@ export default function BudEOnboarding() {
               <input
                 type={showPassword ? "text" : "password"}
                 required
-                className="w-full px-3 py-2 pr-10 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-base"
+                className="w-full px-2.5 py-1.5 pr-9 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
                 value={formData.password}
                 onChange={(e) => handleChange('password', e.target.value)}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               </button>
             </div>
             {showPasswordRequirements && (
-              <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs">
-                <p className="font-semibold text-gray-900 mb-2">Create a strong password</p>
+              <div className="mt-1.5 p-2.5 bg-blue-50 border border-blue-200 rounded-lg text-xs">
+                <p className="font-semibold text-gray-900 mb-1.5">Create a strong password</p>
                 <p className="text-gray-700 mb-1">Your password must be at least 12 characters and include:</p>
-                <ul className="list-disc list-inside space-y-1 text-gray-700 ml-2">
+                <ul className="list-disc list-inside space-y-0.5 text-gray-700 ml-2">
                   <li>One uppercase letter (A–Z)</li>
                   <li>One lowercase letter (a–z)</li>
                   <li>One number (0–9)</li>
@@ -444,7 +429,7 @@ export default function BudEOnboarding() {
           </div>
         </div>
 
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-3">
           <button
             onClick={() => {
               if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
@@ -460,6 +445,21 @@ export default function BudEOnboarding() {
           >
             Continue
           </button>
+        </div>
+
+        {/* Login Link */}
+        <div className="text-center mt-4">
+          <div className="inline-block bg-white border-2 border-[#009900] rounded-lg px-4 py-2.5 shadow-sm">
+            <p className="text-xs text-gray-900 mb-1.5 font-medium">
+              Already have an account?
+            </p>
+            <button
+              onClick={() => setShowLoginModal(true)}
+              className="w-full px-5 py-2 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00] text-sm"
+            >
+              Login Here
+            </button>
+          </div>
         </div>
 
         {/* Mobile Branding - Only visible on mobile */}

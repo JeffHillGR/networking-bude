@@ -422,7 +422,10 @@ const getGreeting = () => {
 
             {/* Desktop greeting with notification bell - show below hero banner on desktop only */}
             <div className="hidden md:flex items-center justify-between">
-              <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
+                <p className="text-sm text-gray-600 mt-1">Let's make some meaningful connections today</p>
+              </div>
               <NotificationBell />
             </div>
 
@@ -431,9 +434,12 @@ const getGreeting = () => {
               {/* Upcoming Events - Left Side */}
               <div className="flex flex-col">
                 <div className="mb-4 text-center">
-                  <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black mb-2">
-                    <h3 className="font-bold text-black text-lg">Upcoming Events</h3>
-                  </div>
+                  <button
+                    onClick={() => setActiveTab('events')}
+                    className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black mb-2 hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    <h3 className="font-bold text-black text-lg">All Upcoming Events →</h3>
+                  </button>
                   <p className="text-sm text-gray-600">Networking events happening near you</p>
                 </div>
                 <div className="space-y-4 flex-grow">
@@ -466,26 +472,21 @@ const getGreeting = () => {
                   </div>
                 ))}
               </div>
-
-                {/* View All Events Button */}
-                <div className="flex justify-center mt-6">
-                  <button
-                    onClick={() => setActiveTab('events')}
-                    className="px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors flex items-center gap-2 border-[3px] border-[#D0ED00] text-sm"
-                  >
-                    View All Events
-                    <img src="/BudE-favicon.png" alt="BudE" className="w-4 h-4" />
-                  </button>
-                </div>
               </div>
 
               {/* Potential Connections - Right Side */}
               <div className="flex flex-col relative group">
                 <div className="mb-4 text-center">
-                  <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black mb-2">
-                    <h3 className="font-bold text-black text-lg">Potential Connections</h3>
-                  </div>
-                  <p className="text-sm text-gray-600">People you might want to connect with first</p>
+                  <button
+                    onClick={() => {
+                      setActiveTab('connections');
+                      window.scrollTo({ top: 0, behavior: 'instant' });
+                    }}
+                    className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black mb-2 hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    <h3 className="font-bold text-black text-lg">All Potential Connections →</h3>
+                  </button>
+                  <p className="text-sm text-gray-600">People you might want to connect with <span className="font-bold">first</span></p>
                 </div>
                 <div className="space-y-4 flex-grow">
                   {/* Show loading state, then real connections, then placeholders */}
@@ -576,79 +577,73 @@ const getGreeting = () => {
                     })
                   )}
                 </div>
-
-                {/* View All Connections Button */}
-                <div className="flex justify-center mt-6">
-                  <button
-                    onClick={() => {
-                      setActiveTab('connections');
-                      window.scrollTo({ top: 0, behavior: 'instant' });
-                    }}
-                    className="px-4 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors flex items-center gap-2 border-[3px] border-[#D0ED00] text-sm"
-                  >
-                    View All Connections
-                    <img src="/BudE-favicon.png" alt="BudE" className="w-4 h-4" />
-                  </button>
-                </div>
-
               </div>
             </div>
 
             {/* Featured Content - Below Events and Connections */}
             <div>
-              <div className="bg-white rounded-lg p-4 md:p-6 shadow-sm border border-gray-200">
-                <div className="mb-3 text-center">
+              <div className="bg-white rounded-lg p-4 md:p-5 shadow-sm border border-gray-200">
+                <div className="mb-2 text-center">
                   <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black">
                     <h3 className="font-bold text-black text-lg">Resources & Insights</h3>
                   </div>
                   <p className="text-xs text-gray-500 mt-0.5">Curated content to help you grow</p>
                 </div>
 
-                {/* Carousel Navigation */}
-                <div className="flex items-center justify-start gap-4 mb-4">
-                  <button
-                    onClick={() => setFeaturedContentIndex((featuredContentIndex - 1 + featuredContent.length) % featuredContent.length)}
-                    className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                    aria-label="Previous tip"
-                  >
-                    <ChevronLeft className="w-6 h-6 text-gray-700" />
-                  </button>
-
-                  <span className="text-lg font-medium text-gray-800 px-4 py-2 bg-gray-100 rounded-lg">
-                    {featuredContentIndex + 1} of {featuredContent.length}
-                  </span>
-
-                  <button
-                    onClick={() => setFeaturedContentIndex((featuredContentIndex + 1) % featuredContent.length)}
-                    className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                    aria-label="Next tip"
-                  >
-                    <ChevronRight className="w-6 h-6 text-gray-700" />
-                  </button>
-                </div>
-
-                {/* Carousel Content */}
+                {/* Carousel Content with Navigation on Left */}
                 <div
                   onClick={() => {
                     if (featuredContent[featuredContentIndex].url) {
                       window.open(featuredContent[featuredContentIndex].url, '_blank');
                     }
                   }}
-                  className="flex flex-col md:flex-row gap-4 md:gap-6 hover:bg-gray-50 p-3 md:p-4 rounded-lg transition-colors cursor-pointer"
+                  className="flex flex-col md:flex-row items-start gap-4 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition-colors cursor-pointer"
                 >
+                  {/* Carousel Navigation - Horizontal: < 1 of 3 > */}
+                  <div className="flex items-center gap-2 self-start">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFeaturedContentIndex((featuredContentIndex - 1 + featuredContent.length) % featuredContent.length);
+                      }}
+                      className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                      aria-label="Previous tip"
+                    >
+                      <ChevronLeft className="w-5 h-5 text-gray-700" />
+                    </button>
+
+                    <span className="text-sm font-medium text-gray-800 px-3 py-2 bg-gray-100 rounded-lg whitespace-nowrap">
+                      {featuredContentIndex + 1} of {featuredContent.length}
+                    </span>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFeaturedContentIndex((featuredContentIndex + 1) % featuredContent.length);
+                      }}
+                      className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                      aria-label="Next tip"
+                    >
+                      <ChevronRight className="w-5 h-5 text-gray-700" />
+                    </button>
+                  </div>
+
+                  {/* Thumbnail Image */}
                   <img
                     src={featuredContent[featuredContentIndex].image}
                     alt={featuredContent[featuredContentIndex].title}
-                    className="w-full md:w-48 h-48 md:h-48 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm"
+                    className="w-32 h-32 md:w-36 md:h-36 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm"
                   />
+
+                  {/* Right side: Content */}
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-gray-900 mb-2 md:mb-3 text-base md:text-lg">{featuredContent[featuredContentIndex].title}</h4>
-                    <p className="text-sm md:text-base text-gray-600 mb-3 md:mb-4 line-clamp-4">{featuredContent[featuredContentIndex].description}</p>
+                    <h4 className="font-bold text-gray-900 mb-2 text-lg leading-tight">{featuredContent[featuredContentIndex].title}</h4>
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-2 leading-relaxed">{featuredContent[featuredContentIndex].description}</p>
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                       {featuredContent[featuredContentIndex].tags && (
                         <div className="flex gap-2 flex-wrap">
                           {featuredContent[featuredContentIndex].tags.split(',').slice(0, 2).map((tag, i) => (
-                            <span key={i} className="text-xs bg-gray-100 text-gray-600 px-2 md:px-3 py-1 rounded">
+                            <span key={i} className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded">
                               {tag.trim()}
                             </span>
                           ))}
@@ -657,7 +652,7 @@ const getGreeting = () => {
                       {featuredContent[featuredContentIndex].sponsoredBy && (
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-gray-400">Sponsored by</span>
-                          <span className="text-xs md:text-sm font-medium text-gray-700">{featuredContent[featuredContentIndex].sponsoredBy}</span>
+                          <span className="text-xs font-medium text-gray-700">{featuredContent[featuredContentIndex].sponsoredBy}</span>
                         </div>
                       )}
                     </div>
