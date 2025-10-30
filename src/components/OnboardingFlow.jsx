@@ -304,21 +304,6 @@ export default function BudEOnboarding() {
               alt="BudE app on phone"
               className="w-full h-full object-cover"
             />
-            <div className="absolute top-6 left-6 text-white text-3xl font-bold drop-shadow-lg">
-            </div>
-
-            {/* Three small images stacked at bottom right inside phone */}
-            <div className="absolute right-6 bottom-6 space-y-3">
-              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
-               <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-1.png" alt="Networking" className="w-full h-full object-cover" />
-              </div>
-              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
-               <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-3.png" alt="Networking" className="w-full h-full object-cover" />
-              </div>
-              <div className="w-40 h-40 rounded-xl overflow-hidden shadow-lg border-3 border-white">
-                <img src="/People-networking-2.png" alt="Networking" className="w-full h-full object-cover" />
-              </div>
-            </div>
           </div>
           <p className="text-sm text-gray-600 mt-4">Networking BudE by The BudE System™</p>
         </div>
@@ -332,10 +317,10 @@ export default function BudEOnboarding() {
           <BudELogo />
         </div>
         <h1 className="text-2xl md:text-3xl font-bold text-center mb-3">
-          Traditional Networking not working for you?<br />Let us help.
+          Traditional networking not working<br />for you? Let us help.
         </h1>
 
-        <h3 className="text-sm md:text-base font-semibold text-center mb-2">Ready to jump in? Let's set up your profile.</h3>
+        <h3 className="text-sm md:text-base font-semibold text-center mb-2">Let's set up your profile.</h3>
 
         <div className="w-full h-2 bg-gray-200 rounded-full mb-3">
           <div className="w-1/3 h-full bg-black rounded-full"></div>
@@ -504,10 +489,6 @@ export default function BudEOnboarding() {
           <div className="flex justify-center mb-4">
             <BudELogo />
           </div>
-
-          <h1 className="text-3xl font-bold text-center mb-5">
-            Welcome to<br />Networking BudE
-          </h1>
 
           <div className="flex gap-2 mb-5">
             <div className="flex-1 h-2 bg-black rounded-full"></div>
@@ -806,10 +787,6 @@ const renderStep2 = () => (
         <div className="flex justify-center mb-4">
           <BudELogo />
         </div>
-
-        <h1 className="text-3xl font-bold text-center mb-5">
-          Welcome to<br />Networking BudE
-        </h1>
 
         <div className="flex gap-2 mb-5">
           <div className="flex-1 h-2 bg-black rounded-full"></div>
