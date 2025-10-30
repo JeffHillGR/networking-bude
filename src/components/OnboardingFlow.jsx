@@ -332,7 +332,7 @@ export default function BudEOnboarding() {
           <BudELogo />
         </div>
         <h1 className="text-2xl md:text-3xl font-bold text-center mb-3">
-          Welcome to<br />Networking BudE
+          Traditional Networking not working for you?<br />Let us help.
         </h1>
 
         <h3 className="text-sm md:text-base font-semibold text-center mb-2">Ready to jump in? Let's set up your profile.</h3>
