@@ -8,8 +8,8 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
   const [activeTab, setActiveTab] = useState('profile');
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  const [showLeaveBetaModal, setShowLeaveBetaModal] = useState(false);
-  const [leaveBetaReason, setLeaveBetaReason] = useState('');
+  const [showCancelAccountModal, setShowCancelAccountModal] = useState(false);
+  const [cancelAccountReason, setCancelAccountReason] = useState('');
   const [showFeedbackModal, setShowFeedbackModal] = useState(autoOpenFeedback);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
@@ -579,11 +579,11 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
     showSuccess('Privacy settings saved!');
   };
 
-  const handleLeaveBetaClick = () => {
-    setShowLeaveBetaModal(true);
+  const handleCancelAccountClick = () => {
+    setShowCancelAccountModal(true);
   };
 
-  const handleConfirmLeaveBeta = async () => {
+  const handleConfirmCancelAccount = async () => {
     // Collect user data for email notification
     const userData = {
       firstName: localStorage.getItem('userFirstName') || '',
@@ -591,12 +591,12 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
       email: profile.email || localStorage.getItem('userEmail') || '',
       jobTitle: profile.jobTitle || localStorage.getItem('userJobTitle') || '',
       company: profile.company || localStorage.getItem('userCompany') || '',
-      reason: leaveBetaReason || 'No reason provided'
+      reason: cancelAccountReason || 'No reason provided'
     };
 
     try {
       // Send notification to Jeff
-      const response = await fetch('/api/leaveBeta', {
+      const response = await fetch('/api/cancelAccount', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -608,10 +608,10 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
       });
 
       if (!response.ok) {
-        console.error('Failed to send leave beta notification');
+        console.error('Failed to send account cancellation notification');
       }
     } catch (error) {
-      console.error('Error sending leave beta notification:', error);
+      console.error('Error sending account cancellation notification:', error);
     }
 
     // Clear all localStorage
@@ -1201,7 +1201,7 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
               </div>
               <p className="text-gray-600 mb-6">Control who can see your information and contact you</p>
 
-              {/* Beta Overlay */}
+              {/* Privacy Coming Soon Overlay */}
               <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-lg flex items-center justify-center z-10">
                 <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 max-w-md mx-4 text-center shadow-2xl border-4 border-[#D0ED00]">
                   <img
@@ -1210,10 +1210,10 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
                     className="h-16 w-16 mx-auto mb-4 object-contain"
                   />
                   <p className="text-green-800 font-bold text-xl mb-2">
-                    Beta Version
+                    Coming Soon
                   </p>
                   <p className="text-green-700 font-medium text-base">
-                    During Beta testing phase, your provided personal profile data is stored unencrypted in your browser to simulate a logged in status. Privacy settings coming soon.
+                    Privacy settings are coming soon. Your profile data is currently stored securely in our database.
                   </p>
                 </div>
               </div>
@@ -1265,19 +1265,19 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
               </div>
             </div>
 
-            {/* Beta Feedback */}
+            {/* Share Feedback */}
             <div className="bg-white rounded-lg shadow-sm p-8 border-2 border-[#D0ED00]">
               <div className="flex items-center gap-2 mb-2 text-[#009900]">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                 </svg>
-                <h2 className="text-xl font-bold">Beta Feedback</h2>
+                <h2 className="text-xl font-bold">Share Feedback</h2>
               </div>
               <p className="text-gray-600 mb-6">Help us improve BudE by sharing your experience</p>
 
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-medium text-gray-900">Give Feedback on Your Beta Experience</h3>
+                  <h3 className="font-medium text-gray-900">Give Feedback on Your Experience</h3>
                   <p className="text-sm text-gray-600 mt-1">Share your thoughts on features, usability, and overall experience</p>
                 </div>
                 <button
@@ -1304,17 +1304,17 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-medium text-gray-900">Cancel Plan / Leave Beta / Unsubscribe</h3>
-                  <p className="text-sm text-gray-600 mt-1">Stop participating in beta testing and remove your account data</p>
+                  <h3 className="font-medium text-gray-900">Cancel Account</h3>
+                  <p className="text-sm text-gray-600 mt-1">Remove your account and all associated data</p>
                 </div>
                 <button
-                  onClick={handleLeaveBetaClick}
+                  onClick={handleCancelAccountClick}
                   className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 font-medium flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
-                  Leave Beta
+                  Cancel Account
                 </button>
               </div>
             </div>
@@ -1322,14 +1322,14 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
         )}
       </div>
 
-      {/* Leave Beta Modal */}
-      {showLeaveBetaModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowLeaveBetaModal(false)}>
+      {/* Cancel Account Modal */}
+      {showCancelAccountModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowCancelAccountModal(false)}>
           <div className="bg-white rounded-lg p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-gray-900">Leave Beta Program</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Cancel Account</h2>
               <button
-                onClick={() => setShowLeaveBetaModal(false)}
+                onClick={() => setShowCancelAccountModal(false)}
                 className="text-gray-400 hover:text-gray-600"
               >
                 <X className="w-6 h-6" />
@@ -1337,16 +1337,16 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
             </div>
 
             <p className="text-gray-600 mb-4">
-              We're sorry to see you go! Before you leave, would you mind sharing why you're leaving the beta program? Your feedback helps us improve BudE.
+              We're sorry to see you go! Before you leave, would you mind sharing why you're canceling your account? Your feedback helps us improve BudE.
             </p>
 
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Reason for Leaving Beta (Thank you for participating!)
+                Reason for Canceling (Optional)
               </label>
               <textarea
-                value={leaveBetaReason}
-                onChange={(e) => setLeaveBetaReason(e.target.value)}
+                value={cancelAccountReason}
+                onChange={(e) => setCancelAccountReason(e.target.value)}
                 rows={4}
                 placeholder="Optional: Let us know what we could improve..."
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
@@ -1361,23 +1361,23 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
 
             <div className="flex gap-3">
               <button
-                onClick={() => setShowLeaveBetaModal(false)}
+                onClick={() => setShowCancelAccountModal(false)}
                 className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
               >
                 Cancel
               </button>
               <button
-                onClick={handleConfirmLeaveBeta}
+                onClick={handleConfirmCancelAccount}
                 className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
               >
-                Leave Beta
+                Cancel Account
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Beta Feedback Modal */}
+      {/* Feedback Modal */}
       {showFeedbackModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => !feedbackSubmitted && setShowFeedbackModal(false)}>
           <div className="bg-white rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
@@ -1396,7 +1396,7 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
             ) : (
               <>
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-2xl font-bold text-gray-900">Beta Feedback</h2>
+                  <h2 className="text-2xl font-bold text-gray-900">Share Feedback</h2>
                   <button
                     onClick={() => setShowFeedbackModal(false)}
                     className="text-gray-400 hover:text-gray-600"

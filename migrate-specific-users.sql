@@ -14,7 +14,8 @@ ALTER TABLE public.users ADD COLUMN IF NOT EXISTS old_id_backup UUID;
 UPDATE public.users
 SET old_id_backup = id
 WHERE email IN (
-  'rick@rickemail.com'
+  'rick@rickemail.com',
+  'anna@humansolutiongroup.com'
   -- Add more emails here as you get them
 );
 
@@ -25,6 +26,10 @@ WHERE email IN (
 UPDATE public.users
 SET id = '6db16619-8406-40f2-8f3f-fae619cddd9f'
 WHERE email = 'rick@rickemail.com';
+
+UPDATE public.users
+SET id = 'fe6e44a4-6432-4af1-854f-248e38498177'
+WHERE email = 'anna@humansolutiongroup.com';
 
 -- Add more UPDATE statements below as you get user data:
 -- UPDATE public.users
@@ -87,6 +92,39 @@ BEGIN
     RAISE NOTICE 'Updated all references for Rick (old: %, new: %)', rick_old_id, rick_new_id;
   ELSE
     RAISE NOTICE 'No old_id_backup found for Rick - migration may have already been done';
+  END IF;
+END $$;
+
+-- ============================================
+-- Anna Baeten's foreign key updates
+-- ============================================
+DO $$
+DECLARE
+  anna_old_id UUID;
+  anna_new_id UUID := 'fe6e44a4-6432-4af1-854f-248e38498177';
+BEGIN
+  SELECT old_id_backup INTO anna_old_id
+  FROM public.users
+  WHERE email = 'anna@humansolutiongroup.com';
+
+  IF anna_old_id IS NOT NULL THEN
+    UPDATE public.matches SET user_id = anna_new_id WHERE user_id = anna_old_id;
+    UPDATE public.matches SET matched_user_id = anna_new_id WHERE matched_user_id = anna_old_id;
+
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'messages') THEN
+      UPDATE public.messages SET sender_id = anna_new_id WHERE sender_id = anna_old_id;
+      UPDATE public.messages SET recipient_id = anna_new_id WHERE recipient_id = anna_old_id;
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'notifications') THEN
+      UPDATE public.notifications SET user_id = anna_new_id WHERE user_id = anna_old_id;
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'notification_preferences') THEN
+      UPDATE public.notification_preferences SET user_id = anna_new_id WHERE user_id = anna_old_id;
+    END IF;
+
+    RAISE NOTICE 'Updated all references for Anna (old: %, new: %)', anna_old_id, anna_new_id;
   END IF;
 END $$;
 

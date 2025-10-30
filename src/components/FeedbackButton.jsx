@@ -87,7 +87,7 @@ export default function FeedbackButton() {
               ) : (
                 <>
                   <p className="text-gray-600 mb-6">
-                    We'd love to hear your thoughts, ideas, or issues you're experiencing during the beta.
+                    We'd love to hear your thoughts, ideas, or any issues you're experiencing.
                   </p>
 
                   <form onSubmit={handleSubmit} className="space-y-4">

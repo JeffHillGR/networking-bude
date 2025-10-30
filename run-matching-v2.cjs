@@ -81,7 +81,7 @@ async function runMatchingAlgorithm() {
     }
 
     let totalMatches = 0;
-    const matchThreshold = 60; // 60% for beta (maximize testing coverage), will increase to 70% post-beta
+    const matchThreshold = 65; // Raised to 65% to reduce match count per user
     let scoreDistribution = { '0-20': 0, '20-40': 0, '40-60': 0, '60-80': 0, '80-100': 0 };
 
     // For each user, find their matches

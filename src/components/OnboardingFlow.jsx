@@ -51,7 +51,7 @@ export default function BudEOnboarding() {
   const [filteredJobTitles, setFilteredJobTitles] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [showBetaTerms, setShowBetaTerms] = useState(false);
+  const [showPrivacyTerms, setShowPrivacyTerms] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -901,10 +901,10 @@ const renderStep2 = () => (
         <p className="text-center text-sm text-gray-600 mt-6">
           By creating an account, you agree to our{' '}
           <button
-            onClick={() => setShowBetaTerms(true)}
+            onClick={() => setShowPrivacyTerms(true)}
             className="text-blue-600 hover:underline font-medium"
           >
-            Beta Terms
+            Privacy Policy
           </button>
         </p>
 
@@ -940,20 +940,20 @@ const renderStep2 = () => (
         </div>
       )}
 
-      {/* Beta Terms Modal */}
-      {showBetaTerms && (
+      {/* Privacy Terms Modal */}
+      {showPrivacyTerms && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-md w-full shadow-2xl">
             <div className="p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
-                🧪 Beta Testing - Your Privacy Matters
+                Your Privacy Matters
               </h2>
               <div className="space-y-3 text-sm text-gray-700">
-                <p>We're testing BudE with a small group in Michigan. Your information is:</p>
+                <p>We're committed to protecting your information. Your data is:</p>
                 <div className="space-y-2">
                   <div className="flex items-start gap-2">
                     <span className="text-green-600 font-bold flex-shrink-0">✓</span>
-                    <p>Stored securely for beta testing only</p>
+                    <p>Stored securely in our database</p>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-green-600 font-bold flex-shrink-0">✓</span>
@@ -961,11 +961,11 @@ const renderStep2 = () => (
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-green-600 font-bold flex-shrink-0">✓</span>
-                    <p>Used only to improve your experience (we'll email you a survey for feedback)</p>
+                    <p>Used only to improve your networking experience</p>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-green-600 font-bold flex-shrink-0">✓</span>
-                    <p>Will be deleted after beta if you request</p>
+                    <p>Can be deleted at your request at any time</p>
                   </div>
                 </div>
                 <p className="pt-3 text-center">
@@ -976,7 +976,7 @@ const renderStep2 = () => (
                 </p>
               </div>
               <button
-                onClick={() => setShowBetaTerms(false)}
+                onClick={() => setShowPrivacyTerms(false)}
                 className="w-full mt-6 bg-[#009900] text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
               >
                 Got it!

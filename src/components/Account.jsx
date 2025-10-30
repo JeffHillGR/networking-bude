@@ -222,7 +222,7 @@ function Account({ onBackToDashboard }) {
                   {plan.popular && (
                     <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                       <span className="bg-white border-2 border-[#009900] text-[#009900] px-6 py-1 rounded-full text-sm font-medium whitespace-nowrap">
-                        Free during Beta Test period
+                        Most Popular
                       </span>
                     </div>
                   )}

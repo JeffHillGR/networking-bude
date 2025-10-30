@@ -227,7 +227,7 @@ function Events({ onBackToDashboard }) {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* BETA: Search and Filters Hidden - Re-enable for production */}
+        {/* Search and Filters - Coming Soon */}
         {/* <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="relative">
