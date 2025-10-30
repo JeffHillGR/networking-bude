@@ -53,22 +53,22 @@ function EventDetail() {
     },
     2: {
       id: 2,
-      title: 'Leadership Lesson Breakfast',
-      description: 'Community leaders sharing valuable leadership insights at this networking breakfast featuring two powerful presentations on leadership strategies.',
-      fullDescription: 'Join the Grand Rapids Chamber for the Leadership Lesson Breakfast, featuring two exceptional speakers sharing their leadership wisdom.\n\nJoe Dyer, President of DISHER, will present "Steward Leadership: Learning, Listening, and Influence," offering insights on servant leadership and building organizational culture through influence and active listening.\n\nLynne Ferrell-Robinson, CEO of Midwest Giving Strategies, will share "Leadership: Lessons from the Field," drawing on her extensive experience in non-profit leadership and strategic philanthropy.\n\nThese breakfast events offer strong community trustees and leaders sharing valuable leadership lessons along with networking opportunities. Cost: Members $40, Non-Members $55.\n\nOrganized by the Grand Rapids Chamber for talent development and professional growth.',
-      date: 'Tuesday, October 28, 2025',
-      time: '7:30 AM - 9:00 AM',
-      location: 'Grand Rapids Chamber',
-      fullAddress: '250 Monroe Ave, Grand Rapids, MI 49503',
-      image: 'https://grandrapids.org/wp-content/uploads/2025/01/GRC_LLB-October-e1737397882767.jpg',
+      title: 'Talent & Inclusion Summit',
+      description: 'This signature Chamber event brings together executives, HR professionals, and thought leaders focused on workforce development. The 2025 theme is "Unlocking Talent, Inclusion, and Retention for a Stronger West Michigan."',
+      fullDescription: 'Join the Grand Rapids Chamber for the Talent & Inclusion Summit, bringing together executives, HR professionals, and thought leaders focused on workforce development.\n\nThe 2025 theme is "Unlocking Talent, Inclusion, and Retention for a Stronger West Michigan." This signature event explores critical topics including talent acquisition and retention strategies, inclusive leadership and high-performing teams, multi-generational workforce engagement, and navigating difficult workplace conversations.\n\nFeatured Speakers:\n• Isabel Medellin (Steelcase)\n• Jan Harrington Davis (Corewell Health)\n• Ken Bogard (Know Honesty)\n• Ovell Barbee (Ask Ovell)\n\nThe summit features a panel discussion focusing on attraction, retention, and workforce success strategies. This is an essential event for leaders committed to building inclusive, thriving workplace cultures.\n\nPricing: Members $250, Non-Members $300, Corporate Table (10 seats) $2,250',
+      date: 'Tuesday, November 11, 2025',
+      time: '8:00 AM - 1:00 PM',
+      location: 'JW Marriott Grand Rapids',
+      fullAddress: '235 Louis St NW, Grand Rapids, MI 49503',
+      image: 'https://grandrapids.org/wp-content/uploads/2024/10/GRC_TIS-1-2048x1152.jpg',
       badge: 'In-Person',
       organizer: {
         name: 'Grand Rapids Chamber',
         avatar: 'GR',
         description: 'The Grand Rapids Chamber advocates for business growth, economic development, and inclusive workplace cultures throughout West Michigan.'
       },
-      tags: ['Leadership', 'Networking', 'Professional Development', 'Business', 'Talent Development'],
-      registrationUrl: 'https://grandrapids.org/event/leadership-lesson-breakfast-2025-10-28/'
+      tags: ['Leadership', 'Diversity & Inclusion', 'HR', 'Talent Development', 'Workforce Development'],
+      registrationUrl: 'https://grandrapids.org/event/talent-inclusion-summit/'
     },
     3: {
       id: 3,

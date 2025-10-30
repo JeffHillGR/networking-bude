@@ -70,14 +70,14 @@ function Events({ onBackToDashboard }) {
     },
     {
       id: 2,
-      title: 'Leadership Lesson Breakfast',
-      description: 'Join community leaders for valuable insights and networking. Features Joe Dyer (DISHER) on Steward Leadership and Lynne Ferrell-Robinson (Midwest Giving Strategies) on Leadership Lessons from the Field.',
-      date: '10/28/2025',
-      time: '7:30 AM - 9:00 AM',
-      location: 'Grand Rapids Chamber',
+      title: 'Talent & Inclusion Summit',
+      description: 'This signature Chamber event brings together executives, HR professionals, and thought leaders focused on workforce development. The 2025 theme is "Unlocking Talent, Inclusion, and Retention for a Stronger West Michigan."',
+      date: '11/11/2025',
+      time: '8:00 AM - 1:00 PM',
+      location: 'JW Marriott Grand Rapids',
       organizerName: 'Grand Rapids Chamber',
-      attendees: '100+',
-      image: 'https://grandrapids.org/wp-content/uploads/2025/01/GRC_LLB-October-e1737397882767.jpg',
+      attendees: '200+',
+      image: 'https://grandrapids.org/wp-content/uploads/2024/10/GRC_TIS-1-2048x1152.jpg',
       badge: 'In-Person'
     },
     {
