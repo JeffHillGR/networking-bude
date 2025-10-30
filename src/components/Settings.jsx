@@ -207,6 +207,16 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
 
           setProfile(loadedProfile);
 
+          // Load photo from Supabase
+          if (userData.photo) {
+            setPhotoUrl(userData.photo);
+            // Save photo to localStorage
+            const profileWithPhoto = { ...loadedProfile, photoUrl: userData.photo };
+            localStorage.setItem('settingsProfile', JSON.stringify(profileWithPhoto));
+          } else {
+            localStorage.setItem('settingsProfile', JSON.stringify(loadedProfile));
+          }
+
           // Also save to localStorage so other components can access it
           const firstName = userData.first_name || '';
           const lastName = userData.last_name || '';
@@ -215,7 +225,6 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
           localStorage.setItem('userEmail', userData.email || '');
           localStorage.setItem('userJobTitle', userData.title || '');
           localStorage.setItem('userCompany', userData.company || '');
-          localStorage.setItem('settingsProfile', JSON.stringify(loadedProfile));
 
           if (userData.professional_interests && Array.isArray(userData.professional_interests)) {
             setSelectedInterests(userData.professional_interests);
