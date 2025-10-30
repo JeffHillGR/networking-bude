@@ -389,7 +389,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
           <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
             <h1 className="text-3xl font-bold text-black">Connections</h1>
           </div>
-          <p className="text-gray-600 mt-2">Discover and connect with professionals who share your interests</p>
+          <p className="text-gray-600 mt-2">Discover and connect with people who share your interests and goals</p>
         </div>
       </div>
 
