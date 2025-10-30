@@ -337,11 +337,19 @@ export default function BudEOnboarding() {
 
         <h3 className="text-sm md:text-base font-semibold text-center mb-3">Ready to jump in? Let's set up your profile.</h3>
 
-        {/* Beta Device Notice */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-2.5 mb-3">
-          <p className="text-xs md:text-sm text-blue-800 text-center">
-            <span className="font-semibold">Beta Testing:</span> Please use the same device and browser to access your account during the beta period.
-          </p>
+        {/* Login Link */}
+        <div className="text-center mb-4">
+          <div className="inline-block bg-white border-2 border-[#009900] rounded-lg px-6 py-3 shadow-md">
+            <p className="text-sm text-gray-900 mb-2 font-medium">
+              Already have an account?
+            </p>
+            <button
+              onClick={() => setShowLoginModal(true)}
+              className="w-full px-6 py-2.5 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00] text-base"
+            >
+              Login Here
+            </button>
+          </div>
         </div>
 
         <div className="w-full h-2 bg-gray-200 rounded-full mb-4">
@@ -452,21 +460,6 @@ export default function BudEOnboarding() {
           >
             Continue
           </button>
-        </div>
-
-        {/* Login Link */}
-        <div className="text-center mt-6">
-          <div className="inline-block bg-white border-2 border-[#009900] rounded-lg px-6 py-4 shadow-md">
-            <p className="text-base text-gray-900 mb-2 font-medium">
-              Already have an account?
-            </p>
-            <button
-              onClick={() => setShowLoginModal(true)}
-              className="w-full px-6 py-3 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00] text-lg"
-            >
-              Login Here
-            </button>
-          </div>
         </div>
 
         {/* Mobile Branding - Only visible on mobile */}

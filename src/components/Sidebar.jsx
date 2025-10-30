@@ -4,13 +4,51 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 import { supabase } from '../lib/supabase.js';
 
 function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
-  // Get user data from localStorage
-  const firstName = localStorage.getItem('userFirstName') || 'User';
-  const lastName = localStorage.getItem('userLastName') || 'Name';
-  const jobTitle = localStorage.getItem('userJobTitle') || 'Job Title';
-  const fullName = `${firstName} ${lastName}`;
   const { user, signOut } = useAuth();
+  const [firstName, setFirstName] = useState(localStorage.getItem('userFirstName') || 'User');
+  const [lastName, setLastName] = useState(localStorage.getItem('userLastName') || 'Name');
+  const [jobTitle, setJobTitle] = useState(localStorage.getItem('userJobTitle') || 'Job Title');
+  const fullName = `${firstName} ${lastName}`;
   // const [photoUrl, setPhotoUrl] = useState(null);
+
+  // Fetch user data from Supabase on mount
+  useEffect(() => {
+    async function fetchUserData() {
+      if (user?.email) {
+        try {
+          const { data, error } = await supabase
+            .from('users')
+            .select('first_name, last_name, title')
+            .eq('email', user.email.toLowerCase())
+            .single();
+
+          if (error) {
+            console.log('Error fetching user data:', error);
+            return;
+          }
+
+          if (data) {
+            const userFirstName = data.first_name || 'User';
+            const userLastName = data.last_name || 'Name';
+            const userJobTitle = data.title || 'Job Title';
+
+            // Update state
+            setFirstName(userFirstName);
+            setLastName(userLastName);
+            setJobTitle(userJobTitle);
+
+            // Update localStorage so it's available for other components
+            localStorage.setItem('userFirstName', userFirstName);
+            localStorage.setItem('userLastName', userLastName);
+            localStorage.setItem('userJobTitle', userJobTitle);
+          }
+        } catch (err) {
+          console.error('Error in fetchUserData:', err);
+        }
+      }
+    }
+    fetchUserData();
+  }, [user]);
 
   // TODO: Re-enable photo fetch after fixing permissions
   // Fetch user's profile photo
