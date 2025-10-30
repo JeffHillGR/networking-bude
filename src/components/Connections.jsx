@@ -555,11 +555,19 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
                 )}
                 
                 <div className="flex flex-col items-center">
-                  <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center mb-4 shadow-lg border-4 border-black">
-                    <span className="text-[#009900] font-bold text-4xl">
-                      {currentCard.initials}
-                    </span>
-                  </div>
+                  {currentCard.photo ? (
+                    <img
+                      src={currentCard.photo}
+                      alt={currentCard.name}
+                      className="w-32 h-32 rounded-full object-cover mb-4 shadow-lg border-4 border-black"
+                    />
+                  ) : (
+                    <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center mb-4 shadow-lg border-4 border-black">
+                      <span className="text-[#009900] font-bold text-4xl">
+                        {currentCard.initials}
+                      </span>
+                    </div>
+                  )}
                   <h3 className="text-2xl font-bold text-gray-900">{currentCard.name}</h3>
                   <p className="text-gray-600 mt-1">{currentCard.title}</p>
                   <p className="text-gray-500 text-sm">{currentCard.company}</p>
@@ -712,11 +720,19 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
                     <>
                       <div className="flex items-start gap-3 mb-3">
                         <div className="relative">
-                          <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center flex-shrink-0 border-2 border-black">
-                            <span className="text-[#009900] font-bold text-sm">
-                              {person.initials}
-                            </span>
-                          </div>
+                          {person.photo ? (
+                            <img
+                              src={person.photo}
+                              alt={person.name}
+                              className="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-black"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center flex-shrink-0 border-2 border-black">
+                              <span className="text-[#009900] font-bold text-sm">
+                                {person.initials}
+                              </span>
+                            </div>
+                          )}
                           {person.isOnline && (
                             <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                           )}
@@ -868,11 +884,19 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center border-2 border-black">
-                <span className="text-[#009900] font-bold text-xl">
-                  {person.initials}
-                </span>
-              </div>
+              {person.photo ? (
+                <img
+                  src={person.photo}
+                  alt={person.name}
+                  className="w-16 h-16 rounded-full object-cover border-2 border-black"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center border-2 border-black">
+                  <span className="text-[#009900] font-bold text-xl">
+                    {person.initials}
+                  </span>
+                </div>
+              )}
               <div className="flex-1">
                 <h3 className="font-bold text-lg text-gray-900">{person.name}</h3>
                 <p className="text-sm text-gray-600">{person.title}</p>

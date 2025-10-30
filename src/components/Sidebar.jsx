@@ -9,7 +9,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
   const [lastName, setLastName] = useState(localStorage.getItem('userLastName') || 'Name');
   const [jobTitle, setJobTitle] = useState(localStorage.getItem('userJobTitle') || 'Job Title');
   const fullName = `${firstName} ${lastName}`;
-  // const [photoUrl, setPhotoUrl] = useState(null);
+  const [photoUrl, setPhotoUrl] = useState(null);
 
   // Fetch user data from Supabase on mount
   useEffect(() => {
@@ -18,7 +18,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
         try {
           const { data, error } = await supabase
             .from('users')
-            .select('first_name, last_name, title')
+            .select('first_name, last_name, title, photo')
             .eq('email', user.email.toLowerCase())
             .single();
 
@@ -36,6 +36,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
             setFirstName(userFirstName);
             setLastName(userLastName);
             setJobTitle(userJobTitle);
+            setPhotoUrl(data.photo || null);
 
             // Update localStorage so it's available for other components
             localStorage.setItem('userFirstName', userFirstName);
@@ -49,34 +50,6 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
     }
     fetchUserData();
   }, [user]);
-
-  // TODO: Re-enable photo fetch after fixing permissions
-  // Fetch user's profile photo
-  // useEffect(() => {
-  //   async function fetchPhotoUrl() {
-  //     if (user?.id) {
-  //       try {
-  //         const { data, error } = await supabase
-  //           .from('users')
-  //           .select('photo_url')
-  //           .eq('id', user.id)
-  //           .single();
-
-  //         if (error) {
-  //           console.log('Error fetching photo URL:', error);
-  //           return;
-  //         }
-
-  //         if (data?.photo_url) {
-  //           setPhotoUrl(data.photo_url);
-  //         }
-  //       } catch (err) {
-  //         console.error('Error in fetchPhotoUrl:', err);
-  //       }
-  //     }
-  //   }
-  //   fetchPhotoUrl();
-  // }, [user]);
 
   const [showActivity, setShowActivity] = useState(false);
 
@@ -186,11 +159,19 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
         {/* Fixed user profile section at bottom */}
         <div className="border-t border-gray-200 p-4 flex-shrink-0">
           <div className="flex items-center gap-2 mb-3 p-2 bg-gray-100 rounded-lg">
-            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center border-2 border-black">
-              <span className="text-[#009900] font-bold text-xs">
-                {firstName.charAt(0).toUpperCase()}{lastName.charAt(0).toUpperCase()}
-              </span>
-            </div>
+            {photoUrl ? (
+              <img
+                src={photoUrl}
+                alt={fullName}
+                className="w-8 h-8 rounded-full object-cover border-2 border-black"
+              />
+            ) : (
+              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center border-2 border-black">
+                <span className="text-[#009900] font-bold text-xs">
+                  {firstName.charAt(0).toUpperCase()}{lastName.charAt(0).toUpperCase()}
+                </span>
+              </div>
+            )}
             <div className="flex-1 min-w-0">
               <p className="font-medium text-gray-900 truncate text-sm">{fullName}</p>
               <p className="text-xs text-gray-600 truncate">{jobTitle}</p>

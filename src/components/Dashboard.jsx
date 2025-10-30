@@ -335,6 +335,7 @@ const getGreeting = () => {
               name,
               title,
               company,
+              photo,
               professional_interests
             )
           `)
@@ -358,6 +359,7 @@ const getGreeting = () => {
             professionalInterests: Array.isArray(matchedUser.professional_interests)
               ? matchedUser.professional_interests.join(', ')
               : matchedUser.professional_interests || '',
+            photo: matchedUser.photo || null,
             initials: initials,
             isReal: true
           };
@@ -431,50 +433,7 @@ const getGreeting = () => {
 
             {/* Events and Connections Side by Side */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Upcoming Events - Left Side */}
-              <div className="flex flex-col">
-                <div className="mb-4 text-center">
-                  <button
-                    onClick={() => setActiveTab('events')}
-                    className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black mb-2 hover:bg-gray-50 transition-colors cursor-pointer"
-                  >
-                    <h3 className="font-bold text-black text-lg">All Upcoming Events →</h3>
-                  </button>
-                  <p className="text-sm text-gray-600">Networking events happening near you</p>
-                </div>
-                <div className="space-y-4 flex-grow">
-                  {events.slice(0, 3).map((event, index) => (
-                  <div
-                    key={index}
-                    onClick={() => navigate(`/events/${event.id}`)}
-                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200 flex min-h-[136px]"
-                  >
-                    {event.image && (
-                      <img
-                        src={event.image}
-                        alt={event.title}
-                        className="w-32 h-32 object-cover flex-shrink-0"
-                      />
-                    )}
-                    <div className="p-3 flex-1 min-w-0">
-                      <div className="flex items-start justify-between mb-1">
-                        <div className="flex-1 min-w-0">
-                          <span className="inline-block bg-black text-white text-xs px-2 py-0.5 rounded mb-1">{event.badge || 'In-Person'}</span>
-                          <h4 className="font-bold text-gray-900 text-sm line-clamp-2">{event.title}</h4>
-                        </div>
-                      </div>
-                      <div className="space-y-0.5 text-xs text-gray-600">
-                        <p className="font-semibold text-gray-700 truncate">{event.organizerName || 'Event Organizer'}</p>
-                        <p>{event.date} • {event.time}</p>
-                        <p className="truncate">{event.fullAddress || event.location}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              </div>
-
-              {/* Potential Connections - Right Side */}
+              {/* Potential Connections - Left Side */}
               <div className="flex flex-col relative group">
                 <div className="mb-4 text-center">
                   <button
@@ -552,12 +511,20 @@ const getGreeting = () => {
                         className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px] cursor-pointer hover:shadow-md hover:border-[#009900] transition-all"
                       >
                         <div className="flex gap-3 md:gap-4">
-                          {/* Profile placeholder with initials */}
-                          <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white flex items-center justify-center flex-shrink-0 border-4 border-black">
-                            <span className="text-[#009900] font-bold text-2xl md:text-3xl">
-                              {person.initials}
-                            </span>
-                          </div>
+                          {/* Profile photo or initials */}
+                          {person.photo ? (
+                            <img
+                              src={person.photo}
+                              alt={person.name}
+                              className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover flex-shrink-0 border-4 border-black"
+                            />
+                          ) : (
+                            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white flex items-center justify-center flex-shrink-0 border-4 border-black">
+                              <span className="text-[#009900] font-bold text-2xl md:text-3xl">
+                                {person.initials}
+                              </span>
+                            </div>
+                          )}
                           <div className="flex-1 min-w-0">
                             <h4 className="font-bold text-gray-900 text-base md:text-lg">{person.name}</h4>
                             <p className="text-xs md:text-sm text-gray-600 mb-2">{person.title}</p>
@@ -577,6 +544,49 @@ const getGreeting = () => {
                     })
                   )}
                 </div>
+              </div>
+
+              {/* Upcoming Events - Right Side */}
+              <div className="flex flex-col">
+                <div className="mb-4 text-center">
+                  <button
+                    onClick={() => setActiveTab('events')}
+                    className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black mb-2 hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    <h3 className="font-bold text-black text-lg">All Upcoming Events →</h3>
+                  </button>
+                  <p className="text-sm text-gray-600">Networking events happening near you</p>
+                </div>
+                <div className="space-y-4 flex-grow">
+                  {events.slice(0, 3).map((event, index) => (
+                  <div
+                    key={index}
+                    onClick={() => navigate(`/events/${event.id}`)}
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200 flex min-h-[136px]"
+                  >
+                    {event.image && (
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        className="w-32 h-32 object-cover flex-shrink-0"
+                      />
+                    )}
+                    <div className="p-3 flex-1 min-w-0">
+                      <div className="flex items-start justify-between mb-1">
+                        <div className="flex-1 min-w-0">
+                          <span className="inline-block bg-black text-white text-xs px-2 py-0.5 rounded mb-1">{event.badge || 'In-Person'}</span>
+                          <h4 className="font-bold text-gray-900 text-sm line-clamp-2">{event.title}</h4>
+                        </div>
+                      </div>
+                      <div className="space-y-0.5 text-xs text-gray-600">
+                        <p className="font-semibold text-gray-700 truncate">{event.organizerName || 'Event Organizer'}</p>
+                        <p>{event.date} • {event.time}</p>
+                        <p className="truncate">{event.fullAddress || event.location}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
               </div>
             </div>
 
