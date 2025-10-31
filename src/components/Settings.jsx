@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { User, Shield, Bell, Lock, Upload, X, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { runMatchingAlgorithm } from '../lib/runMatching';
 
 function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
   const { user } = useAuth();
@@ -385,6 +386,11 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
       localStorage.setItem('userCompany', profile.company);
 
       showSuccess('Profile updated successfully!');
+
+      // Trigger matching algorithm after profile update (don't wait for it)
+      runMatchingAlgorithm().catch(err => {
+        console.error('⚠️ Matching algorithm failed (non-critical):', err);
+      });
     } catch (error) {
       console.error('Error saving profile:', error);
       alert('Error saving profile. Please try again.');

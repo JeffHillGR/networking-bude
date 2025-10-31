@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { User, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import { runMatchingAlgorithm } from '../lib/runMatching.js';
 
 export default function BudEOnboarding() {
   const navigate = useNavigate();
@@ -269,6 +270,11 @@ export default function BudEOnboarding() {
 
       // Show success popup
       setShowSuccessPopup(true);
+
+      // Trigger matching algorithm for the new user (don't wait for it)
+      runMatchingAlgorithm().catch(err => {
+        console.error('⚠️ Matching algorithm failed (non-critical):', err);
+      });
 
       // Navigate to dashboard after 4 seconds
       setTimeout(() => {
