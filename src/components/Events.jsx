@@ -178,29 +178,29 @@ function Events({ onBackToDashboard }) {
     },
     {
       id: 6,
-      title: 'Fuel on the Fire Pitch Competition',
-      description: 'Watch seven Black-owned businesses pitch for capital and support. A live competition empowering Kent County entrepreneurs with growth resources and visibility.',
-      date: '10/29/2025',
-      time: '5:00 PM - 8:00 PM',
-      location: 'ICCF Community Homes HQ',
-      attendees: '150+',
-      organizer: 'Grand Rapids Area Black Businesses',
-      price: 'Free',
+      title: 'Gabe Karp – Best-selling Author and Keynote Speaker',
+      description: 'Globally recognized expert in leadership and high-performance teams. Author of "Don\'t Get Mad at Penguins," presenting his proprietary system for leveraging conflict effectively. Operating Partner at Detroit Venture Partners.',
+      date: '11/17/2025',
+      time: '11:30 AM - 1:30 PM',
+      location: 'JW Marriott Grand Rapids',
+      attendees: '200+',
+      organizer: 'Economic Club of Grand Rapids',
+      price: 'Registration Required',
       badge: 'In-Person',
-      image: 'https://grabblocal.com/wp-content/uploads/FOF.jpeg'
+      image: 'https://miro.medium.com/v2/resize:fit:1100/format:webp/1*x7S7Iiz737OW5qXQGSpy3w.jpeg'
     },
     {
       id: 7,
-      title: 'Mastering The Matrix: AI, Innovation & Public Safety',
-      description: 'A groundbreaking full-day gathering with national experts, community leaders, tech innovators, and public safety professionals exploring how AI is reshaping our lives, laws, and liberties.',
-      date: '10/30/2025',
-      time: '7:30 AM - 5:00 PM',
-      location: 'GVSU Eberhard Center',
+      title: 'West Michigan Capstone Dinner 2025',
+      description: 'Celebrating 20 years of Inforum helping women lead and succeed in West Michigan. Featuring fireside chat with Andi Owen, CEO of MillerKnoll, discussing her leadership journey and insights.',
+      date: '11/20/2025',
+      time: '5:30 PM - 7:45 PM',
+      location: 'JW Marriott Grand Rapids',
       attendees: '200+',
-      organizer: 'Scales Consulting LLC',
-      price: 'Free',
+      organizer: 'Inforum',
+      price: '$100 per ticket',
       badge: 'In-Person',
-      image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1150451263%2F2284555542733%2F1%2Foriginal.20251010-230321?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.506&fp-y=0.098&s=99803e3fd6bb96e6dee48880e089b619'
+      image: 'https://myinforum.app.neoncrm.com/neon/resource/myinforum/images/Andi%20Owen_HEADSHOT.jpg'
     }
   ];
 
