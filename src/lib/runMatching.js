@@ -61,26 +61,41 @@ export async function runMatchingAlgorithm() {
 
     // Simple matching logic - calculate compatibility between all users
     let matchesCreated = 0;
+    let matchesUpdated = 0;
+    let totalPairsEvaluated = 0;
+
+    console.log(`📊 Evaluating ${users.length} users for matches...`);
 
     for (let i = 0; i < users.length; i++) {
       for (let j = i + 1; j < users.length; j++) {
         const userA = users[i];
         const userB = users[j];
+        totalPairsEvaluated++;
 
         const score = calculateCompatibility(userA, userB);
+
+        console.log(`🔍 ${userA.first_name} ↔ ${userB.first_name}: ${score}% compatibility`);
 
         // Only create matches above threshold (65%)
         if (score >= 65) {
           // Create match for both directions
-          await createMatch(userA.id, userB.id, score);
-          await createMatch(userB.id, userA.id, score);
-          matchesCreated += 2;
+          const resultA = await createMatch(userA.id, userB.id, score);
+          const resultB = await createMatch(userB.id, userA.id, score);
+
+          if (resultA.created || resultB.created) {
+            matchesCreated += 2;
+          } else {
+            matchesUpdated += 2;
+          }
         }
       }
     }
 
-    console.log(`✅ Matching completed: ${matchesCreated} matches created`);
-    return { success: true, matchesCreated };
+    console.log(`✅ Matching completed:`);
+    console.log(`   - Pairs evaluated: ${totalPairsEvaluated}`);
+    console.log(`   - New matches created: ${matchesCreated}`);
+    console.log(`   - Existing matches updated: ${matchesUpdated}`);
+    return { success: true, matchesCreated, matchesUpdated, totalPairsEvaluated };
 
   } catch (error) {
     console.error('❌ Error running matching algorithm:', error);
@@ -184,6 +199,14 @@ function calculateTextSimilarity(text1, text2) {
  * Create or update a match in the database
  */
 async function createMatch(userId, matchedUserId, score) {
+  // Check if match already exists
+  const { data: existing } = await supabase
+    .from('matches')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('matched_user_id', matchedUserId)
+    .single();
+
   const { error } = await supabase
     .from('matches')
     .upsert({
@@ -191,7 +214,7 @@ async function createMatch(userId, matchedUserId, score) {
       matched_user_id: matchedUserId,
       compatibility_score: score,
       status: 'recommended',
-      created_at: new Date().toISOString(),
+      created_at: existing ? undefined : new Date().toISOString(), // Keep original created_at if exists
       updated_at: new Date().toISOString()
     }, {
       onConflict: 'user_id,matched_user_id'
@@ -199,5 +222,8 @@ async function createMatch(userId, matchedUserId, score) {
 
   if (error && error.code !== '23505') { // Ignore duplicate key errors
     console.error('Error creating match:', error);
+    return { created: false };
   }
+
+  return { created: !existing }; // Return true if it was newly created
 }
