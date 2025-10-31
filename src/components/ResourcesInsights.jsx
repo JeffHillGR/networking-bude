@@ -141,8 +141,12 @@ function ResourcesInsights() {
                 <ArrowLeft className="w-5 h-5" />
                 <span>Back to Dashboard</span>
               </button>
-              <h1 className="text-2xl font-bold text-gray-900">Resources & Insights</h1>
-              <p className="text-gray-600 mt-1">Curated content to help you grow</p>
+              <div className="text-center">
+                <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
+                  <h1 className="text-3xl font-bold text-black">Resources & Insights</h1>
+                </div>
+                <p className="text-gray-600 mt-2">Curated content to help you grow</p>
+              </div>
             </div>
           </div>
 

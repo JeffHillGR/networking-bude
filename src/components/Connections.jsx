@@ -55,7 +55,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
 
       try {
         // Optimized: Fetch only user ID once, with minimal data
-        const { data: userData, error: userError } = await supabase
+        const { data: userData, error: userError} = await supabase
           .from('users')
           .select('id')
           .eq('email', user.email)
@@ -66,6 +66,17 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
         // Store current user ID for sending connection requests
         setCurrentUserId(userData.id);
 
+        // Reset stale pending connections (10+ days old)
+        await supabase
+          .from('matches')
+          .update({
+            status: 'recommended',
+            pending_since: null
+          })
+          .eq('user_id', userData.id)
+          .eq('status', 'pending')
+          .lt('pending_since', new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString());
+
         // Fetch all matches with different statuses
         const { data: allMatchesData, error: matchesError } = await supabase
           .from('matches')
@@ -73,6 +84,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
             matched_user_id,
             compatibility_score,
             status,
+            updated_at,
             matched_user:users!matches_matched_user_id_fkey (
               first_name,
               last_name,
@@ -90,13 +102,14 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
             )
           `)
           .eq('user_id', userData.id)
-          .in('status', ['recommended', 'pending', 'saved', 'connected'])
+          .in('status', ['recommended', 'perhaps', 'pending', 'saved', 'connected'])
           .order('compatibility_score', { ascending: false });
 
         if (matchesError) throw matchesError;
 
         // Transform Supabase data to component format and separate by status
         const recommended = [];
+        const perhaps = [];
         const pending = [];
         const saved = [];
 
@@ -133,6 +146,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
           // Separate by status
           if (match.status === 'recommended') {
             recommended.push(connectionData);
+          } else if (match.status === 'perhaps') {
+            perhaps.push(connectionData);
           } else if (match.status === 'pending') {
             pending.push(connectionData);
           } else if (match.status === 'saved' || match.status === 'connected') {
@@ -140,7 +155,10 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
           }
         });
 
-        setConnections(recommended);
+        // Combine recommended and perhaps (perhaps at the end)
+        const allRecommended = [...recommended, ...perhaps];
+
+        setConnections(allRecommended);
         setPendingConnections(pending);
         setSavedConnections(saved);
         setLoading(false);
@@ -212,14 +230,52 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
     const person = selectedConnection || currentCard;
 
     try {
-      // Call Supabase function to handle mutual connection logic
-      const { data: connectionResult, error: dbError } = await supabase
-        .rpc('handle_connection_request', {
-          p_user_id: currentUserId,
-          p_matched_user_id: person.id
-        });
+      // Update the match status to 'pending' with timestamp
+      const { error: updateError } = await supabase
+        .from('matches')
+        .update({
+          status: 'pending',
+          pending_since: new Date().toISOString()
+        })
+        .eq('user_id', currentUserId)
+        .eq('matched_user_id', person.id);
 
-      if (dbError) throw dbError;
+      if (updateError) throw updateError;
+
+      // Check if the other person already sent a request (mutual connection)
+      const { data: reciprocalMatch, error: reciprocalError } = await supabase
+        .from('matches')
+        .select('status')
+        .eq('user_id', person.id)
+        .eq('matched_user_id', currentUserId)
+        .single();
+
+      let connectionResult = 'pending';
+
+      // If they already requested, create mutual connection
+      if (reciprocalMatch && reciprocalMatch.status === 'pending') {
+        // Update both matches to 'connected'
+        await supabase
+          .from('matches')
+          .update({ status: 'connected' })
+          .eq('user_id', currentUserId)
+          .eq('matched_user_id', person.id);
+
+        await supabase
+          .from('matches')
+          .update({ status: 'connected' })
+          .eq('user_id', person.id)
+          .eq('matched_user_id', currentUserId);
+
+        connectionResult = 'connected';
+      }
+
+      // Get current user's profile info for the email
+      const { data: currentUserData } = await supabase
+        .from('users')
+        .select('name, photo, title, company')
+        .eq('id', currentUserId)
+        .single();
 
       // Send email notification
       const response = await fetch('/api/sendConnectionEmail', {
@@ -228,9 +284,12 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          senderName: user?.user_metadata?.full_name || user?.email,
+          senderName: currentUserData?.name || user?.user_metadata?.full_name || user?.email,
           senderEmail: user?.email,
           senderId: currentUserId,
+          senderPhoto: currentUserData?.photo || null,
+          senderTitle: currentUserData?.title || '',
+          senderCompany: currentUserData?.company || '',
           recipientName: person.name,
           recipientEmail: person.email,
           message: connectionMessage,
@@ -314,31 +373,22 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
 
   const handlePerhaps = async () => {
     try {
-      // Update match status to 'saved' in database
+      // Update match status to 'perhaps' in database (will show at end of recommended)
       const { error } = await supabase
         .from('matches')
-        .update({ status: 'saved' })
+        .update({
+          status: 'perhaps',
+          updated_at: new Date().toISOString()
+        })
         .eq('user_id', currentUserId)
         .eq('matched_user_id', currentCard.id);
 
       if (error) throw error;
 
-      // Add to saved connections
-      setSavedConnections(prev => [...prev, {
-        id: currentCard.id,
-        email: currentCard.email,
-        name: currentCard.name,
-        title: currentCard.title,
-        company: currentCard.company,
-        photo: currentCard.photo,
-        initials: currentCard.initials,
-        connectionScore: currentCard.connectionScore,
-        professionalInterests: currentCard.professionalInterests,
-        isMutual: false
-      }]);
+      // Don't add to saved - it stays in recommended but at the end
       nextCard();
     } catch (error) {
-      console.error('Error saving connection:', error);
+      console.error('Error marking as perhaps:', error);
     }
   };
 
