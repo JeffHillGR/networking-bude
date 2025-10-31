@@ -107,7 +107,7 @@ export default async function handler(req, res) {
 
     // Send email via Resend
     const data = await resend.emails.send({
-      from: 'BudE Connections <connections@networkingbude.com>',
+      from: 'BudE Connections <connections@mail.networkingbude.com>',
       to: recipientEmailAddress,
       subject: `${senderName} wants to connect with you on Networking BudE`,
       html: emailHtml,
