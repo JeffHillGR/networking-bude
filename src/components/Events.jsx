@@ -200,7 +200,7 @@ function Events({ onBackToDashboard }) {
       organizer: 'Inforum',
       price: '$100 per ticket',
       badge: 'In-Person',
-      image: 'https://myinforum.app.neoncrm.com/neon/resource/myinforum/images/Andi%20Owen_HEADSHOT.jpg'
+      image: 'https://npr.brightspotcdn.com/dims4/default/ec2181b/2147483647/strip/true/crop/383x214%2B0%2B0/resize/880x492!/quality/90/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2Flegacy%2Fsites%2Fwgvu%2Ffiles%2F201511%2FInforum.jpg'
     }
   ];
 
