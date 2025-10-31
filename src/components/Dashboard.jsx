@@ -27,7 +27,7 @@ function Dashboard() {
 const [selectedPlan, setSelectedPlan] = useState(null);
 const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
 const [showSponsorModal, setShowSponsorModal] = useState(false);
-const [showFeedbackPrompt, setShowFeedbackPrompt] = useState(false);
+const [showSharePrompt, setShowSharePrompt] = useState(false);
 const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
 const [adInquirySubmitted, setAdInquirySubmitted] = useState(false);
 const [phoneNumber, setPhoneNumber] = useState('');
@@ -196,20 +196,19 @@ const handleSubmitContact = async (e) => {
   }
 };
 
-// Check if user should see feedback prompt (after 24 hours of usage)
+// Check if user should see share prompt (every 5 days)
 useEffect(() => {
-  const firstLoginDate = localStorage.getItem('firstLoginDate');
-  const feedbackPromptShown = localStorage.getItem('feedbackPromptShown');
+  const lastSharePromptDate = localStorage.getItem('lastSharePromptDate');
 
-  if (!firstLoginDate) {
-    // Set first login date if not already set
-    localStorage.setItem('firstLoginDate', new Date().toISOString());
-  } else if (!feedbackPromptShown) {
-    // Check if 24 hours have passed
-    const hoursSinceFirstLogin = Math.floor((new Date() - new Date(firstLoginDate)) / (1000 * 60 * 60));
-    if (hoursSinceFirstLogin >= 24) {
-      setShowFeedbackPrompt(true);
-      localStorage.setItem('feedbackPromptShown', 'true');
+  if (!lastSharePromptDate) {
+    // Set initial date
+    localStorage.setItem('lastSharePromptDate', new Date().toISOString());
+  } else {
+    // Check if 5 days have passed (120 hours)
+    const hoursSinceLastPrompt = Math.floor((new Date() - new Date(lastSharePromptDate)) / (1000 * 60 * 60));
+    if (hoursSinceLastPrompt >= 120) { // 5 days = 120 hours
+      setShowSharePrompt(true);
+      localStorage.setItem('lastSharePromptDate', new Date().toISOString());
     }
   }
 }, []);
@@ -719,7 +718,7 @@ const getGreeting = () => {
             {/* Feedback Form Button */}
             <div className="flex justify-center mt-8">
               <button
-                onClick={() => setShowFeedbackPrompt(true)}
+                onClick={() => setShowFeedbackModal(true)}
                 className="px-6 py-3 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] flex items-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1080,12 +1079,12 @@ default:
         </div>
       )}
 
-      {/* Feedback Prompt Modal */}
-      {showFeedbackPrompt && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowFeedbackPrompt(false)}>
+      {/* Share Prompt Modal */}
+      {showSharePrompt && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowSharePrompt(false)}>
           <div className="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 relative border-4 border-[#D0ED00]" onClick={(e) => e.stopPropagation()}>
             <button
-              onClick={() => setShowFeedbackPrompt(false)}
+              onClick={() => setShowSharePrompt(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
             >
               ×
@@ -1094,28 +1093,35 @@ default:
               <div className="mb-4">
                 <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                   </svg>
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">How's your BudE experience so far?</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">Loving BudE? Share it!</h3>
               <p className="text-gray-600 mb-6">
-                We'd love to hear your thoughts! Your feedback helps us make BudE better for everyone.
-                It only takes a few minutes.
+                Help grow our networking community! Invite friends and colleagues who would benefit from making meaningful connections.
               </p>
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => {
-                    // Close prompt and open feedback modal without changing page
-                    setShowFeedbackPrompt(false);
-                    setShowFeedbackModal(true);
+                    const shareText = `Check out Networking BudE - it's helping me make meaningful professional connections! ${window.location.origin}`;
+                    if (navigator.share) {
+                      navigator.share({
+                        title: 'Networking BudE',
+                        text: shareText
+                      }).catch(() => {});
+                    } else {
+                      navigator.clipboard.writeText(shareText);
+                      alert('Link copied to clipboard!');
+                    }
+                    setShowSharePrompt(false);
                   }}
                   className="w-full bg-[#009900] text-white py-3 rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00]"
                 >
-                  Give Feedback
+                  Share with Friends
                 </button>
                 <button
-                  onClick={() => setShowFeedbackPrompt(false)}
+                  onClick={() => setShowSharePrompt(false)}
                   className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
                 >
                   Maybe Later
@@ -1431,8 +1437,8 @@ default:
       {/* Floating Feedback Widget */}
       <FeedbackWidget
         onOpenFeedback={() => {
-          // Open feedback prompt without changing active tab
-          setShowFeedbackPrompt(true);
+          // Open feedback modal directly without changing active tab
+          setShowFeedbackModal(true);
         }}
       />
     </div>
