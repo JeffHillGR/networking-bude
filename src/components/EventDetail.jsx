@@ -131,7 +131,7 @@ function EventDetail() {
       id: 7,
       title: 'West Michigan Capstone Dinner 2025',
       description: 'Celebrating 20 years of Inforum helping women lead and succeed in West Michigan. Featuring fireside chat with Andi Owen, CEO of MillerKnoll.',
-      fullDescription: 'Join Inforum for a milestone celebration marking 20 years of helping women lead and succeed in West Michigan.\n\nThis special Capstone Dinner features an inspiring fireside chat with Andi Owen, President and CEO of MillerKnoll, a collective of dynamic brands with more than 10,000 employees and $3.6 billion in annual revenue.\n\nAndi will share insights from her remarkable leadership journey, discussing how she navigated challenges, built high-performing teams, and created an inclusive culture that drives business success.\n\nThe conversation will be moderated by Tiffany Eubanks-Saunders, Head of Diverse Segments for the Private Bank business at Bank of America.\n\nThis elegant evening celebrates two decades of Inforum\'s impact on women\'s leadership development in West Michigan, while inspiring the next generation of female leaders.\n\nEvent Schedule:\n• 5:30-6:00 PM: Check-in and networking\n• 6:00-7:45 PM: Dinner and program\n\nTickets: $100 per non-member/guest. Table sponsorships available for $1,400.\n\nDress: Business professional',
+      fullDescription: 'Join Inforum for a milestone celebration marking 20 years of helping women lead and succeed in West Michigan.\n\nThis special Capstone Dinner features an inspiring fireside chat with Andi Owen, President and CEO of MillerKnoll, a collective of dynamic brands with more than 10,000 employees and $3.6 billion in annual revenue.\n\nAndi will share insights from her remarkable leadership journey, discussing how she navigated challenges, built high-performing teams, and created an inclusive culture that drives business success.\n\nThe conversation will be moderated by Tiffany Eubanks-Saunders, Head of Diverse Segments for the Private Bank business at Bank of America.\n\nThis elegant evening celebrates two decades of Inforum\'s impact on women\'s leadership development in West Michigan, while inspiring the next generation of female leaders.\n\nEvent Schedule:\n• 5:30-6:00 PM: Check-in and networking\n• 6:00-7:45 PM: Dinner and program\n\nRegistration required. Visit the event website for pricing and details.\n\nDress: Business professional',
       date: 'Thursday, November 20, 2025',
       time: '5:30 PM - 7:45 PM',
       location: 'JW Marriott Grand Rapids',
@@ -209,14 +209,27 @@ function EventDetail() {
   const suggestedConnections = [];
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar activeTab="events" setActiveTab={() => navigate('/dashboard')} />
+    <>
+      {/* Top banner matching site header - spans full width */}
+      <div className="bg-gradient-to-r from-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
+        <span className="font-medium">
+          Welcome to Networking BudE • <button
+          onClick={() => {
+            localStorage.removeItem('onboardingCompleted');
+            window.location.href = '/';
+          }}
+          className="underline hover:no-underline font-medium"
+        >
+          Reset to Onboarding
+        </button>
+        </span>
+      </div>
 
-      <div className="flex-1">
-        {/* Header with BudE gradient top bar */}
-        <div className="bg-gradient-to-r from-green-600 via-lime-400 to-yellow-400 h-2"></div>
+      <div className="flex min-h-screen bg-gray-50">
+        <Sidebar activeTab="events" setActiveTab={() => navigate('/dashboard')} />
 
-        <div className="bg-white border-b border-gray-200">
+        <div className="flex-1">
+          <div className="bg-white border-b border-gray-200">
           <div className="px-4 py-4">
             <button
               onClick={() => navigate('/dashboard', { state: { activeTab: 'events' } })}
@@ -362,7 +375,7 @@ function EventDetail() {
                     <Users className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
                     <div>
                       <div className="font-semibold text-gray-900">Attendees</div>
-                      <div className="text-sm text-[#009900] font-medium">Coming Soon</div>
+                      <div className="text-sm text-[#009900] font-medium">Who's Going - Feature Coming Soon</div>
                     </div>
                   </div>
                 </div>
@@ -472,6 +485,7 @@ function EventDetail() {
             </div>
           );
         })()}
+        </div>
         </div>
       </div>
 
@@ -742,7 +756,7 @@ function EventDetail() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 

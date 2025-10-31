@@ -594,13 +594,16 @@ const getGreeting = () => {
             <div>
               <div className="bg-white rounded-lg p-4 md:p-5 shadow-sm border border-gray-200">
                 <div className="mb-2 text-center">
-                  <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black">
+                  <div
+                    onClick={() => navigate('/resources-insights')}
+                    className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black cursor-pointer hover:bg-gray-50 transition-colors"
+                  >
                     <h3 className="font-bold text-black text-lg">Resources & Insights</h3>
                   </div>
                   <p className="text-xs text-gray-500 mt-0.5">Curated content to help you grow</p>
                 </div>
 
-                {/* Carousel Content with Navigation on Left */}
+                {/* Carousel Content with Thumbnail on Left */}
                 <div
                   onClick={() => {
                     if (featuredContent[featuredContentIndex].url) {
@@ -609,6 +612,13 @@ const getGreeting = () => {
                   }}
                   className="flex flex-col md:flex-row items-start gap-4 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition-colors cursor-pointer"
                 >
+                  {/* Thumbnail Image */}
+                  <img
+                    src={featuredContent[featuredContentIndex].image}
+                    alt={featuredContent[featuredContentIndex].title}
+                    className="w-32 h-32 md:w-36 md:h-36 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm"
+                  />
+
                   {/* Carousel Navigation - Horizontal: < 1 of 3 > */}
                   <div className="flex items-center gap-2 self-start">
                     <button
@@ -637,13 +647,6 @@ const getGreeting = () => {
                       <ChevronRight className="w-5 h-5 text-gray-700" />
                     </button>
                   </div>
-
-                  {/* Thumbnail Image */}
-                  <img
-                    src={featuredContent[featuredContentIndex].image}
-                    alt={featuredContent[featuredContentIndex].title}
-                    className="w-32 h-32 md:w-36 md:h-36 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm"
-                  />
 
                   {/* Right side: Content */}
                   <div className="flex-1 min-w-0">

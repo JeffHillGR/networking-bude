@@ -5,6 +5,7 @@ import OnboardingFlow from './components/OnboardingFlow.jsx';
 import AdminPanel from './components/AdminPanel.jsx';
 import Events from './components/Events.jsx';
 import EventDetail from './components/EventDetail.jsx';
+import ResourcesInsights from './components/ResourcesInsights.jsx';
 import Settings from './components/Settings.jsx';
 import ResetPassword from './components/ResetPassword.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
@@ -33,6 +34,10 @@ function App() {
         <Route
           path="/events/:eventId"
           element={user ? <EventDetail /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/resources-insights"
+          element={user ? <ResourcesInsights /> : <Navigate to="/" />}
         />
         <Route
           path="/settings"

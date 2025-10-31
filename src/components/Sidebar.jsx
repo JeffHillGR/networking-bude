@@ -143,14 +143,6 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
                   <CreditCard className="w-4 h-4" />
                   <span>Account</span>
                 </button>
-
-                <button
-                  onClick={() => setActiveTab('archive')}
-                  className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors text-gray-500 hover:bg-gray-100"
-                >
-                  <Archive className="w-4 h-4" />
-                  <span>Content Archive</span>
-                </button>
               </div>
             </nav>
           </div>

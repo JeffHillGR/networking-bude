@@ -55,7 +55,14 @@ function Events({ onBackToDashboard }) {
   // Load admin-created events from localStorage
   const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
 
-  const defaultFeaturedEvents = [
+  // Helper function to parse date strings (MM/DD/YYYY) into Date objects for sorting
+  const parseEventDate = (dateString) => {
+    const [month, day, year] = dateString.split('/');
+    return new Date(year, month - 1, day);
+  };
+
+  // Featured events in custom order (not sorted by date)
+  const featuredEvents = [
     {
       id: 1,
       title: 'Bamboo Grand Rapids: Grand Opening Celebration',
@@ -105,17 +112,6 @@ function Events({ onBackToDashboard }) {
       badge: 'In-Person'
     }
   ];
-
-  // Helper function to parse date strings (MM/DD/YYYY) into Date objects for sorting
-  const parseEventDate = (dateString) => {
-    const [month, day, year] = dateString.split('/');
-    return new Date(year, month - 1, day);
-  };
-
-  // Sort featured events chronologically (earliest first)
-  const featuredEvents = [...defaultFeaturedEvents].sort((a, b) =>
-    parseEventDate(a.date) - parseEventDate(b.date)
-  );
 
   const handleSubmitEvent = async (e) => {
     e.preventDefault();
@@ -198,7 +194,7 @@ function Events({ onBackToDashboard }) {
       location: 'JW Marriott Grand Rapids',
       attendees: '200+',
       organizer: 'Inforum',
-      price: '$100 per ticket',
+      price: 'Registration Required',
       badge: 'In-Person',
       image: 'https://npr.brightspotcdn.com/dims4/default/ec2181b/2147483647/strip/true/crop/383x214%2B0%2B0/resize/880x492!/quality/90/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2Flegacy%2Fsites%2Fwgvu%2Ffiles%2F201511%2FInforum.jpg'
     }
@@ -308,8 +304,12 @@ function Events({ onBackToDashboard }) {
                     <div className="p-6">
                       <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>
                       <p className="text-gray-600 mb-4">{event.description}</p>
+                      <div className="mb-3">
+                        <span className="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
+                          {event.organizerName || 'Event Organizer'}
+                        </span>
+                      </div>
                       <div className="space-y-2 text-sm text-gray-600 mb-4">
-                        <p className="font-semibold text-gray-700">🏢 {event.organizerName || 'Event Organizer'}</p>
                         <div className="flex items-center gap-2">
                           <Calendar className="h-4 w-4" />
                           <span>{event.date} • {event.time}</span>
@@ -320,7 +320,7 @@ function Events({ onBackToDashboard }) {
                         </div>
                         <div className="flex items-center gap-2">
                           <Users className="h-4 w-4" />
-                          <span className="text-[#009900] font-medium">Coming Soon</span>
+                          <span className="text-[#009900] font-medium">Who's Going - Feature Coming Soon</span>
                         </div>
                       </div>
                       <div className="flex justify-end">
@@ -387,11 +387,18 @@ function Events({ onBackToDashboard }) {
                           </div>
                           <div className="flex items-center gap-2">
                             <Users className="h-4 w-4 flex-shrink-0" />
-                            <span className="truncate text-[#009900] font-medium">Coming Soon</span>
+                            <span className="truncate text-[#009900] font-medium">Who's Going - Feature Coming Soon</span>
                           </div>
                         </div>
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0 mt-3 md:mt-4">
-                          <span className="text-xs md:text-sm text-gray-600 truncate">by {event.organizer} {event.price !== 'Free' && `• ${event.price}`}</span>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
+                              {event.organizer}
+                            </span>
+                            {event.price !== 'Free' && (
+                              <span className="text-xs text-gray-600">{event.price}</span>
+                            )}
+                          </div>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
