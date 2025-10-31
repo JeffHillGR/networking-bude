@@ -110,41 +110,41 @@ function EventDetail() {
     },
     6: {
       id: 6,
-      title: 'Fuel on the Fire Pitch Competition',
-      description: 'A live pitch competition empowering Black-owned businesses with capital, expert support, and visibility.',
-      fullDescription: 'Fuel on the Fire is a transformative pitch competition designed to empower Black-owned, for-profit businesses in Kent County.\n\nWatch seven inspiring founders pitch their business growth plans to a panel of expert judges and a live audience. This isn\'t just a competition—it\'s a celebration of Black entrepreneurship and a commitment to economic equity in our community.\n\nWinners receive capital investment, mentorship, and ongoing support to help scale their businesses. Whether you\'re an entrepreneur, investor, or community supporter, this event offers powerful insights into the innovation happening in Grand Rapids\' Black business community.\n\nHosted by Grand Rapids Area Black Businesses at ICCF Community Homes HQ. Free admission.',
-      date: 'Wednesday, October 29, 2025',
-      time: '5:00 PM - 8:00 PM',
-      location: 'ICCF Community Homes HQ',
-      fullAddress: '415 M.L.K Jr St SE, Grand Rapids, MI 49507',
-      image: 'https://grabblocal.com/wp-content/uploads/FOF.jpeg',
+      title: 'Gabe Karp – Best-selling Author and Keynote Speaker',
+      description: 'Globally recognized expert in leadership and high-performance teams. Author of "Don\'t Get Mad at Penguins," presenting his proprietary system for leveraging conflict effectively.',
+      fullDescription: 'Join the Economic Club of Grand Rapids for an insightful luncheon featuring Gabe Karp, globally recognized expert in leadership and high-performance teams.\n\nGabe Karp is the author of the bestselling book "Don\'t Get Mad at Penguins," which presents his proprietary system for leveraging conflict effectively, developed through three decades of research and real-world application.\n\nCurrently serving as an Operating Partner at Detroit Venture Partners, Gabe brings extensive experience from his role as Executive Vice President and General Counsel at ePrize (now Merkle). In 2011, Crain\'s Business named him General Counsel of the Year for Michigan.\n\nHis career began as a trial lawyer specializing in complex commercial and class-action litigation, giving him unique insights into conflict resolution and team dynamics.\n\nThis engaging presentation will explore how leaders can transform workplace conflict into a catalyst for innovation, stronger teams, and organizational success. Perfect for executives, managers, and professionals seeking to enhance their leadership effectiveness.\n\nRegistration includes lunch and networking opportunities. Available in-person or via Zoom livestream. Corporate table packages available.',
+      date: 'Monday, November 17, 2025',
+      time: '11:30 AM - 1:30 PM',
+      location: 'JW Marriott Grand Rapids',
+      fullAddress: '235 Louis St NW, Grand Rapids, MI 49503',
+      image: 'https://miro.medium.com/v2/resize:fit:1100/format:webp/1*x7S7Iiz737OW5qXQGSpy3w.jpeg',
       badge: 'In-Person',
       organizer: {
-        name: 'Grand Rapids Area Black Businesses',
-        avatar: 'GB',
-        description: 'GRABB supports Black-owned businesses through networking, resources, and advocacy, building economic strength in the Grand Rapids community.'
+        name: 'Economic Club of Grand Rapids',
+        avatar: 'EC',
+        description: 'The Economic Club of Grand Rapids brings world-class speakers and thought leaders to West Michigan, fostering informed discussion on business, leadership, and economic issues.'
       },
-      tags: ['Entrepreneurship', 'Diversity', 'Investment', 'Community', 'Pitch Competition'],
-      registrationUrl: 'https://grabblocal.com/event/fuel-on-the-fire2025/'
+      tags: ['Leadership', 'Conflict Resolution', 'Business Strategy', 'Team Building', 'Professional Development'],
+      registrationUrl: 'https://econclub.net/gabe-karp/'
     },
     7: {
       id: 7,
-      title: 'Mastering The Matrix: AI, Innovation & Public Safety',
-      description: 'A groundbreaking full-day gathering with national experts exploring how artificial intelligence is reshaping our lives, laws, and liberties.',
-      fullDescription: 'Join Scales Consulting LLC, the Michigan Department of Civil Rights, and Kent County ALPACT for "Mastering The Matrix," a transformative full-day conference exploring the intersection of artificial intelligence, innovation, and public safety.\n\nKeynote Address: Renée Cummings, AI Ethicist and Professor at the University of Virginia, will share insights on ethical AI development and its implications for civil rights and justice.\n\nThis comprehensive event features expert panels on AI technology, law enforcement applications, civil rights considerations, and policy development. Attend interactive breakout sessions covering practical AI implementation, ethical frameworks, and community impact.\n\nWhether you\'re a tech leader, public safety official, educator, policy maker, or concerned community member, this conference offers critical insights into how AI is transforming our society. Network with national experts, local leaders, and fellow attendees during the vendor expo.\n\nIncludes breakfast, lunch, networking opportunities, and giveaways. Ages 18+.',
-      date: 'Thursday, October 30, 2025',
-      time: '7:30 AM - 5:00 PM',
-      location: 'GVSU Eberhard Center',
-      fullAddress: '301 Fulton St W, Grand Rapids, MI 49504',
-      image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1150451263%2F2284555542733%2F1%2Foriginal.20251010-230321?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.506&fp-y=0.098&s=99803e3fd6bb96e6dee48880e089b619',
+      title: 'West Michigan Capstone Dinner 2025',
+      description: 'Celebrating 20 years of Inforum helping women lead and succeed in West Michigan. Featuring fireside chat with Andi Owen, CEO of MillerKnoll.',
+      fullDescription: 'Join Inforum for a milestone celebration marking 20 years of helping women lead and succeed in West Michigan.\n\nThis special Capstone Dinner features an inspiring fireside chat with Andi Owen, President and CEO of MillerKnoll, a collective of dynamic brands with more than 10,000 employees and $3.6 billion in annual revenue.\n\nAndi will share insights from her remarkable leadership journey, discussing how she navigated challenges, built high-performing teams, and created an inclusive culture that drives business success.\n\nThe conversation will be moderated by Tiffany Eubanks-Saunders, Head of Diverse Segments for the Private Bank business at Bank of America.\n\nThis elegant evening celebrates two decades of Inforum\'s impact on women\'s leadership development in West Michigan, while inspiring the next generation of female leaders.\n\nEvent Schedule:\n• 5:30-6:00 PM: Check-in and networking\n• 6:00-7:45 PM: Dinner and program\n\nTickets: $100 per non-member/guest. Table sponsorships available for $1,400.\n\nDress: Business professional',
+      date: 'Thursday, November 20, 2025',
+      time: '5:30 PM - 7:45 PM',
+      location: 'JW Marriott Grand Rapids',
+      fullAddress: '235 Louis St NW, Grand Rapids, MI 49503',
+      image: 'https://npr.brightspotcdn.com/dims4/default/ec2181b/2147483647/strip/true/crop/383x214%2B0%2B0/resize/880x492!/quality/90/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2Flegacy%2Fsites%2Fwgvu%2Ffiles%2F201511%2FInforum.jpg',
       badge: 'In-Person',
       organizer: {
-        name: 'Scales Consulting LLC',
-        avatar: 'SC',
-        description: 'Scales Consulting LLC partners with the Michigan Department of Civil Rights and Kent County ALPACT to advance conversations on AI, innovation, and social justice.'
+        name: 'Inforum',
+        avatar: 'IF',
+        description: 'Inforum is Michigan\'s leading membership organization for professional women, dedicated to helping women lead and succeed through connections, programs, and advocacy.'
       },
-      tags: ['AI', 'Technology', 'Public Safety', 'Civil Rights', 'Innovation', 'Policy'],
-      registrationUrl: 'https://www.eventbrite.com/e/mastering-the-matrix-ai-innovation-public-safety-tickets-1752250060099'
+      tags: ['Women in Leadership', 'Networking', 'CEO Insights', 'Professional Development', 'Celebration'],
+      registrationUrl: 'https://myinforum.app.neoncrm.com/np/clients/myinforum/event.jsp?event=54120'
     },
     4: {
       id: 4,
