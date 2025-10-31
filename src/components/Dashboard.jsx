@@ -555,7 +555,7 @@ const getGreeting = () => {
                   >
                     <h3 className="font-bold text-black text-lg">All Upcoming Events →</h3>
                   </button>
-                  <p className="text-sm text-gray-600">Networking events happening near you</p>
+                  <p className="text-sm text-gray-600">Check out events coming up </p>
                 </div>
                 <div className="space-y-4 flex-grow">
                   {events.slice(0, 3).map((event, index) => (
