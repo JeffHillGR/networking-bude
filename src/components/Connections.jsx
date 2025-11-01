@@ -270,58 +270,35 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
         connectionResult = 'connected';
       }
 
-      // Get current user's profile info for the email
+      // Get current user's profile info
       const { data: currentUserData } = await supabase
         .from('users')
-        .select('name, photo, title, company')
+        .select('name, title, company')
         .eq('id', currentUserId)
         .single();
 
-      // Send email notification
-      const response = await fetch('/api/sendConnectionEmail', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          senderName: currentUserData?.name || user?.user_metadata?.full_name || user?.email,
-          senderEmail: user?.email,
-          senderId: currentUserId,
-          senderPhoto: currentUserData?.photo || null,
-          senderTitle: currentUserData?.title || '',
-          senderCompany: currentUserData?.company || '',
-          recipientName: person.name,
-          recipientEmail: person.email,
-          message: connectionMessage,
-          connectionScore: person.connectionScore
-        })
-      });
+      const senderName = currentUserData?.name || user?.user_metadata?.full_name || user?.email;
+      const senderTitle = currentUserData?.title || '';
+      const senderCompany = currentUserData?.company || '';
 
-      if (!response.ok) {
-        console.error('Failed to send email, but connection status updated');
-      }
+      // Create mailto link to open user's email client
+      const subject = `${senderName} wants to connect with you on Networking BudE`;
+      const body = `Hi ${person.name},
 
-      // Create in-app notification for the recipient
-      try {
-        const senderName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Someone';
+I found your profile on Networking BudE and would love to connect! We have a ${person.connectionScore}% compatibility match.
 
-        const { error: notificationError } = await supabase
-          .from('notifications')
-          .insert({
-            user_id: person.id,
-            type: 'connection_request',
-            title: 'New Connection Request',
-            message: `${senderName} wants to connect with you`,
-            related_user_id: currentUserId,
-            is_read: false
-          });
+${senderTitle && senderCompany ? `About me: ${senderTitle} at ${senderCompany}` : ''}
 
-        if (notificationError) {
-          console.error('Failed to create notification:', notificationError);
-        }
-      } catch (notifError) {
-        console.error('Error creating notification:', notifError);
-      }
+${connectionMessage ? `Personal message:\n"${connectionMessage}"\n\n` : ''}Log in to Networking BudE to view my full profile and connect: https://networking-bude.vercel.app/dashboard
+
+Looking forward to connecting!
+
+Best,
+${senderName}`;
+
+      // Open mailto link
+      const mailtoLink = `mailto:${person.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailtoLink;
 
       // Check if connection became mutual
       if (connectionResult === 'connected') {
