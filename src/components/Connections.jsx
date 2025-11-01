@@ -814,7 +814,8 @@ ${senderName}`;
                 {filteredConnections.map((person) => (
                   <div
                     key={person.id}
-                    className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-all"
+                    onClick={() => setSelectedConnection(person)}
+                    className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-all cursor-pointer"
                   >
                     <div className="flex gap-4">
                       {person.photo ? (
@@ -903,6 +904,170 @@ ${senderName}`;
           </div>
         )}
       </div>
+
+      {/* Expanded Profile View Modal for Saved/Pending */}
+      {selectedConnection && (activeTab === 'saved' || activeTab === 'pending') && !showConnectModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setSelectedConnection(null)}>
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            {/* Card Header */}
+            <div className="relative bg-gradient-to-br from-blue-50 to-blue-100 p-8 pb-16">
+              <button
+                onClick={() => setSelectedConnection(null)}
+                className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 bg-white rounded-full p-2"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <div className="flex flex-col items-center">
+                {selectedConnection.photo ? (
+                  <img
+                    src={selectedConnection.photo}
+                    alt={selectedConnection.name}
+                    className="w-32 h-32 rounded-full object-cover mb-4 shadow-lg border-4 border-black"
+                  />
+                ) : (
+                  <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center mb-4 shadow-lg border-4 border-black">
+                    <span className="text-[#009900] font-bold text-4xl">
+                      {selectedConnection.initials}
+                    </span>
+                  </div>
+                )}
+                <h3 className="text-2xl font-bold text-gray-900">{selectedConnection.name}</h3>
+                <p className="text-gray-600 mt-1">{selectedConnection.title}</p>
+                <p className="text-gray-500 text-sm">{selectedConnection.company}</p>
+              </div>
+            </div>
+
+            {/* Card Content */}
+            <div className="p-6">
+              <div className="flex items-center justify-center gap-6 mb-6 pb-6 border-b border-gray-200">
+                <div className="text-center">
+                  <div className="flex items-center gap-2 text-green-600 mb-1">
+                    <TrendingUp className="w-5 h-5" />
+                    <span className="text-2xl font-bold">{selectedConnection.connectionScore}%</span>
+                  </div>
+                  <p className="text-xs text-gray-600">BudE Compatibility</p>
+                </div>
+              </div>
+
+              <div className="mb-6 space-y-4">
+                <div className="flex gap-2 mb-4 flex-wrap">
+                  {selectedConnection.professionalInterests && selectedConnection.professionalInterests.split(',').slice(0, 3).map((interest, index) => (
+                    <span key={index} className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
+                      {interest.trim()}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Profile Fields */}
+                {selectedConnection.email && (
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700 mb-1">Email:</p>
+                    <p className="text-gray-600 text-sm">{selectedConnection.email}</p>
+                  </div>
+                )}
+
+                {selectedConnection.industry && (
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700 mb-1">Industry:</p>
+                    <p className="text-gray-600 text-sm capitalize">{selectedConnection.industry}</p>
+                  </div>
+                )}
+
+                {selectedConnection.orgsAttend && (
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700 mb-1">Organizations That Have Events I Like To Attend:</p>
+                    <p className="text-gray-600 text-sm">{selectedConnection.orgsAttend}</p>
+                  </div>
+                )}
+
+                {selectedConnection.orgsCheckOut && (
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700 mb-1">Organizations I've Wanted to Check Out:</p>
+                    <p className="text-gray-600 text-sm">{selectedConnection.orgsCheckOut}</p>
+                  </div>
+                )}
+
+                {selectedConnection.professionalInterests && (
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700 mb-1">Professional Interests:</p>
+                    <p className="text-gray-600 text-sm">{selectedConnection.professionalInterests}</p>
+                  </div>
+                )}
+
+                {selectedConnection.professionalInterestsOther && (
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700 mb-1">Professional Interests Other:</p>
+                    <p className="text-gray-600 text-sm">{selectedConnection.professionalInterestsOther}</p>
+                  </div>
+                )}
+
+                {selectedConnection.personalInterests && (
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700 mb-1">Personal Interests:</p>
+                    <p className="text-gray-600 text-sm">{selectedConnection.personalInterests}</p>
+                  </div>
+                )}
+
+                {selectedConnection.networkingGoals && (
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700 mb-1">Networking Goals:</p>
+                    <p className="text-gray-600 text-sm">{selectedConnection.networkingGoals}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons based on tab */}
+              {activeTab === 'saved' && !selectedConnection.isMutual && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={async () => {
+                      await supabase
+                        .from('matches')
+                        .update({ status: 'recommended' })
+                        .eq('user_id', currentUserId)
+                        .eq('matched_user_id', selectedConnection.id);
+                      setSavedConnections(prev => prev.filter(c => c.id !== selectedConnection.id));
+                      setSelectedConnection(null);
+                    }}
+                    className="px-4 py-2 text-sm border-2 border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors"
+                  >
+                    Remove
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowConnectModal(true);
+                    }}
+                    className="flex-1 px-4 py-2 text-sm bg-[#009900] border-2 border-[#D0ED00] text-white rounded hover:bg-[#007700] transition-colors font-medium"
+                  >
+                    Connect
+                  </button>
+                </div>
+              )}
+
+              {activeTab === 'saved' && selectedConnection.isMutual && (
+                <div className="text-center">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 border-2 border-[#009900] text-[#009900] rounded text-sm font-semibold">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    Mutual Connection
+                  </span>
+                  <p className="text-xs text-gray-500 mt-2">Both of you clicked Connect!</p>
+                </div>
+              )}
+
+              {activeTab === 'pending' && (
+                <div className="text-center">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded text-sm">
+                    <Clock className="w-4 h-4" />
+                    Request Sent
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Connect Modal */}
       {showConnectModal && (selectedConnection || currentCard) && (() => {
