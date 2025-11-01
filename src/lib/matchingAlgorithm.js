@@ -156,6 +156,20 @@ function scoreNetworkingGoals(goals1, goals2) {
     matches.push(`Shared goals: ${sharedWords.join(', ')}`);
   }
 
+  // BudE Philosophy Bonus - authentic relationship-building values
+  const budePhilosophyKeywords = [
+    'purpose', 'relationship', 'connecting', 'collaboration', 'shared', 'share',
+    'uplifting', 'community', 'partnership', 'partnerships', 'real', 'genuine',
+    'authentic', 'meaningful', 'serve', 'support', 'uplift'
+  ];
+  const sharedPhilosophy = budePhilosophyKeywords.filter(kw =>
+    text1.includes(kw) && text2.includes(kw)
+  );
+  if (sharedPhilosophy.length > 0) {
+    score += Math.min(sharedPhilosophy.length * 3, 12); // Higher weight for philosophy match
+    matches.push(`Shared values: ${sharedPhilosophy.join(', ')}`);
+  }
+
   return {
     score: Math.min(score, maxScore),
     matches
@@ -406,13 +420,14 @@ function findSharedKeywords(text1, text2, keywords) {
 function areIndustriesRelated(industry1, industry2) {
   const relatedGroups = [
     ['technology', 'software', 'it', 'tech', 'engineering'],
-    ['healthcare', 'medical', 'health', 'pharma', 'biotech'],
+    ['healthcare', 'medical', 'health', 'pharma', 'biotech', 'nursing'],
     ['finance', 'banking', 'investment', 'financial'],
     ['marketing', 'advertising', 'media', 'communications', 'pr'],
     ['education', 'teaching', 'academic', 'university'],
     ['retail', 'ecommerce', 'consumer', 'shopping'],
     ['real estate', 'property', 'construction'],
-    ['hospitality', 'restaurant', 'hotel', 'tourism', 'travel']
+    ['hospitality', 'restaurant', 'hotel', 'tourism', 'travel'],
+    ['business', 'startup', 'entrepreneur', 'small business', 'founder']
   ];
 
   const i1 = industry1.toLowerCase();
