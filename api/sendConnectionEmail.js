@@ -105,6 +105,14 @@ export default async function handler(req, res) {
       </html>
     `;
 
+    // Log email details before sending
+    console.log('📧 Attempting to send connection email:', {
+      from: 'connections@mail.networkingbude.com',
+      to: recipientEmailAddress,
+      subject: `${senderName} wants to connect with you on Networking BudE`,
+      hasApiKey: !!process.env.RESEND_API_KEY
+    });
+
     // Send email via Resend
     const data = await resend.emails.send({
       from: 'BudE Connections <connections@mail.networkingbude.com>',
@@ -114,7 +122,7 @@ export default async function handler(req, res) {
       replyTo: senderEmail
     });
 
-    console.log('✅ Connection email sent:', data);
+    console.log('✅ Connection email sent successfully:', data);
 
     return res.status(200).json({
       success: true,
