@@ -83,7 +83,8 @@ export default function BudEOnboarding() {
     'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
     'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo',
     'Hello West Michigan', 'CARWM', 'Creative Mornings', 'Athena',
-    'Inforum', 'Start Garden', 'GRABB', 'WMPRSA', 'Crain\'s GR Business', 'AIGA - WM'
+    'Inforum', 'Start Garden', 'GRABB', 'WMPRSA', 'Crain\'s GR Business', 'AIGA - WM',
+    'West Michigan Hispanic Chamber of Commerce'
   ];
 
   const professionalInterestOptions = [
@@ -465,292 +466,333 @@ export default function BudEOnboarding() {
 
 
   const renderStep1 = () => (
-    <div className="h-full md:min-h-screen flex flex-col md:flex-row">
-   {/* Left side - Images - Hidden on mobile */}
-   <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 px-12 pb-12 items-start justify-end">
-      <div className="relative pt-8">
-        {/* Phone image with single inset */}
-        <div className="flex flex-col items-center">
-          <div className="w-[500px] h-[620px] rounded-3xl overflow-hidden shadow-2xl relative">
-            <img
-              src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/My-phone-2.jpg"
-              alt="BudE app on phone"
-              className="w-full h-full object-cover"
-            />
-            {/* Single inset image at top right inside phone */}
-            <div className="absolute right-6 top-6">
-              <div className="w-60 h-60 rounded-xl overflow-hidden shadow-lg border-3 border-white">
-               <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/People-networking-1.png" alt="Networking" className="w-full h-full object-cover" />
+    <div className="relative h-screen overflow-hidden bg-gray-50">
+      {/* Green Header Bar - Spans Full Width */}
+      <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] text-white px-4 py-1 text-sm md:text-base z-20">
+        <div className="md:ml-64 text-center">
+          <span className="font-medium">Add To Your Profile</span>
+        </div>
+      </div>
+
+      {/* Dashboard Background */}
+      <div className="absolute inset-0 flex pointer-events-none pt-8">
+        {/* Sidebar - Clear and Not Blurred */}
+        <div className="hidden md:block w-64 bg-white border-r border-gray-200 relative overflow-hidden">
+          {/* Background Image - Positioned exactly like Dashboard Sidebar */}
+          <div
+            className="absolute left-0 top-0 w-full h-full bg-cover opacity-30 pointer-events-none"
+            style={{
+              backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
+              backgroundPosition: 'right top',
+              backgroundSize: 'cover',
+              transform: 'scale(1.1)'
+            }}
+          />
+          {/* Content Layer */}
+          <div className="p-4 relative z-10">
+            <img src="/BudE-Logo-Final.png" alt="BudE Logo" className="w-full h-auto mb-4" />
+            <div className="space-y-4 flex flex-col items-center">
+              <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-1.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
+              <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People%20networking%202.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
+              <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-3.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content Area - Blurred Preview */}
+        <div className="flex-1 bg-gray-50">
+
+          <div className="filter blur-[2px] opacity-30">
+            {/* Hero Banner */}
+            <div className="relative bg-gradient-to-br from-green-50 via-yellow-50 to-green-100 px-8 py-12">
+              <div className="max-w-6xl mx-auto">
+                <div className="h-10 bg-gray-300 rounded w-3/4 mb-2"></div>
+                <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            </div>
+
+            {/* Content cards */}
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white rounded-lg p-6 h-32 shadow-sm"></div>
+                <div className="bg-white rounded-lg p-6 h-32 shadow-sm"></div>
+                <div className="bg-white rounded-lg p-6 h-32 shadow-sm"></div>
               </div>
             </div>
           </div>
-          <p className="text-sm text-gray-600 mt-4">Networking BudE by The BudE System™</p>
         </div>
       </div>
-    </div>
 
-      {/* Right side - Form - Full width on mobile */}
-      <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch', minHeight: '100dvh' }}>
-        <div className="max-w-lg w-full pb-16">
-          <div className="flex justify-center mb-4">
-            <BudELogo />
+      {/* Form Overlay - No Container Box */}
+      <div className="absolute inset-0 md:left-64 flex items-start justify-center pt-12 pb-4 px-4 overflow-y-auto">
+        <div className="w-full max-w-5xl">
+          <div className="flex gap-2 mb-2 max-w-md mx-auto">
+            <div className="flex-1 h-1.5 bg-black rounded-full"></div>
+            <div className="flex-1 h-1.5 bg-black rounded-full"></div>
+            <div className="flex-1 h-1.5 bg-gray-300 rounded-full"></div>
           </div>
 
-          <div className="flex gap-2 mb-5">
-            <div className="flex-1 h-2 bg-black rounded-full"></div>
-            <div className="flex-1 h-2 bg-black rounded-full"></div>
-            <div className="flex-1 h-2 bg-gray-200 rounded-full"></div>
-          </div>
+          {/* Form Fields - Compact Layout */}
+          <div className="space-y-2.5">
+            {/* Row 1: Job Title, Company, Zip Code */}
+            <div className="bg-white rounded-lg p-4 shadow-md">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-bold mb-1 text-gray-900">Job Title</label>
+                  <input
+                    type="text"
+                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    placeholder="Or what you are known for"
+                    value={formData.jobTitle}
+                    onChange={(e) => handleJobTitleChange(e.target.value)}
+                    onFocus={() => {
+                      if (formData.jobTitle.length > 0) {
+                        const filtered = jobTitleSuggestions.filter(title =>
+                          title.toLowerCase().includes(formData.jobTitle.toLowerCase())
+                        );
+                        setFilteredJobTitles(filtered);
+                        setShowJobTitleSuggestions(filtered.length > 0);
+                      }
+                    }}
+                    onBlur={() => {
+                      setTimeout(() => setShowJobTitleSuggestions(false), 200);
+                    }}
+                  />
+                  <div className="relative h-0">
+                    {showJobTitleSuggestions && filteredJobTitles.length > 0 && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                        {filteredJobTitles.slice(0, 10).map((title, index) => (
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() => selectJobTitle(title)}
+                            className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none text-sm"
+                          >
+                            {title}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold mb-1 text-gray-900">Company <span className="text-gray-500 font-normal">(optional)</span></label>
+                  <input
+                    type="text"
+                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    value={formData.company}
+                    onChange={(e) => handleChange('company', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold mb-1 text-gray-900">Zip Code</label>
+                  <input
+                    type="text"
+                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    value={formData.zipCode}
+                    onChange={(e) => handleChange('zipCode', e.target.value)}
+                    maxLength={10}
+                  />
+                </div>
+              </div>
+            </div>
 
-          <div className="space-y-3">
-            <div>
-              <label className="block text-sm font-semibold mb-1">Job Title</label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                placeholder="Or what you are known for"
-                value={formData.jobTitle}
-                onChange={(e) => handleJobTitleChange(e.target.value)}
-                onFocus={() => {
-                  if (formData.jobTitle.length > 0) {
-                    const filtered = jobTitleSuggestions.filter(title =>
-                      title.toLowerCase().includes(formData.jobTitle.toLowerCase())
-                    );
-                    setFilteredJobTitles(filtered);
-                    setShowJobTitleSuggestions(filtered.length > 0);
-                  }
-                }}
-                onBlur={() => {
-                  setTimeout(() => setShowJobTitleSuggestions(false), 200);
-                }}
-              />
-              {/* Fixed height container to prevent layout shift */}
-              <div className="relative h-0">
-                {showJobTitleSuggestions && filteredJobTitles.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                    {filteredJobTitles.slice(0, 10).map((title, index) => (
+            {/* Row 2: Industry & Industry Connect */}
+            <div className="bg-white rounded-lg p-4 shadow-md">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold mb-1 text-gray-900">Industry <span className="text-gray-500 font-normal">(optional)</span></label>
+                  <select
+                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    value={formData.industry}
+                    onChange={(e) => handleChange('industry', e.target.value)}
+                  >
+                    <option value="">Select your industry</option>
+                    <option value="accounting">Accounting</option>
+                    <option value="construction">Construction</option>
+                    <option value="consulting">Consulting</option>
+                    <option value="education">Education</option>
+                    <option value="entertainment">Entertainment</option>
+                    <option value="entrepreneur">Entrepreneur/Business Owner</option>
+                    <option value="events">Events</option>
+                    <option value="healthcare">Healthcare</option>
+                    <option value="finance">Finance</option>
+                    <option value="government">Government</option>
+                    <option value="law">Law</option>
+                    <option value="manufacturing">Manufacturing</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="media">Media</option>
+                    <option value="non-profit">Non-Profit</option>
+                    <option value="professional development">Professional Development</option>
+                    <option value="real estate">Real Estate</option>
+                    <option value="recruiting">Recruiting</option>
+                    <option value="startup">Startup/Founder</option>
+                    <option value="technology">Technology</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold mb-1 text-gray-900">Same Industry Connect</label>
+                  <select
+                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    value={formData.sameIndustry}
+                    onChange={(e) => handleChange('sameIndustry', e.target.value)}
+                  >
+                    <option value="">Choose preference</option>
+                    <option value="Yes">Yes, Same Industry</option>
+                    <option value="No">No, Different Industry</option>
+                    <option value="Either">Either</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Row 3: Gender & Gender Connect */}
+            <div className="bg-white rounded-lg p-4 shadow-md">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold mb-1 text-gray-900">Gender <span className="text-gray-500 font-normal">(optional)</span></label>
+                  <select
+                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    value={formData.gender}
+                    onChange={(e) => handleChange('gender', e.target.value)}
+                  >
+                    <option value=""></option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="nonbinary">Non-binary</option>
+                    <option value="prefer-not">Prefer not to say</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold mb-1 text-gray-900">Gender Preference Connect?</label>
+                  <select
+                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    value={formData.genderPreference}
+                    onChange={(e) => handleChange('genderPreference', e.target.value)}
+                  >
+                    <option value="">Select preference</option>
+                    <option value="same">Same gender</option>
+                    <option value="different">Different gender</option>
+                    <option value="any">Any gender</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Row 4: Year Born & Age Connect */}
+            <div className="bg-white rounded-lg p-4 shadow-md">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold mb-1 text-gray-900">Year Born <span className="text-gray-500 font-normal">(optional)</span></label>
+                  <input
+                    type="text"
+                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    placeholder="YYYY"
+                    maxLength={4}
+                    value={formData.yearBorn}
+                    onChange={(e) => handleChange('yearBorn', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold mb-1 text-gray-900">Age Connect?</label>
+                  <select
+                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    value={formData.yearBornConnect}
+                    onChange={(e) => handleChange('yearBornConnect', e.target.value)}
+                  >
+                    <option value="">Select age preference</option>
+                    <option value="similar5">Similar Age (+/- 5 Years)</option>
+                    <option value="similar10">Similar Age (+/- 10 Years)</option>
+                    <option value="Mentor">Older - Mentor</option>
+                    <option value="Mentee">Younger - Mentee</option>
+                    <option value="No Preference">No Preference</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Row 5: Organizations - Side by Side */}
+            <div className="bg-white rounded-lg p-4 shadow-md">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold mb-2 text-gray-900">Where You Can Find Me Networking Now</label>
+                  <div className="flex flex-wrap gap-2">
+                    {organizations.map(org => (
                       <button
-                        key={index}
-                        type="button"
-                        onClick={() => selectJobTitle(title)}
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none text-sm"
+                        key={org}
+                        onClick={() => toggleOrganization(org)}
+                        className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                          formData.organizations.includes(org)
+                            ? 'bg-[#009900] text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
                       >
-                        {title}
+                        {org}
                       </button>
                     ))}
                   </div>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-1">Company (optional)</label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                value={formData.company}
-                onChange={(e) => handleChange('company', e.target.value)}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-sm font-semibold mb-1">Industry (optional)</label>
-                <select
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                  value={formData.industry}
-                  onChange={(e) => handleChange('industry', e.target.value)}
-                >
-                  
-                  <option value="">Select your industry</option>
-                  <option value="accounting">Accounting</option>
-                  <option value="construction">Construction</option>
-                  <option value="consulting">Consulting</option>
-                  <option value="education">Education</option>
-                  <option value="entertainment">Entertainment</option>
-                  <option value="entrepreneur">Entrepreneur/Business Owner</option>
-                  <option value="events">Events</option>
-                  <option value="healthcare">Healthcare</option>
-                  <option value="finance">Finance</option>
-                  <option value="government">Government</option>
-                  <option value="law">Law</option>
-                  <option value="manufacturing">Manufacturing</option>
-                  <option value="marketing">Marketing</option>
-                  <option value="media">Media</option>
-                  <option value="non-profit">Non-Profit</option>
-                  <option value="professional development">Professional Development</option>
-                  <option value="real estate">Real Estate</option>
-                  <option value="recruiting">Recruiting</option>
-                  <option value="startup">Startup/Founder</option>
-                  <option value="technology">Technology</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-1">Same Industry Connect</label>
-                <select
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                  value={formData.sameIndustry}
-                  onChange={(e) => handleChange('sameIndustry', e.target.value)}
-                >
-                  <option value="">Choose preference</option>
-                  <option value="Yes">Yes, Same Industry As Mine</option>
-                  <option value="No">No, Different Industry As Mine</option>
-                  <option value="Either">My Industry or Other Industries</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-sm font-semibold mb-1">Gender (optional)</label>
-                <select
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                  value={formData.gender}
-                  onChange={(e) => handleChange('gender', e.target.value)}
-                >
-                  <option value=""></option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="nonbinary">Non-binary</option>
-                  <option value="prefer-not">Prefer not to say</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-1">Gender Preference Connect?</label>
-                <select
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                  value={formData.genderPreference}
-                  onChange={(e) => handleChange('genderPreference', e.target.value)}
-                >
-                  <option value="">Select preference</option>
-                  <option value="same">Same gender</option>
-                  <option value="different">Different gender</option>
-                  <option value="any">Any gender</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-sm font-semibold mb-1">Year Born (optional)</label>
-                <input
-                  type="text"
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                  placeholder="YYYY"
-                  maxLength={4}
-                  value={formData.yearBorn}
-                  onChange={(e) => handleChange('yearBorn', e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-1">Age Connect?</label>
-                <select
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                  value={formData.yearBornConnect}
-                  onChange={(e) => handleChange('yearBornConnect', e.target.value)}
-                >
-                  <option value="">Select age preference</option>
-                  <option value="similar5">Similar Age (+/- 5 Years)</option>
-                  <option value="similar10">Similar Age (+/- 10 Years)</option>
-                  <option value="Mentor">Older - Mentor</option>
-                  <option value="Mentee">Younger - Mentee</option>
-                  <option value="No Preference">No Preference</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-1">Zip Code</label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                value={formData.zipCode}
-                onChange={(e) => handleChange('zipCode', e.target.value)}
-                maxLength={10}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-1.5">Where You Can Find Me Networking Now</label>
-              <div className="flex flex-wrap gap-1.5">
-                {organizations.map(org => (
-                  <button
-                    key={org}
-                    onClick={() => toggleOrganization(org)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                      formData.organizations.includes(org)
-                        ? 'bg-black text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {org}
-                  </button>
-                ))}
-              </div>
-              <div className="mt-2">
-                <input
-                  type="text"
-                  placeholder="Other organization (please specify)"
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                  value={formData.organizationsOther}
-                  onChange={(e) => handleChange('organizationsOther', e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-1.5">Organizations That I've Wanted to Check Out</label>
-              <div className="flex flex-wrap gap-1.5">
-                {organizations.map(org => (
-                  <button
-                    key={`checkout-${org}`}
-                    onClick={() => {
-                      setFormData(prev => ({
-                        ...prev,
-                        organizationsToCheckOut: prev.organizationsToCheckOut?.includes(org)
-                          ? prev.organizationsToCheckOut.filter(o => o !== org)
-                          : [...(prev.organizationsToCheckOut || []), org]
-                      }));
-                    }}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                      formData.organizationsToCheckOut?.includes(org)
-                        ? 'bg-black text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {org}
-                  </button>
-                ))}
-              </div>
-              <div className="mt-2">
-                <input
-                  type="text"
-                  placeholder="Other organization (please specify)"
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                  value={formData.organizationsToCheckOutOther}
-                  onChange={(e) => handleChange('organizationsToCheckOutOther', e.target.value)}
-                />
+                  <input
+                    type="text"
+                    placeholder="Other organization"
+                    className="w-full mt-2 px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    value={formData.organizationsOther}
+                    onChange={(e) => handleChange('organizationsOther', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold mb-2 text-gray-900">Organizations I've Wanted to Check Out</label>
+                  <div className="flex flex-wrap gap-2">
+                    {organizations.map(org => (
+                      <button
+                        key={`checkout-${org}`}
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            organizationsToCheckOut: prev.organizationsToCheckOut?.includes(org)
+                              ? prev.organizationsToCheckOut.filter(o => o !== org)
+                              : [...(prev.organizationsToCheckOut || []), org]
+                          }));
+                        }}
+                        className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                          formData.organizationsToCheckOut?.includes(org)
+                            ? 'bg-[#009900] text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {org}
+                      </button>
+                    ))}
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Other organization"
+                    className="w-full mt-2 px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    value={formData.organizationsToCheckOutOther}
+                    onChange={(e) => handleChange('organizationsToCheckOutOther', e.target.value)}
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-between mt-6">
+          {/* Navigation Buttons */}
+          <div className="flex justify-between mt-4 max-w-5xl">
             <button
               onClick={() => setStep(0)}
-              className="px-8 py-3 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+              className="px-6 py-2 border border-gray-300 rounded-md font-semibold hover:bg-gray-50 transition-colors text-sm"
             >
               Previous
             </button>
-           <button
+            <button
               onClick={() => {
-                       setStep(2);
-                      window.scrollTo(0, 0);
-  }}
-  className="bg-black text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors"
->
-  Continue
-</button>
+                setStep(2);
+                window.scrollTo(0, 0);
+              }}
+              className="bg-black text-white px-6 py-2 rounded-md font-semibold hover:bg-gray-800 transition-colors text-sm"
+            >
+              Continue
+            </button>
           </div>
 
           {/* Mobile Branding - Only visible on mobile */}
@@ -763,41 +805,70 @@ export default function BudEOnboarding() {
   );
 
 const renderStep2 = () => (
-  <div className="h-full md:min-h-screen flex flex-col md:flex-row">
-    {/* Left side - Images - Hidden on mobile */}
-    <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 px-12 pb-12 items-start justify-end">
-      <div className="relative pt-8">
-        {/* Phone image with single inset */}
-        <div className="flex flex-col items-center">
-          <div className="w-[500px] h-[620px] rounded-3xl overflow-hidden shadow-2xl relative">
-            <img
-              src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/My-phone-2.jpg"
-              alt="BudE app on phone"
-              className="w-full h-full object-cover"
-            />
-            {/* Single inset image at top right inside phone */}
-            <div className="absolute right-6 top-6">
-              <div className="w-60 h-60 rounded-xl overflow-hidden shadow-lg border-3 border-white">
-               <img src="/People-networking-2.png" alt="Networking" className="w-full h-full object-cover" />
-              </div>
+  <div className="relative h-screen overflow-hidden bg-gray-50">
+    {/* Green Header Bar - Spans Full Width */}
+    <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] text-white px-4 py-1 text-sm md:text-base z-20">
+      <div className="md:ml-64 text-center">
+        <span className="font-medium">Final Step! Please Tell Us About You</span>
+      </div>
+    </div>
+
+    {/* Dashboard Background */}
+    <div className="absolute inset-0 flex pointer-events-none pt-8">
+      {/* Sidebar - Clear and Not Blurred */}
+      <div className="hidden md:block w-64 bg-white border-r border-gray-200 relative overflow-hidden">
+        {/* Background Image - Positioned exactly like Dashboard Sidebar */}
+        <div
+          className="absolute left-0 top-0 w-full h-full bg-cover opacity-30 pointer-events-none"
+          style={{
+            backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
+            backgroundPosition: 'right top',
+            backgroundSize: 'cover',
+            transform: 'scale(1.1)'
+          }}
+        />
+        {/* Content Layer */}
+        <div className="p-4 relative z-10">
+          <img src="/BudE-Logo-Final.png" alt="BudE Logo" className="w-full h-auto mb-4" />
+          <div className="space-y-4 flex flex-col items-center">
+            <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-1.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
+            <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People%20networking%202.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
+            <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-3.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area - Blurred Preview */}
+      <div className="flex-1 bg-gray-50">
+
+        <div className="filter blur-[2px] opacity-30">
+          {/* Hero Banner */}
+          <div className="relative bg-gradient-to-br from-green-50 via-yellow-50 to-green-100 px-8 py-12">
+            <div className="max-w-6xl mx-auto">
+              <div className="h-10 bg-gray-300 rounded w-3/4 mb-2"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/2"></div>
             </div>
           </div>
-          <p className="text-sm text-gray-600 mt-4">Networking BudE by The BudE System™</p>
+
+          {/* Content cards */}
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white rounded-lg p-6 h-32 shadow-sm"></div>
+              <div className="bg-white rounded-lg p-6 h-32 shadow-sm"></div>
+              <div className="bg-white rounded-lg p-6 h-32 shadow-sm"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    {/* Right side - Form - Full width on mobile */}
-    <div className="w-full md:w-1/2 p-4 md:p-12 flex items-center justify-center bg-white overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch', minHeight: '100dvh' }}>
-      <div className="max-w-lg w-full pb-16">
-        <div className="flex justify-center mb-4">
-          <BudELogo />
-        </div>
-
-        <div className="flex gap-2 mb-5">
-          <div className="flex-1 h-2 bg-black rounded-full"></div>
-          <div className="flex-1 h-2 bg-black rounded-full"></div>
-          <div className="flex-1 h-2 bg-black rounded-full"></div>
+    {/* Form Overlay - No Container Box */}
+    <div className="absolute inset-0 md:left-64 flex items-start justify-center pt-12 pb-4 px-4 overflow-y-auto">
+      <div className="w-full max-w-5xl">
+        <div className="flex gap-2 mb-2 max-w-md mx-auto">
+          <div className="flex-1 h-1.5 bg-black rounded-full"></div>
+          <div className="flex-1 h-1.5 bg-black rounded-full"></div>
+          <div className="flex-1 h-1.5 bg-black rounded-full"></div>
         </div>
 
         <div className="space-y-4">
@@ -860,10 +931,10 @@ const renderStep2 = () => (
           </div>
         </div>
 
-        <div className="flex justify-between mt-6">
+        <div className="flex justify-between mt-4 max-w-5xl">
           <button
             onClick={() => setStep(1)}
-            className="px-8 py-3 border-2 border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+            className="px-6 py-2 border border-gray-300 rounded-md font-semibold hover:bg-gray-50 transition-colors text-sm"
           >
             Previous
           </button>
@@ -878,7 +949,7 @@ const renderStep2 = () => (
               }
             }}
             disabled={isSubmitting}
-            className="bg-[#009900] text-white px-6 py-3 rounded-lg border-[3px] border-[#D0ED00] hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-[#009900] text-white px-6 py-2 rounded-md border-[3px] border-[#D0ED00] font-semibold hover:bg-green-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? 'Creating Account...' : 'Create My Account'}
           </button>

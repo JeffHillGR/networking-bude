@@ -161,6 +161,19 @@ function Events({ onBackToDashboard }) {
   const moreEvents = [
     {
       id: 5,
+      title: 'WMHCC Conecta Membership Meeting',
+      description: 'Join the West Michigan Hispanic Chamber of Commerce for the monthly Conecta membership meeting. Network with fellow chamber members, learn about upcoming initiatives, and celebrate Hispanic business community achievements. Hosted by Acrisure.',
+      date: '11/25/2025',
+      time: '5:00 PM - 7:00 PM',
+      location: 'Acrisure',
+      organizerName: 'West Michigan Hispanic Chamber of Commerce',
+      attendees: '75+',
+      price: 'Free for Members',
+      badge: 'In-Person',
+      image: 'https://chambermaster.blob.core.windows.net/userfiles/UserFiles/chambers/2018/Image/November25Conecta.png'
+    },
+    {
+      id: 8,
       title: 'ATHENA Leadership Forum 2025',
       description: 'Leading Through Connection: The Role of Mentorship in Every Season of Life. This final ATHENA Leadership Forum explores mentorship\'s transformative impact on leadership and personal growth, featuring Megan Rydecki, Director of the Hauenstein Center for Presidential Studies.',
       date: '11/4/2025',
@@ -180,7 +193,7 @@ function Events({ onBackToDashboard }) {
       time: '11:30 AM - 1:30 PM',
       location: 'JW Marriott Grand Rapids',
       attendees: '200+',
-      organizer: 'Economic Club of Grand Rapids',
+      organizerName: 'Economic Club of Grand Rapids',
       price: 'Registration Required',
       badge: 'In-Person',
       image: 'https://miro.medium.com/v2/resize:fit:1100/format:webp/1*x7S7Iiz737OW5qXQGSpy3w.jpeg'
@@ -193,7 +206,7 @@ function Events({ onBackToDashboard }) {
       time: '5:30 PM - 7:45 PM',
       location: 'JW Marriott Grand Rapids',
       attendees: '200+',
-      organizer: 'Inforum',
+      organizerName: 'Inforum',
       price: 'Registration Required',
       badge: 'In-Person',
       image: 'https://npr.brightspotcdn.com/dims4/default/ec2181b/2147483647/strip/true/crop/383x214%2B0%2B0/resize/880x492!/quality/90/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2Flegacy%2Fsites%2Fwgvu%2Ffiles%2F201511%2FInforum.jpg'
@@ -393,7 +406,7 @@ function Events({ onBackToDashboard }) {
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0 mt-3 md:mt-4">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
-                              {event.organizer}
+                              {event.organizerName}
                             </span>
                             {event.price !== 'Free' && (
                               <span className="text-xs text-gray-600">{event.price}</span>

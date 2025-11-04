@@ -91,6 +91,25 @@ function EventDetail() {
     },
     5: {
       id: 5,
+      title: 'WMHCC Conecta Membership Meeting',
+      description: 'Join the West Michigan Hispanic Chamber of Commerce for the monthly Conecta membership meeting. Network with fellow chamber members and celebrate Hispanic business community achievements.',
+      fullDescription: 'The West Michigan Hispanic Chamber of Commerce invites you to the monthly Conecta membership meeting, hosted by Acrisure.\n\nConecta meetings are designed to bring together Hispanic business owners, entrepreneurs, and professionals from across West Michigan to:\n\n• Network with fellow chamber members\n• Learn about upcoming chamber initiatives and programs\n• Share business opportunities and resources\n• Celebrate achievements within the Hispanic business community\n• Build meaningful connections that drive economic growth\n\nThis month\'s meeting is graciously hosted by Acrisure, a leader in insurance brokerage and risk management. Enjoy light refreshments while connecting with West Michigan\'s vibrant Hispanic business community.\n\nWhether you\'re a long-time member or considering joining the chamber, Conecta meetings provide an excellent opportunity to expand your professional network and contribute to the economic vitality of our region.\n\nFree for WMHCC members. Guest registration available.',
+      date: 'Monday, November 25, 2025',
+      time: '5:00 PM - 7:00 PM',
+      location: 'Acrisure',
+      fullAddress: 'Acrisure, Grand Rapids, MI',
+      image: 'https://chambermaster.blob.core.windows.net/userfiles/UserFiles/chambers/2018/Image/November25Conecta.png',
+      badge: 'In-Person',
+      organizer: {
+        name: 'West Michigan Hispanic Chamber of Commerce',
+        avatar: 'WM',
+        description: 'The West Michigan Hispanic Chamber of Commerce promotes economic development and advocates for Hispanic-owned businesses throughout the region.'
+      },
+      tags: ['Networking', 'Hispanic Business', 'Community', 'Chamber', 'Professional Development'],
+      registrationUrl: 'https://members.westmihcc.org/events/details/wmhcc-conecta-membership-meeting-hosted-by-acrisure-2908'
+    },
+    8: {
+      id: 8,
       title: 'ATHENA Leadership Forum 2025',
       description: 'Leading Through Connection: The Role of Mentorship in Every Season of Life. This final ATHENA Leadership Forum explores mentorship\'s transformative impact on leadership and personal growth.',
       fullDescription: 'Join the Grand Rapids Chamber for the final ATHENA Leadership Forum of 2025, "Leading Through Connection: The Role of Mentorship in Every Season of Life."\n\nThis engaging forum features Megan Rydecki, Director of the Hauenstein Center for Presidential Studies at Grand Valley State University, who will explore how mentorship shapes leadership development throughout different life stages.\n\nWhether you\'re seeking a mentor, currently mentoring others, or interested in understanding how mentorship drives personal and professional growth, this forum offers valuable insights and networking opportunities.\n\nThe ATHENA Leadership Forum series celebrates and supports women leaders while fostering inclusive leadership development across all sectors. Join fellow professionals at The High Five GR for an afternoon of learning, connection, and inspiration.\n\nRegistration required. Event is open to all professionals interested in leadership development and mentorship.',

@@ -77,6 +77,17 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
           .eq('status', 'pending')
           .lt('pending_since', new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString());
 
+        // Reset "perhaps" connections after 1 week (7 days)
+        await supabase
+          .from('matches')
+          .update({
+            status: 'recommended',
+            perhaps_since: null
+          })
+          .eq('user_id', userData.id)
+          .eq('status', 'perhaps')
+          .lt('perhaps_since', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+
         // Fetch all matches with different statuses
         const { data: allMatchesData, error: matchesError } = await supabase
           .from('matches')
@@ -109,7 +120,6 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
 
         // Transform Supabase data to component format and separate by status
         const recommended = [];
-        const perhaps = [];
         const pending = [];
         const saved = [];
 
@@ -147,7 +157,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
           if (match.status === 'recommended') {
             recommended.push(connectionData);
           } else if (match.status === 'perhaps') {
-            perhaps.push(connectionData);
+            // "Perhaps" connections are hidden for 1 week - don't show them
+            // They will automatically return to recommended after 7 days (handled above)
           } else if (match.status === 'pending') {
             pending.push(connectionData);
           } else if (match.status === 'saved' || match.status === 'connected') {
@@ -155,10 +166,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
           }
         });
 
-        // Combine recommended and perhaps (perhaps at the end)
-        const allRecommended = [...recommended, ...perhaps];
-
-        setConnections(allRecommended);
+        // Only show recommended (perhaps are hidden for 1 week)
+        setConnections(recommended);
         setPendingConnections(pending);
         setSavedConnections(saved);
         setLoading(false);
@@ -349,20 +358,35 @@ ${senderName}`;
   };
 
   const handlePerhaps = async () => {
+    // Safety check: ensure currentCard exists and has an ID
+    if (!currentCard || !currentCard.id || !currentUserId) {
+      console.warn('Cannot mark as perhaps: missing required data', {
+        hasCurrentCard: !!currentCard,
+        isPlaceholder: currentCard?.isPlaceholder,
+        hasId: !!currentCard?.id,
+        currentUserId
+      });
+      return;
+    }
+
     try {
-      // Update match status to 'perhaps' in database (will show at end of recommended)
+      // Update match status to 'perhaps' with timestamp (hidden for 1 week)
       const { error } = await supabase
         .from('matches')
         .update({
           status: 'perhaps',
+          perhaps_since: new Date().toISOString(), // Track when marked as perhaps
           updated_at: new Date().toISOString()
         })
         .eq('user_id', currentUserId)
         .eq('matched_user_id', currentCard.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error in handlePerhaps:', error);
+        throw error;
+      }
 
-      // Don't add to saved - it stays in recommended but at the end
+      // Move to next card (person is now hidden for 1 week)
       nextCard();
     } catch (error) {
       console.error('Error marking as perhaps:', error);
