@@ -647,7 +647,7 @@ ${senderName}`;
                   </div>
 
                   {/* Profile Fields - matching connection cards */}
-                  {currentCard.email && (
+                  {currentCard.email && currentCard.isMutual && (
                     <div>
                       <p className="text-sm font-semibold text-gray-700 mb-1">Email:</p>
                       <p className="text-gray-600 text-sm">{currentCard.email}</p>
@@ -983,7 +983,7 @@ ${senderName}`;
                 </div>
 
                 {/* Profile Fields */}
-                {selectedConnection.email && (
+                {selectedConnection.email && selectedConnection.isMutual && (
                   <div>
                     <p className="text-sm font-semibold text-gray-700 mb-1">Email:</p>
                     <p className="text-gray-600 text-sm">{selectedConnection.email}</p>
