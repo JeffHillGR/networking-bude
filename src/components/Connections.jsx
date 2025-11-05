@@ -386,6 +386,9 @@ ${senderName}`;
         throw error;
       }
 
+      // Remove from local connections array
+      setConnections(prev => prev.filter(conn => conn.id !== currentCard.id));
+
       // Move to next card (person is now hidden for 1 week)
       nextCard();
     } catch (error) {
@@ -394,15 +397,32 @@ ${senderName}`;
   };
 
   const handleNoThanks = async () => {
+    // Safety check: ensure currentCard exists and has an ID
+    if (!currentCard || !currentCard.id || !currentUserId) {
+      console.warn('Cannot mark as no thanks: missing required data', {
+        hasCurrentCard: !!currentCard,
+        isPlaceholder: currentCard?.isPlaceholder,
+        hasId: !!currentCard?.id,
+        currentUserId
+      });
+      return;
+    }
+
     try {
       // Update match status to 'passed' in database
       const { error } = await supabase
         .from('matches')
-        .update({ status: 'passed' })
+        .update({
+          status: 'passed',
+          updated_at: new Date().toISOString()
+        })
         .eq('user_id', currentUserId)
         .eq('matched_user_id', currentCard.id);
 
       if (error) throw error;
+
+      // Remove from local connections array
+      setConnections(prev => prev.filter(conn => conn.id !== currentCard.id));
 
       // Add to passed connections
       setPassedConnections(prev => [...prev, currentCard.id]);

@@ -181,7 +181,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
               await signOut();
               window.location.href = '/';
             }}
-            className="w-full py-2 text-xs text-gray-600 hover:text-[#009900] hover:bg-gray-50 rounded transition-colors mb-1"
+            className="w-full py-2 text-xs text-[#009900] font-bold hover:bg-gray-50 rounded transition-colors mb-1"
           >
             Logout
           </button>

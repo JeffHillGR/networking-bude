@@ -14,6 +14,7 @@ export default function BudEOnboarding() {
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [rememberMeLogin, setRememberMeLogin] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetSuccess, setResetSuccess] = useState(false);
@@ -156,7 +157,7 @@ export default function BudEOnboarding() {
       return;
     }
 
-    const { data, error } = await signIn(loginEmail, loginPassword);
+    const { data, error } = await signIn(loginEmail, loginPassword, rememberMeLogin);
 
     if (error) {
       setLoginError(error.message || 'Invalid email or password');
@@ -538,10 +539,10 @@ export default function BudEOnboarding() {
             <div className="bg-white rounded-lg p-4 shadow-md">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-bold mb-1 text-gray-900">Job Title</label>
+                  <label className="block text-sm font-bold mb-1 text-gray-900">Job Title</label>
                   <input
                     type="text"
-                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                     placeholder="Or what you are known for"
                     value={formData.jobTitle}
                     onChange={(e) => handleJobTitleChange(e.target.value)}
@@ -576,19 +577,19 @@ export default function BudEOnboarding() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold mb-1 text-gray-900">Company <span className="text-gray-500 font-normal">(optional)</span></label>
+                  <label className="block text-sm font-bold mb-1 text-gray-900">Company <span className="text-gray-500 font-normal">(optional)</span></label>
                   <input
                     type="text"
-                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                     value={formData.company}
                     onChange={(e) => handleChange('company', e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold mb-1 text-gray-900">Zip Code</label>
+                  <label className="block text-sm font-bold mb-1 text-gray-900">Zip Code</label>
                   <input
                     type="text"
-                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                     value={formData.zipCode}
                     onChange={(e) => handleChange('zipCode', e.target.value)}
                     maxLength={10}
@@ -601,9 +602,9 @@ export default function BudEOnboarding() {
             <div className="bg-white rounded-lg p-4 shadow-md">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold mb-1 text-gray-900">Industry <span className="text-gray-500 font-normal">(optional)</span></label>
+                  <label className="block text-sm font-bold mb-1 text-gray-900">Industry <span className="text-gray-500 font-normal">(optional)</span></label>
                   <select
-                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                     value={formData.industry}
                     onChange={(e) => handleChange('industry', e.target.value)}
                   >
@@ -632,9 +633,9 @@ export default function BudEOnboarding() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold mb-1 text-gray-900">Same Industry Connect</label>
+                  <label className="block text-sm font-bold mb-1 text-gray-900">Same Industry Connect</label>
                   <select
-                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                     value={formData.sameIndustry}
                     onChange={(e) => handleChange('sameIndustry', e.target.value)}
                   >
@@ -651,9 +652,9 @@ export default function BudEOnboarding() {
             <div className="bg-white rounded-lg p-4 shadow-md">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold mb-1 text-gray-900">Gender <span className="text-gray-500 font-normal">(optional)</span></label>
+                  <label className="block text-sm font-bold mb-1 text-gray-900">Gender <span className="text-gray-500 font-normal">(optional)</span></label>
                   <select
-                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                     value={formData.gender}
                     onChange={(e) => handleChange('gender', e.target.value)}
                   >
@@ -665,9 +666,9 @@ export default function BudEOnboarding() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold mb-1 text-gray-900">Gender Preference Connect?</label>
+                  <label className="block text-sm font-bold mb-1 text-gray-900">Gender Preference Connect?</label>
                   <select
-                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                     value={formData.genderPreference}
                     onChange={(e) => handleChange('genderPreference', e.target.value)}
                   >
@@ -684,10 +685,10 @@ export default function BudEOnboarding() {
             <div className="bg-white rounded-lg p-4 shadow-md">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold mb-1 text-gray-900">Year Born <span className="text-gray-500 font-normal">(optional)</span></label>
+                  <label className="block text-sm font-bold mb-1 text-gray-900">Year Born <span className="text-gray-500 font-normal">(optional)</span></label>
                   <input
                     type="text"
-                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                     placeholder="YYYY"
                     maxLength={4}
                     value={formData.yearBorn}
@@ -695,9 +696,9 @@ export default function BudEOnboarding() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold mb-1 text-gray-900">Age Connect?</label>
+                  <label className="block text-sm font-bold mb-1 text-gray-900">Age Connect?</label>
                   <select
-                    className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                     value={formData.yearBornConnect}
                     onChange={(e) => handleChange('yearBornConnect', e.target.value)}
                   >
@@ -716,13 +717,13 @@ export default function BudEOnboarding() {
             <div className="bg-white rounded-lg p-4 shadow-md">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold mb-2 text-gray-900">Where You Can Find Me Networking Now</label>
+                  <label className="block text-sm font-bold mb-2 text-gray-900">Where You Can Find Me Networking Now</label>
                   <div className="flex flex-wrap gap-2">
                     {organizations.map(org => (
                       <button
                         key={org}
                         onClick={() => toggleOrganization(org)}
-                        className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                           formData.organizations.includes(org)
                             ? 'bg-[#009900] text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -735,13 +736,13 @@ export default function BudEOnboarding() {
                   <input
                     type="text"
                     placeholder="Other organization"
-                    className="w-full mt-2 px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    className="w-full mt-2 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                     value={formData.organizationsOther}
                     onChange={(e) => handleChange('organizationsOther', e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold mb-2 text-gray-900">Organizations I've Wanted to Check Out</label>
+                  <label className="block text-sm font-bold mb-2 text-gray-900">Organizations I've Wanted to Check Out</label>
                   <div className="flex flex-wrap gap-2">
                     {organizations.map(org => (
                       <button
@@ -754,7 +755,7 @@ export default function BudEOnboarding() {
                               : [...(prev.organizationsToCheckOut || []), org]
                           }));
                         }}
-                        className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                           formData.organizationsToCheckOut?.includes(org)
                             ? 'bg-[#009900] text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -767,7 +768,7 @@ export default function BudEOnboarding() {
                   <input
                     type="text"
                     placeholder="Other organization"
-                    className="w-full mt-2 px-2.5 py-1.5 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-xs"
+                    className="w-full mt-2 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                     value={formData.organizationsToCheckOutOther}
                     onChange={(e) => handleChange('organizationsToCheckOutOther', e.target.value)}
                   />
@@ -880,7 +881,7 @@ const renderStep2 = () => (
                 <button
                   key={interest}
                   onClick={() => toggleProfessionalInterest(interest)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                     formData.professionalInterests.includes(interest)
                       ? 'bg-black text-white'
                       : 'bg-white border border-gray-300 text-gray-700 hover:border-gray-400'
@@ -1081,6 +1082,19 @@ const renderStep2 = () => (
                     {showLoginPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="rememberMe"
+                  checked={rememberMeLogin}
+                  onChange={(e) => setRememberMeLogin(e.target.checked)}
+                  className="w-4 h-4 text-[#009900] border-gray-300 rounded focus:ring-[#009900] focus:ring-2"
+                />
+                <label htmlFor="rememberMe" className="ml-2 text-sm text-gray-700">
+                  Remember me (skip 24-hour timeout)
+                </label>
               </div>
 
               {loginError && (
