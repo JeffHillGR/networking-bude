@@ -108,25 +108,6 @@ function EventDetail() {
       tags: ['Networking', 'Hispanic Business', 'Community', 'Chamber', 'Professional Development'],
       registrationUrl: 'https://members.westmihcc.org/events/details/wmhcc-conecta-membership-meeting-hosted-by-acrisure-2908'
     },
-    8: {
-      id: 8,
-      title: 'ATHENA Leadership Forum 2025',
-      description: 'Leading Through Connection: The Role of Mentorship in Every Season of Life. This final ATHENA Leadership Forum explores mentorship\'s transformative impact on leadership and personal growth.',
-      fullDescription: 'Join the Grand Rapids Chamber for the final ATHENA Leadership Forum of 2025, "Leading Through Connection: The Role of Mentorship in Every Season of Life."\n\nThis engaging forum features Megan Rydecki, Director of the Hauenstein Center for Presidential Studies at Grand Valley State University, who will explore how mentorship shapes leadership development throughout different life stages.\n\nWhether you\'re seeking a mentor, currently mentoring others, or interested in understanding how mentorship drives personal and professional growth, this forum offers valuable insights and networking opportunities.\n\nThe ATHENA Leadership Forum series celebrates and supports women leaders while fostering inclusive leadership development across all sectors. Join fellow professionals at The High Five GR for an afternoon of learning, connection, and inspiration.\n\nRegistration required. Event is open to all professionals interested in leadership development and mentorship.',
-      date: 'Tuesday, November 4, 2025',
-      time: '3:00 PM - 5:00 PM',
-      location: 'The High Five GR',
-      fullAddress: 'The High Five GR, Grand Rapids, MI',
-      image: 'https://grandrapids.org/wp-content/uploads/2025/01/Graphic-ATHENA-Leadership-Forum-11.04.25-1536x864.jpg',
-      badge: 'In-Person',
-      organizer: {
-        name: 'Grand Rapids Chamber',
-        avatar: 'GR',
-        description: 'The Grand Rapids Chamber advocates for business growth, economic development, and inclusive workplace cultures throughout West Michigan.'
-      },
-      tags: ['Leadership', 'Mentorship', 'Women in Leadership', 'Professional Development', 'Networking'],
-      registrationUrl: 'https://grandrapids.org/event/athena-leadership-forum-2025-11-04/'
-    },
     6: {
       id: 6,
       title: 'Gabe Karp – Best-selling Author and Keynote Speaker',

@@ -173,19 +173,6 @@ function Events({ onBackToDashboard }) {
       image: 'https://chambermaster.blob.core.windows.net/userfiles/UserFiles/chambers/2018/Image/November25Conecta.png'
     },
     {
-      id: 8,
-      title: 'ATHENA Leadership Forum 2025',
-      description: 'Leading Through Connection: The Role of Mentorship in Every Season of Life. This final ATHENA Leadership Forum explores mentorship\'s transformative impact on leadership and personal growth, featuring Megan Rydecki, Director of the Hauenstein Center for Presidential Studies.',
-      date: '11/4/2025',
-      time: '3:00 PM - 5:00 PM',
-      location: 'The High Five GR',
-      organizerName: 'Grand Rapids Chamber',
-      attendees: '100+',
-      price: 'Registration Required',
-      badge: 'In-Person',
-      image: 'https://grandrapids.org/wp-content/uploads/2025/01/Graphic-ATHENA-Leadership-Forum-11.04.25-1536x864.jpg'
-    },
-    {
       id: 6,
       title: 'Gabe Karp – Best-selling Author and Keynote Speaker',
       description: 'Globally recognized expert in leadership and high-performance teams. Author of "Don\'t Get Mad at Penguins," presenting his proprietary system for leveraging conflict effectively. Operating Partner at Detroit Venture Partners.',
