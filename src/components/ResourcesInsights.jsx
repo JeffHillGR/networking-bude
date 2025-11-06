@@ -1,21 +1,61 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, ExternalLink, ChevronDown, ChevronUp, X } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
+import { supabase } from '../lib/supabase.js';
 
 function ResourcesInsights() {
   const navigate = useNavigate();
   const [showArchive, setShowArchive] = useState(false);
+  const [selectedContent, setSelectedContent] = useState(null);
+  const [loadedContent, setLoadedContent] = useState([null, null, null]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load admin-created featured content from localStorage
-  const adminContent1 = localStorage.getItem('featuredContent1');
-  const adminFeaturedContent1 = adminContent1 ? JSON.parse(adminContent1) : null;
+  // Load featured content from Supabase on mount
+  useEffect(() => {
+    const loadFeaturedContent = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('featured_content')
+          .select('*')
+          .order('slot_number', { ascending: true });
 
-  const adminContent2 = localStorage.getItem('featuredContent2');
-  const adminFeaturedContent2 = adminContent2 ? JSON.parse(adminContent2) : null;
+        if (error) {
+          console.error('Error loading featured content:', error);
+          setIsLoading(false);
+          return;
+        }
 
-  const adminContent3 = localStorage.getItem('featuredContent3');
-  const adminFeaturedContent3 = adminContent3 ? JSON.parse(adminContent3) : null;
+        if (data && data.length > 0) {
+          const contentArray = [null, null, null];
+
+          data.forEach(item => {
+            const index = item.slot_number - 1;
+            if (index >= 0 && index < 3) {
+              contentArray[index] = {
+                image: item.image,
+                title: item.title,
+                description: item.description,
+                url: item.url,
+                tags: item.tags,
+                sponsoredBy: item.sponsored_by,
+                fullContent: item.full_content
+              };
+            }
+          });
+
+          setLoadedContent(contentArray);
+        }
+
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Error in loadFeaturedContent:', err);
+        setIsLoading(false);
+      }
+    };
+
+    loadFeaturedContent();
+  }, []);
 
   const defaultFeaturedContent = [
     {
@@ -44,10 +84,10 @@ function ResourcesInsights() {
     }
   ];
 
-  // Build featured content array: use admin content where available, otherwise use defaults
-  const slot1 = (adminFeaturedContent1 && adminFeaturedContent1.title) ? adminFeaturedContent1 : defaultFeaturedContent[0];
-  const slot2 = (adminFeaturedContent2 && adminFeaturedContent2.title) ? adminFeaturedContent2 : defaultFeaturedContent[1];
-  const slot3 = (adminFeaturedContent3 && adminFeaturedContent3.title) ? adminFeaturedContent3 : defaultFeaturedContent[2];
+  // Build featured content array: use database content where available, otherwise use defaults
+  const slot1 = (loadedContent[0] && loadedContent[0].title) ? loadedContent[0] : defaultFeaturedContent[0];
+  const slot2 = (loadedContent[1] && loadedContent[1].title) ? loadedContent[1] : defaultFeaturedContent[1];
+  const slot3 = (loadedContent[2] && loadedContent[2].title) ? loadedContent[2] : defaultFeaturedContent[2];
 
   const featuredContent = [slot1, slot2, slot3];
 
@@ -71,10 +111,21 @@ function ResourcesInsights() {
     }
   ];
 
-  const ContentCard = ({ content }) => (
+  const ContentCard = ({ content }) => {
+    const handleClick = () => {
+      if (content.url) {
+        window.open(content.url, '_blank');
+      } else if (content.fullContent) {
+        setSelectedContent(content);
+      }
+    };
+
+    const isClickable = content.url || content.fullContent;
+
+    return (
     <div
-      onClick={() => content.url && window.open(content.url, '_blank')}
-      className={`bg-white rounded-lg shadow-sm p-6 transition-shadow border border-gray-200 ${content.url ? 'hover:shadow-md cursor-pointer' : ''}`}
+      onClick={handleClick}
+      className={`bg-white rounded-lg shadow-sm p-6 transition-shadow border border-gray-200 ${isClickable ? 'hover:shadow-md cursor-pointer' : ''}`}
     >
       <div className="flex flex-col md:flex-row gap-6">
         <img
@@ -106,10 +157,16 @@ function ResourcesInsights() {
               <ExternalLink className="w-4 h-4" />
             </div>
           )}
+          {!content.url && content.fullContent && (
+            <div className="flex items-center gap-1 text-[#009900] font-medium mt-2">
+              <span>Read Full Article</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
-  );
+    );
+  };
 
   return (
     <>
@@ -186,6 +243,59 @@ function ResourcesInsights() {
           </div>
         </div>
       </div>
+
+      {/* Full Content Modal */}
+      {selectedContent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-start justify-between">
+              <div className="flex-1 pr-4">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">{selectedContent.title}</h2>
+                {selectedContent.tags && (
+                  <div className="flex gap-2 flex-wrap">
+                    {selectedContent.tags.split(',').map((tag, i) => (
+                      <span
+                        key={i}
+                        className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
+                      >
+                        {tag.trim()}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => setSelectedContent(null)}
+                className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-6">
+              {selectedContent.image && (
+                <img
+                  src={selectedContent.image}
+                  alt={selectedContent.title}
+                  className="w-full max-h-96 object-cover rounded-lg mb-6"
+                />
+              )}
+
+              <div className="prose prose-lg max-w-none">
+                <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                  {selectedContent.fullContent}
+                </p>
+              </div>
+
+              {selectedContent.sponsoredBy && (
+                <p className="text-sm text-gray-500 italic mt-6 pt-6 border-t border-gray-200">
+                  Sponsored by {selectedContent.sponsoredBy}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

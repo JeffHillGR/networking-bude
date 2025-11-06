@@ -26,6 +26,7 @@ function Dashboard() {
   const [userFirstName, setUserFirstName] = useState('there');
 const [selectedPlan, setSelectedPlan] = useState(null);
 const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
+const [loadedFeaturedContent, setLoadedFeaturedContent] = useState([null, null, null]);
 const [showSponsorModal, setShowSponsorModal] = useState(false);
 const [showSharePrompt, setShowSharePrompt] = useState(false);
 const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
@@ -260,15 +261,47 @@ const getGreeting = () => {
   return 'Good Evening';
 };
 
-  // Load admin-created featured content from localStorage
-  const adminContent1 = localStorage.getItem('featuredContent1');
-  const adminFeaturedContent1 = adminContent1 ? JSON.parse(adminContent1) : null;
+  // Load featured content from Supabase on mount
+  useEffect(() => {
+    const loadFeaturedContent = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('featured_content')
+          .select('*')
+          .order('slot_number', { ascending: true });
 
-  const adminContent2 = localStorage.getItem('featuredContent2');
-  const adminFeaturedContent2 = adminContent2 ? JSON.parse(adminContent2) : null;
+        if (error) {
+          console.error('Error loading featured content:', error);
+          return;
+        }
 
-  const adminContent3 = localStorage.getItem('featuredContent3');
-  const adminFeaturedContent3 = adminContent3 ? JSON.parse(adminContent3) : null;
+        if (data && data.length > 0) {
+          const contentArray = [null, null, null];
+
+          data.forEach(item => {
+            const index = item.slot_number - 1;
+            if (index >= 0 && index < 3) {
+              contentArray[index] = {
+                image: item.image,
+                title: item.title,
+                description: item.description,
+                url: item.url,
+                tags: item.tags,
+                sponsoredBy: item.sponsored_by,
+                fullContent: item.full_content
+              };
+            }
+          });
+
+          setLoadedFeaturedContent(contentArray);
+        }
+      } catch (err) {
+        console.error('Error in loadFeaturedContent:', err);
+      }
+    };
+
+    loadFeaturedContent();
+  }, []);
 
   const defaultFeaturedContent = [
     {
@@ -297,10 +330,10 @@ const getGreeting = () => {
     }
   ];
 
-  // Build featured content array: use admin content where available, otherwise use defaults
-  const slot1 = (adminFeaturedContent1 && adminFeaturedContent1.title) ? adminFeaturedContent1 : defaultFeaturedContent[0];
-  const slot2 = (adminFeaturedContent2 && adminFeaturedContent2.title) ? adminFeaturedContent2 : defaultFeaturedContent[1];
-  const slot3 = (adminFeaturedContent3 && adminFeaturedContent3.title) ? adminFeaturedContent3 : defaultFeaturedContent[2];
+  // Build featured content array: use database content where available, otherwise use defaults
+  const slot1 = (loadedFeaturedContent[0] && loadedFeaturedContent[0].title) ? loadedFeaturedContent[0] : defaultFeaturedContent[0];
+  const slot2 = (loadedFeaturedContent[1] && loadedFeaturedContent[1].title) ? loadedFeaturedContent[1] : defaultFeaturedContent[1];
+  const slot3 = (loadedFeaturedContent[2] && loadedFeaturedContent[2].title) ? loadedFeaturedContent[2] : defaultFeaturedContent[2];
 
   const featuredContent = [slot1, slot2, slot3];
 

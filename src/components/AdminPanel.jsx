@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Upload, X, Link2, Eye, EyeOff } from 'lucide-react';
+import { supabase } from '../lib/supabase.js';
 
 function AdminPanel() {
   const [password, setPassword] = useState('');
@@ -181,23 +182,49 @@ function AdminPanel() {
 }
 
 function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
-  // Load most recent featured content from localStorage if exists
-  const loadFeaturedContent = () => {
-    const saved = localStorage.getItem('featuredContent1');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return {
-      title: '',
-      description: '',
-      image: '',
-      url: '',
-      tags: '',
-      sponsoredBy: ''
-    };
-  };
+  const [featuredContent, setFeaturedContent] = useState({
+    title: '',
+    description: '',
+    image: '',
+    url: '',
+    tags: '',
+    sponsoredBy: '',
+    fullContent: ''
+  });
 
-  const [featuredContent, setFeaturedContent] = useState(loadFeaturedContent());
+  // Load featured content #1 from Supabase on mount
+  useEffect(() => {
+    const loadFeaturedContent = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('featured_content')
+          .select('*')
+          .eq('slot_number', 1)
+          .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
+          console.error('Error loading featured content #1:', error);
+          return;
+        }
+
+        if (data) {
+          setFeaturedContent({
+            title: data.title || '',
+            description: data.description || '',
+            image: data.image || '',
+            url: data.url || '',
+            tags: data.tags || '',
+            sponsoredBy: data.sponsored_by || '',
+            fullContent: data.full_content || ''
+          });
+        }
+      } catch (err) {
+        console.error('Error in loadFeaturedContent:', err);
+      }
+    };
+
+    loadFeaturedContent();
+  }, []);
   const [scrapeUrl, setScrapeUrl] = useState('');
   const [isScraping, setIsScraping] = useState(false);
   const [scrapeError, setScrapeError] = useState('');
@@ -262,28 +289,116 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
     }
   };
 
-  const handleSaveContent = () => {
-    localStorage.setItem('featuredContent1', JSON.stringify(featuredContent));
-    alert('Featured Content #1 saved successfully!');
+  const handleSaveContent = async () => {
+    try {
+      const { error } = await supabase
+        .from('featured_content')
+        .upsert({
+          slot_number: 1,
+          title: featuredContent.title,
+          description: featuredContent.description,
+          image: featuredContent.image,
+          url: featuredContent.url || null,
+          tags: featuredContent.tags || null,
+          sponsored_by: featuredContent.sponsoredBy || null,
+          full_content: featuredContent.fullContent || null
+        }, {
+          onConflict: 'slot_number'
+        });
+
+      if (error) {
+        console.error('Error saving featured content #1:', error);
+        alert('Failed to save: ' + error.message);
+        return;
+      }
+
+      alert('Featured Content #1 saved successfully!');
+    } catch (err) {
+      console.error('Error in handleSaveContent:', err);
+      alert('Failed to save content');
+    }
+  };
+
+  const handleImageUploadToSupabase = async (file, contentNumber) => {
+    if (!file) return;
+
+    try {
+      // Create a unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `featured-content-${contentNumber}-${Date.now()}.${fileExt}`;
+      const filePath = `featured-images/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('featured-content')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) {
+        console.error('Upload error:', error);
+        alert('Failed to upload image: ' + error.message);
+        return null;
+      }
+
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from('featured-content')
+        .getPublicUrl(filePath);
+
+      return publicUrlData.publicUrl;
+    } catch (error) {
+      console.error('Error uploading to Supabase:', error);
+      alert('Failed to upload image to Supabase');
+      return null;
+    }
   };
 
   // Featured Content #2 handlers
-  const loadFeaturedContent2 = () => {
-    const saved = localStorage.getItem('featuredContent2');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return {
-      title: '',
-      description: '',
-      image: '',
-      url: '',
-      tags: '',
-      sponsoredBy: ''
-    };
-  };
+  const [featuredContent2, setFeaturedContent2] = useState({
+    title: '',
+    description: '',
+    image: '',
+    url: '',
+    tags: '',
+    sponsoredBy: '',
+    fullContent: ''
+  });
 
-  const [featuredContent2, setFeaturedContent2] = useState(loadFeaturedContent2());
+  // Load featured content #2 from Supabase on mount
+  useEffect(() => {
+    const loadFeaturedContent2 = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('featured_content')
+          .select('*')
+          .eq('slot_number', 2)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error loading featured content #2:', error);
+          return;
+        }
+
+        if (data) {
+          setFeaturedContent2({
+            title: data.title || '',
+            description: data.description || '',
+            image: data.image || '',
+            url: data.url || '',
+            tags: data.tags || '',
+            sponsoredBy: data.sponsored_by || '',
+            fullContent: data.full_content || ''
+          });
+        }
+      } catch (err) {
+        console.error('Error in loadFeaturedContent2:', err);
+      }
+    };
+
+    loadFeaturedContent2();
+  }, []);
   const [scrapeUrl2, setScrapeUrl2] = useState('');
   const [isScraping2, setIsScraping2] = useState(false);
   const [scrapeError2, setScrapeError2] = useState('');
@@ -344,28 +459,80 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
     }
   };
 
-  const handleSaveContent2 = () => {
-    localStorage.setItem('featuredContent2', JSON.stringify(featuredContent2));
-    alert('Featured Content #2 saved successfully!');
+  const handleSaveContent2 = async () => {
+    try {
+      const { error } = await supabase
+        .from('featured_content')
+        .upsert({
+          slot_number: 2,
+          title: featuredContent2.title,
+          description: featuredContent2.description,
+          image: featuredContent2.image,
+          url: featuredContent2.url || null,
+          tags: featuredContent2.tags || null,
+          sponsored_by: featuredContent2.sponsoredBy || null,
+          full_content: featuredContent2.fullContent || null
+        }, {
+          onConflict: 'slot_number'
+        });
+
+      if (error) {
+        console.error('Error saving featured content #2:', error);
+        alert('Failed to save: ' + error.message);
+        return;
+      }
+
+      alert('Featured Content #2 saved successfully!');
+    } catch (err) {
+      console.error('Error in handleSaveContent2:', err);
+      alert('Failed to save content');
+    }
   };
 
   // Featured Content #3 handlers
-  const loadFeaturedContent3 = () => {
-    const saved = localStorage.getItem('featuredContent3');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return {
-      title: '',
-      description: '',
-      image: '',
-      url: '',
-      tags: '',
-      sponsoredBy: ''
-    };
-  };
+  const [featuredContent3, setFeaturedContent3] = useState({
+    title: '',
+    description: '',
+    image: '',
+    url: '',
+    tags: '',
+    sponsoredBy: '',
+    fullContent: ''
+  });
 
-  const [featuredContent3, setFeaturedContent3] = useState(loadFeaturedContent3());
+  // Load featured content #3 from Supabase on mount
+  useEffect(() => {
+    const loadFeaturedContent3 = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('featured_content')
+          .select('*')
+          .eq('slot_number', 3)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error loading featured content #3:', error);
+          return;
+        }
+
+        if (data) {
+          setFeaturedContent3({
+            title: data.title || '',
+            description: data.description || '',
+            image: data.image || '',
+            url: data.url || '',
+            tags: data.tags || '',
+            sponsoredBy: data.sponsored_by || '',
+            fullContent: data.full_content || ''
+          });
+        }
+      } catch (err) {
+        console.error('Error in loadFeaturedContent3:', err);
+      }
+    };
+
+    loadFeaturedContent3();
+  }, []);
   const [scrapeUrl3, setScrapeUrl3] = useState('');
   const [isScraping3, setIsScraping3] = useState(false);
   const [scrapeError3, setScrapeError3] = useState('');
@@ -426,9 +593,34 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
     }
   };
 
-  const handleSaveContent3 = () => {
-    localStorage.setItem('featuredContent3', JSON.stringify(featuredContent3));
-    alert('Featured Content #3 saved successfully!');
+  const handleSaveContent3 = async () => {
+    try {
+      const { error } = await supabase
+        .from('featured_content')
+        .upsert({
+          slot_number: 3,
+          title: featuredContent3.title,
+          description: featuredContent3.description,
+          image: featuredContent3.image,
+          url: featuredContent3.url || null,
+          tags: featuredContent3.tags || null,
+          sponsored_by: featuredContent3.sponsoredBy || null,
+          full_content: featuredContent3.fullContent || null
+        }, {
+          onConflict: 'slot_number'
+        });
+
+      if (error) {
+        console.error('Error saving featured content #3:', error);
+        alert('Failed to save: ' + error.message);
+        return;
+      }
+
+      alert('Featured Content #3 saved successfully!');
+    } catch (err) {
+      console.error('Error in handleSaveContent3:', err);
+      alert('Failed to save content');
+    }
   };
 
   return (
@@ -537,13 +729,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
             {/* Description */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Description *</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Card Preview Text *</label>
               <textarea
                 value={featuredContent.description}
                 onChange={(e) => handleContentChange('description', e.target.value)}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
                 rows="3"
-                placeholder="Brief description of the content..."
+                placeholder="Brief teaser shown on the dashboard card (2-3 sentences)"
               />
             </div>
 
@@ -564,14 +756,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const file = e.target.files[0];
                       if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          handleContentChange('image', reader.result);
-                        };
-                        reader.readAsDataURL(file);
+                        const publicUrl = await handleImageUploadToSupabase(file, 1);
+                        if (publicUrl) {
+                          handleContentChange('image', publicUrl);
+                        }
                       }
                     }}
                     className="hidden"
@@ -618,6 +809,20 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
                 placeholder="e.g., Lake Michigan Credit Union"
               />
               <p className="text-xs text-gray-500 mt-1">Only displays on dashboard if filled in</p>
+            </div>
+
+            {/* Full Content */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Full Blog Content (if applicable)</label>
+              <textarea
+                value={featuredContent.fullContent}
+                onChange={(e) => handleContentChange('fullContent', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                rows="8"
+                maxLength={5000}
+                placeholder="For blog posts without external URLs, enter the full article text here (max ~1000 words)"
+              />
+              <p className="text-xs text-gray-500 mt-1">{featuredContent.fullContent?.length || 0}/5000 characters (~{Math.round((featuredContent.fullContent?.length || 0) / 5)} words)</p>
             </div>
           </div>
         </div>
@@ -673,13 +878,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
             {/* Description */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Description *</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Card Preview Text *</label>
               <textarea
                 value={featuredContent2.description}
                 onChange={(e) => handleContentChange2('description', e.target.value)}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
                 rows="3"
-                placeholder="Brief description of the content..."
+                placeholder="Brief teaser shown on the dashboard card (2-3 sentences)"
               />
             </div>
 
@@ -700,14 +905,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const file = e.target.files[0];
                       if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          handleContentChange2('image', reader.result);
-                        };
-                        reader.readAsDataURL(file);
+                        const publicUrl = await handleImageUploadToSupabase(file, 2);
+                        if (publicUrl) {
+                          handleContentChange2('image', publicUrl);
+                        }
                       }
                     }}
                     className="hidden"
@@ -754,6 +958,20 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
                 placeholder="e.g., Mercantile Bank"
               />
               <p className="text-xs text-gray-500 mt-1">Only displays on dashboard if filled in</p>
+            </div>
+
+            {/* Full Content */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Full Blog Content (if applicable)</label>
+              <textarea
+                value={featuredContent2.fullContent}
+                onChange={(e) => handleContentChange2('fullContent', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                rows="8"
+                maxLength={5000}
+                placeholder="For blog posts without external URLs, enter the full article text here (max ~1000 words)"
+              />
+              <p className="text-xs text-gray-500 mt-1">{featuredContent2.fullContent?.length || 0}/5000 characters (~{Math.round((featuredContent2.fullContent?.length || 0) / 5)} words)</p>
             </div>
           </div>
         </div>
@@ -809,13 +1027,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
             {/* Description */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Description *</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Card Preview Text *</label>
               <textarea
                 value={featuredContent3.description}
                 onChange={(e) => handleContentChange3('description', e.target.value)}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
                 rows="3"
-                placeholder="Brief description of the content..."
+                placeholder="Brief teaser shown on the dashboard card (2-3 sentences)"
               />
             </div>
 
@@ -836,14 +1054,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const file = e.target.files[0];
                       if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          handleContentChange3('image', reader.result);
-                        };
-                        reader.readAsDataURL(file);
+                        const publicUrl = await handleImageUploadToSupabase(file, 3);
+                        if (publicUrl) {
+                          handleContentChange3('image', publicUrl);
+                        }
                       }
                     }}
                     className="hidden"
@@ -890,6 +1107,20 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
                 placeholder="e.g., Fifth Third Bank"
               />
               <p className="text-xs text-gray-500 mt-1">Only displays on dashboard if filled in</p>
+            </div>
+
+            {/* Full Content */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Full Blog Content (if applicable)</label>
+              <textarea
+                value={featuredContent3.fullContent}
+                onChange={(e) => handleContentChange3('fullContent', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                rows="8"
+                maxLength={5000}
+                placeholder="For blog posts without external URLs, enter the full article text here (max ~1000 words)"
+              />
+              <p className="text-xs text-gray-500 mt-1">{featuredContent3.fullContent?.length || 0}/5000 characters (~{Math.round((featuredContent3.fullContent?.length || 0) / 5)} words)</p>
             </div>
           </div>
         </div>
