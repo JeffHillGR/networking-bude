@@ -106,9 +106,9 @@ function Events({ onBackToDashboard }) {
       date: '12/9/2025',
       time: '11:30 AM - 1:30 PM',
       location: 'Amway Grand Plaza Hotel',
-      organizerName: 'Economic Club of Grand Rapids',
+      organizerName: 'The Right Place',
       attendees: '300+',
-      image: 'https://www.economicclubgr.org/wp-content/uploads/2024/10/2026-Economic-Outlook-Banner-scaled.jpg',
+      image: 'https://rightplace.nyc3.cdn.digitaloceanspaces.com/production/uploads/images/Economic-Outlook-2026-Email-Header.png',
       badge: 'In-Person'
     }
   ];
