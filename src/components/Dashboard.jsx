@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Calendar, Heart, MessageCircle, User, ChevronLeft, ChevronRight, Users, ExternalLink, Menu, X as XIcon } from 'lucide-react';
+import { Home, Calendar, Heart, MessageCircle, User, Users, ExternalLink, Menu, X as XIcon } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
 import Events from './Events';
 import Connections from './Connections';
@@ -25,7 +25,6 @@ function Dashboard() {
   const [loadingConnections, setLoadingConnections] = useState(true);
   const [userFirstName, setUserFirstName] = useState('there');
 const [selectedPlan, setSelectedPlan] = useState(null);
-const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
 const [loadedFeaturedContent, setLoadedFeaturedContent] = useState([null, null, null]);
 const [showSponsorModal, setShowSponsorModal] = useState(false);
 const [showSharePrompt, setShowSharePrompt] = useState(false);
@@ -632,73 +631,44 @@ const getGreeting = () => {
                     onClick={() => navigate('/resources-insights')}
                     className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black cursor-pointer hover:bg-gray-50 transition-colors"
                   >
-                    <h3 className="font-bold text-black text-lg">Resources & Insights</h3>
+                    <h3 className="font-bold text-black text-lg">All Resources and Insights →</h3>
                   </div>
                   <p className="text-xs text-gray-500 mt-0.5">Curated content to help you grow</p>
                 </div>
 
-                {/* Carousel Content with Thumbnail on Left */}
+                {/* Featured Content with Thumbnail on Left */}
                 <div
                   onClick={() => navigate('/resources-insights')}
                   className="flex flex-col md:flex-row items-start gap-4 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition-colors cursor-pointer"
                 >
                   {/* Thumbnail Image */}
                   <img
-                    src={featuredContent[featuredContentIndex].image}
-                    alt={featuredContent[featuredContentIndex].title}
+                    src={featuredContent[0].image}
+                    alt={featuredContent[0].title}
                     className="w-32 h-32 md:w-36 md:h-36 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm"
                   />
 
-                  {/* Carousel Navigation - Horizontal: < 1 of 3 > */}
-                  <div className="flex items-center gap-2 self-start">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setFeaturedContentIndex((featuredContentIndex - 1 + featuredContent.length) % featuredContent.length);
-                      }}
-                      className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                      aria-label="Previous tip"
-                    >
-                      <ChevronLeft className="w-5 h-5 text-gray-700" />
-                    </button>
-
-                    <span className="text-sm font-medium text-gray-800 px-3 py-2 bg-gray-100 rounded-lg whitespace-nowrap">
-                      {featuredContentIndex + 1} of {featuredContent.length}
-                    </span>
-
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setFeaturedContentIndex((featuredContentIndex + 1) % featuredContent.length);
-                      }}
-                      className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                      aria-label="Next tip"
-                    >
-                      <ChevronRight className="w-5 h-5 text-gray-700" />
-                    </button>
-                  </div>
-
-                  {/* Right side: Content */}
+                  {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-gray-900 mb-2 text-lg leading-tight">{featuredContent[featuredContentIndex].title}</h4>
-                    {featuredContent[featuredContentIndex].author && (
-                      <p className="text-xs text-gray-500 italic mb-2">By {featuredContent[featuredContentIndex].author}</p>
+                    <h4 className="font-bold text-gray-900 mb-2 text-lg leading-tight">{featuredContent[0].title}</h4>
+                    {featuredContent[0].author && (
+                      <p className="text-xs text-gray-500 italic mb-2">By {featuredContent[0].author}</p>
                     )}
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-2 leading-relaxed">{featuredContent[featuredContentIndex].description}</p>
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-2 leading-relaxed">{featuredContent[0].description}</p>
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                      {featuredContent[featuredContentIndex].tags && (
+                      {featuredContent[0].tags && (
                         <div className="flex gap-2 flex-wrap">
-                          {featuredContent[featuredContentIndex].tags.split(',').slice(0, 2).map((tag, i) => (
+                          {featuredContent[0].tags.split(',').slice(0, 2).map((tag, i) => (
                             <span key={i} className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded">
                               {tag.trim()}
                             </span>
                           ))}
                         </div>
                       )}
-                      {featuredContent[featuredContentIndex].sponsoredBy && (
+                      {featuredContent[0].sponsoredBy && (
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-gray-400">Sponsored by</span>
-                          <span className="text-xs font-medium text-gray-700">{featuredContent[featuredContentIndex].sponsoredBy}</span>
+                          <span className="text-xs font-medium text-gray-700">{featuredContent[0].sponsoredBy}</span>
                         </div>
                       )}
                     </div>

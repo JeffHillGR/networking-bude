@@ -95,6 +95,14 @@ function ResourcesInsights() {
   // Archived content - these were previously featured
   const archivedContent = [
     {
+      image: 'https://travischappell.com/wp-content/uploads/2023/08/phone-img-podcast.png',
+      title: 'How to Lose Everything and Come Back Even Stronger with Annette Raynor',
+      description: 'Travis Chappell interviews Annette Raynor, who brings two decades of IT experience. Learn about resilience through economic downturns, building enterprises, and the lessons learned from overcoming significant financial setbacks.',
+      url: 'https://travischappell.com/travis_podcast/047-how-to-lose-everything-and-come-back-even-stronger-with-annette-raynor/',
+      tags: 'Resilience, Entrepreneurship',
+      sponsoredBy: ''
+    },
+    {
       image: 'https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1320417949i/84699.jpg',
       title: 'Never Eat Alone: The Power of Relationship Building',
       description: 'Keith Ferrazzi\'s groundbreaking book on building authentic professional relationships and mastering the art of networking to advance your career and enrich your life.',
