@@ -101,14 +101,14 @@ function Events({ onBackToDashboard }) {
     },
     {
       id: 4,
-      title: 'Place Matters Summit 2025',
-      description: 'Join community leaders from government, business, and nonprofits for meaningful discussions on nurturing vibrant communities and neighborhoods.',
-      date: '11/6/2025',
-      time: '12:00 PM - 5:00 PM',
-      location: 'The Rockford Corner Bar',
-      organizerName: 'The Right Place',
-      attendees: '150+',
-      image: 'https://web.cvent.com/event_guestside_app/_next/image?url=https%3A%2F%2Fimages.cvent.com%2Fc49e750ef94b4a73879b4e57ae9c1393%2Fa261375d7d47fd2cd2c68c3a86dd821f%2Fd978795e378242b5af5233c775c250e4%2Ff65bb8e0f27745f5bcf821b889bc6407!_!eb5aa18403450c956b23c2a0b455af07.jpeg&w=3840&q=75',
+      title: '2026 Economic Outlook',
+      description: 'Join economic experts and business leaders for insights into the 2026 economic forecast. Discuss trends, challenges, and opportunities shaping West Michigan\'s business landscape.',
+      date: '12/9/2025',
+      time: '11:30 AM - 1:30 PM',
+      location: 'Amway Grand Plaza Hotel',
+      organizerName: 'Economic Club of Grand Rapids',
+      attendees: '300+',
+      image: 'https://www.economicclubgr.org/wp-content/uploads/2024/10/2026-Economic-Outlook-Banner-scaled.jpg',
       badge: 'In-Person'
     }
   ];
