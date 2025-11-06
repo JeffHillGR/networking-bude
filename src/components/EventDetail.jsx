@@ -148,22 +148,22 @@ function EventDetail() {
     },
     4: {
       id: 4,
-      title: 'Place Matters Summit 2025',
-      description: 'Join community leaders from government, business, and nonprofits for meaningful discussions on nurturing vibrant communities and neighborhoods.',
-      fullDescription: 'The Place Matters Summit brings together community leaders from government, business, non-profit, and association industries for meaningful discussions on creating vibrant communities.\n\nFeatured Keynote: "Redefining Community: People, Places, Purpose" by Allyson Brunette. This powerful presentation addresses how social institutions are deteriorating due to digital-induced isolation and poor urban design, and offers solutions for rebuilding authentic community connections.\n\nAdditional Session: "Growth, Development, and Community Character: You Can Have it All!" presented by Dan Leonard, Redevelopment Services Director at Michigan Economic Development Corporation. Learn how communities can balance growth with preserving their unique character.\n\nThis summit provides valuable insights and inspiration to take proactive steps in nurturing vibrant communities and neighborhoods across West Michigan. Previous summits have sold out, demonstrating strong community interest in place-making and community development.\n\nOrganized by The Right Place, the regional economic development organization serving Greater Grand Rapids.',
-      date: 'Thursday, November 6, 2025',
-      time: '12:00 PM - 5:00 PM',
-      location: 'The Rockford Corner Bar',
-      fullAddress: 'The Rockford Corner Bar, Rockford, MI',
-      image: 'https://web.cvent.com/event_guestside_app/_next/image?url=https%3A%2F%2Fimages.cvent.com%2Fc49e750ef94b4a73879b4e57ae9c1393%2Fa261375d7d47fd2cd2c68c3a86dd821f%2Fd978795e378242b5af5233c775c250e4%2Ff65bb8e0f27745f5bcf821b889bc6407!_!eb5aa18403450c956b23c2a0b455af07.jpeg&w=3840&q=75',
+      title: '2026 Economic Outlook',
+      description: 'Join economic experts and business leaders for insights into the 2026 economic forecast. Discuss trends, challenges, and opportunities shaping West Michigan\'s business landscape.',
+      fullDescription: 'Join The Right Place for the annual Economic Outlook event, bringing together economic experts and business leaders to discuss the 2026 economic forecast for West Michigan and beyond.\n\nThis essential event provides valuable insights into:\n• National and regional economic trends for 2026\n• Labor market projections and workforce development\n• Industry-specific forecasts and opportunities\n• Real estate and development outlook\n• Key challenges and strategic opportunities for businesses\n\nFeaturing expert presentations and panel discussions with economists, business leaders, and industry analysts who will help you make informed decisions for the year ahead.\n\nWhether you\'re a CEO, business owner, investor, or community leader, the Economic Outlook provides the intelligence you need to navigate the evolving economic landscape and position your organization for success in 2026.\n\nNetworking lunch included. This annual event consistently draws 300+ regional business leaders and typically sells out.\n\nOrganized by The Right Place, the regional economic development organization serving Greater Grand Rapids.',
+      date: 'Monday, December 9, 2025',
+      time: '11:30 AM - 1:30 PM',
+      location: 'Amway Grand Plaza Hotel',
+      fullAddress: 'Amway Grand Plaza Hotel, Grand Rapids, MI',
+      image: 'https://rightplace.nyc3.cdn.digitaloceanspaces.com/production/uploads/images/Economic-Outlook-2026-Email-Header.png',
       badge: 'In-Person',
       organizer: {
         name: 'The Right Place',
         avatar: 'RP',
         description: 'The Right Place is the regional economic development organization serving Greater Grand Rapids, focused on business growth, talent attraction, and community development.'
       },
-      tags: ['Community Development', 'Leadership', 'Networking', 'Urban Planning', 'Economic Development'],
-      registrationUrl: 'https://web.cvent.com/event/d978795e-3782-42b5-af52-33c775c250e4/summary'
+      tags: ['Economic Forecast', 'Business Strategy', 'Leadership', 'Networking', 'Regional Development'],
+      registrationUrl: 'https://www.rightplace.org/events/economic-outlook-for-2026'
     },
     8: {
       id: 8,
