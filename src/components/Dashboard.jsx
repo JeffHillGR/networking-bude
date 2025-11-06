@@ -638,11 +638,7 @@ const getGreeting = () => {
 
                 {/* Carousel Content with Thumbnail on Left */}
                 <div
-                  onClick={() => {
-                    if (featuredContent[featuredContentIndex].url) {
-                      window.open(featuredContent[featuredContentIndex].url, '_blank');
-                    }
-                  }}
+                  onClick={() => navigate('/resources-insights')}
                   className="flex flex-col md:flex-row items-start gap-4 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition-colors cursor-pointer"
                 >
                   {/* Thumbnail Image */}
