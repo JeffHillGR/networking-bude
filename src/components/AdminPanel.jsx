@@ -585,13 +585,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
             {/* URL Link */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Content URL *</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Content URL (optional)</label>
               <input
                 type="url"
                 value={featuredContent.url}
                 onChange={(e) => handleContentChange('url', e.target.value)}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                placeholder="https://example.com/article"
+                placeholder="https://example.com/article (leave blank for no link)"
               />
             </div>
 
@@ -721,13 +721,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
             {/* URL Link */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Content URL *</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Content URL (optional)</label>
               <input
                 type="url"
                 value={featuredContent2.url}
                 onChange={(e) => handleContentChange2('url', e.target.value)}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                placeholder="https://example.com/article"
+                placeholder="https://example.com/article (leave blank for no link)"
               />
             </div>
 
@@ -857,13 +857,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
             {/* URL Link */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Content URL *</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Content URL (optional)</label>
               <input
                 type="url"
                 value={featuredContent3.url}
                 onChange={(e) => handleContentChange3('url', e.target.value)}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                placeholder="https://example.com/article"
+                placeholder="https://example.com/article (leave blank for no link)"
               />
             </div>
 

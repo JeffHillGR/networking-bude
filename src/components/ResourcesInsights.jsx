@@ -74,7 +74,7 @@ function ResourcesInsights() {
   const ContentCard = ({ content }) => (
     <div
       onClick={() => content.url && window.open(content.url, '_blank')}
-      className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer border border-gray-200"
+      className={`bg-white rounded-lg shadow-sm p-6 transition-shadow border border-gray-200 ${content.url ? 'hover:shadow-md cursor-pointer' : ''}`}
     >
       <div className="flex flex-col md:flex-row gap-6">
         <img
