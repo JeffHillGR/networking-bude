@@ -451,7 +451,7 @@ const getGreeting = () => {
                 fetchpriority="high"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-4 text-white">
-                <h2 className="text-xl md:text-2xl font-bold tracking-tight">Discover. Connect. Grow.</h2>
+                <h2 className="text-xl md:text-2xl font-bold tracking-tight">Connect. Discover. Grow.</h2>
               </div>
             </div>
 
