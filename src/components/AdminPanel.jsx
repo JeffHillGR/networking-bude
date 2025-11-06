@@ -689,14 +689,8 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
         {/* Featured Item #1 - Editable */}
         <div className="border-2 border-blue-300 rounded-lg p-4 bg-blue-50 mb-4">
-          <div className="flex items-center justify-between mb-3">
+          <div className="mb-3">
             <h4 className="font-bold text-gray-900">Featured Item #1</h4>
-            <button
-              onClick={handleSaveContent}
-              className="px-3 py-1 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700"
-            >
-              Save Content
-            </button>
           </div>
 
           <div className="space-y-3 bg-white p-3 rounded">
@@ -847,18 +841,22 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
               <p className="text-xs text-gray-500 mt-1">{featuredContent.fullContent?.length || 0}/5000 characters (~{Math.round((featuredContent.fullContent?.length || 0) / 5)} words)</p>
             </div>
           </div>
+
+          {/* Save Button */}
+          <div className="mt-4">
+            <button
+              onClick={handleSaveContent}
+              className="w-full px-4 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700"
+            >
+              Save Featured Content #1
+            </button>
+          </div>
         </div>
 
         {/* Featured Item #2 - Editable */}
         <div className="border-2 border-green-300 rounded-lg p-4 bg-green-50 mb-4">
-          <div className="flex items-center justify-between mb-3">
+          <div className="mb-3">
             <h4 className="font-bold text-gray-900">Featured Item #2</h4>
-            <button
-              onClick={handleSaveContent2}
-              className="px-3 py-1 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700"
-            >
-              Save Content
-            </button>
           </div>
 
           <div className="space-y-3 bg-white p-3 rounded">
@@ -1009,18 +1007,22 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
               <p className="text-xs text-gray-500 mt-1">{featuredContent2.fullContent?.length || 0}/5000 characters (~{Math.round((featuredContent2.fullContent?.length || 0) / 5)} words)</p>
             </div>
           </div>
+
+          {/* Save Button */}
+          <div className="mt-4">
+            <button
+              onClick={handleSaveContent2}
+              className="w-full px-4 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700"
+            >
+              Save Featured Content #2
+            </button>
+          </div>
         </div>
 
         {/* Featured Item #3 - Editable */}
         <div className="border-2 border-purple-300 rounded-lg p-4 bg-purple-50 mb-4">
-          <div className="flex items-center justify-between mb-3">
+          <div className="mb-3">
             <h4 className="font-bold text-gray-900">Featured Item #3</h4>
-            <button
-              onClick={handleSaveContent3}
-              className="px-3 py-1 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700"
-            >
-              Save Content
-            </button>
           </div>
 
           <div className="space-y-3 bg-white p-3 rounded">
@@ -1170,6 +1172,16 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
               />
               <p className="text-xs text-gray-500 mt-1">{featuredContent3.fullContent?.length || 0}/5000 characters (~{Math.round((featuredContent3.fullContent?.length || 0) / 5)} words)</p>
             </div>
+          </div>
+
+          {/* Save Button */}
+          <div className="mt-4">
+            <button
+              onClick={handleSaveContent3}
+              className="w-full px-4 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700"
+            >
+              Save Featured Content #3
+            </button>
           </div>
         </div>
       </div>
