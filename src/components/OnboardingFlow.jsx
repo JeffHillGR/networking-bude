@@ -257,7 +257,7 @@ export default function BudEOnboarding() {
         organizations_to_check_out_other: formData.organizationsToCheckOutOther,
         professional_interests: formData.professionalInterests,
         professional_interests_other: formData.professionalInterestsOther,
-        personal_interests: formData.personalInterests ? [formData.personalInterests] : [],
+        personal_interests: formData.personalInterests || '',
         networking_goals: formData.networkingGoals,
         connection_count: 0,
         max_connections: 10
