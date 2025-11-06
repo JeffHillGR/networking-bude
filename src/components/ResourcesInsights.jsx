@@ -39,7 +39,8 @@ function ResourcesInsights() {
                 url: item.url,
                 tags: item.tags,
                 sponsoredBy: item.sponsored_by,
-                fullContent: item.full_content
+                fullContent: item.full_content,
+                author: item.author
               };
             }
           });
@@ -135,6 +136,9 @@ function ResourcesInsights() {
         />
         <div className="flex-1">
           <h3 className="text-xl font-bold text-gray-900 mb-2">{content.title}</h3>
+          {content.author && (
+            <p className="text-sm text-gray-500 italic mb-2">By {content.author}</p>
+          )}
           <p className="text-gray-600 mb-4">{content.description}</p>
           {content.tags && (
             <div className="flex gap-2 flex-wrap mb-3">
@@ -251,6 +255,9 @@ function ResourcesInsights() {
             <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-start justify-between">
               <div className="flex-1 pr-4">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">{selectedContent.title}</h2>
+                {selectedContent.author && (
+                  <p className="text-sm text-gray-500 italic mb-2">By {selectedContent.author}</p>
+                )}
                 {selectedContent.tags && (
                   <div className="flex gap-2 flex-wrap">
                     {selectedContent.tags.split(',').map((tag, i) => (

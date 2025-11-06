@@ -288,7 +288,8 @@ const getGreeting = () => {
                 url: item.url,
                 tags: item.tags,
                 sponsoredBy: item.sponsored_by,
-                fullContent: item.full_content
+                fullContent: item.full_content,
+                author: item.author
               };
             }
           });
@@ -680,6 +681,9 @@ const getGreeting = () => {
                   {/* Right side: Content */}
                   <div className="flex-1 min-w-0">
                     <h4 className="font-bold text-gray-900 mb-2 text-lg leading-tight">{featuredContent[featuredContentIndex].title}</h4>
+                    {featuredContent[featuredContentIndex].author && (
+                      <p className="text-xs text-gray-500 italic mb-2">By {featuredContent[featuredContentIndex].author}</p>
+                    )}
                     <p className="text-sm text-gray-600 mb-2 line-clamp-2 leading-relaxed">{featuredContent[featuredContentIndex].description}</p>
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                       {featuredContent[featuredContentIndex].tags && (

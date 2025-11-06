@@ -189,7 +189,8 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
     url: '',
     tags: '',
     sponsoredBy: '',
-    fullContent: ''
+    fullContent: '',
+    author: ''
   });
 
   // Load featured content #1 from Supabase on mount
@@ -215,7 +216,8 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
             url: data.url || '',
             tags: data.tags || '',
             sponsoredBy: data.sponsored_by || '',
-            fullContent: data.full_content || ''
+            fullContent: data.full_content || '',
+            author: data.author || ''
           });
         }
       } catch (err) {
@@ -301,7 +303,8 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
           url: featuredContent.url || null,
           tags: featuredContent.tags || null,
           sponsored_by: featuredContent.sponsoredBy || null,
-          full_content: featuredContent.fullContent || null
+          full_content: featuredContent.fullContent || null,
+          author: featuredContent.author || null
         }, {
           onConflict: 'slot_number'
         });
@@ -363,7 +366,8 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
     url: '',
     tags: '',
     sponsoredBy: '',
-    fullContent: ''
+    fullContent: '',
+    author: ''
   });
 
   // Load featured content #2 from Supabase on mount
@@ -389,7 +393,8 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
             url: data.url || '',
             tags: data.tags || '',
             sponsoredBy: data.sponsored_by || '',
-            fullContent: data.full_content || ''
+            fullContent: data.full_content || '',
+            author: data.author || ''
           });
         }
       } catch (err) {
@@ -471,7 +476,8 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
           url: featuredContent2.url || null,
           tags: featuredContent2.tags || null,
           sponsored_by: featuredContent2.sponsoredBy || null,
-          full_content: featuredContent2.fullContent || null
+          full_content: featuredContent2.fullContent || null,
+          author: featuredContent2.author || null
         }, {
           onConflict: 'slot_number'
         });
@@ -497,7 +503,8 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
     url: '',
     tags: '',
     sponsoredBy: '',
-    fullContent: ''
+    fullContent: '',
+    author: ''
   });
 
   // Load featured content #3 from Supabase on mount
@@ -523,7 +530,8 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
             url: data.url || '',
             tags: data.tags || '',
             sponsoredBy: data.sponsored_by || '',
-            fullContent: data.full_content || ''
+            fullContent: data.full_content || '',
+            author: data.author || ''
           });
         }
       } catch (err) {
@@ -605,7 +613,8 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
           url: featuredContent3.url || null,
           tags: featuredContent3.tags || null,
           sponsored_by: featuredContent3.sponsoredBy || null,
-          full_content: featuredContent3.fullContent || null
+          full_content: featuredContent3.fullContent || null,
+          author: featuredContent3.author || null
         }, {
           onConflict: 'slot_number'
         });
@@ -811,6 +820,19 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
               <p className="text-xs text-gray-500 mt-1">Only displays on dashboard if filled in</p>
             </div>
 
+            {/* Author */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Author (optional)</label>
+              <input
+                type="text"
+                value={featuredContent.author}
+                onChange={(e) => handleContentChange('author', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                placeholder="e.g., Jeff Hill"
+              />
+              <p className="text-xs text-gray-500 mt-1">Displays under title for blog posts</p>
+            </div>
+
             {/* Full Content */}
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Full Blog Content (if applicable)</label>
@@ -960,6 +982,19 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
               <p className="text-xs text-gray-500 mt-1">Only displays on dashboard if filled in</p>
             </div>
 
+            {/* Author */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Author (optional)</label>
+              <input
+                type="text"
+                value={featuredContent2.author}
+                onChange={(e) => handleContentChange2('author', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                placeholder="e.g., Jeff Hill"
+              />
+              <p className="text-xs text-gray-500 mt-1">Displays under title for blog posts</p>
+            </div>
+
             {/* Full Content */}
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Full Blog Content (if applicable)</label>
@@ -1107,6 +1142,19 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
                 placeholder="e.g., Fifth Third Bank"
               />
               <p className="text-xs text-gray-500 mt-1">Only displays on dashboard if filled in</p>
+            </div>
+
+            {/* Author */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Author (optional)</label>
+              <input
+                type="text"
+                value={featuredContent3.author}
+                onChange={(e) => handleContentChange3('author', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                placeholder="e.g., Jeff Hill"
+              />
+              <p className="text-xs text-gray-500 mt-1">Displays under title for blog posts</p>
             </div>
 
             {/* Full Content */}
