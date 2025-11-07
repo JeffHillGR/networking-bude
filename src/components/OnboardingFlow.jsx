@@ -291,9 +291,9 @@ export default function BudEOnboarding() {
   };
 
   const BudELogo = () => (
-  <img 
-  src="/BudE-Logo-Final.png"
-  alt="BudE Logo" 
+  <img
+  src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png"
+  alt="BudE Logo"
   className="h-16.5 w-auto"
 />
   );
