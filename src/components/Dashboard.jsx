@@ -196,16 +196,27 @@ const handleSubmitContact = async (e) => {
   }
 };
 
-// Check if user should see share prompt based on engagement
+// Check if user should see share prompt based on engagement or time
 useEffect(() => {
   const checkEngagement = () => {
     const hasSeenSharePrompt = localStorage.getItem('hasSeenSharePrompt');
+    const lastSharePromptDate = localStorage.getItem('lastSharePromptDate');
     const engagementCount = parseInt(localStorage.getItem('userEngagementCount') || '0', 10);
 
-    // Show share prompt after 10 meaningful interactions (only once)
-    if (!hasSeenSharePrompt && engagementCount >= 10) {
-      setShowSharePrompt(true);
-      localStorage.setItem('hasSeenSharePrompt', 'true');
+    if (!hasSeenSharePrompt) {
+      // First time: Show after 6 meaningful interactions
+      if (engagementCount >= 6) {
+        setShowSharePrompt(true);
+        localStorage.setItem('hasSeenSharePrompt', 'true');
+        localStorage.setItem('lastSharePromptDate', new Date().toISOString());
+      }
+    } else if (lastSharePromptDate) {
+      // Returning users: Show every 7-10 days (using 8.5 days average = 204 hours)
+      const hoursSinceLastPrompt = Math.floor((new Date() - new Date(lastSharePromptDate)) / (1000 * 60 * 60));
+      if (hoursSinceLastPrompt >= 204) { // 8.5 days = 204 hours
+        setShowSharePrompt(true);
+        localStorage.setItem('lastSharePromptDate', new Date().toISOString());
+      }
     }
   };
 
