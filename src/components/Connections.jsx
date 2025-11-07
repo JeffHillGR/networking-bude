@@ -231,9 +231,16 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
 
   const currentCard = allCards[currentCardIndex];
 
+  // Track user engagement for share prompt
+  const trackEngagement = () => {
+    const currentCount = parseInt(localStorage.getItem('userEngagementCount') || '0', 10);
+    localStorage.setItem('userEngagementCount', (currentCount + 1).toString());
+  };
+
   const handleConnect = () => {
     // Open modal to send connection request
     setShowConnectModal(true);
+    trackEngagement(); // Count opening connection modal as engagement
   };
 
   const handleSendConnectionRequest = async () => {
@@ -369,6 +376,8 @@ ${senderName}`;
       });
       return;
     }
+
+    trackEngagement(); // Count saving for later as engagement
 
     try {
       // Update match status to 'perhaps' with timestamp (hidden for 1 week)
@@ -631,6 +640,7 @@ ${senderName}`;
                     <img
                       src={currentCard.photo}
                       alt={currentCard.name}
+                      loading="lazy"
                       className="w-32 h-32 rounded-full object-cover mb-4 shadow-lg border-4 border-black"
                     />
                   ) : (
@@ -769,6 +779,7 @@ ${senderName}`;
                   key={person.isPlaceholder ? `placeholder-${index}` : person.id}
                   onClick={() => {
                     setCurrentCardIndex(index);
+                    trackEngagement(); // Count viewing a connection card as engagement
                     // Scroll to featured card on mobile
                     if (featuredCardRef.current) {
                       featuredCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -802,6 +813,7 @@ ${senderName}`;
                             <img
                               src={person.photo}
                               alt={person.name}
+                              loading="lazy"
                               className="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-black"
                             />
                           ) : (
@@ -865,7 +877,10 @@ ${senderName}`;
                 {filteredConnections.map((person) => (
                   <div
                     key={person.id}
-                    onClick={() => setSelectedConnection(person)}
+                    onClick={() => {
+                      setSelectedConnection(person);
+                      trackEngagement(); // Count viewing saved/pending connection details as engagement
+                    }}
                     className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-all cursor-pointer"
                   >
                     <div className="flex gap-4">
@@ -873,6 +888,7 @@ ${senderName}`;
                         <img
                           src={person.photo}
                           alt={person.name}
+                          loading="lazy"
                           className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover flex-shrink-0 border-2 border-black"
                         />
                       ) : (
@@ -973,6 +989,7 @@ ${senderName}`;
                   <img
                     src={selectedConnection.photo}
                     alt={selectedConnection.name}
+                    loading="lazy"
                     className="w-32 h-32 rounded-full object-cover mb-4 shadow-lg border-4 border-black"
                   />
                 ) : (
@@ -1131,6 +1148,7 @@ ${senderName}`;
                 <img
                   src={person.photo}
                   alt={person.name}
+                  loading="lazy"
                   className="w-16 h-16 rounded-full object-cover border-2 border-black"
                 />
               ) : (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, MapPin, Heart, ExternalLink, Share2, User, Home, TrendingUp, Users } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
@@ -12,6 +12,12 @@ function EventDetail() {
   const [adInquirySubmitted, setAdInquirySubmitted] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [showScientistModal, setShowScientistModal] = useState(false);
+
+  // Track user engagement when viewing event details
+  useEffect(() => {
+    const currentCount = parseInt(localStorage.getItem('userEngagementCount') || '0', 10);
+    localStorage.setItem('userEngagementCount', (currentCount + 1).toString());
+  }, [eventId]); // Track once per event view
 
   // Format phone number as user types: (XXX) XXX-XXXX
   const formatPhoneNumber = (value) => {

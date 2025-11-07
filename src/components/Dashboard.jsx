@@ -196,21 +196,25 @@ const handleSubmitContact = async (e) => {
   }
 };
 
-// Check if user should see share prompt (every 5 days)
+// Check if user should see share prompt based on engagement
 useEffect(() => {
-  const lastSharePromptDate = localStorage.getItem('lastSharePromptDate');
+  const checkEngagement = () => {
+    const hasSeenSharePrompt = localStorage.getItem('hasSeenSharePrompt');
+    const engagementCount = parseInt(localStorage.getItem('userEngagementCount') || '0', 10);
 
-  if (!lastSharePromptDate) {
-    // Set initial date
-    localStorage.setItem('lastSharePromptDate', new Date().toISOString());
-  } else {
-    // Check if 5 days have passed (120 hours)
-    const hoursSinceLastPrompt = Math.floor((new Date() - new Date(lastSharePromptDate)) / (1000 * 60 * 60));
-    if (hoursSinceLastPrompt >= 120) { // 5 days = 120 hours
+    // Show share prompt after 10 meaningful interactions (only once)
+    if (!hasSeenSharePrompt && engagementCount >= 10) {
       setShowSharePrompt(true);
-      localStorage.setItem('lastSharePromptDate', new Date().toISOString());
+      localStorage.setItem('hasSeenSharePrompt', 'true');
     }
-  }
+  };
+
+  // Check on mount
+  checkEngagement();
+
+  // Also check periodically (every 3 seconds) in case user navigates back to dashboard
+  const interval = setInterval(checkEngagement, 3000);
+  return () => clearInterval(interval);
 }, []);
 
 // Prevent scroll restoration and bounce-to-top on mobile
@@ -825,7 +829,7 @@ default:
                 <Menu className="w-6 h-6" />
               </button>
               <img
-                src="/BudE-Logo-Final.png"
+                src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png"
                 alt="BudE Logo"
                 className="h-16 w-auto"
               />
