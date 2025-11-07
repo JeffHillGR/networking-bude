@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, Clock, User, TrendingUp, ArrowLeft, Send } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
 function Connections({ onBackToDashboard, onNavigateToSettings }) {
   const { user } = useAuth();
+  const featuredCardRef = useRef(null);
   const [activeTab, setActiveTab] = useState('recommended');
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showConnectModal, setShowConnectModal] = useState(false);
@@ -537,7 +538,7 @@ ${senderName}`;
         {activeTab === 'recommended' ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative">
             {/* Large Card View for Recommended */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2" ref={featuredCardRef}>
               <div className="text-center mb-4">
                 <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black">
                   <h2 className="text-xl font-bold text-black">Discover New Connections</h2>
@@ -766,7 +767,13 @@ ${senderName}`;
               {allCards.map((person, index) => (
                 <div
                   key={person.isPlaceholder ? `placeholder-${index}` : person.id}
-                  onClick={() => setCurrentCardIndex(index)}
+                  onClick={() => {
+                    setCurrentCardIndex(index);
+                    // Scroll to featured card on mobile
+                    if (featuredCardRef.current) {
+                      featuredCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                  }}
                   className={`bg-white rounded-lg p-4 shadow-sm transition-shadow ${person.isPlaceholder ? 'cursor-default opacity-60' : 'hover:shadow-md cursor-pointer'}`}
                 >
                   {person.isPlaceholder ? (
