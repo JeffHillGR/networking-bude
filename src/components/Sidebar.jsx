@@ -86,7 +86,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
               className="w-full flex items-center justify-center mb-4 cursor-pointer hover:opacity-80 transition-opacity"
             >
               <img
-                src="/BudE-Logo-Final.png"
+                src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png"
                 alt="BudE Logo"
                 className="w-full h-auto"
               />

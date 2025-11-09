@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Calendar, Users, ExternalLink, X, TrendingUp, ArrowLeft } from 'lucide-react';
+import { supabase } from '../lib/supabase.js';
 
 function Events({ onBackToDashboard }) {
   const navigate = useNavigate();
@@ -20,6 +21,8 @@ function Events({ onBackToDashboard }) {
     submitterEmail: '',
     eventUrl: ''
   });
+  const [allEvents, setAllEvents] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
 
   // Format phone number as user types: (XXX) XXX-XXXX
   const formatPhoneNumber = (value) => {
@@ -52,66 +55,55 @@ function Events({ onBackToDashboard }) {
     });
   }, []);
 
-  // Load admin-created events from localStorage
-  const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
+  // Load events from Supabase
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select('*')
+          .order('slot_number', { ascending: true });
 
-  // Helper function to parse date strings (MM/DD/YYYY) into Date objects for sorting
+        if (error) throw error;
+
+        // Transform data to match the expected format
+        const transformedEvents = data.map(event => ({
+          id: event.id,
+          title: event.title,
+          description: event.short_description,
+          date: event.date,
+          time: event.time,
+          location: event.location_name,
+          organizerName: event.organization === 'Other' ? event.organization_custom : event.organization,
+          image: event.image_url,
+          badge: event.event_badge,
+          isFeatured: event.is_featured
+        }));
+
+        setAllEvents(transformedEvents);
+      } catch (error) {
+        console.error('Error loading events:', error);
+      } finally {
+        setLoadingEvents(false);
+      }
+    };
+
+    loadEvents();
+  }, []);
+
+  // Separate featured and non-featured events
+  const featuredEvents = allEvents.filter(e => e.isFeatured);
+  const upcomingEvents = allEvents.filter(e => !e.isFeatured);
+
+  // Helper function to parse date strings for sorting
   const parseEventDate = (dateString) => {
-    const [month, day, year] = dateString.split('/');
-    return new Date(year, month - 1, day);
-  };
-
-  // Featured events in custom order (not sorted by date)
-  const featuredEvents = [
-    {
-      id: 1,
-      title: 'Bamboo Grand Rapids: Grand Opening Celebration',
-      description: 'Celebrate the grand opening of Bamboo Grand Rapids, a new center for entrepreneurship, creativity, and innovation in downtown Grand Rapids.',
-      date: '12/4/2025',
-      time: '4:00 PM - 8:00 PM',
-      location: '2 Fulton Street West',
-      organizerName: 'Bamboo Detroit',
-      attendees: '500',
-      image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1120287333%2F84709515697%2F1%2Foriginal.20250910-174858?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.208333333333&fp-y=0.621848739496&s=9f37de221b0249dee8dd7ee347395056',
-      badge: 'In-Person'
-    },
-    {
-      id: 2,
-      title: 'Talent & Inclusion Summit',
-      description: 'This signature Chamber event brings together executives, HR professionals, and thought leaders focused on workforce development. The 2025 theme is "Unlocking Talent, Inclusion, and Retention for a Stronger West Michigan."',
-      date: '11/11/2025',
-      time: '8:00 AM - 1:00 PM',
-      location: 'JW Marriott Grand Rapids',
-      organizerName: 'Grand Rapids Chamber',
-      attendees: '200+',
-      image: 'https://grandrapids.org/wp-content/uploads/2024/10/GRC_TIS-1-2048x1152.jpg',
-      badge: 'In-Person'
-    },
-    {
-      id: 3,
-      title: '17th Annual Jay & Betty Van Andel Legacy Awards Gala',
-      description: 'Celebrate community leadership and impact at this elegant gala honoring the Van Andel legacy and supporting the Grand Rapids Public Museum.',
-      date: '11/12/2025',
-      time: '6:00 PM - 10:00 PM',
-      location: 'JW Marriott Grand Rapids',
-      organizerName: 'Grand Rapids Public Museum',
-      attendees: '300+',
-      image: 'https://www.grpm.org/wp-content/uploads/2025/06/2025_Gala_Web-Header_Option-05.png',
-      badge: 'In-Person'
-    },
-    {
-      id: 4,
-      title: '2026 Economic Outlook',
-      description: 'Join economic experts and business leaders for insights into the 2026 economic forecast. Discuss trends, challenges, and opportunities shaping West Michigan\'s business landscape.',
-      date: '12/9/2025',
-      time: '11:30 AM - 1:30 PM',
-      location: 'Amway Grand Plaza Hotel',
-      organizerName: 'The Right Place',
-      attendees: '300+',
-      image: 'https://rightplace.nyc3.cdn.digitaloceanspaces.com/production/uploads/images/Economic-Outlook-2026-Email-Header.png',
-      badge: 'In-Person'
+    // Handle different date formats
+    if (dateString.includes('/')) {
+      const [month, day, year] = dateString.split('/');
+      return new Date(year, month - 1, day);
     }
-  ];
+    return new Date(dateString);
+  };
 
   const handleSubmitEvent = async (e) => {
     e.preventDefault();
@@ -158,47 +150,8 @@ function Events({ onBackToDashboard }) {
     }
   };
 
-  const moreEvents = [
-    {
-      id: 5,
-      title: 'WMHCC Conecta Membership Meeting',
-      description: 'Join the West Michigan Hispanic Chamber of Commerce for the monthly Conecta membership meeting. Network with fellow chamber members, learn about upcoming initiatives, and celebrate Hispanic business community achievements. Hosted by Acrisure.',
-      date: '11/25/2025',
-      time: '5:00 PM - 7:00 PM',
-      location: 'Acrisure',
-      organizerName: 'West Michigan Hispanic Chamber of Commerce',
-      attendees: '75+',
-      price: 'Free for Members',
-      badge: 'In-Person',
-      image: 'https://chambermaster.blob.core.windows.net/userfiles/UserFiles/chambers/2018/Image/November25Conecta.png'
-    },
-    {
-      id: 6,
-      title: 'Gabe Karp – Best-selling Author and Keynote Speaker',
-      description: 'Globally recognized expert in leadership and high-performance teams. Author of "Don\'t Get Mad at Penguins," presenting his proprietary system for leveraging conflict effectively. Operating Partner at Detroit Venture Partners.',
-      date: '11/17/2025',
-      time: '11:30 AM - 1:30 PM',
-      location: 'JW Marriott Grand Rapids',
-      attendees: '200+',
-      organizerName: 'Economic Club of Grand Rapids',
-      price: 'Registration Required',
-      badge: 'In-Person',
-      image: 'https://miro.medium.com/v2/resize:fit:1100/format:webp/1*x7S7Iiz737OW5qXQGSpy3w.jpeg'
-    },
-    {
-      id: 7,
-      title: 'West Michigan Capstone Dinner 2025',
-      description: 'Celebrating 20 years of Inforum helping women lead and succeed in West Michigan. Featuring fireside chat with Andi Owen, CEO of MillerKnoll, discussing her leadership journey and insights.',
-      date: '11/20/2025',
-      time: '5:30 PM - 7:45 PM',
-      location: 'JW Marriott Grand Rapids',
-      attendees: '200+',
-      organizerName: 'Inforum',
-      price: 'Registration Required',
-      badge: 'In-Person',
-      image: 'https://npr.brightspotcdn.com/dims4/default/ec2181b/2147483647/strip/true/crop/383x214%2B0%2B0/resize/880x492!/quality/90/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2Flegacy%2Fsites%2Fwgvu%2Ffiles%2F201511%2FInforum.jpg'
-    }
-  ];
+  // Use upcomingEvents from Supabase (non-featured events)
+  const moreEvents = upcomingEvents;
 
   return (
     <div className="min-h-screen bg-gray-50">

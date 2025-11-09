@@ -24,6 +24,8 @@ function Dashboard() {
   const [connections, setConnections] = useState([]);
   const [loadingConnections, setLoadingConnections] = useState(true);
   const [userFirstName, setUserFirstName] = useState('there');
+  const [events, setEvents] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
 const [selectedPlan, setSelectedPlan] = useState(null);
 const [loadedFeaturedContent, setLoadedFeaturedContent] = useState([null, null, null]);
 const [showSponsorModal, setShowSponsorModal] = useState(false);
@@ -429,17 +431,46 @@ const getGreeting = () => {
     fetchConnections();
   }, [user]);
 
-  // Load admin-created events from localStorage
-  const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
+  // Load events from Supabase
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select('*')
+          .order('slot_number', { ascending: true });
 
-  // Featured events - Real Grand Rapids networking events
-  const events = [
-    { id: 1, title: 'Bamboo Grand Rapids: Grand Opening Celebration', date: '12/4/2025', time: '4:00 PM - 8:00 PM', location: '2 Fulton Street West', organizerName: 'Bamboo Detroit', fullAddress: '2 Fulton Street West, Grand Rapids, MI 49503', image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1120287333%2F84709515697%2F1%2Foriginal.20250910-174858?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.208333333333&fp-y=0.621848739496&s=9f37de221b0249dee8dd7ee347395056', badge: 'In-Person', tags: ['Entrepreneurship', 'Innovation', 'Startup'] },
-    { id: 2, title: 'Talent & Inclusion Summit', date: '11/11/2025', time: '8:00 AM - 1:00 PM', location: 'JW Marriott Grand Rapids', organizerName: 'Grand Rapids Chamber', fullAddress: '235 Louis St NW, Grand Rapids, MI 49503', image: 'https://grandrapids.org/wp-content/uploads/2024/10/GRC_TIS-1-2048x1152.jpg', badge: 'In-Person' },
-    { id: 3, title: '17th Annual Jay & Betty Van Andel Legacy Awards Gala', date: '11/12/2025', time: 'Evening Event', location: 'JW Marriott Grand Rapids', organizerName: 'Grand Rapids Public Museum', fullAddress: 'JW Marriott Grand Rapids, MI', image: 'https://i0.wp.com/www.grpm.org/wp-content/uploads/2025/06/2025_Gala_Web-Header_Option-05.png', badge: 'In-Person' },
-    { id: 4, title: 'Place Matters Summit 2025', date: '11/6/2025', time: '12:00 PM - 5:00 PM', location: 'The Rockford Corner Bar', organizerName: 'The Right Place', fullAddress: 'The Rockford Corner Bar, Rockford, MI', image: 'https://web.cvent.com/event_guestside_app/_next/image?url=https%3A%2F%2Fimages.cvent.com%2Fc49e750ef94b4a73879b4e57ae9c1393%2Fa261375d7d47fd2cd2c68c3a86dd821f%2Fd978795e378242b5af5233c775c250e4%2Ff65bb8e0f27745f5bcf821b889bc6407!_!eb5aa18403450c956b23c2a0b455af07.jpeg&w=3840&q=75', badge: 'In-Person' },
-    { id: 5, title: 'WMHCC Conecta Membership Meeting', date: '11/25/2025', time: '5:00 PM - 7:00 PM', location: 'Acrisure', organizerName: 'West Michigan Hispanic Chamber of Commerce', fullAddress: 'Acrisure, Grand Rapids, MI', image: 'https://chambermaster.blob.core.windows.net/userfiles/UserFiles/chambers/2018/Image/November25Conecta.png', badge: 'In-Person' }
-  ];
+        if (error) throw error;
+
+        // Transform data to match the expected format
+        const transformedEvents = data.map(event => ({
+          id: event.id,
+          title: event.title,
+          date: event.date,
+          time: event.time,
+          location: event.location_name,
+          organizerName: event.organization === 'Other' ? event.organization_custom : event.organization,
+          fullAddress: event.full_address,
+          image: event.image_url,
+          badge: event.event_badge,
+          tags: event.tags ? event.tags.split(',').map(t => t.trim()) : [],
+          description: event.short_description,
+          fullDescription: event.full_description,
+          organizerDescription: event.organizer_description,
+          registrationUrl: event.registration_url,
+          isFeatured: event.is_featured
+        }));
+
+        setEvents(transformedEvents);
+      } catch (error) {
+        console.error('Error loading events:', error);
+      } finally {
+        setLoadingEvents(false);
+      }
+    };
+
+    loadEvents();
+  }, []);
 
   const navItems = [
     { id: 'dashboard', icon: Home, label: 'Dashboard' },

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Calendar, MapPin, Heart, ExternalLink, Share2, User, Home, TrendingUp, Users } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
+import { supabase } from '../lib/supabase.js';
 
 function EventDetail() {
   const navigate = useNavigate();
@@ -12,6 +13,8 @@ function EventDetail() {
   const [adInquirySubmitted, setAdInquirySubmitted] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [showScientistModal, setShowScientistModal] = useState(false);
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Track user engagement when viewing event details
   useEffect(() => {
@@ -33,10 +36,58 @@ function EventDetail() {
     return value;
   };
 
-  // Load admin-created events from localStorage
-  const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
+  // Load event from Supabase
+  useEffect(() => {
+    const loadEvent = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select('*')
+          .eq('id', eventId)
+          .single();
 
-  // Real event data - Grand Rapids networking events
+        if (error) throw error;
+
+        if (data) {
+          // Transform data to match expected format
+          const transformedEvent = {
+            id: data.id,
+            title: data.title,
+            description: data.short_description,
+            fullDescription: data.full_description,
+            date: data.date,
+            time: data.time,
+            location: data.location_name,
+            fullAddress: data.full_address,
+            image: data.image_url,
+            badge: data.event_badge,
+            organizer: {
+              name: data.organization === 'Other' ? data.organization_custom : data.organization,
+              avatar: (data.organization === 'Other' ? data.organization_custom : data.organization)
+                ?.split(' ')
+                .map(w => w[0])
+                .join('')
+                .slice(0, 2)
+                .toUpperCase() || 'EO',
+              description: data.organizer_description || 'Event organization details'
+            },
+            tags: data.tags ? data.tags.split(',').map(t => t.trim()) : [],
+            registrationUrl: data.registration_url
+          };
+
+          setEvent(transformedEvent);
+        }
+      } catch (error) {
+        console.error('Error loading event:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEvent();
+  }, [eventId]);
+
+  // Fallback event data for backward compatibility (can be removed after migration)
   const defaultEventData = {
     1: {
       id: 1,
@@ -192,23 +243,34 @@ function EventDetail() {
     }
   };
 
-  // Find admin event by ID first, fall back to default events
-  const adminEvent = adminEvents.find(e => String(e.id) === String(eventId));
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading event details...</p>
+        </div>
+      </div>
+    );
+  }
 
-  // If admin event exists, format it with proper structure
-  let event;
-  if (adminEvent) {
-    event = {
-      ...adminEvent,
-      organizer: {
-        name: adminEvent.organizerName || 'Event Organizer',
-        avatar: adminEvent.organizerName ? adminEvent.organizerName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : 'EO',
-        description: adminEvent.organizerDescription || 'Event organization details'
-      },
-      tags: adminEvent.tags ? adminEvent.tags.split(',').map(t => t.trim()) : []
-    };
-  } else {
-    event = defaultEventData[eventId] || defaultEventData[1];
+  // Show error if event not found
+  if (!event) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Event Not Found</h2>
+          <p className="text-gray-600 mb-4">The event you're looking for doesn't exist.</p>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    );
   }
 
   // Suggested connections - currently disabled (will show real connections in future)
