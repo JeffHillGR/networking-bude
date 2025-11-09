@@ -24,6 +24,12 @@ function Events({ onBackToDashboard }) {
   const [allEvents, setAllEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
 
+  // Track user engagement for share prompt
+  const trackEngagement = () => {
+    const currentCount = parseInt(localStorage.getItem('userEngagementCount') || '0', 10);
+    localStorage.setItem('userEngagementCount', (currentCount + 1).toString());
+  };
+
   // Format phone number as user types: (XXX) XXX-XXXX
   const formatPhoneNumber = (value) => {
     const cleaned = value.replace(/\D/g, '');
@@ -240,7 +246,10 @@ function Events({ onBackToDashboard }) {
                 {featuredEvents.map((event) => (
                   <div
                     key={event.id}
-                    onClick={() => navigate(`/events/${event.id}`)}
+                    onClick={() => {
+                      trackEngagement(); // Count viewing event as engagement
+                      navigate(`/events/${event.id}`);
+                    }}
                     className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                   >
                     <div className="relative h-48 bg-white">
@@ -301,7 +310,10 @@ function Events({ onBackToDashboard }) {
                 {[...moreEvents].sort((a, b) => parseEventDate(a.date) - parseEventDate(b.date)).map((event) => (
                   <div
                     key={event.id}
-                    onClick={() => navigate(`/events/${event.id}`)}
+                    onClick={() => {
+                      trackEngagement(); // Count viewing event as engagement
+                      navigate(`/events/${event.id}`);
+                    }}
                     className={`bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md transition-shadow cursor-pointer relative ${event.isTrending ? 'border-2 border-green-200' : ''}`}
                   >
                     <div className="flex flex-col md:flex-row gap-4 md:gap-6">

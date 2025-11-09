@@ -206,16 +206,16 @@ useEffect(() => {
     const engagementCount = parseInt(localStorage.getItem('userEngagementCount') || '0', 10);
 
     if (!hasSeenSharePrompt) {
-      // First time: Show after 6 meaningful interactions
-      if (engagementCount >= 6) {
+      // First time: Show after 4 meaningful interactions
+      if (engagementCount >= 4) {
         setShowSharePrompt(true);
         localStorage.setItem('hasSeenSharePrompt', 'true');
         localStorage.setItem('lastSharePromptDate', new Date().toISOString());
       }
     } else if (lastSharePromptDate) {
-      // Returning users: Show every 7-10 days (using 8.5 days average = 204 hours)
+      // Returning users: Show every 14 days minimum
       const hoursSinceLastPrompt = Math.floor((new Date() - new Date(lastSharePromptDate)) / (1000 * 60 * 60));
-      if (hoursSinceLastPrompt >= 204) { // 8.5 days = 204 hours
+      if (hoursSinceLastPrompt >= 336) { // 14 days = 336 hours
         setShowSharePrompt(true);
         localStorage.setItem('lastSharePromptDate', new Date().toISOString());
       }
@@ -684,7 +684,12 @@ const getGreeting = () => {
 
                 {/* Featured Content with Thumbnail on Left */}
                 <div
-                  onClick={() => navigate('/resources-insights')}
+                  onClick={() => {
+                    // Track engagement when viewing featured content
+                    const currentCount = parseInt(localStorage.getItem('userEngagementCount') || '0', 10);
+                    localStorage.setItem('userEngagementCount', (currentCount + 1).toString());
+                    navigate('/resources-insights');
+                  }}
                   className="flex flex-col md:flex-row items-start gap-4 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition-colors cursor-pointer"
                 >
                   {/* Thumbnail Image */}
