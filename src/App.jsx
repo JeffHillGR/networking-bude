@@ -33,11 +33,15 @@ function App() {
         />
         <Route
           path="/events/:eventId"
-          element={user ? <EventDetail /> : <Navigate to="/" />}
+          element={<EventDetail />}
         />
         <Route
           path="/resources-insights"
-          element={user ? <ResourcesInsights /> : <Navigate to="/" />}
+          element={<ResourcesInsights />}
+        />
+        <Route
+          path="/resources-insights/:contentId"
+          element={<ResourcesInsights />}
         />
         <Route
           path="/settings"

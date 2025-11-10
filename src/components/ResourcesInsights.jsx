@@ -3,15 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, ChevronDown, ChevronUp, X, Share2 } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
 import { supabase } from '../lib/supabase.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 function ResourcesInsights() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [showArchive, setShowArchive] = useState(false);
   const [selectedContent, setSelectedContent] = useState(null);
   const [loadedContent, setLoadedContent] = useState([null, null, null]);
   const [isLoading, setIsLoading] = useState(true);
   const [showShareModal, setShowShareModal] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [showSignupPrompt, setShowSignupPrompt] = useState(false);
 
   // Load featured content from Supabase on mount
   useEffect(() => {
@@ -59,6 +62,20 @@ function ResourcesInsights() {
 
     loadFeaturedContent();
   }, []);
+
+  // Check if non-authenticated user has already viewed content
+  useEffect(() => {
+    if (!user) {
+      const hasViewedPublicContent = sessionStorage.getItem('hasViewedPublicContent');
+      if (hasViewedPublicContent) {
+        // They've already viewed one piece of content, show signup prompt
+        setShowSignupPrompt(true);
+      } else {
+        // First view is free, mark it
+        sessionStorage.setItem('hasViewedPublicContent', 'true');
+      }
+    }
+  }, [user]);
 
   const defaultFeaturedContent = [
     {
@@ -454,6 +471,39 @@ function ResourcesInsights() {
             >
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Signup Prompt Modal for Non-Authenticated Users */}
+      {showSignupPrompt && !user && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl border-4 border-[#D0ED00]">
+            <div className="text-center">
+              <div className="mb-6">
+                <div className="w-20 h-20 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto">
+                  <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">Create an Account for Full Access</h2>
+              <p className="text-gray-600 mb-6">
+                It only takes 2 minutes to join our networking community and unlock all events and content!
+              </p>
+              <button
+                onClick={() => window.location.href = '/'}
+                className="w-full bg-[#009900] text-white py-3 rounded-lg font-bold hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] mb-3"
+              >
+                Create Account
+              </button>
+              <button
+                onClick={() => setShowSignupPrompt(false)}
+                className="text-gray-500 text-sm hover:text-gray-700"
+              >
+                Maybe later
+              </button>
+            </div>
           </div>
         </div>
       )}
