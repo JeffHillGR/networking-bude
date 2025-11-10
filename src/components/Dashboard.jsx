@@ -1160,20 +1160,29 @@ default:
                 <button
                   onClick={() => {
                     const shareText = `Check out Networking BudE - it's helping me make meaningful professional connections! ${window.location.origin}`;
-                    if (navigator.share) {
-                      navigator.share({
-                        title: 'Networking BudE',
-                        text: shareText
-                      }).catch(() => {});
-                    } else {
-                      navigator.clipboard.writeText(shareText);
-                      alert('Link copied to clipboard!');
+
+                    try {
+                      // Try to copy to clipboard as fallback
+                      if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(shareText).then(() => {
+                          alert('Link copied to clipboard! You can now paste it in an email or message to share with friends.');
+                        }).catch(() => {
+                          // Fallback if clipboard fails
+                          prompt('Copy this link to share:', shareText);
+                        });
+                      } else {
+                        // Older browser fallback
+                        prompt('Copy this link to share:', shareText);
+                      }
+                    } catch (err) {
+                      prompt('Copy this link to share:', shareText);
                     }
+
                     setShowSharePrompt(false);
                   }}
                   className="w-full bg-[#009900] text-white py-3 rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00]"
                 >
-                  Share with Friends
+                  Copy Link to Share
                 </button>
                 <button
                   onClick={() => setShowSharePrompt(false)}
