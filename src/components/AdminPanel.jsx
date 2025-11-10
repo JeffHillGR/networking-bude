@@ -1469,6 +1469,8 @@ function ContentSlotEditor({ content, onUpdate }) {
           sponsored_by: formData.sponsored_by,
           full_content: formData.full_content,
           author: formData.author
+        }, {
+          onConflict: 'slot_number'
         });
 
       if (error) throw error;
@@ -1478,6 +1480,43 @@ function ContentSlotEditor({ content, onUpdate }) {
     } catch (error) {
       console.error('Save error:', error);
       alert('Failed to save content: ' + error.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete the content in Slot ${formData.slot_number}? This action cannot be undone.`
+    );
+
+    if (!confirmDelete) return;
+
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('featured_content')
+        .delete()
+        .eq('slot_number', formData.slot_number);
+
+      if (error) throw error;
+
+      alert('Content deleted successfully!');
+      // Reset form to empty state
+      onUpdate({
+        slot_number: formData.slot_number,
+        title: '',
+        description: '',
+        image: '',
+        url: '',
+        tags: '',
+        sponsored_by: '',
+        full_content: '',
+        author: ''
+      });
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('Failed to delete content: ' + error.message);
     } finally {
       setIsSaving(false);
     }
@@ -1617,8 +1656,15 @@ function ContentSlotEditor({ content, onUpdate }) {
         />
       </div>
 
-      {/* Save Button */}
-      <div className="flex justify-end gap-4 pt-4 border-t">
+      {/* Action Buttons */}
+      <div className="flex justify-between gap-4 pt-4 border-t">
+        <button
+          onClick={handleDelete}
+          disabled={isSaving}
+          className="px-8 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400 font-semibold"
+        >
+          {isSaving ? 'Deleting...' : 'Delete Content'}
+        </button>
         <button
           onClick={handleSave}
           disabled={isSaving}

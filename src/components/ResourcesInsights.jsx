@@ -139,12 +139,12 @@ function ResourcesInsights() {
     }
   ];
 
-  const ContentCard = ({ content }) => {
+  const ContentCard = ({ content, slotNumber }) => {
     const handleClick = () => {
       if (content.url) {
         window.open(content.url, '_blank');
       } else if (content.fullContent) {
-        setSelectedContent(content);
+        setSelectedContent({...content, slotNumber});
       }
     };
 
@@ -199,7 +199,7 @@ function ResourcesInsights() {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                setSelectedContent(content);
+                setSelectedContent({...content, slotNumber});
                 setShowShareModal(true);
               }}
               className="text-gray-600 hover:text-[#009900] transition-colors p-2"
@@ -259,7 +259,7 @@ function ResourcesInsights() {
               <h2 className="text-xl font-bold text-gray-900 mb-4">Featured Content</h2>
               <div className="space-y-6">
                 {featuredContent.map((content, index) => (
-                  <ContentCard key={index} content={content} />
+                  <ContentCard key={index} content={content} slotNumber={index + 1} />
                 ))}
               </div>
             </div>
@@ -430,7 +430,7 @@ function ResourcesInsights() {
               <p className="text-sm font-medium text-gray-700 mb-2">Share to:</p>
               <div className="grid grid-cols-2 gap-2">
                 <a
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(selectedContent.url || window.location.origin + '/resources-insights')}`}
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(selectedContent.slotNumber ? `${window.location.origin}/resources-insights/${selectedContent.slotNumber}` : window.location.origin + '/resources-insights')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-[#0077B5] text-white rounded-lg hover:bg-[#006399] transition-colors text-sm"
@@ -438,7 +438,7 @@ function ResourcesInsights() {
                   LinkedIn
                 </a>
                 <a
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(selectedContent.url || window.location.origin + '/resources-insights')}`}
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(selectedContent.slotNumber ? `${window.location.origin}/resources-insights/${selectedContent.slotNumber}` : window.location.origin + '/resources-insights')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#145dbf] transition-colors text-sm"
@@ -446,7 +446,7 @@ function ResourcesInsights() {
                   Facebook
                 </a>
                 <a
-                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(selectedContent.url || window.location.origin + '/resources-insights')}&text=${encodeURIComponent('Check out: ' + selectedContent.title)}`}
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(selectedContent.slotNumber ? `${window.location.origin}/resources-insights/${selectedContent.slotNumber}` : window.location.origin + '/resources-insights')}&text=${encodeURIComponent('Check out: ' + selectedContent.title)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm"
@@ -454,7 +454,7 @@ function ResourcesInsights() {
                   X
                 </a>
                 <a
-                  href={`mailto:?subject=${encodeURIComponent('Check out: ' + selectedContent.title)}&body=${encodeURIComponent('I thought you might be interested in this:\n\n' + selectedContent.title + '\n\n' + (selectedContent.url || window.location.origin + '/resources-insights'))}`}
+                  href={`mailto:?subject=${encodeURIComponent('Check out: ' + selectedContent.title)}&body=${encodeURIComponent('I thought you might be interested in this:\n\n' + selectedContent.title + '\n\n' + (selectedContent.slotNumber ? `${window.location.origin}/resources-insights/${selectedContent.slotNumber}` : window.location.origin + '/resources-insights'))}`}
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
                 >
                   Email

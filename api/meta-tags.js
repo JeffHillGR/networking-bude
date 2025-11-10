@@ -36,13 +36,18 @@ export default async function handler(req, res) {
         const fullUrl = `https://www.networkingbude.com${url}`;
 
         const ogTags = `
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph / Facebook / LinkedIn -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="${fullUrl}" />
     <meta property="og:title" content="${title} | Networking BudE" />
     <meta property="og:description" content="${description}" />
     <meta property="og:image" content="${image}" />
+    <meta property="og:image:secure_url" content="${image}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:site_name" content="Networking BudE" />
+    <meta property="og:locale" content="en_US" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -50,10 +55,6 @@ export default async function handler(req, res) {
     <meta name="twitter:title" content="${title} | Networking BudE" />
     <meta name="twitter:description" content="${description}" />
     <meta name="twitter:image" content="${image}" />
-
-    <!-- LinkedIn -->
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
         `;
 
         html = html.replace('</head>', `${ogTags}\n  </head>`);
@@ -79,13 +80,18 @@ export default async function handler(req, res) {
           const fullUrl = `https://www.networkingbude.com${url}`;
 
           const ogTags = `
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph / Facebook / LinkedIn -->
     <meta property="og:type" content="article" />
     <meta property="og:url" content="${fullUrl}" />
     <meta property="og:title" content="${title} | Networking BudE" />
     <meta property="og:description" content="${description}" />
     <meta property="og:image" content="${image}" />
+    <meta property="og:image:secure_url" content="${image}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:site_name" content="Networking BudE" />
+    <meta property="og:locale" content="en_US" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -93,10 +99,6 @@ export default async function handler(req, res) {
     <meta name="twitter:title" content="${title} | Networking BudE" />
     <meta name="twitter:description" content="${description}" />
     <meta name="twitter:image" content="${image}" />
-
-    <!-- LinkedIn -->
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
           `;
 
           html = html.replace('</head>', `${ogTags}\n  </head>`);
@@ -105,13 +107,18 @@ export default async function handler(req, res) {
         // Default resources page
         const fullUrl = `https://www.networkingbude.com${url}`;
         const ogTags = `
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph / Facebook / LinkedIn -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="${fullUrl}" />
     <meta property="og:title" content="Resources & Insights | Networking BudE" />
     <meta property="og:description" content="Discover curated networking content, podcasts, and insights to help you grow professionally in West Michigan." />
     <meta property="og:image" content="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png" />
+    <meta property="og:image:secure_url" content="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:site_name" content="Networking BudE" />
+    <meta property="og:locale" content="en_US" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -119,10 +126,6 @@ export default async function handler(req, res) {
     <meta name="twitter:title" content="Resources & Insights | Networking BudE" />
     <meta name="twitter:description" content="Discover curated networking content, podcasts, and insights to help you grow professionally in West Michigan." />
     <meta name="twitter:image" content="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png" />
-
-    <!-- LinkedIn -->
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
         `;
 
         html = html.replace('</head>', `${ogTags}\n  </head>`);
