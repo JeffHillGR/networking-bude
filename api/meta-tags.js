@@ -34,7 +34,14 @@ export default async function handler(req, res) {
       const description = event ? (event.short_description || event.full_description || 'Join us for this networking event in West Michigan')
         .replace(/"/g, '&quot;')
         .substring(0, 200) : 'Join us for this networking event in West Michigan';
-      const image = event?.image || event?.image_url || 'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png';
+
+      // Get image and optimize for LinkedIn (1200px width minimum)
+      let image = event?.image || event?.image_url || 'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png';
+      // If it's an Eventbrite image with width parameter, increase to 1200 for better LinkedIn preview
+      if (image.includes('evbuc.com') && image.includes('w=')) {
+        image = image.replace(/w=\d+/, 'w=1200');
+      }
+
       const fullUrl = `https://www.networkingbude.com${url}`;
 
       const ogTags = `

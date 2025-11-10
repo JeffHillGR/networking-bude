@@ -12,6 +12,7 @@ function EventDetail() {
   const [isFavorited, setIsFavorited] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
   const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
   const [adInquirySubmitted, setAdInquirySubmitted] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -583,6 +584,7 @@ function EventDetail() {
               onClick={() => {
                 setShowShareModal(false);
                 setLinkCopied(false);
+                setEmailCopied(false);
               }}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
             >
@@ -670,12 +672,37 @@ function EventDetail() {
                 >
                   X
                 </a>
-                <a
-                  href={`mailto:?subject=${encodeURIComponent('Check out this event: ' + event.title)}&body=${encodeURIComponent('I thought you might be interested in this event:\n\n' + event.title + '\n\n' + window.location.href)}`}
+                <button
+                  onClick={() => {
+                    const emailText = `Check out this event: ${event.title}\n\nI thought you might be interested in this event:\n\n${event.title}\n\n${window.location.href}`;
+                    try {
+                      if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(emailText).then(() => {
+                          setEmailCopied(true);
+                          setTimeout(() => setEmailCopied(false), 3000);
+                        }).catch(() => {
+                          prompt('Copy this message to share via email:', emailText);
+                        });
+                      } else {
+                        prompt('Copy this message to share via email:', emailText);
+                      }
+                    } catch (err) {
+                      prompt('Copy this message to share via email:', emailText);
+                    }
+                  }}
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
                 >
-                  Email
-                </a>
+                  {emailCopied ? (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    'Email'
+                  )}
+                </button>
               </div>
             </div>
 
@@ -683,6 +710,7 @@ function EventDetail() {
               onClick={() => {
                 setShowShareModal(false);
                 setLinkCopied(false);
+                setEmailCopied(false);
               }}
               className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
             >
