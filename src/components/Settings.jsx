@@ -805,7 +805,7 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
                   />
                   <label
                     htmlFor="photo-upload"
-                    className="cursor-pointer inline-block bg-[#009900] text-white px-4 py-2 rounded-lg hover:bg-[#007700] transition-colors"
+                    className="cursor-pointer inline-block bg-[#009900] text-white px-4 py-2 rounded-lg hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00]"
                   >
                     {uploadingPhoto ? 'Uploading...' : 'Upload Photo'}
                   </label>
