@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { ArrowLeft, ExternalLink, ChevronDown, ChevronUp, X, Share2 } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
 import { supabase } from '../lib/supabase.js';
 
@@ -10,6 +10,8 @@ function ResourcesInsights() {
   const [selectedContent, setSelectedContent] = useState(null);
   const [loadedContent, setLoadedContent] = useState([null, null, null]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   // Load featured content from Supabase on mount
   useEffect(() => {
@@ -163,17 +165,32 @@ function ResourcesInsights() {
           {content.sponsoredBy && (
             <p className="text-xs text-gray-500 italic">Sponsored by {content.sponsoredBy}</p>
           )}
-          {content.url && (
-            <div className="flex items-center gap-1 text-[#009900] font-medium mt-2">
-              <span>View Content</span>
-              <ExternalLink className="w-4 h-4" />
+          <div className="flex items-center justify-between mt-2">
+            <div>
+              {content.url && (
+                <div className="flex items-center gap-1 text-[#009900] font-medium">
+                  <span>View Content</span>
+                  <ExternalLink className="w-4 h-4" />
+                </div>
+              )}
+              {!content.url && content.fullContent && (
+                <div className="flex items-center gap-1 text-[#009900] font-medium">
+                  <span>Read Full Article</span>
+                </div>
+              )}
             </div>
-          )}
-          {!content.url && content.fullContent && (
-            <div className="flex items-center gap-1 text-[#009900] font-medium mt-2">
-              <span>Read Full Article</span>
-            </div>
-          )}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedContent(content);
+                setShowShareModal(true);
+              }}
+              className="text-gray-600 hover:text-[#009900] transition-colors p-2"
+              title="Share content"
+            >
+              <Share2 className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -279,12 +296,21 @@ function ResourcesInsights() {
                   </div>
                 )}
               </div>
-              <button
-                onClick={() => setSelectedContent(null)}
-                className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setShowShareModal(true)}
+                  className="flex-shrink-0 text-gray-600 hover:text-[#009900] transition-colors"
+                  title="Share content"
+                >
+                  <Share2 className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={() => setSelectedContent(null)}
+                  className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
             </div>
 
             <div className="p-6">
@@ -308,6 +334,120 @@ function ResourcesInsights() {
                 </p>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Share Content Modal */}
+      {showShareModal && selectedContent && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 relative">
+            <button
+              onClick={() => {
+                setShowShareModal(false);
+                setLinkCopied(false);
+              }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Share2 className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Share Content</h3>
+              <p className="text-sm text-gray-600">{selectedContent.title}</p>
+            </div>
+
+            {/* Link Display with Copy Button */}
+            <div className="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex-1 overflow-hidden">
+                  <p className="text-sm text-gray-500 mb-1">Share Link:</p>
+                  <p className="text-sm font-mono text-gray-900 truncate">
+                    {selectedContent.url || `${window.location.origin}/resources-insights`}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    const shareLink = selectedContent.url || `${window.location.origin}/resources-insights`;
+                    try {
+                      if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(shareLink).then(() => {
+                          setLinkCopied(true);
+                          setTimeout(() => setLinkCopied(false), 2000);
+                        }).catch(() => {
+                          prompt('Copy this link:', shareLink);
+                        });
+                      } else {
+                        prompt('Copy this link:', shareLink);
+                      }
+                    } catch (err) {
+                      prompt('Copy this link:', shareLink);
+                    }
+                  }}
+                  className="flex-shrink-0 bg-[#009900] text-white px-4 py-2 rounded-lg hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] flex items-center gap-2"
+                >
+                  {linkCopied ? (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Social Share Buttons */}
+            <div className="space-y-2 mb-4">
+              <p className="text-sm font-medium text-gray-700 mb-2">Share to:</p>
+              <div className="grid grid-cols-3 gap-2">
+                <a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(selectedContent.url || window.location.origin + '/resources-insights')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#0077B5] text-white rounded-lg hover:bg-[#006399] transition-colors text-sm"
+                >
+                  LinkedIn
+                </a>
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(selectedContent.url || window.location.origin + '/resources-insights')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#145dbf] transition-colors text-sm"
+                >
+                  Facebook
+                </a>
+                <a
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(selectedContent.url || window.location.origin + '/resources-insights')}&text=${encodeURIComponent('Check out: ' + selectedContent.title)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1DA1F2] text-white rounded-lg hover:bg-[#1a8cd8] transition-colors text-sm"
+                >
+                  Twitter
+                </a>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setShowShareModal(false);
+                setLinkCopied(false);
+              }}
+              className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
