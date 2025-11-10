@@ -52,9 +52,6 @@ export default async function handler(req, res) {
     <meta property="og:description" content="${description}" />
     <meta property="og:image" content="${image}" />
     <meta property="og:image:secure_url" content="${image}" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:site_name" content="Networking BudE" />
     <meta property="og:locale" content="en_US" />
 
@@ -95,9 +92,6 @@ export default async function handler(req, res) {
     <meta property="og:description" content="${description}" />
     <meta property="og:image" content="${image}" />
     <meta property="og:image:secure_url" content="${image}" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:site_name" content="Networking BudE" />
     <meta property="og:locale" content="en_US" />
 
@@ -122,9 +116,6 @@ export default async function handler(req, res) {
     <meta property="og:description" content="Discover curated networking content, podcasts, and insights to help you grow professionally in West Michigan." />
     <meta property="og:image" content="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png" />
     <meta property="og:image:secure_url" content="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:type" content="image/png" />
     <meta property="og:site_name" content="Networking BudE" />
     <meta property="og:locale" content="en_US" />
 
