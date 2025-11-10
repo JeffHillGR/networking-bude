@@ -87,7 +87,7 @@ export default async function handler(req, res) {
               ` : ''}
 
               <div style="text-align: center;">
-                <a href="https://networking-bude.vercel.app/dashboard?viewConnection=${senderId || ''}" class="button">
+                <a href="https://networking-bude.vercel.app/dashboard?tab=connections&highlightUser=${senderId || ''}" class="button">
                   View Profile & Respond
                 </a>
               </div>

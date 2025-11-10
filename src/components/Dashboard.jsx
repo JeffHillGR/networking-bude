@@ -1,306 +1,375 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Calendar, Heart, MessageCircle, User, ChevronLeft, ChevronRight, Users, ExternalLink, Menu, X as XIcon } from 'lucide-react';
-import Sidebar from './Sidebar.jsx';
-import Events from './Events';
-import Connections from './Connections';
-import Messages from './Messages';
-import Settings from './Settings';
-import Subscription from './Subscription';
-import Account from './Account';
-import TermsPage from './TermsPage';
-import PrivacyPage from './PrivacyPage';
-import ArchivePage from './ArchivePage';
-import FeedbackWidget from './FeedbackWidget';
-import NotificationBell from './NotificationBell.jsx';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
+import { useState, useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+  Home,
+  Calendar,
+  Heart,
+  MessageCircle,
+  User,
+  ChevronLeft,
+  ChevronRight,
+  Users,
+  ExternalLink,
+  Menu,
+  X as XIcon,
+} from "lucide-react";
+import Sidebar from "./Sidebar.jsx";
+import Events from "./Events";
+import Connections from "./Connections";
+import Messages from "./Messages";
+import Settings from "./Settings";
+import Subscription from "./Subscription";
+import Account from "./Account";
+import TermsPage from "./TermsPage";
+import PrivacyPage from "./PrivacyPage";
+import ArchivePage from "./ArchivePage";
+import FeedbackWidget from "./FeedbackWidget";
+import NotificationBell from "./NotificationBell.jsx";
+import { supabase } from "../lib/supabase";
+import { useAuth } from "../contexts/AuthContext";
 
 function Dashboard() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'dashboard');
+  const [activeTab, setActiveTab] = useState(
+    location.state?.activeTab || "dashboard",
+  );
   const [connections, setConnections] = useState([]);
   const [loadingConnections, setLoadingConnections] = useState(true);
-  const [userFirstName, setUserFirstName] = useState('there');
-const [selectedPlan, setSelectedPlan] = useState(null);
-const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
-const [showSponsorModal, setShowSponsorModal] = useState(false);
-const [showSharePrompt, setShowSharePrompt] = useState(false);
-const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
-const [adInquirySubmitted, setAdInquirySubmitted] = useState(false);
-const [phoneNumber, setPhoneNumber] = useState('');
-const [isSubmittingAd, setIsSubmittingAd] = useState(false);
-const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
-const [showContactModal, setShowContactModal] = useState(false);
-const [contactSubmitted, setContactSubmitted] = useState(false);
-const [isSubmittingContact, setIsSubmittingContact] = useState(false);
-const [showMobileMenu, setShowMobileMenu] = useState(false);
-const [contactData, setContactData] = useState({
-  name: '',
-  email: '',
-  message: ''
-});
-const [feedbackData, setFeedbackData] = useState({
-  name: '',
-  email: '',
-  signUpSmoothness: '',
-  navigationEase: '',
-  confusingSteps: '',
-  visualAppeal: '',
-  brandClarity: '',
-  performance: '',
-  crashesOrBugs: '',
-  usefulFeatures: '',
-  missingFeatures: '',
-  corePurposeUnderstood: '',
-  valueProposition: '',
-  solvesRealProblem: '',
-  wouldUseOrRecommend: '',
-  reasonToComeBack: '',
-  overallSatisfaction: '',
-  overallRating: '',
-  netPromoterScore: ''
-});
+  const [userFirstName, setUserFirstName] = useState("there");
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
+  const [showSponsorModal, setShowSponsorModal] = useState(false);
+  const [showSharePrompt, setShowSharePrompt] = useState(false);
+  const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
+  const [adInquirySubmitted, setAdInquirySubmitted] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [isSubmittingAd, setIsSubmittingAd] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [contactSubmitted, setContactSubmitted] = useState(false);
+  const [isSubmittingContact, setIsSubmittingContact] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [contactData, setContactData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [feedbackData, setFeedbackData] = useState({
+    name: "",
+    email: "",
+    signUpSmoothness: "",
+    navigationEase: "",
+    confusingSteps: "",
+    visualAppeal: "",
+    brandClarity: "",
+    performance: "",
+    crashesOrBugs: "",
+    usefulFeatures: "",
+    missingFeatures: "",
+    corePurposeUnderstood: "",
+    valueProposition: "",
+    solvesRealProblem: "",
+    wouldUseOrRecommend: "",
+    reasonToComeBack: "",
+    overallSatisfaction: "",
+    overallRating: "",
+    netPromoterScore: "",
+  });
 
-// Format phone number as user types: (XXX) XXX-XXXX
-const formatPhoneNumber = (value) => {
-  const cleaned = value.replace(/\D/g, '');
-  const match = cleaned.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
-  if (match) {
-    const parts = [];
-    if (match[1]) parts.push('(', match[1]);
-    if (match[2]) parts.push(') ', match[2]);
-    if (match[3]) parts.push('-', match[3]);
-    return parts.join('');
-  }
-  return value;
-};
-
-// Handle feedback form submission
-const handleSubmitFeedback = async (e) => {
-  e.preventDefault();
-
-  try {
-    const response = await fetch('/api/submitFeedback', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...feedbackData,
-        submittedAt: new Date().toISOString()
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || 'Failed to submit feedback');
+  // Format phone number as user types: (XXX) XXX-XXXX
+  const formatPhoneNumber = (value) => {
+    const cleaned = value.replace(/\D/g, "");
+    const match = cleaned.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
+    if (match) {
+      const parts = [];
+      if (match[1]) parts.push("(", match[1]);
+      if (match[2]) parts.push(") ", match[2]);
+      if (match[3]) parts.push("-", match[3]);
+      return parts.join("");
     }
+    return value;
+  };
 
-    // Show success message in modal
-    setFeedbackSubmitted(true);
-
-    // Reset form after 3 seconds and close modal
-    setTimeout(() => {
-      setFeedbackSubmitted(false);
-      setShowFeedbackModal(false);
-      setFeedbackData({
-        name: '',
-        email: '',
-        signUpSmoothness: '',
-        navigationEase: '',
-        confusingSteps: '',
-        visualAppeal: '',
-        brandClarity: '',
-        performance: '',
-        crashesOrBugs: '',
-        usefulFeatures: '',
-        missingFeatures: '',
-        corePurposeUnderstood: '',
-        valueProposition: '',
-        solvesRealProblem: '',
-        wouldUseOrRecommend: '',
-        reasonToComeBack: '',
-        overallSatisfaction: '',
-        overallRating: '',
-        netPromoterScore: ''
-      });
-    }, 3000);
-  } catch (error) {
-    console.error('Error submitting feedback:', error);
-
-    // Check if we're on localhost
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      alert('API endpoints are not available on localhost. Please test feedback submission on the Vercel deployment at your live URL.\n\nFor local testing, the form validation and UI work correctly - only the actual Google Sheets submission requires the production environment.');
-    } else {
-      alert('There was an error submitting your feedback. Please try again or contact support if the problem persists.');
-    }
-  }
-};
-
-// Handle contact form submission
-// Removed returning user banner - data is now saved to Supabase
-const handleDismissReturningUserBanner = () => {
-  // Deprecated - keeping for backwards compatibility
-  setShowReturningUserBanner(false);
-};
-
-const handleSubmitContact = async (e) => {
-  e.preventDefault();
-  setIsSubmittingContact(true);
-
-  try {
-    const response = await fetch('/api/submitContact', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...contactData,
-        submittedAt: new Date().toISOString()
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || 'Failed to submit contact form');
-    }
-
-    // Show success message in modal
-    setContactSubmitted(true);
-
-    // Reset form after 3 seconds and close modal
-    setTimeout(() => {
-      setContactSubmitted(false);
-      setShowContactModal(false);
-      setContactData({
-        name: '',
-        email: '',
-        message: ''
-      });
-    }, 3000);
-  } catch (error) {
-    console.error('Error submitting contact form:', error);
-
-    // Check if we're on localhost
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      alert('API endpoints are not available on localhost. Please test on the Vercel deployment.\n\nFor now, please email grjeff@gmail.com directly.');
-    } else {
-      alert('There was an error submitting your message. Please email grjeff@gmail.com directly.');
-    }
-  } finally {
-    setIsSubmittingContact(false);
-  }
-};
-
-// Check if user should see share prompt (every 5 days)
-useEffect(() => {
-  const lastSharePromptDate = localStorage.getItem('lastSharePromptDate');
-
-  if (!lastSharePromptDate) {
-    // Set initial date
-    localStorage.setItem('lastSharePromptDate', new Date().toISOString());
-  } else {
-    // Check if 5 days have passed (120 hours)
-    const hoursSinceLastPrompt = Math.floor((new Date() - new Date(lastSharePromptDate)) / (1000 * 60 * 60));
-    if (hoursSinceLastPrompt >= 120) { // 5 days = 120 hours
-      setShowSharePrompt(true);
-      localStorage.setItem('lastSharePromptDate', new Date().toISOString());
-    }
-  }
-}, []);
-
-// Prevent scroll restoration and bounce-to-top on mobile
-useEffect(() => {
-  // Disable automatic scroll restoration
-  if ('scrollRestoration' in window.history) {
-    window.history.scrollRestoration = 'manual';
-  }
-
-  // Scroll to top only on first mount
-  window.scrollTo(0, 0);
-}, []);
-
-// Load user's first name from Supabase
-useEffect(() => {
-  async function loadUserName() {
-    if (!user) return;
+  // Handle feedback form submission
+  const handleSubmitFeedback = async (e) => {
+    e.preventDefault();
 
     try {
-      const { data: userData, error } = await supabase
-        .from('users')
-        .select('first_name')
-        .eq('email', user.email)
-        .single();
+      const response = await fetch("/api/submitFeedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...feedbackData,
+          submittedAt: new Date().toISOString(),
+        }),
+      });
 
-      if (error) {
-        console.error('Error loading user name:', error);
-        return;
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to submit feedback");
       }
 
-      if (userData && userData.first_name) {
-        setUserFirstName(userData.first_name);
-      }
+      // Show success message in modal
+      setFeedbackSubmitted(true);
+
+      // Reset form after 3 seconds and close modal
+      setTimeout(() => {
+        setFeedbackSubmitted(false);
+        setShowFeedbackModal(false);
+        setFeedbackData({
+          name: "",
+          email: "",
+          signUpSmoothness: "",
+          navigationEase: "",
+          confusingSteps: "",
+          visualAppeal: "",
+          brandClarity: "",
+          performance: "",
+          crashesOrBugs: "",
+          usefulFeatures: "",
+          missingFeatures: "",
+          corePurposeUnderstood: "",
+          valueProposition: "",
+          solvesRealProblem: "",
+          wouldUseOrRecommend: "",
+          reasonToComeBack: "",
+          overallSatisfaction: "",
+          overallRating: "",
+          netPromoterScore: "",
+        });
+      }, 3000);
     } catch (error) {
-      console.error('Error loading user name:', error);
+      console.error("Error submitting feedback:", error);
+
+      // Check if we're on localhost
+      if (
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+      ) {
+        alert(
+          "API endpoints are not available on localhost. Please test feedback submission on the Vercel deployment at your live URL.\n\nFor local testing, the form validation and UI work correctly - only the actual Google Sheets submission requires the production environment.",
+        );
+      } else {
+        alert(
+          "There was an error submitting your feedback. Please try again or contact support if the problem persists.",
+        );
+      }
     }
-  }
+  };
 
-  loadUserName();
-}, [user]);
+  // Handle contact form submission
+  // Removed returning user banner - data is now saved to Supabase
+  const handleDismissReturningUserBanner = () => {
+    // Deprecated - keeping for backwards compatibility
+    setShowReturningUserBanner(false);
+  };
 
-// Get time-based greeting
-const getGreeting = () => {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'Good Morning';
-  if (hour < 18) return 'Good Afternoon';
-  return 'Good Evening';
-};
+  const handleSubmitContact = async (e) => {
+    e.preventDefault();
+    setIsSubmittingContact(true);
+
+    try {
+      const response = await fetch("/api/submitContact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...contactData,
+          submittedAt: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to submit contact form");
+      }
+
+      // Show success message in modal
+      setContactSubmitted(true);
+
+      // Reset form after 3 seconds and close modal
+      setTimeout(() => {
+        setContactSubmitted(false);
+        setShowContactModal(false);
+        setContactData({
+          name: "",
+          email: "",
+          message: "",
+        });
+      }, 3000);
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+
+      // Check if we're on localhost
+      if (
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+      ) {
+        alert(
+          "API endpoints are not available on localhost. Please test on the Vercel deployment.\n\nFor now, please email grjeff@gmail.com directly.",
+        );
+      } else {
+        alert(
+          "There was an error submitting your message. Please email grjeff@gmail.com directly.",
+        );
+      }
+    } finally {
+      setIsSubmittingContact(false);
+    }
+  };
+
+  // Check if user should see share prompt (every 5 days)
+  useEffect(() => {
+    const lastSharePromptDate = localStorage.getItem("lastSharePromptDate");
+
+    if (!lastSharePromptDate) {
+      // Set initial date
+      localStorage.setItem("lastSharePromptDate", new Date().toISOString());
+    } else {
+      // Check if 5 days have passed (120 hours)
+      const hoursSinceLastPrompt = Math.floor(
+        (new Date() - new Date(lastSharePromptDate)) / (1000 * 60 * 60),
+      );
+      if (hoursSinceLastPrompt >= 120) {
+        // 5 days = 120 hours
+        setShowSharePrompt(true);
+        localStorage.setItem("lastSharePromptDate", new Date().toISOString());
+      }
+    }
+  }, []);
+
+  // Prevent scroll restoration and bounce-to-top on mobile
+  useEffect(() => {
+    // Disable automatic scroll restoration
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    // Scroll to top only on first mount
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Handle URL parameters for navigation
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const tab = urlParams.get('tab');
+    const highlightUser = urlParams.get('highlightUser');
+    
+    if (tab === 'connections') {
+      setActiveTab('connections');
+    }
+    
+    // Store highlightUser for Connections component
+    if (highlightUser) {
+      sessionStorage.setItem('highlightUserId', highlightUser);
+    }
+  }, [location.search]);
+
+  // Load user's first name from Supabase
+  useEffect(() => {
+    async function loadUserName() {
+      if (!user) return;
+
+      try {
+        const { data: userData, error } = await supabase
+          .from("users")
+          .select("first_name")
+          .eq("email", user.email)
+          .single();
+
+        if (error) {
+          console.error("Error loading user name:", error);
+          return;
+        }
+
+        if (userData && userData.first_name) {
+          setUserFirstName(userData.first_name);
+        }
+      } catch (error) {
+        console.error("Error loading user name:", error);
+      }
+    }
+
+    loadUserName();
+  }, [user]);
+
+  // Get time-based greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good Morning";
+    if (hour < 18) return "Good Afternoon";
+    return "Good Evening";
+  };
 
   // Load admin-created featured content from localStorage
-  const adminContent1 = localStorage.getItem('featuredContent1');
-  const adminFeaturedContent1 = adminContent1 ? JSON.parse(adminContent1) : null;
+  const adminContent1 = localStorage.getItem("featuredContent1");
+  const adminFeaturedContent1 = adminContent1
+    ? JSON.parse(adminContent1)
+    : null;
 
-  const adminContent2 = localStorage.getItem('featuredContent2');
-  const adminFeaturedContent2 = adminContent2 ? JSON.parse(adminContent2) : null;
+  const adminContent2 = localStorage.getItem("featuredContent2");
+  const adminFeaturedContent2 = adminContent2
+    ? JSON.parse(adminContent2)
+    : null;
 
-  const adminContent3 = localStorage.getItem('featuredContent3');
-  const adminFeaturedContent3 = adminContent3 ? JSON.parse(adminContent3) : null;
+  const adminContent3 = localStorage.getItem("featuredContent3");
+  const adminFeaturedContent3 = adminContent3
+    ? JSON.parse(adminContent3)
+    : null;
 
   const defaultFeaturedContent = [
     {
-      image: 'https://travischappell.com/wp-content/uploads/2023/08/phone-img-podcast.png',
-      title: 'How to Lose Everything and Come Back Even Stronger with Annette Raynor',
-      description: 'Travis Chappell interviews Annette Raynor, who brings two decades of IT experience. Learn about resilience through economic downturns, building enterprises, and the lessons learned from overcoming significant financial setbacks.',
-      url: 'https://travischappell.com/travis_podcast/047-how-to-lose-everything-and-come-back-even-stronger-with-annette-raynor/',
-      tags: 'Resilience, Entrepreneurship',
-      sponsoredBy: ''
+      image:
+        "https://travischappell.com/wp-content/uploads/2023/08/phone-img-podcast.png",
+      title:
+        "How to Lose Everything and Come Back Even Stronger with Annette Raynor",
+      description:
+        "Travis Chappell interviews Annette Raynor, who brings two decades of IT experience. Learn about resilience through economic downturns, building enterprises, and the lessons learned from overcoming significant financial setbacks.",
+      url: "https://travischappell.com/travis_podcast/047-how-to-lose-everything-and-come-back-even-stronger-with-annette-raynor/",
+      tags: "Resilience, Entrepreneurship",
+      sponsoredBy: "",
     },
     {
-      image: 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/52/2c/26/522c2689-01a0-f2c4-37b9-20034b428603/mza_15419489958704245485.jpg/540x540bb.webp',
-      title: 'The Not Perfect Networking Podcast',
-      description: 'Networking doesn\'t have to be perfect to be powerful. Join us for real conversations about building genuine connections in business and life. Perfect for professionals who want to network authentically.',
-      url: 'https://podcasts.apple.com/us/podcast/the-not-perfect-networking-podcast/id1802926391',
-      tags: 'Networking, Professional Development',
-      sponsoredBy: ''
+      image:
+        "https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/52/2c/26/522c2689-01a0-f2c4-37b9-20034b428603/mza_15419489958704245485.jpg/540x540bb.webp",
+      title: "The Not Perfect Networking Podcast",
+      description:
+        "Networking doesn't have to be perfect to be powerful. Join us for real conversations about building genuine connections in business and life. Perfect for professionals who want to network authentically.",
+      url: "https://podcasts.apple.com/us/podcast/the-not-perfect-networking-podcast/id1802926391",
+      tags: "Networking, Professional Development",
+      sponsoredBy: "",
     },
     {
-      image: 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts126/v4/aa/8e/72/aa8e72f7-643a-f98e-f929-3586a8c3ef62/mza_10593625707581288470.jpg/540x540bb.webp',
-      title: 'How to Build Systems to Actually Achieve Your Goals',
-      description: "Are your goals holding you back? In this episode, I'll show you why focusing on big, long-term results can actually demotivate you—and how shifting to daily, actionable systems can help you achieve real progress.",
-      url: 'https://podcasts.apple.com/us/podcast/how-to-build-systems-to-actually-achieve-your-goals/id1033048640?i=1000728624111',
-      tags: 'Goal Setting, Personal Growth',
-      sponsoredBy: ''
-    }
+      image:
+        "https://is1-ssl.mzstatic.com/image/thumb/Podcasts126/v4/aa/8e/72/aa8e72f7-643a-f98e-f929-3586a8c3ef62/mza_10593625707581288470.jpg/540x540bb.webp",
+      title: "How to Build Systems to Actually Achieve Your Goals",
+      description:
+        "Are your goals holding you back? In this episode, I'll show you why focusing on big, long-term results can actually demotivate you—and how shifting to daily, actionable systems can help you achieve real progress.",
+      url: "https://podcasts.apple.com/us/podcast/how-to-build-systems-to-actually-achieve-your-goals/id1033048640?i=1000728624111",
+      tags: "Goal Setting, Personal Growth",
+      sponsoredBy: "",
+    },
   ];
 
   // Build featured content array: use admin content where available, otherwise use defaults
-  const slot1 = (adminFeaturedContent1 && adminFeaturedContent1.title) ? adminFeaturedContent1 : defaultFeaturedContent[0];
-  const slot2 = (adminFeaturedContent2 && adminFeaturedContent2.title) ? adminFeaturedContent2 : defaultFeaturedContent[1];
-  const slot3 = (adminFeaturedContent3 && adminFeaturedContent3.title) ? adminFeaturedContent3 : defaultFeaturedContent[2];
+  const slot1 =
+    adminFeaturedContent1 && adminFeaturedContent1.title
+      ? adminFeaturedContent1
+      : defaultFeaturedContent[0];
+  const slot2 =
+    adminFeaturedContent2 && adminFeaturedContent2.title
+      ? adminFeaturedContent2
+      : defaultFeaturedContent[1];
+  const slot3 =
+    adminFeaturedContent3 && adminFeaturedContent3.title
+      ? adminFeaturedContent3
+      : defaultFeaturedContent[2];
 
   const featuredContent = [slot1, slot2, slot3];
 
@@ -315,17 +384,18 @@ const getGreeting = () => {
       try {
         // Get user ID
         const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('id')
-          .eq('email', user.email)
+          .from("users")
+          .select("id")
+          .eq("email", user.email)
           .single();
 
         if (userError) throw userError;
 
         // Fetch top 3 matches
         const { data: matchesData, error: matchesError } = await supabase
-          .from('matches')
-          .select(`
+          .from("matches")
+          .select(
+            `
             matched_user_id,
             compatibility_score,
             matched_user:users!matches_matched_user_id_fkey (
@@ -337,10 +407,11 @@ const getGreeting = () => {
               photo,
               professional_interests
             )
-          `)
-          .eq('user_id', userData.id)
-          .eq('status', 'recommended')
-          .order('compatibility_score', { ascending: false })
+          `,
+          )
+          .eq("user_id", userData.id)
+          .eq("status", "recommended")
+          .order("compatibility_score", { ascending: false })
           .limit(3);
 
         if (matchesError) throw matchesError;
@@ -348,19 +419,30 @@ const getGreeting = () => {
         // Transform to component format
         const transformedConnections = matchesData.map((match) => {
           const matchedUser = match.matched_user;
-          const fullName = matchedUser.name || `${matchedUser.first_name} ${matchedUser.last_name}`;
-          const initials = fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+          const fullName =
+            matchedUser.name ||
+            `${matchedUser.first_name} ${matchedUser.last_name}`;
+          const initials = fullName
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase()
+            .slice(0, 2);
 
           return {
+            id: match.matched_user_id,
             name: fullName,
-            title: `${matchedUser.title || ''} at ${matchedUser.company || ''}`.trim(),
+            title:
+              `${matchedUser.title || ""} at ${matchedUser.company || ""}`.trim(),
             similarity: `${match.compatibility_score}%`,
-            professionalInterests: Array.isArray(matchedUser.professional_interests)
-              ? matchedUser.professional_interests.join(', ')
-              : matchedUser.professional_interests || '',
+            professionalInterests: Array.isArray(
+              matchedUser.professional_interests,
+            )
+              ? matchedUser.professional_interests.join(", ")
+              : matchedUser.professional_interests || "",
             photo: matchedUser.photo || null,
             initials: initials,
-            isReal: true
+            isReal: true,
           };
         });
 
@@ -372,7 +454,7 @@ const getGreeting = () => {
         }
         setLoadingConnections(false);
       } catch (error) {
-        console.error('Error fetching connections:', error);
+        console.error("Error fetching connections:", error);
         setConnections([]);
         setLoadingConnections(false);
       }
@@ -382,31 +464,86 @@ const getGreeting = () => {
   }, [user]);
 
   // Load admin-created events from localStorage
-  const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
+  const adminEvents = JSON.parse(localStorage.getItem("adminEvents") || "[]");
 
   // Featured events - Real Grand Rapids networking events
   const events = [
-    { id: 1, title: 'Bamboo Grand Rapids: Grand Opening Celebration', date: '12/4/2025', time: '4:00 PM - 8:00 PM', location: '2 Fulton Street West', organizerName: 'Bamboo Detroit', fullAddress: '2 Fulton Street West, Grand Rapids, MI 49503', image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1120287333%2F84709515697%2F1%2Foriginal.20250910-174858?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.208333333333&fp-y=0.621848739496&s=9f37de221b0249dee8dd7ee347395056', badge: 'In-Person', tags: ['Entrepreneurship', 'Innovation', 'Startup'] },
-    { id: 2, title: 'Talent & Inclusion Summit', date: '11/11/2025', time: '8:00 AM - 1:00 PM', location: 'JW Marriott Grand Rapids', organizerName: 'Grand Rapids Chamber', fullAddress: '235 Louis St NW, Grand Rapids, MI 49503', image: 'https://grandrapids.org/wp-content/uploads/2024/10/GRC_TIS-1-2048x1152.jpg', badge: 'In-Person' },
-    { id: 3, title: '17th Annual Jay & Betty Van Andel Legacy Awards Gala', date: '11/12/2025', time: 'Evening Event', location: 'JW Marriott Grand Rapids', organizerName: 'Grand Rapids Public Museum', fullAddress: 'JW Marriott Grand Rapids, MI', image: 'https://i0.wp.com/www.grpm.org/wp-content/uploads/2025/06/2025_Gala_Web-Header_Option-05.png', badge: 'In-Person' },
-    { id: 4, title: 'Place Matters Summit 2025', date: '11/6/2025', time: '12:00 PM - 5:00 PM', location: 'The Rockford Corner Bar', organizerName: 'The Right Place', fullAddress: 'The Rockford Corner Bar, Rockford, MI', image: 'https://web.cvent.com/event_guestside_app/_next/image?url=https%3A%2F%2Fimages.cvent.com%2Fc49e750ef94b4a73879b4e57ae9c1393%2Fa261375d7d47fd2cd2c68c3a86dd821f%2Fd978795e378242b5af5233c775c250e4%2Ff65bb8e0f27745f5bcf821b889bc6407!_!eb5aa18403450c956b23c2a0b455af07.jpeg&w=3840&q=75', badge: 'In-Person' },
-    { id: 5, title: 'WMHCC Conecta Membership Meeting', date: '11/25/2025', time: '5:00 PM - 7:00 PM', location: 'Acrisure', organizerName: 'West Michigan Hispanic Chamber of Commerce', fullAddress: 'Acrisure, Grand Rapids, MI', image: 'https://chambermaster.blob.core.windows.net/userfiles/UserFiles/chambers/2018/Image/November25Conecta.png', badge: 'In-Person' }
+    {
+      id: 1,
+      title: "Bamboo Grand Rapids: Grand Opening Celebration",
+      date: "12/4/2025",
+      time: "4:00 PM - 8:00 PM",
+      location: "2 Fulton Street West",
+      organizerName: "Bamboo Detroit",
+      fullAddress: "2 Fulton Street West, Grand Rapids, MI 49503",
+      image:
+        "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1120287333%2F84709515697%2F1%2Foriginal.20250910-174858?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.208333333333&fp-y=0.621848739496&s=9f37de221b0249dee8dd7ee347395056",
+      badge: "In-Person",
+      tags: ["Entrepreneurship", "Innovation", "Startup"],
+    },
+    {
+      id: 2,
+      title: "Talent & Inclusion Summit",
+      date: "11/11/2025",
+      time: "8:00 AM - 1:00 PM",
+      location: "JW Marriott Grand Rapids",
+      organizerName: "Grand Rapids Chamber",
+      fullAddress: "235 Louis St NW, Grand Rapids, MI 49503",
+      image:
+        "https://grandrapids.org/wp-content/uploads/2024/10/GRC_TIS-1-2048x1152.jpg",
+      badge: "In-Person",
+    },
+    {
+      id: 3,
+      title: "17th Annual Jay & Betty Van Andel Legacy Awards Gala",
+      date: "11/12/2025",
+      time: "Evening Event",
+      location: "JW Marriott Grand Rapids",
+      organizerName: "Grand Rapids Public Museum",
+      fullAddress: "JW Marriott Grand Rapids, MI",
+      image:
+        "https://i0.wp.com/www.grpm.org/wp-content/uploads/2025/06/2025_Gala_Web-Header_Option-05.png",
+      badge: "In-Person",
+    },
+    {
+      id: 4,
+      title: "Place Matters Summit 2025",
+      date: "11/6/2025",
+      time: "12:00 PM - 5:00 PM",
+      location: "The Rockford Corner Bar",
+      organizerName: "The Right Place",
+      fullAddress: "The Rockford Corner Bar, Rockford, MI",
+      image:
+        "https://web.cvent.com/event_guestside_app/_next/image?url=https%3A%2F%2Fimages.cvent.com%2Fc49e750ef94b4a73879b4e57ae9c1393%2Fa261375d7d47fd2cd2c68c3a86dd821f%2Fd978795e378242b5af5233c775c250e4%2Ff65bb8e0f27745f5bcf821b889bc6407!_!eb5aa18403450c956b23c2a0b455af07.jpeg&w=3840&q=75",
+      badge: "In-Person",
+    },
+    {
+      id: 5,
+      title: "WMHCC Conecta Membership Meeting",
+      date: "11/25/2025",
+      time: "5:00 PM - 7:00 PM",
+      location: "Acrisure",
+      organizerName: "West Michigan Hispanic Chamber of Commerce",
+      fullAddress: "Acrisure, Grand Rapids, MI",
+      image:
+        "https://chambermaster.blob.core.windows.net/userfiles/UserFiles/chambers/2018/Image/November25Conecta.png",
+      badge: "In-Person",
+    },
   ];
 
   const navItems = [
-    { id: 'dashboard', icon: Home, label: 'Dashboard' },
-    { id: 'events', icon: Calendar, label: 'Events' },
-    { id: 'connections', icon: Users, label: 'Connections' },
-    { id: 'messages', icon: MessageCircle, label: 'Messages' },
-    { id: 'settings', icon: User, label: 'Profile' }
+    { id: "dashboard", icon: Home, label: "Dashboard" },
+    { id: "events", icon: Calendar, label: "Events" },
+    { id: "connections", icon: Users, label: "Connections" },
+    { id: "messages", icon: MessageCircle, label: "Messages" },
+    { id: "settings", icon: User, label: "Profile" },
   ];
 
   const renderContent = () => {
+    console.log("Current activeTab:", activeTab);
 
-  console.log('Current activeTab:', activeTab);
-
-    switch(activeTab) {
-      case 'dashboard':
+    switch (activeTab) {
+      case "dashboard":
         return (
           <div className="space-y-4">
             <div className="relative h-48 rounded-lg overflow-hidden shadow-lg bg-gradient-to-r from-green-600 to-lime-400">
@@ -418,15 +555,21 @@ const getGreeting = () => {
                 fetchpriority="high"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-4 text-white">
-                <h2 className="text-xl md:text-2xl font-bold tracking-tight">Discover. Connect. Grow.</h2>
+                <h2 className="text-xl md:text-2xl font-bold tracking-tight">
+                  Discover. Connect. Grow.
+                </h2>
               </div>
             </div>
 
             {/* Desktop greeting with notification bell - show below hero banner on desktop only */}
             <div className="hidden md:flex items-center justify-between">
               <div>
-                <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
-                <p className="text-sm text-gray-600 mt-1">Let's make some meaningful connections today</p>
+                <h1 className="text-xl font-bold text-gray-900">
+                  {getGreeting()}, {userFirstName}!
+                </h1>
+                <p className="text-sm text-gray-600 mt-1">
+                  Let's make some meaningful connections today
+                </p>
               </div>
               <NotificationBell />
             </div>
@@ -438,57 +581,30 @@ const getGreeting = () => {
                 <div className="mb-4 text-center">
                   <button
                     onClick={() => {
-                      setActiveTab('connections');
-                      window.scrollTo({ top: 0, behavior: 'instant' });
+                      setActiveTab("connections");
+                      window.scrollTo({ top: 0, behavior: "instant" });
                     }}
                     className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black mb-2 hover:bg-gray-50 transition-colors cursor-pointer"
                   >
-                    <h3 className="font-bold text-black text-lg">All Potential Connections →</h3>
+                    <h3 className="font-bold text-black text-lg">
+                      All Potential Connections →
+                    </h3>
                   </button>
-                  <p className="text-sm text-gray-600">People you might want to connect with <span className="font-bold">first</span></p>
+                  <p className="text-sm text-gray-600">
+                    People you might want to connect with{" "}
+                    <span className="font-bold">first</span>
+                  </p>
                 </div>
                 <div className="space-y-4 flex-grow">
                   {/* Show loading state, then real connections, then placeholders */}
-                  {loadingConnections ? (
-                    // Loading skeleton
-                    [0, 1, 2].map((index) => (
-                      <div
-                        key={`loading-${index}`}
-                        className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px] animate-pulse"
-                      >
-                        <div className="flex gap-3 md:gap-4">
-                          <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gray-200 flex-shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <div className="h-5 bg-gray-200 rounded w-3/4 mb-2" />
-                            <div className="h-4 bg-gray-200 rounded w-full mb-2" />
-                            <div className="h-3 bg-gray-200 rounded w-1/2" />
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    [0, 1, 2].map((index) => {
-                      const person = connections[index];
-                      const isPlaceholder = !person;
-
-                      if (isPlaceholder) {
-                        // Blurred placeholder card
-                      return (
+                  {loadingConnections
+                    ? // Loading skeleton
+                      [0, 1, 2].map((index) => (
                         <div
-                          key={`placeholder-${index}`}
-                          onClick={() => {
-                            setActiveTab('settings');
-                            window.scrollTo({ top: 0, behavior: 'instant' });
-                          }}
-                          className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px] cursor-pointer hover:shadow-md hover:border-[#009900] transition-all relative overflow-hidden"
+                          key={`loading-${index}`}
+                          className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px] animate-pulse"
                         >
-                          <div className="absolute inset-0 backdrop-blur-sm bg-white/60 flex items-center justify-center z-10">
-                            <div className="text-center px-4">
-                              <p className="font-bold text-gray-900 text-sm mb-1">Complete Your Profile</p>
-                              <p className="text-xs text-gray-600">to find more connections</p>
-                            </div>
-                          </div>
-                          <div className="flex gap-3 md:gap-4 filter blur-[3px]">
+                          <div className="flex gap-3 md:gap-4">
                             <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gray-200 flex-shrink-0" />
                             <div className="flex-1 min-w-0">
                               <div className="h-5 bg-gray-200 rounded w-3/4 mb-2" />
@@ -497,52 +613,106 @@ const getGreeting = () => {
                             </div>
                           </div>
                         </div>
-                      );
-                    }
+                      ))
+                    : [0, 1, 2].map((index) => {
+                        const person = connections[index];
+                        const isPlaceholder = !person;
 
-                    // Real connection card
-                    return (
-                      <div
-                        key={index}
-                        onClick={() => {
-                          setActiveTab('connections');
-                          window.scrollTo({ top: 0, behavior: 'instant' });
-                        }}
-                        className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px] cursor-pointer hover:shadow-md hover:border-[#009900] transition-all"
-                      >
-                        <div className="flex gap-3 md:gap-4">
-                          {/* Profile photo or initials */}
-                          {person.photo ? (
-                            <img
-                              src={person.photo}
-                              alt={person.name}
-                              className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover flex-shrink-0 border-4 border-black"
-                            />
-                          ) : (
-                            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white flex items-center justify-center flex-shrink-0 border-4 border-black">
-                              <span className="text-[#009900] font-bold text-2xl md:text-3xl">
-                                {person.initials}
-                              </span>
+                        if (isPlaceholder) {
+                          // Blurred placeholder card
+                          return (
+                            <div
+                              key={`placeholder-${index}`}
+                              onClick={() => {
+                                setActiveTab("settings");
+                                window.scrollTo({
+                                  top: 0,
+                                  behavior: "instant",
+                                });
+                              }}
+                              className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px] cursor-pointer hover:shadow-md hover:border-[#009900] transition-all relative overflow-hidden"
+                            >
+                              <div className="absolute inset-0 backdrop-blur-sm bg-white/60 flex items-center justify-center z-10">
+                                <div className="text-center px-4">
+                                  <p className="font-bold text-gray-900 text-sm mb-1">
+                                    Complete Your Profile
+                                  </p>
+                                  <p className="text-xs text-gray-600">
+                                    to find more connections
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex gap-3 md:gap-4 filter blur-[3px]">
+                                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gray-200 flex-shrink-0" />
+                                <div className="flex-1 min-w-0">
+                                  <div className="h-5 bg-gray-200 rounded w-3/4 mb-2" />
+                                  <div className="h-4 bg-gray-200 rounded w-full mb-2" />
+                                  <div className="h-3 bg-gray-200 rounded w-1/2" />
+                                </div>
+                              </div>
                             </div>
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-bold text-gray-900 text-base md:text-lg">{person.name}</h4>
-                            <p className="text-xs md:text-sm text-gray-600 mb-2">{person.title}</p>
-                            <div className="flex items-center gap-2 text-xs flex-wrap mb-2">
-                              <span className="font-medium whitespace-nowrap text-[#009900]">{person.similarity} compatible</span>
-                              {person.professionalInterests && person.professionalInterests.split(',').slice(0, 2).map((interest, idx) => (
-                                <span key={idx} className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded">
-                                  {interest.trim()}
-                                </span>
-                              ))}
+                          );
+                        }
+
+                        // Real connection card
+                        return (
+                          <div
+                            key={index}
+                            onClick={() => {
+                              // Store the user ID for highlighting in connections
+                              sessionStorage.setItem('highlightUserId', person.id);
+                              setActiveTab("connections");
+                              window.scrollTo({ top: 0, behavior: "instant" });
+                            }}
+                            className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px] cursor-pointer hover:shadow-md hover:border-[#009900] transition-all"
+                          >
+                            <div className="flex gap-3 md:gap-4">
+                              {/* Profile photo or initials */}
+                              {person.photo ? (
+                                <img
+                                  src={person.photo}
+                                  alt={person.name}
+                                  className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover flex-shrink-0 border-4 border-black"
+                                />
+                              ) : (
+                                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white flex items-center justify-center flex-shrink-0 border-4 border-black">
+                                  <span className="text-[#009900] font-bold text-2xl md:text-3xl">
+                                    {person.initials}
+                                  </span>
+                                </div>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-bold text-gray-900 text-base md:text-lg">
+                                  {person.name}
+                                </h4>
+                                <p className="text-xs md:text-sm text-gray-600 mb-2">
+                                  {person.title}
+                                </p>
+                                <div className="flex items-center gap-2 text-xs flex-wrap mb-2">
+                                  <span className="font-medium whitespace-nowrap text-[#009900]">
+                                    {person.similarity} compatible
+                                  </span>
+                                  {person.professionalInterests &&
+                                    person.professionalInterests
+                                      .split(",")
+                                      .slice(0, 2)
+                                      .map((interest, idx) => (
+                                        <span
+                                          key={idx}
+                                          className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded"
+                                        >
+                                          {interest.trim()}
+                                        </span>
+                                      ))}
+                                </div>
+                                <p className="text-xs text-gray-500">
+                                  Click to view full profile
+                                </p>
+                              </div>
                             </div>
-                            <p className="text-xs text-gray-500">Click to view full profile</p>
                           </div>
-                        </div>
-                      </div>
-                    );
-                    })
-                  )}
+                        );
+                      })}
                 </div>
               </div>
 
@@ -550,43 +720,58 @@ const getGreeting = () => {
               <div className="flex flex-col">
                 <div className="mb-4 text-center">
                   <button
-                    onClick={() => setActiveTab('events')}
+                    onClick={() => setActiveTab("events")}
                     className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black mb-2 hover:bg-gray-50 transition-colors cursor-pointer"
                   >
-                    <h3 className="font-bold text-black text-lg">All Upcoming Events →</h3>
+                    <h3 className="font-bold text-black text-lg">
+                      All Upcoming Events →
+                    </h3>
                   </button>
-                  <p className="text-sm text-gray-600">Then check out some events <span className="font-bold">together</span></p>
+                  <p className="text-sm text-gray-600">
+                    Then check out some events{" "}
+                    <span className="font-bold">together</span>
+                  </p>
                 </div>
                 <div className="space-y-4 flex-grow">
                   {events.slice(0, 3).map((event, index) => (
-                  <div
-                    key={index}
-                    onClick={() => navigate(`/events/${event.id}`)}
-                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200 flex min-h-[136px]"
-                  >
-                    {event.image && (
-                      <img
-                        src={event.image}
-                        alt={event.title}
-                        className="w-32 h-32 object-cover flex-shrink-0"
-                      />
-                    )}
-                    <div className="p-3 flex-1 min-w-0">
-                      <div className="flex items-start justify-between mb-1">
-                        <div className="flex-1 min-w-0">
-                          <span className="inline-block bg-black text-white text-xs px-2 py-0.5 rounded mb-1">{event.badge || 'In-Person'}</span>
-                          <h4 className="font-bold text-gray-900 text-sm line-clamp-2">{event.title}</h4>
+                    <div
+                      key={index}
+                      onClick={() => navigate(`/events/${event.id}`)}
+                      className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200 flex min-h-[136px]"
+                    >
+                      {event.image && (
+                        <img
+                          src={event.image}
+                          alt={event.title}
+                          className="w-32 h-32 object-cover flex-shrink-0"
+                        />
+                      )}
+                      <div className="p-3 flex-1 min-w-0">
+                        <div className="flex items-start justify-between mb-1">
+                          <div className="flex-1 min-w-0">
+                            <span className="inline-block bg-black text-white text-xs px-2 py-0.5 rounded mb-1">
+                              {event.badge || "In-Person"}
+                            </span>
+                            <h4 className="font-bold text-gray-900 text-sm line-clamp-2">
+                              {event.title}
+                            </h4>
+                          </div>
+                        </div>
+                        <div className="space-y-0.5 text-xs text-gray-600">
+                          <p className="font-semibold text-gray-700 truncate">
+                            {event.organizerName || "Event Organizer"}
+                          </p>
+                          <p>
+                            {event.date} • {event.time}
+                          </p>
+                          <p className="truncate">
+                            {event.fullAddress || event.location}
+                          </p>
                         </div>
                       </div>
-                      <div className="space-y-0.5 text-xs text-gray-600">
-                        <p className="font-semibold text-gray-700 truncate">{event.organizerName || 'Event Organizer'}</p>
-                        <p>{event.date} • {event.time}</p>
-                        <p className="truncate">{event.fullAddress || event.location}</p>
-                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -595,19 +780,26 @@ const getGreeting = () => {
               <div className="bg-white rounded-lg p-4 md:p-5 shadow-sm border border-gray-200">
                 <div className="mb-2 text-center">
                   <div
-                    onClick={() => navigate('/resources-insights')}
+                    onClick={() => navigate("/resources-insights")}
                     className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black cursor-pointer hover:bg-gray-50 transition-colors"
                   >
-                    <h3 className="font-bold text-black text-lg">Resources & Insights</h3>
+                    <h3 className="font-bold text-black text-lg">
+                      Resources & Insights
+                    </h3>
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5">Curated content to help you grow</p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Curated content to help you grow
+                  </p>
                 </div>
 
                 {/* Carousel Content with Thumbnail on Left */}
                 <div
                   onClick={() => {
                     if (featuredContent[featuredContentIndex].url) {
-                      window.open(featuredContent[featuredContentIndex].url, '_blank');
+                      window.open(
+                        featuredContent[featuredContentIndex].url,
+                        "_blank",
+                      );
                     }
                   }}
                   className="flex flex-col md:flex-row items-start gap-4 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition-colors cursor-pointer"
@@ -624,7 +816,10 @@ const getGreeting = () => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setFeaturedContentIndex((featuredContentIndex - 1 + featuredContent.length) % featuredContent.length);
+                        setFeaturedContentIndex(
+                          (featuredContentIndex - 1 + featuredContent.length) %
+                            featuredContent.length,
+                        );
                       }}
                       className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                       aria-label="Previous tip"
@@ -639,7 +834,9 @@ const getGreeting = () => {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setFeaturedContentIndex((featuredContentIndex + 1) % featuredContent.length);
+                        setFeaturedContentIndex(
+                          (featuredContentIndex + 1) % featuredContent.length,
+                        );
                       }}
                       className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                       aria-label="Next tip"
@@ -650,22 +847,36 @@ const getGreeting = () => {
 
                   {/* Right side: Content */}
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-gray-900 mb-2 text-lg leading-tight">{featuredContent[featuredContentIndex].title}</h4>
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-2 leading-relaxed">{featuredContent[featuredContentIndex].description}</p>
+                    <h4 className="font-bold text-gray-900 mb-2 text-lg leading-tight">
+                      {featuredContent[featuredContentIndex].title}
+                    </h4>
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-2 leading-relaxed">
+                      {featuredContent[featuredContentIndex].description}
+                    </p>
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                       {featuredContent[featuredContentIndex].tags && (
                         <div className="flex gap-2 flex-wrap">
-                          {featuredContent[featuredContentIndex].tags.split(',').slice(0, 2).map((tag, i) => (
-                            <span key={i} className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded">
-                              {tag.trim()}
-                            </span>
-                          ))}
+                          {featuredContent[featuredContentIndex].tags
+                            .split(",")
+                            .slice(0, 2)
+                            .map((tag, i) => (
+                              <span
+                                key={i}
+                                className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded"
+                              >
+                                {tag.trim()}
+                              </span>
+                            ))}
                         </div>
                       )}
                       {featuredContent[featuredContentIndex].sponsoredBy && (
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-400">Sponsored by</span>
-                          <span className="text-xs font-medium text-gray-700">{featuredContent[featuredContentIndex].sponsoredBy}</span>
+                          <span className="text-xs text-gray-400">
+                            Sponsored by
+                          </span>
+                          <span className="text-xs font-medium text-gray-700">
+                            {featuredContent[featuredContentIndex].sponsoredBy}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -677,9 +888,11 @@ const getGreeting = () => {
             {/* Bottom Banner Ad */}
             <div className="mt-8">
               {(() => {
-                const dashboardAd = JSON.parse(localStorage.getItem('ad_dashboardBottom') || 'null');
-                return dashboardAd?.image && dashboardAd?.url ? (<a
-
+                const dashboardAd = JSON.parse(
+                  localStorage.getItem("ad_dashboardBottom") || "null",
+                );
+                return dashboardAd?.image && dashboardAd?.url ? (
+                  <a
                     href={dashboardAd.url}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -689,27 +902,32 @@ const getGreeting = () => {
                       src={dashboardAd.image}
                       alt="Advertisement"
                       className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow object-cover"
-                      style={{ maxHeight: '180px' }}
+                      style={{ maxHeight: "180px" }}
                     />
                   </a>
                 ) : (
                   <div
                     onClick={() => setShowAdInquiryModal(true)}
                     className="rounded-lg p-8 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
-                    style={{ height: '180px' }}
+                    style={{ height: "180px" }}
                   >
                     <div
                       className="absolute inset-0 bg-cover opacity-30"
                       style={{
-                        backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
-                        backgroundPosition: 'center 90%',
-                        filter: 'blur(12px)',
-                        transform: 'scale(1.1)'
+                        backgroundImage:
+                          "url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)",
+                        backgroundPosition: "center 90%",
+                        filter: "blur(12px)",
+                        transform: "scale(1.1)",
                       }}
                     />
                     <div className="text-center relative z-10">
-                      <p className="text-gray-700 font-bold text-base">Banner Ad Spot: Click to Inquire</p>
-                      <p className="text-gray-600 text-sm mt-1">Recommended: 1200×180px</p>
+                      <p className="text-gray-700 font-bold text-base">
+                        Banner Ad Spot: Click to Inquire
+                      </p>
+                      <p className="text-gray-600 text-sm mt-1">
+                        Recommended: 1200×180px
+                      </p>
                     </div>
                   </div>
                 );
@@ -722,8 +940,18 @@ const getGreeting = () => {
                 onClick={() => setShowFeedbackModal(true)}
                 className="px-6 py-3 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] flex items-center gap-2"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
+                  />
                 </svg>
                 Share Feedback
               </button>
@@ -731,86 +959,117 @@ const getGreeting = () => {
           </div>
         );
 
-  case 'events':
-  return <Events onBackToDashboard={() => {
-    setActiveTab('dashboard');
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }} />;
+      case "events":
+        return (
+          <Events
+            onBackToDashboard={() => {
+              setActiveTab("dashboard");
+              window.scrollTo({ top: 0, behavior: "instant" });
+            }}
+          />
+        );
 
- case 'connections':
-  return <Connections
-    onBackToDashboard={() => {
-      setActiveTab('dashboard');
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    }}
-    onNavigateToSettings={() => {
-      setActiveTab('settings');
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    }}
-  />;
+      case "connections":
+        return (
+          <Connections
+            onBackToDashboard={() => {
+              setActiveTab("dashboard");
+              window.scrollTo({ top: 0, behavior: "instant" });
+            }}
+            onNavigateToSettings={() => {
+              setActiveTab("settings");
+              window.scrollTo({ top: 0, behavior: "instant" });
+            }}
+          />
+        );
 
-  case 'messages':
-  return <Messages onBackToDashboard={() => {
-    setActiveTab('dashboard');
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }} />;
+      case "messages":
+        return (
+          <Messages
+            onBackToDashboard={() => {
+              setActiveTab("dashboard");
+              window.scrollTo({ top: 0, behavior: "instant" });
+            }}
+          />
+        );
 
-  case 'settings':
-  return <Settings onBackToDashboard={() => setActiveTab('dashboard')} />;
+      case "settings":
+        return <Settings onBackToDashboard={() => setActiveTab("dashboard")} />;
 
-  case 'subscription':
-  return <Subscription onSelectPlan={(planId, isYearly) => {
-    setSelectedPlan({ planId, isYearly });
-      setActiveTab('payment');
-  }} />;
+      case "subscription":
+        return (
+          <Subscription
+            onSelectPlan={(planId, isYearly) => {
+              setSelectedPlan({ planId, isYearly });
+              setActiveTab("payment");
+            }}
+          />
+        );
 
-  case 'payment':
-  return <Account onBackToDashboard={() => {
-    setActiveTab('dashboard');
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }} />;
+      case "payment":
+        return (
+          <Account
+            onBackToDashboard={() => {
+              setActiveTab("dashboard");
+              window.scrollTo({ top: 0, behavior: "instant" });
+            }}
+          />
+        );
 
-  case 'terms':
-  return <TermsPage />;
+      case "terms":
+        return <TermsPage />;
 
-  case 'privacy':
-  return <PrivacyPage />;
+      case "privacy":
+        return <PrivacyPage />;
 
-  case 'archive':
-  return <ArchivePage onBackToDashboard={() => {
-    setActiveTab('dashboard');
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }} />;
+      case "archive":
+        return (
+          <ArchivePage
+            onBackToDashboard={() => {
+              setActiveTab("dashboard");
+              window.scrollTo({ top: 0, behavior: "instant" });
+            }}
+          />
+        );
 
-default:
+      default:
         return (
           <div className="flex items-center justify-center h-64">
-            <p className="text-gray-500">Content for {activeTab} coming soon...</p>
+            <p className="text-gray-500">
+              Content for {activeTab} coming soon...
+            </p>
           </div>
         );
     }
   };
 
   return (
-    <div className="bg-gray-50 pb-32 md:pb-0" style={{ minHeight: '100dvh', WebkitOverflowScrolling: 'touch' }}>
-    <div className="bg-gradient-to-r from-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
-      <span className="font-medium">
-        Welcome to Networking BudE • <button
-        onClick={() => {
-          localStorage.removeItem('onboardingCompleted');
-          window.location.href = '/';
-        }}
-        className="underline hover:no-underline font-medium"
-      >
-        Reset to Onboarding
-      </button>
-      </span>
-    </div>
-    <div className="md:flex">
+    <div
+      className="bg-gray-50 pb-32 md:pb-0"
+      style={{ minHeight: "100dvh", WebkitOverflowScrolling: "touch" }}
+    >
+      <div className="bg-gradient-to-r from-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
+        <span className="font-medium">
+          Welcome to Networking BudE •{" "}
+          <button
+            onClick={() => {
+              localStorage.removeItem("onboardingCompleted");
+              window.location.href = "/";
+            }}
+            className="underline hover:no-underline font-medium"
+          >
+            Reset to Onboarding
+          </button>
+        </span>
+      </div>
+      <div className="md:flex">
+        <Sidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          onContactUsClick={() => setShowContactModal(true)}
+        />
 
-    <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onContactUsClick={() => setShowContactModal(true)} />
-
-          <main className="flex-1 w-full overflow-x-hidden">
+        <main className="flex-1 w-full overflow-x-hidden">
           {/* Mobile Header */}
           <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
             <div className="flex items-center justify-between">
@@ -844,12 +1103,14 @@ default:
               onClick={() => setActiveTab(item.id)}
               className={`flex flex-col items-center px-1 py-2 rounded-lg transition-colors min-w-0 ${
                 activeTab === item.id
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? "text-blue-600 bg-blue-50"
+                  : "text-gray-600 hover:text-gray-900"
               }`}
             >
               <item.icon className="h-5 w-5 flex-shrink-0" />
-              <span className="text-[10px] mt-1 truncate max-w-full">{item.label}</span>
+              <span className="text-[10px] mt-1 truncate max-w-full">
+                {item.label}
+              </span>
             </button>
           ))}
         </div>
@@ -857,8 +1118,14 @@ default:
 
       {/* Sponsored Event Modal */}
       {showSponsorModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowSponsorModal(false)}>
-          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 relative" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowSponsorModal(false)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               onClick={() => setShowSponsorModal(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
@@ -871,10 +1138,16 @@ default:
                   <Calendar className="w-8 h-8 text-white" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Sponsored Event Opportunity</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">
+                Sponsored Event Opportunity
+              </h3>
               <p className="text-gray-600 mb-6">
-                For sponsored event or advertising inquiries, please email Jeff Hill at{' '}
-                <a href="mailto:grjeff@gmail.com" className="text-[#009900] font-semibold hover:underline">
+                For sponsored event or advertising inquiries, please email Jeff
+                Hill at{" "}
+                <a
+                  href="mailto:grjeff@gmail.com"
+                  className="text-[#009900] font-semibold hover:underline"
+                >
                   grjeff@gmail.com
                 </a>
               </p>
@@ -891,18 +1164,38 @@ default:
 
       {/* Ad Inquiry Modal */}
       {showAdInquiryModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => !adInquirySubmitted && setShowAdInquiryModal(false)}>
-          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full max-h-[85vh] overflow-y-auto p-4 relative border-4 border-[#D0ED00]" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => !adInquirySubmitted && setShowAdInquiryModal(false)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-2xl max-w-md w-full max-h-[85vh] overflow-y-auto p-4 relative border-4 border-[#D0ED00]"
+            onClick={(e) => e.stopPropagation()}
+          >
             {adInquirySubmitted ? (
               // Success Message
               <div className="text-center py-12">
                 <div className="mb-6">
-                  <svg className="w-20 h-20 mx-auto text-[#009900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-20 h-20 mx-auto text-[#009900]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 </div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Thank You!</h2>
-                <p className="text-lg text-gray-600 mb-2">Your inquiry has been submitted successfully.</p>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                  Thank You!
+                </h2>
+                <p className="text-lg text-gray-600 mb-2">
+                  Your inquiry has been submitted successfully.
+                </p>
                 <p className="text-gray-500">We'll be in touch soon!</p>
               </div>
             ) : (
@@ -916,163 +1209,224 @@ default:
                 <div>
                   <div className="mb-4">
                     <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto">
-                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                      <svg
+                        className="w-8 h-8 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                        />
                       </svg>
                     </div>
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">Advertise with BudE</h3>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">
+                    Advertise with BudE
+                  </h3>
                   <p className="text-gray-600 text-sm mb-4 text-center">
-                    Interested in advertising? Fill out this quick form and we'll get back to you soon!
+                    Interested in advertising? Fill out this quick form and
+                    we'll get back to you soon!
                   </p>
                   <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  setIsSubmittingAd(true);
-                  const formData = new FormData(e.target);
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      setIsSubmittingAd(true);
+                      const formData = new FormData(e.target);
 
-                  try {
-                    console.log('📤 Submitting ad inquiry...');
-                    const payload = {
-                      name: formData.get('name'),
-                      email: formData.get('email'),
-                      company: formData.get('company'),
-                      phone: phoneNumber,
-                      adType: formData.get('adType'),
-                      message: formData.get('message')
-                    };
-                    console.log('Payload:', payload);
+                      try {
+                        console.log("📤 Submitting ad inquiry...");
+                        const payload = {
+                          name: formData.get("name"),
+                          email: formData.get("email"),
+                          company: formData.get("company"),
+                          phone: phoneNumber,
+                          adType: formData.get("adType"),
+                          message: formData.get("message"),
+                        };
+                        console.log("Payload:", payload);
 
-                    const response = await fetch('/api/submitAdInquiry', {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify(payload)
-                    });
+                        const response = await fetch("/api/submitAdInquiry", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify(payload),
+                        });
 
-                    console.log('Response status:', response.status);
+                        console.log("Response status:", response.status);
 
-                    if (!response.ok) {
-                      const errorData = await response.json().catch(() => ({ message: 'Unknown server error' }));
-                      console.error('❌ Server error response:', errorData);
-                      alert(`Server Error: ${errorData.message || 'Failed to submit inquiry'}\n\nPlease email grjeff@gmail.com directly.`);
-                      return;
-                    }
+                        if (!response.ok) {
+                          const errorData = await response
+                            .json()
+                            .catch(() => ({ message: "Unknown server error" }));
+                          console.error("❌ Server error response:", errorData);
+                          alert(
+                            `Server Error: ${errorData.message || "Failed to submit inquiry"}\n\nPlease email grjeff@gmail.com directly.`,
+                          );
+                          return;
+                        }
 
-                    const result = await response.json();
-                    console.log('✅ Success:', result);
+                        const result = await response.json();
+                        console.log("✅ Success:", result);
 
-                    // Show success message in modal
-                    setAdInquirySubmitted(true);
-                    e.target.reset();
-                    setPhoneNumber('');
+                        // Show success message in modal
+                        setAdInquirySubmitted(true);
+                        e.target.reset();
+                        setPhoneNumber("");
 
-                    // Close modal after 3 seconds
-                    setTimeout(() => {
-                      setAdInquirySubmitted(false);
-                      setShowAdInquiryModal(false);
-                    }, 3000);
-                  } catch (error) {
-                    console.error('❌ Error submitting ad inquiry:', error);
-                    alert(`Error: ${error.message}\n\nPlease email grjeff@gmail.com directly.`);
-                  } finally {
-                    setIsSubmittingAd(false);
-                  }
-                }}
-                className="space-y-3"
-              >
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Name *</label>
-                  <input
-                    type="text"
-                    name="name"
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Email *</label>
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Company</label>
-                  <input
-                    type="text"
-                    name="company"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Phone</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value))}
-                    placeholder="(555) 123-4567"
-                    maxLength="14"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Ad Type of Interest</label>
-                  <select
-                    name="adType"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                        // Close modal after 3 seconds
+                        setTimeout(() => {
+                          setAdInquirySubmitted(false);
+                          setShowAdInquiryModal(false);
+                        }, 3000);
+                      } catch (error) {
+                        console.error("❌ Error submitting ad inquiry:", error);
+                        alert(
+                          `Error: ${error.message}\n\nPlease email grjeff@gmail.com directly.`,
+                        );
+                      } finally {
+                        setIsSubmittingAd(false);
+                      }
+                    }}
+                    className="space-y-3"
                   >
-                    <option value="">Select one...</option>
-                    <option value="Dashboard Banner">Dashboard Banner</option>
-                    <option value="Events Page Sidebar">Events Page Sidebar</option>
-                    <option value="Events Page Banner">Events Page Banner</option>
-                    <option value="Event Detail Banner">Event Detail Banner</option>
-                    <option value="Sponsored Event">Sponsored Event</option>
-                    <option value="Sponsored Content">Sponsored Content</option>
-                    <option value="Multiple Placements">Multiple Placements</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Message</label>
-                  <textarea
-                    name="message"
-                    rows="2"
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    placeholder="Tell us about your advertising goals..."
-                  ></textarea>
-                </div>
-                <div className="flex gap-3 pt-2">
-                  <button
-                    type="submit"
-                    disabled={isSubmittingAd}
-                    className="flex-1 bg-[#009900] text-white py-3 rounded-lg font-medium hover:bg-[#007700] transition-colors border-2 border-[#D0ED00] disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {isSubmittingAd ? (
-                      <>
-                        <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Submitting...
-                      </>
-                    ) : (
-                      'Submit Inquiry'
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowAdInquiryModal(false)}
-                    disabled={isSubmittingAd}
-                    className="px-6 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        Name *
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        Email *
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        required
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        Company
+                      </label>
+                      <input
+                        type="text"
+                        name="company"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        Phone
+                      </label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={phoneNumber}
+                        onChange={(e) =>
+                          setPhoneNumber(formatPhoneNumber(e.target.value))
+                        }
+                        placeholder="(555) 123-4567"
+                        maxLength="14"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        Ad Type of Interest
+                      </label>
+                      <select
+                        name="adType"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      >
+                        <option value="">Select one...</option>
+                        <option value="Dashboard Banner">
+                          Dashboard Banner
+                        </option>
+                        <option value="Events Page Sidebar">
+                          Events Page Sidebar
+                        </option>
+                        <option value="Events Page Banner">
+                          Events Page Banner
+                        </option>
+                        <option value="Event Detail Banner">
+                          Event Detail Banner
+                        </option>
+                        <option value="Sponsored Event">Sponsored Event</option>
+                        <option value="Sponsored Content">
+                          Sponsored Content
+                        </option>
+                        <option value="Multiple Placements">
+                          Multiple Placements
+                        </option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        Message
+                      </label>
+                      <textarea
+                        name="message"
+                        rows="2"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                        placeholder="Tell us about your advertising goals..."
+                      ></textarea>
+                    </div>
+                    <div className="flex gap-3 pt-2">
+                      <button
+                        type="submit"
+                        disabled={isSubmittingAd}
+                        className="flex-1 bg-[#009900] text-white py-3 rounded-lg font-medium hover:bg-[#007700] transition-colors border-2 border-[#D0ED00] disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        {isSubmittingAd ? (
+                          <>
+                            <svg
+                              className="animate-spin h-5 w-5"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              ></path>
+                            </svg>
+                            Submitting...
+                          </>
+                        ) : (
+                          "Submit Inquiry"
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowAdInquiryModal(false)}
+                        disabled={isSubmittingAd}
+                        className="px-6 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </>
             )}
@@ -1082,8 +1436,14 @@ default:
 
       {/* Share Prompt Modal */}
       {showSharePrompt && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowSharePrompt(false)}>
-          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 relative border-4 border-[#D0ED00]" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowSharePrompt(false)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 relative border-4 border-[#D0ED00]"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               onClick={() => setShowSharePrompt(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
@@ -1093,27 +1453,42 @@ default:
             <div className="text-center">
               <div className="mb-4">
                 <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  <svg
+                    className="w-8 h-8 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                    />
                   </svg>
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Loving BudE? Share it!</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">
+                Loving BudE? Share it!
+              </h3>
               <p className="text-gray-600 mb-6">
-                Help grow our networking community! Invite friends and colleagues who would benefit from making meaningful connections.
+                Help grow our networking community! Invite friends and
+                colleagues who would benefit from making meaningful connections.
               </p>
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => {
                     const shareText = `Check out Networking BudE - it's helping me make meaningful professional connections! ${window.location.origin}`;
                     if (navigator.share) {
-                      navigator.share({
-                        title: 'Networking BudE',
-                        text: shareText
-                      }).catch(() => {});
+                      navigator
+                        .share({
+                          title: "Networking BudE",
+                          text: shareText,
+                        })
+                        .catch(() => {});
                     } else {
                       navigator.clipboard.writeText(shareText);
-                      alert('Link copied to clipboard!');
+                      alert("Link copied to clipboard!");
                     }
                     setShowSharePrompt(false);
                   }}
@@ -1133,123 +1508,357 @@ default:
         </div>
       )}
 
-
       {/* Beta Feedback Form Modal */}
       {showFeedbackModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => !feedbackSubmitted && setShowFeedbackModal(false)}>
-          <div className="bg-white rounded-lg p-4 md:p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => !feedbackSubmitted && setShowFeedbackModal(false)}
+        >
+          <div
+            className="bg-white rounded-lg p-4 md:p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             {feedbackSubmitted ? (
               <div className="text-center py-12">
                 <div className="mb-6">
-                  <svg className="w-20 h-20 mx-auto text-[#009900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-20 h-20 mx-auto text-[#009900]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 </div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Thank You!</h2>
-                <p className="text-lg text-gray-600 mb-2">Your feedback has been submitted successfully.</p>
-                <p className="text-gray-500">This helps us make BudE better for everyone!</p>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                  Thank You!
+                </h2>
+                <p className="text-lg text-gray-600 mb-2">
+                  Your feedback has been submitted successfully.
+                </p>
+                <p className="text-gray-500">
+                  This helps us make BudE better for everyone!
+                </p>
               </div>
             ) : (
               <>
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-2xl font-bold text-gray-900">Share Feedback</h2>
-                  <button onClick={() => setShowFeedbackModal(false)} className="text-gray-400 hover:text-gray-600">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Share Feedback
+                  </h2>
+                  <button
+                    onClick={() => setShowFeedbackModal(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </button>
                 </div>
-                <p className="text-gray-600 mb-4">Your feedback is invaluable in helping us create the best networking platform.</p>
+                <p className="text-gray-600 mb-4">
+                  Your feedback is invaluable in helping us create the best
+                  networking platform.
+                </p>
                 <form onSubmit={handleSubmitFeedback} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-                      <input type="text" required value={feedbackData.name} onChange={(e) => setFeedbackData({...feedbackData, name: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Name *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={feedbackData.name}
+                        onChange={(e) =>
+                          setFeedbackData({
+                            ...feedbackData,
+                            name: e.target.value,
+                          })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                      <input type="email" required value={feedbackData.email} onChange={(e) => setFeedbackData({...feedbackData, email: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Email *
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={feedbackData.email}
+                        onChange={(e) =>
+                          setFeedbackData({
+                            ...feedbackData,
+                            email: e.target.value,
+                          })
+                        }
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      />
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg mb-2">Onboarding & First Impressions</h3>
+                    <h3 className="font-bold text-lg mb-2">
+                      Onboarding & First Impressions
+                    </h3>
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">How smooth was the sign-up or login process?</label>
-                        <textarea value={feedbackData.signUpSmoothness} onChange={(e) => setFeedbackData({...feedbackData, signUpSmoothness: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg mb-2">User Experience (UX)</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">How easy or intuitive is it to navigate the app?</label>
-                        <textarea value={feedbackData.navigationEase} onChange={(e) => setFeedbackData({...feedbackData, navigationEase: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Any steps that felt confusing or frustrating?</label>
-                        <textarea value={feedbackData.confusingSteps} onChange={(e) => setFeedbackData({...feedbackData, confusingSteps: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg mb-2">Design & Branding</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Visual appeal of the app (colors, fonts, imagery)</label>
-                        <textarea value={feedbackData.visualAppeal} onChange={(e) => setFeedbackData({...feedbackData, visualAppeal: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Does the brand feel clear, memorable, and consistent?</label>
-                        <textarea value={feedbackData.brandClarity} onChange={(e) => setFeedbackData({...feedbackData, brandClarity: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg mb-2">Performance & Speed</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Loading times, responsiveness, lag</label>
-                        <textarea value={feedbackData.performance} onChange={(e) => setFeedbackData({...feedbackData, performance: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Any crashes, bugs, or slowdowns?</label>
-                        <textarea value={feedbackData.crashesOrBugs} onChange={(e) => setFeedbackData({...feedbackData, crashesOrBugs: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          How smooth was the sign-up or login process?
+                        </label>
+                        <textarea
+                          value={feedbackData.signUpSmoothness}
+                          onChange={(e) =>
+                            setFeedbackData({
+                              ...feedbackData,
+                              signUpSmoothness: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm"
+                        />
                       </div>
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg mb-2">Features & Functionality</h3>
+                    <h3 className="font-bold text-lg mb-2">
+                      User Experience (UX)
+                    </h3>
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Which features were most useful or enjoyable?</label>
-                        <textarea value={feedbackData.usefulFeatures} onChange={(e) => setFeedbackData({...feedbackData, usefulFeatures: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          How easy or intuitive is it to navigate the app?
+                        </label>
+                        <textarea
+                          value={feedbackData.navigationEase}
+                          onChange={(e) =>
+                            setFeedbackData({
+                              ...feedbackData,
+                              navigationEase: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm"
+                        />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Anything missing or not working as expected?</label>
-                        <textarea value={feedbackData.missingFeatures} onChange={(e) => setFeedbackData({...feedbackData, missingFeatures: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Any steps that felt confusing or frustrating?
+                        </label>
+                        <textarea
+                          value={feedbackData.confusingSteps}
+                          onChange={(e) =>
+                            setFeedbackData({
+                              ...feedbackData,
+                              confusingSteps: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm"
+                        />
                       </div>
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-bold text-lg mb-2">Value Proposition & Relevance</h3>
+                    <h3 className="font-bold text-lg mb-2">
+                      Design & Branding
+                    </h3>
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Did you understand the core purpose of the app right away?</label>
-                        <textarea value={feedbackData.corePurposeUnderstood} onChange={(e) => setFeedbackData({...feedbackData, corePurposeUnderstood: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Visual appeal of the app (colors, fonts, imagery)
+                        </label>
+                        <textarea
+                          value={feedbackData.visualAppeal}
+                          onChange={(e) =>
+                            setFeedbackData({
+                              ...feedbackData,
+                              visualAppeal: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm"
+                        />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Does the app solve a real problem for you?</label>
-                        <textarea value={feedbackData.solvesRealProblem} onChange={(e) => setFeedbackData({...feedbackData, solvesRealProblem: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Does the brand feel clear, memorable, and consistent?
+                        </label>
+                        <textarea
+                          value={feedbackData.brandClarity}
+                          onChange={(e) =>
+                            setFeedbackData({
+                              ...feedbackData,
+                              brandClarity: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg mb-2">
+                      Performance & Speed
+                    </h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Loading times, responsiveness, lag
+                        </label>
+                        <textarea
+                          value={feedbackData.performance}
+                          onChange={(e) =>
+                            setFeedbackData({
+                              ...feedbackData,
+                              performance: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm"
+                        />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Would you realistically use it or recommend it?</label>
-                        <textarea value={feedbackData.wouldUseOrRecommend} onChange={(e) => setFeedbackData({...feedbackData, wouldUseOrRecommend: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Any crashes, bugs, or slowdowns?
+                        </label>
+                        <textarea
+                          value={feedbackData.crashesOrBugs}
+                          onChange={(e) =>
+                            setFeedbackData({
+                              ...feedbackData,
+                              crashesOrBugs: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg mb-2">
+                      Features & Functionality
+                    </h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Which features were most useful or enjoyable?
+                        </label>
+                        <textarea
+                          value={feedbackData.usefulFeatures}
+                          onChange={(e) =>
+                            setFeedbackData({
+                              ...feedbackData,
+                              usefulFeatures: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm"
+                        />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Does the app give you a reason to come back?</label>
-                        <textarea value={feedbackData.reasonToComeBack} onChange={(e) => setFeedbackData({...feedbackData, reasonToComeBack: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Anything missing or not working as expected?
+                        </label>
+                        <textarea
+                          value={feedbackData.missingFeatures}
+                          onChange={(e) =>
+                            setFeedbackData({
+                              ...feedbackData,
+                              missingFeatures: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg mb-2">
+                      Value Proposition & Relevance
+                    </h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Did you understand the core purpose of the app right
+                          away?
+                        </label>
+                        <textarea
+                          value={feedbackData.corePurposeUnderstood}
+                          onChange={(e) =>
+                            setFeedbackData({
+                              ...feedbackData,
+                              corePurposeUnderstood: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Does the app solve a real problem for you?
+                        </label>
+                        <textarea
+                          value={feedbackData.solvesRealProblem}
+                          onChange={(e) =>
+                            setFeedbackData({
+                              ...feedbackData,
+                              solvesRealProblem: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Would you realistically use it or recommend it?
+                        </label>
+                        <textarea
+                          value={feedbackData.wouldUseOrRecommend}
+                          onChange={(e) =>
+                            setFeedbackData({
+                              ...feedbackData,
+                              wouldUseOrRecommend: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Does the app give you a reason to come back?
+                        </label>
+                        <textarea
+                          value={feedbackData.reasonToComeBack}
+                          onChange={(e) =>
+                            setFeedbackData({
+                              ...feedbackData,
+                              reasonToComeBack: e.target.value,
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm"
+                        />
                       </div>
                     </div>
                   </div>
@@ -1257,26 +1866,66 @@ default:
                     <h3 className="font-bold text-lg mb-2">Overall Rating</h3>
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">Overall rating (1–10)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-3">
+                          Overall rating (1–10)
+                        </label>
                         <div className="flex flex-wrap gap-2">
                           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
-                            <button key={rating} type="button" onClick={() => setFeedbackData({...feedbackData, overallRating: rating.toString()})} className={`w-12 h-12 rounded-lg font-bold text-lg transition-all ${feedbackData.overallRating === rating.toString() ? 'bg-[#009900] text-white border-2 border-[#D0ED00] shadow-md scale-105' : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-[#009900] hover:bg-gray-50'}`}>{rating}</button>
+                            <button
+                              key={rating}
+                              type="button"
+                              onClick={() =>
+                                setFeedbackData({
+                                  ...feedbackData,
+                                  overallRating: rating.toString(),
+                                })
+                              }
+                              className={`w-12 h-12 rounded-lg font-bold text-lg transition-all ${feedbackData.overallRating === rating.toString() ? "bg-[#009900] text-white border-2 border-[#D0ED00] shadow-md scale-105" : "bg-white border-2 border-gray-300 text-gray-700 hover:border-[#009900] hover:bg-gray-50"}`}
+                            >
+                              {rating}
+                            </button>
                           ))}
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">Would you recommend this app to a friend or colleague? (1-10 scale)</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-3">
+                          Would you recommend this app to a friend or colleague?
+                          (1-10 scale)
+                        </label>
                         <div className="flex flex-wrap gap-2">
                           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((score) => (
-                            <button key={score} type="button" onClick={() => setFeedbackData({...feedbackData, netPromoterScore: score.toString()})} className={`w-12 h-12 rounded-lg font-bold text-lg transition-all ${feedbackData.netPromoterScore === score.toString() ? 'bg-[#009900] text-white border-2 border-[#D0ED00] shadow-md scale-105' : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-[#009900] hover:bg-gray-50'}`}>{score}</button>
+                            <button
+                              key={score}
+                              type="button"
+                              onClick={() =>
+                                setFeedbackData({
+                                  ...feedbackData,
+                                  netPromoterScore: score.toString(),
+                                })
+                              }
+                              className={`w-12 h-12 rounded-lg font-bold text-lg transition-all ${feedbackData.netPromoterScore === score.toString() ? "bg-[#009900] text-white border-2 border-[#D0ED00] shadow-md scale-105" : "bg-white border-2 border-gray-300 text-gray-700 hover:border-[#009900] hover:bg-gray-50"}`}
+                            >
+                              {score}
+                            </button>
                           ))}
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="flex gap-3 pt-4">
-                    <button type="button" onClick={() => setShowFeedbackModal(false)} className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">Cancel</button>
-                    <button type="submit" className="flex-1 px-4 py-3 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00]">Submit Feedback</button>
+                    <button
+                      type="button"
+                      onClick={() => setShowFeedbackModal(false)}
+                      className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 px-4 py-3 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00]"
+                    >
+                      Submit Feedback
+                    </button>
                   </div>
                 </form>
               </>
@@ -1287,17 +1936,37 @@ default:
 
       {/* Contact Us Modal */}
       {showContactModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => !contactSubmitted && setShowContactModal(false)}>
-          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 relative border-4 border-[#D0ED00]" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => !contactSubmitted && setShowContactModal(false)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 relative border-4 border-[#D0ED00]"
+            onClick={(e) => e.stopPropagation()}
+          >
             {contactSubmitted ? (
               <div className="text-center py-12">
                 <div className="mb-6">
-                  <svg className="w-20 h-20 mx-auto text-[#009900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-20 h-20 mx-auto text-[#009900]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 </div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Message Sent!</h2>
-                <p className="text-lg text-gray-600 mb-2">Thank you for contacting us.</p>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                  Message Sent!
+                </h2>
+                <p className="text-lg text-gray-600 mb-2">
+                  Thank you for contacting us.
+                </p>
                 <p className="text-gray-500">We'll get back to you soon!</p>
               </div>
             ) : (
@@ -1310,41 +1979,73 @@ default:
                 </button>
                 <div className="text-center mb-6">
                   <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    <svg
+                      className="w-8 h-8 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
                     </svg>
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Contact Us</h3>
-                  <p className="text-gray-600">Have a question or feedback? We'd love to hear from you!</p>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                    Contact Us
+                  </h3>
+                  <p className="text-gray-600">
+                    Have a question or feedback? We'd love to hear from you!
+                  </p>
                 </div>
                 <form onSubmit={handleSubmitContact} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Name *
+                    </label>
                     <input
                       type="text"
                       required
                       value={contactData.name}
-                      onChange={(e) => setContactData({...contactData, name: e.target.value})}
+                      onChange={(e) =>
+                        setContactData({ ...contactData, name: e.target.value })
+                      }
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email *
+                    </label>
                     <input
                       type="email"
                       required
                       value={contactData.email}
-                      onChange={(e) => setContactData({...contactData, email: e.target.value})}
+                      onChange={(e) =>
+                        setContactData({
+                          ...contactData,
+                          email: e.target.value,
+                        })
+                      }
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Message *</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Message *
+                    </label>
                     <textarea
                       required
                       rows="5"
                       value={contactData.message}
-                      onChange={(e) => setContactData({...contactData, message: e.target.value})}
+                      onChange={(e) =>
+                        setContactData({
+                          ...contactData,
+                          message: e.target.value,
+                        })
+                      }
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                       placeholder="How can we help you?"
                     ></textarea>
@@ -1365,14 +2066,30 @@ default:
                     >
                       {isSubmittingContact ? (
                         <>
-                          <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          <svg
+                            className="animate-spin h-5 w-5"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
                           </svg>
                           Sending...
                         </>
                       ) : (
-                        'Send Message'
+                        "Send Message"
                       )}
                     </button>
                   </div>
@@ -1385,7 +2102,10 @@ default:
 
       {/* Mobile Menu Modal */}
       {showMobileMenu && (
-        <div className="fixed inset-0 bg-black/50 z-50 md:hidden" onClick={() => setShowMobileMenu(false)}>
+        <div
+          className="fixed inset-0 bg-black/50 z-50 md:hidden"
+          onClick={() => setShowMobileMenu(false)}
+        >
           <div
             className="fixed right-0 top-0 bottom-0 w-64 bg-white shadow-2xl"
             onClick={(e) => e.stopPropagation()}
@@ -1402,7 +2122,7 @@ default:
             <div className="p-4 space-y-2">
               <button
                 onClick={() => {
-                  setActiveTab('terms');
+                  setActiveTab("terms");
                   setShowMobileMenu(false);
                 }}
                 className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
@@ -1411,7 +2131,7 @@ default:
               </button>
               <button
                 onClick={() => {
-                  setActiveTab('privacy');
+                  setActiveTab("privacy");
                   setShowMobileMenu(false);
                 }}
                 className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
@@ -1431,7 +2151,7 @@ default:
                 onClick={async () => {
                   setShowMobileMenu(false);
                   await signOut();
-                  window.location.href = '/';
+                  window.location.href = "/";
                 }}
                 className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
               >
@@ -1439,7 +2159,9 @@ default:
               </button>
             </div>
             <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
-              <p className="text-xs text-gray-500 text-center">© 2025 The BudE System™</p>
+              <p className="text-xs text-gray-500 text-center">
+                © 2025 The BudE System™
+              </p>
             </div>
           </div>
         </div>
@@ -1455,7 +2177,5 @@ default:
     </div>
   );
 }
-
-
 
 export default Dashboard;
