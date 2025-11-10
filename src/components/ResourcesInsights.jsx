@@ -408,18 +408,10 @@ function ResourcesInsights() {
               </div>
             </div>
 
-            {/* Social Share Buttons */}
+            {/* Share Options */}
             <div className="space-y-2 mb-4">
               <p className="text-sm font-medium text-gray-700 mb-2">Share to:</p>
-              <div className="grid grid-cols-3 gap-2">
-                <a
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(selectedContent.url || window.location.origin + '/resources-insights')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#0077B5] text-white rounded-lg hover:bg-[#006399] transition-colors text-sm"
-                >
-                  LinkedIn
-                </a>
+              <div className="grid grid-cols-2 gap-2">
                 <a
                   href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(selectedContent.url || window.location.origin + '/resources-insights')}`}
                   target="_blank"
@@ -429,12 +421,26 @@ function ResourcesInsights() {
                   Facebook
                 </a>
                 <a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(selectedContent.url || window.location.origin + '/resources-insights')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#0077B5] text-white rounded-lg hover:bg-[#006399] transition-colors text-sm"
+                >
+                  LinkedIn
+                </a>
+                <a
                   href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(selectedContent.url || window.location.origin + '/resources-insights')}&text=${encodeURIComponent('Check out: ' + selectedContent.title)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1DA1F2] text-white rounded-lg hover:bg-[#1a8cd8] transition-colors text-sm"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm"
                 >
-                  Twitter
+                  X
+                </a>
+                <a
+                  href={`mailto:?subject=${encodeURIComponent('Check out: ' + selectedContent.title)}&body=${encodeURIComponent('I thought you might be interested in this:\n\n' + selectedContent.title + '\n\n' + (selectedContent.url || window.location.origin + '/resources-insights'))}`}
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
+                >
+                  Email
                 </a>
               </div>
             </div>
