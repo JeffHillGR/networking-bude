@@ -232,13 +232,25 @@ function ResourcesInsights() {
       </div>
 
       <div className="flex min-h-screen bg-gray-50">
-        <Sidebar activeTab="resources" setActiveTab={() => navigate('/dashboard')} />
+        <Sidebar activeTab="resources" setActiveTab={() => {
+          if (!user && sessionStorage.getItem('hasViewedPublicContent')) {
+            setShowSignupPrompt(true);
+          } else {
+            navigate('/dashboard');
+          }
+        }} />
 
         <div className="flex-1">
           <div className="bg-white border-b border-gray-200">
             <div className="px-4 py-4">
               <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => {
+                  if (!user && sessionStorage.getItem('hasViewedPublicContent')) {
+                    setShowSignupPrompt(true);
+                  } else {
+                    navigate('/dashboard');
+                  }
+                }}
                 className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 transition-colors"
               >
                 <ArrowLeft className="w-5 h-5" />

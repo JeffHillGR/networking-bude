@@ -30,13 +30,11 @@ function EventDetail() {
   useEffect(() => {
     if (!user) {
       const hasViewedPublicContent = sessionStorage.getItem('hasViewedPublicContent');
-      if (hasViewedPublicContent) {
-        // They've already viewed one piece of content, show signup prompt
-        setShowSignupPrompt(true);
-      } else {
+      if (!hasViewedPublicContent) {
         // First view is free, mark it
         sessionStorage.setItem('hasViewedPublicContent', 'true');
       }
+      // Don't show prompt immediately - wait for them to try to navigate
     }
   }, [user, eventId]);
 
@@ -312,13 +310,25 @@ function EventDetail() {
       </div>
 
       <div className="flex min-h-screen bg-gray-50">
-        <Sidebar activeTab="events" setActiveTab={() => navigate('/dashboard')} />
+        <Sidebar activeTab="events" setActiveTab={(tab) => {
+          if (!user && sessionStorage.getItem('hasViewedPublicContent')) {
+            setShowSignupPrompt(true);
+          } else {
+            navigate('/dashboard');
+          }
+        }} />
 
         <div className="flex-1">
           <div className="bg-white border-b border-gray-200">
           <div className="px-4 py-4">
             <button
-              onClick={() => navigate('/dashboard', { state: { activeTab: 'events' } })}
+              onClick={() => {
+                if (!user && sessionStorage.getItem('hasViewedPublicContent')) {
+                  setShowSignupPrompt(true);
+                } else {
+                  navigate('/dashboard', { state: { activeTab: 'events' } });
+                }
+              }}
               className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
