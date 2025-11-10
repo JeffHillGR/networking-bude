@@ -32,7 +32,7 @@ export default async function handler(req, res) {
         const description = (event.short_description || event.full_description || 'Join us for this networking event')
           .replace(/"/g, '&quot;')
           .substring(0, 200);
-        const image = event.image_url || 'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png';
+        const image = event.image || event.image_url || 'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png';
         const fullUrl = `https://www.networkingbude.com${url}`;
 
         const ogTags = `
