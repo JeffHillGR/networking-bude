@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, Calendar, Users, ExternalLink, X, TrendingUp, ArrowLeft } from 'lucide-react';
+import { Search, MapPin, Calendar, Users, ExternalLink, X, TrendingUp, ArrowLeft, Share2 } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
 
 function Events({ onBackToDashboard }) {
@@ -23,6 +23,9 @@ function Events({ onBackToDashboard }) {
   });
   const [allEvents, setAllEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareEvent, setShareEvent] = useState(null);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   // Track user engagement for share prompt
   const trackEngagement = () => {
@@ -285,7 +288,18 @@ function Events({ onBackToDashboard }) {
                           <span className="text-[#009900] font-medium">Who's Going - Feature Coming Soon</span>
                         </div>
                       </div>
-                      <div className="flex justify-end">
+                      <div className="flex justify-between items-center">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShareEvent(event);
+                            setShowShareModal(true);
+                          }}
+                          className="text-gray-600 hover:text-[#009900] transition-colors"
+                          title="Share event"
+                        >
+                          <Share2 className="h-5 w-5" />
+                        </button>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -364,15 +378,27 @@ function Events({ onBackToDashboard }) {
                               <span className="text-xs text-gray-600">{event.price}</span>
                             )}
                           </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/events/${event.id}`);
-                            }}
-                            className="flex items-center gap-2 text-[#009900] font-medium hover:text-[#007700] text-sm md:text-base whitespace-nowrap"
-                          >
-                            View Details
-                            <ExternalLink className="h-4 w-4" />
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShareEvent(event);
+                                setShowShareModal(true);
+                              }}
+                              className="text-gray-600 hover:text-[#009900] transition-colors"
+                              title="Share event"
+                            >
+                              <Share2 className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/events/${event.id}`);
+                              }}
+                              className="flex items-center gap-2 text-[#009900] font-medium hover:text-[#007700] text-sm md:text-base whitespace-nowrap"
+                            >
+                              View Details
+                              <ExternalLink className="h-4 w-4" />
                           </button>
                         </div>
                       </div>
@@ -771,6 +797,120 @@ function Events({ onBackToDashboard }) {
                 </div>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Share Event Modal */}
+      {showShareModal && shareEvent && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 relative">
+            <button
+              onClick={() => {
+                setShowShareModal(false);
+                setShareEvent(null);
+                setLinkCopied(false);
+              }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Share2 className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Share Event</h3>
+              <p className="text-sm text-gray-600">{shareEvent.title}</p>
+            </div>
+
+            {/* Link Display with Copy Button */}
+            <div className="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex-1 overflow-hidden">
+                  <p className="text-sm text-gray-500 mb-1">Event Link:</p>
+                  <p className="text-sm font-mono text-gray-900 truncate">{`${window.location.origin}/events/${shareEvent.id}`}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    const eventLink = `${window.location.origin}/events/${shareEvent.id}`;
+                    try {
+                      if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(eventLink).then(() => {
+                          setLinkCopied(true);
+                          setTimeout(() => setLinkCopied(false), 2000);
+                        }).catch(() => {
+                          prompt('Copy this link:', eventLink);
+                        });
+                      } else {
+                        prompt('Copy this link:', eventLink);
+                      }
+                    } catch (err) {
+                      prompt('Copy this link:', eventLink);
+                    }
+                  }}
+                  className="flex-shrink-0 bg-[#009900] text-white px-4 py-2 rounded-lg hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] flex items-center gap-2"
+                >
+                  {linkCopied ? (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Social Share Buttons */}
+            <div className="space-y-2 mb-4">
+              <p className="text-sm font-medium text-gray-700 mb-2">Share to:</p>
+              <div className="grid grid-cols-3 gap-2">
+                <a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin + '/events/' + shareEvent.id)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#0077B5] text-white rounded-lg hover:bg-[#006399] transition-colors text-sm"
+                >
+                  LinkedIn
+                </a>
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.origin + '/events/' + shareEvent.id)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#145dbf] transition-colors text-sm"
+                >
+                  Facebook
+                </a>
+                <a
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.origin + '/events/' + shareEvent.id)}&text=${encodeURIComponent('Check out this event: ' + shareEvent.title)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1DA1F2] text-white rounded-lg hover:bg-[#1a8cd8] transition-colors text-sm"
+                >
+                  Twitter
+                </a>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setShowShareModal(false);
+                setShareEvent(null);
+                setLinkCopied(false);
+              }}
+              className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

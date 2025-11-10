@@ -30,6 +30,7 @@ const [selectedPlan, setSelectedPlan] = useState(null);
 const [loadedFeaturedContent, setLoadedFeaturedContent] = useState([null, null, null]);
 const [showSponsorModal, setShowSponsorModal] = useState(false);
 const [showSharePrompt, setShowSharePrompt] = useState(false);
+const [linkCopied, setLinkCopied] = useState(false);
 const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
 const [adInquirySubmitted, setAdInquirySubmitted] = useState(false);
 const [phoneNumber, setPhoneNumber] = useState('');
@@ -1154,43 +1155,63 @@ default:
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3">Loving BudE? Share it!</h3>
               <p className="text-gray-600 mb-6">
-                Help grow our networking community! Invite friends and colleagues who would benefit from making meaningful connections.
+                Help grow our networking community! Copy the link below and share with friends and colleagues.
               </p>
-              <div className="flex flex-col gap-3">
-                <button
-                  onClick={() => {
-                    const shareText = `Check out Networking BudE - it's helping me make meaningful professional connections! ${window.location.origin}`;
 
-                    try {
-                      // Try to copy to clipboard as fallback
-                      if (navigator.clipboard && navigator.clipboard.writeText) {
-                        navigator.clipboard.writeText(shareText).then(() => {
-                          alert('Link copied to clipboard! You can now paste it in an email or message to share with friends.');
-                        }).catch(() => {
-                          // Fallback if clipboard fails
-                          prompt('Copy this link to share:', shareText);
-                        });
-                      } else {
-                        // Older browser fallback
-                        prompt('Copy this link to share:', shareText);
+              {/* Link Display with Copy Button */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex-1 overflow-hidden">
+                    <p className="text-sm text-gray-500 mb-1">Share Link:</p>
+                    <p className="text-sm font-mono text-gray-900 truncate">{window.location.origin}</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      try {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                          navigator.clipboard.writeText(window.location.origin).then(() => {
+                            setLinkCopied(true);
+                            setTimeout(() => setLinkCopied(false), 2000);
+                          }).catch(() => {
+                            prompt('Copy this link:', window.location.origin);
+                          });
+                        } else {
+                          prompt('Copy this link:', window.location.origin);
+                        }
+                      } catch (err) {
+                        prompt('Copy this link:', window.location.origin);
                       }
-                    } catch (err) {
-                      prompt('Copy this link to share:', shareText);
-                    }
-
-                    setShowSharePrompt(false);
-                  }}
-                  className="w-full bg-[#009900] text-white py-3 rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00]"
-                >
-                  Copy Link to Share
-                </button>
-                <button
-                  onClick={() => setShowSharePrompt(false)}
-                  className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-                >
-                  Maybe Later
-                </button>
+                    }}
+                    className="flex-shrink-0 bg-[#009900] text-white px-4 py-2 rounded-lg hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] flex items-center gap-2"
+                  >
+                    {linkCopied ? (
+                      <>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
+
+              <button
+                onClick={() => {
+                  setShowSharePrompt(false);
+                  setLinkCopied(false);
+                }}
+                className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
