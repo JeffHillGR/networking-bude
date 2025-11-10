@@ -37,6 +37,16 @@ export default async function handler(req, res) {
 
       // Get image and optimize for LinkedIn (1200px width minimum)
       let image = event?.image || event?.image_url || 'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png';
+
+      // Handle double-encoded Eventbrite URLs (e.g., https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com/...)
+      if (image.includes('img.evbuc.com/https%3A')) {
+        // Extract the inner URL and decode it
+        const match = image.match(/img\.evbuc\.com\/(https%3A[^?]+)/);
+        if (match) {
+          image = decodeURIComponent(match[1]);
+        }
+      }
+
       // If it's an Eventbrite image with width parameter, increase to 1200 for better LinkedIn preview
       if (image.includes('evbuc.com') && image.includes('w=')) {
         image = image.replace(/w=\d+/, 'w=1200');
