@@ -127,14 +127,14 @@ function AdminPanel() {
               Events & Banner Ads
             </button>
             <button
-              onClick={() => setActiveTab('eventDetailAds')}
+              onClick={() => setActiveTab('resources')}
               className={`px-4 py-4 font-semibold border-b-2 transition-colors ${
-                activeTab === 'eventDetailAds'
+                activeTab === 'resources'
                   ? 'border-green-600 text-green-600'
                   : 'border-transparent text-gray-600 hover:text-gray-900'
               }`}
             >
-              Event Details Banner Ads
+              Resources & Insights
             </button>
             <button
               onClick={() => setActiveTab('moderation')}
@@ -168,14 +168,7 @@ function AdminPanel() {
             removeAd={removeAd}
           />
         )}
-        {activeTab === 'eventDetailAds' && (
-          <EventDetailAdsTab
-            ads={ads}
-            handleImageUpload={handleImageUpload}
-            handleUrlChange={handleUrlChange}
-            removeAd={removeAd}
-          />
-        )}
+        {activeTab === 'resources' && <ResourcesInsightsTab />}
         {activeTab === 'moderation' && <ModerationTab />}
       </div>
     </div>
@@ -1282,43 +1275,357 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
   );
 }
 
-function EventDetailAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
+function ResourcesInsightsTab() {
+  const [contentSlots, setContentSlots] = useState([
+    { slot_number: 1, title: '', description: '', image: '', url: '', tags: '', sponsored_by: '', full_content: '', author: '' },
+    { slot_number: 2, title: '', description: '', image: '', url: '', tags: '', sponsored_by: '', full_content: '', author: '' },
+    { slot_number: 3, title: '', description: '', image: '', url: '', tags: '', sponsored_by: '', full_content: '', author: '' }
+  ]);
+  const [loading, setLoading] = useState(true);
+  const [activeSlot, setActiveSlot] = useState(1);
+
+  // Load all content slots from Supabase
+  useEffect(() => {
+    const loadContentSlots = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('featured_content')
+          .select('*')
+          .order('slot_number', { ascending: true });
+
+        if (error) {
+          console.error('Error loading content slots:', error);
+          return;
+        }
+
+        if (data) {
+          const updatedSlots = [1, 2, 3].map(slotNum => {
+            const existing = data.find(item => item.slot_number === slotNum);
+            return existing ? {
+              slot_number: slotNum,
+              title: existing.title || '',
+              description: existing.description || '',
+              image: existing.image || '',
+              url: existing.url || '',
+              tags: existing.tags || '',
+              sponsored_by: existing.sponsored_by || '',
+              full_content: existing.full_content || '',
+              author: existing.author || ''
+            } : {
+              slot_number: slotNum,
+              title: '',
+              description: '',
+              image: '',
+              url: '',
+              tags: '',
+              sponsored_by: '',
+              full_content: '',
+              author: ''
+            };
+          });
+          setContentSlots(updatedSlots);
+        }
+      } catch (err) {
+        console.error('Error loading content:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadContentSlots();
+  }, []);
+
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold mb-6">Event Details Banner Ads</h2>
+      <h2 className="text-2xl font-bold mb-6">Resources & Insights Management</h2>
       <p className="text-gray-600 mb-6">
-        Manage 728x160 banner ads that appear at the bottom of individual event detail pages.
-        Use content tags to target specific types of events (e.g., Technology, Leadership, Networking).
+        Manage all three featured content slots displayed on the Dashboard and Resources pages.
       </p>
 
-      <div className="bg-white rounded-lg p-6 border border-gray-200">
-        <h3 className="text-xl font-semibold mb-4">Banner Ad Management</h3>
-        <p className="text-gray-600 mb-6">
-          Upload a banner ad with targeted content tags. The ad will only display on event detail pages
-          where the event's tags match your ad's tags.
-        </p>
+      {/* Slot Selector */}
+      <div className="flex gap-4 mb-6">
+        {[1, 2, 3].map((slotNum) => (
+          <button
+            key={slotNum}
+            onClick={() => setActiveSlot(slotNum)}
+            className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+              activeSlot === slotNum
+                ? 'bg-green-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Content Slot #{slotNum}
+          </button>
+        ))}
+      </div>
 
-        <InlineAdEditor
-          title="Event Detail Page - Banner Ad"
-          slot="eventDetailBanner"
-          ad={ads.eventDetailBanner}
-          onImageUpload={handleImageUpload}
-          onUrlChange={handleUrlChange}
-          onRemove={removeAd}
-          dimensions="728x160px"
-          description="Banner ad at bottom of individual event detail pages"
-          aspectRatio="728/160"
-        />
-
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h4 className="font-semibold text-sm text-blue-900 mb-2">How Tag Targeting Works:</h4>
-          <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
-            <li>Enter tags like "Technology, Innovation, AI" in the Content Tags field above</li>
-            <li>Your ad will only show on events that have at least one matching tag</li>
-            <li>Example: An ad tagged "Leadership, Networking" shows on leadership forums and networking events</li>
-            <li>Leave tags empty to show the ad on all event detail pages</li>
-          </ul>
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading content...</p>
         </div>
+      ) : (
+        <ContentSlotEditor
+          content={contentSlots[activeSlot - 1]}
+          onUpdate={(updatedContent) => {
+            const newSlots = [...contentSlots];
+            newSlots[activeSlot - 1] = updatedContent;
+            setContentSlots(newSlots);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function ContentSlotEditor({ content, onUpdate }) {
+  const [formData, setFormData] = useState(content);
+  const [scrapeUrl, setScrapeUrl] = useState('');
+  const [isScraping, setIsScraping] = useState(false);
+  const [scrapeError, setScrapeError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setFormData(content);
+  }, [content]);
+
+  const handleChange = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  const handleScrapeContent = async () => {
+    if (!scrapeUrl) {
+      setScrapeError('Please enter a URL');
+      return;
+    }
+
+    setIsScraping(true);
+    setScrapeError('');
+
+    try {
+      const proxyUrl = 'https://api.allorigins.win/raw?url=';
+      const response = await fetch(proxyUrl + encodeURIComponent(scrapeUrl));
+      const html = await response.text();
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      const title = doc.querySelector('meta[property="og:title"]')?.content ||
+                   doc.querySelector('title')?.textContent ||
+                   '';
+
+      const description = doc.querySelector('meta[property="og:description"]')?.content ||
+                         doc.querySelector('meta[name="description"]')?.content ||
+                         '';
+
+      const image = doc.querySelector('meta[property="og:image"]')?.content ||
+                   doc.querySelector('meta[name="twitter:image"]')?.content ||
+                   '';
+
+      const author = doc.querySelector('meta[name="author"]')?.content ||
+                    doc.querySelector('.author')?.textContent ||
+                    '';
+
+      setFormData({
+        ...formData,
+        title: title.trim(),
+        description: description.trim(),
+        image: image,
+        url: scrapeUrl,
+        author: author.trim()
+      });
+
+      setScrapeUrl('');
+    } catch (error) {
+      console.error('Scrape error:', error);
+      setScrapeError('Failed to scrape content. Try entering manually.');
+    } finally {
+      setIsScraping(false);
+    }
+  };
+
+  const handleImageUpload = (file) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData({ ...formData, image: reader.result });
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('featured_content')
+        .upsert({
+          slot_number: formData.slot_number,
+          title: formData.title,
+          description: formData.description,
+          image: formData.image,
+          url: formData.url,
+          tags: formData.tags,
+          sponsored_by: formData.sponsored_by,
+          full_content: formData.full_content,
+          author: formData.author
+        });
+
+      if (error) throw error;
+
+      alert('Content saved successfully!');
+      onUpdate(formData);
+    } catch (error) {
+      console.error('Save error:', error);
+      alert('Failed to save content: ' + error.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg p-6 border border-gray-200 space-y-6">
+      {/* URL Scraper */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Scrape from URL</label>
+        <div className="flex gap-2">
+          <input
+            type="url"
+            value={scrapeUrl}
+            onChange={(e) => setScrapeUrl(e.target.value)}
+            placeholder="https://example.com/article"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg"
+          />
+          <button
+            onClick={handleScrapeContent}
+            disabled={isScraping}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+          >
+            {isScraping ? 'Scraping...' : 'Scrape'}
+          </button>
+        </div>
+        {scrapeError && <p className="text-red-600 text-sm mt-1">{scrapeError}</p>}
+      </div>
+
+      {/* Title */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Title *</label>
+        <input
+          type="text"
+          value={formData.title}
+          onChange={(e) => handleChange('title', e.target.value)}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+        />
+      </div>
+
+      {/* Preview Description */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Preview Description *</label>
+        <textarea
+          value={formData.description}
+          onChange={(e) => handleChange('description', e.target.value)}
+          rows="3"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+        />
+      </div>
+
+      {/* Image */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Image</label>
+        <div className="flex gap-4">
+          <input
+            type="url"
+            value={formData.image}
+            onChange={(e) => handleChange('image', e.target.value)}
+            placeholder="https://example.com/image.jpg"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg"
+          />
+          <label className="px-6 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 cursor-pointer flex items-center gap-2">
+            <Upload className="w-4 h-4" />
+            Upload
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => handleImageUpload(e.target.files[0])}
+            />
+          </label>
+        </div>
+        {formData.image && (
+          <img src={formData.image} alt="Preview" className="mt-2 w-48 h-48 object-cover rounded border" />
+        )}
+      </div>
+
+      {/* External URL */}
+      <div>
+        <label className="block text-sm font-medium mb-2">External Site URL (if applicable)</label>
+        <input
+          type="url"
+          value={formData.url}
+          onChange={(e) => handleChange('url', e.target.value)}
+          placeholder="https://example.com"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+        />
+      </div>
+
+      {/* Full Content */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Full Content (if blog post)</label>
+        <textarea
+          value={formData.full_content}
+          onChange={(e) => handleChange('full_content', e.target.value)}
+          rows="8"
+          placeholder="Full article content for blog posts..."
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg font-mono text-sm"
+        />
+      </div>
+
+      {/* Author */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Author (if applicable)</label>
+        <input
+          type="text"
+          value={formData.author}
+          onChange={(e) => handleChange('author', e.target.value)}
+          placeholder="Author name"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+        />
+      </div>
+
+      {/* Professional Interest Tags */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Professional Interest Tags</label>
+        <input
+          type="text"
+          value={formData.tags}
+          onChange={(e) => handleChange('tags', e.target.value)}
+          placeholder="Technology, Leadership, Innovation"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+        />
+        <p className="text-xs text-gray-500 mt-1">Comma-separated tags</p>
+      </div>
+
+      {/* Sponsored By */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Sponsored By (optional)</label>
+        <input
+          type="text"
+          value={formData.sponsored_by}
+          onChange={(e) => handleChange('sponsored_by', e.target.value)}
+          placeholder="Company name"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+        />
+      </div>
+
+      {/* Save Button */}
+      <div className="flex justify-end gap-4 pt-4 border-t">
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 font-semibold"
+        >
+          {isSaving ? 'Saving...' : 'Save Content'}
+        </button>
       </div>
     </div>
   );
