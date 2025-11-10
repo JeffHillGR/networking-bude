@@ -27,19 +27,21 @@ export default async function handler(req, res) {
         .eq('id', eventId)
         .single();
 
-      if (event && !error) {
-        const title = event.title || 'Event';
-        const description = (event.short_description || event.full_description || 'Join us for this networking event')
-          .replace(/"/g, '&quot;')
-          .substring(0, 200);
-        const image = event.image || event.image_url || 'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png';
-        const fullUrl = `https://www.networkingbude.com${url}`;
+      // Log for debugging
+      console.log('Event query result:', { eventId, found: !!event, error: error?.message });
 
-        const ogTags = `
+      const title = event?.title || 'Networking Event | Networking BudE';
+      const description = event ? (event.short_description || event.full_description || 'Join us for this networking event in West Michigan')
+        .replace(/"/g, '&quot;')
+        .substring(0, 200) : 'Join us for this networking event in West Michigan';
+      const image = event?.image || event?.image_url || 'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png';
+      const fullUrl = `https://www.networkingbude.com${url}`;
+
+      const ogTags = `
     <!-- Open Graph / Facebook / LinkedIn -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="${fullUrl}" />
-    <meta property="og:title" content="${title} | Networking BudE" />
+    <meta property="og:title" content="${title}" />
     <meta property="og:description" content="${description}" />
     <meta property="og:image" content="${image}" />
     <meta property="og:image:secure_url" content="${image}" />
@@ -52,13 +54,12 @@ export default async function handler(req, res) {
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="${fullUrl}" />
-    <meta name="twitter:title" content="${title} | Networking BudE" />
+    <meta name="twitter:title" content="${title}" />
     <meta name="twitter:description" content="${description}" />
     <meta name="twitter:image" content="${image}" />
-        `;
+      `;
 
-        html = html.replace('</head>', `${ogTags}\n  </head>`);
-      }
+      html = html.replace('</head>', `${ogTags}\n  </head>`);
     } else if (contentMatch && supabaseUrl && supabaseKey) {
       const contentId = contentMatch[1];
 
