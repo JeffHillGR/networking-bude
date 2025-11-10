@@ -13,8 +13,8 @@ export default async function handler(req, res) {
   let html = fs.readFileSync(htmlPath, 'utf8');
 
   try {
-    // Check if URL is for an event
-    const eventMatch = url?.match(/^\/events\/(\d+)$/);
+    // Check if URL is for an event (matches UUIDs and numeric IDs)
+    const eventMatch = url?.match(/^\/events\/([a-zA-Z0-9-]+)$/);
     const contentMatch = url?.match(/^\/resources-insights(?:\/(\d+))?$/);
 
     if (eventMatch && supabaseUrl && supabaseKey) {
