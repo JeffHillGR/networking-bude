@@ -430,20 +430,20 @@ function ResourcesInsights() {
               <p className="text-sm font-medium text-gray-700 mb-2">Share to:</p>
               <div className="grid grid-cols-2 gap-2">
                 <a
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(selectedContent.url || window.location.origin + '/resources-insights')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#145dbf] transition-colors text-sm"
-                >
-                  Facebook
-                </a>
-                <a
                   href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(selectedContent.url || window.location.origin + '/resources-insights')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-[#0077B5] text-white rounded-lg hover:bg-[#006399] transition-colors text-sm"
                 >
                   LinkedIn
+                </a>
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(selectedContent.url || window.location.origin + '/resources-insights')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#145dbf] transition-colors text-sm"
+                >
+                  Facebook
                 </a>
                 <a
                   href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(selectedContent.url || window.location.origin + '/resources-insights')}&text=${encodeURIComponent('Check out: ' + selectedContent.title)}`}
