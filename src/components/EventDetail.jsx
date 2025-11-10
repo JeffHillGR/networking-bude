@@ -279,7 +279,7 @@ function EventDetail() {
   return (
     <>
       {/* Top banner matching site header - spans full width */}
-      <div className="bg-gradient-to-r from-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
+      <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
         <span className="font-medium">
           Welcome to Networking BudE • <button
           onClick={() => {

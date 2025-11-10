@@ -477,7 +477,7 @@ ${senderName}`;
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Monday Reset Banner */}
         {showMondayBanner && (
-          <div className="mb-6 bg-gradient-to-r from-[#009900] to-[#D0ED00] rounded-lg p-4 shadow-lg">
+          <div className="mb-6 bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] rounded-lg p-4 shadow-lg">
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0">
