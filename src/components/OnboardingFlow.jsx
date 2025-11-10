@@ -471,7 +471,7 @@ export default function BudEOnboarding() {
       {/* Green Header Bar - Spans Full Width */}
       <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] text-white px-4 py-1 text-sm md:text-base z-20">
         <div className="md:ml-64 text-center">
-          <span className="font-medium">Add To Your Profile</span>
+          <span className="font-medium">Let's Set Up Your Profile</span>
         </div>
       </div>
 
