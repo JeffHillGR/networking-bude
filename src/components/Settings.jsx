@@ -256,8 +256,8 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
 
   const availableOrganizations = [
     'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
-    'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo',
-    'Hello West Michigan', 'CARWM', 'Creative Mornings', 'Athena',
+    'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo GR',
+    'Hello West Michigan', 'CARWM', 'Creative Mornings GR', 'Athena',
     'Inforum', 'Start Garden', 'GRABB', 'WMPRSA', 'Crain\'s GR Business'
   ];
 

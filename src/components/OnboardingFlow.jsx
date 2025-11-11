@@ -82,8 +82,8 @@ export default function BudEOnboarding() {
 
   const organizations = [
     'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
-    'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo',
-    'Hello West Michigan', 'CARWM', 'Creative Mornings', 'Athena',
+    'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo GR',
+    'Hello West Michigan', 'CARWM', 'Creative Mornings GR', 'Athena',
     'Inforum', 'Start Garden', 'GRABB', 'WMPRSA', 'Crain\'s GR Business', 'AIGA - WM',
     'West Michigan Hispanic Chamber of Commerce'
   ];

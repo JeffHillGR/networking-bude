@@ -13,8 +13,8 @@ function EventSlotsManager() {
 
   const organizations = [
     'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
-    'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo',
-    'Hello West Michigan', 'CARWM', 'Creative Mornings', 'Athena',
+    'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo GR',
+    'Hello West Michigan', 'CARWM', 'Creative Mornings GR', 'Athena',
     'Inforum', 'Start Garden', 'Other'
   ];
 
@@ -317,24 +317,102 @@ function EventSlotsManager() {
 
       let scrapedData = { registration_url: url };
 
-      // Try to find title
-      const title = doc.querySelector('h1')?.textContent?.trim() ||
-                   doc.querySelector('meta[property="og:title"]')?.getAttribute('content') ||
-                   doc.querySelector('title')?.textContent?.trim() || '';
-      scrapedData.title = title;
+      // Try to find JSON-LD structured data (used by Eventbrite and many event sites)
+      const jsonLdScripts = doc.querySelectorAll('script[type="application/ld+json"]');
+      let eventData = null;
 
-      // Try to find description
-      const metaDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content') ||
-                      doc.querySelector('meta[property="og:description"]')?.getAttribute('content');
-      if (metaDesc) {
-        scrapedData.short_description = metaDesc;
-        scrapedData.full_description = metaDesc;
+      for (const script of jsonLdScripts) {
+        try {
+          const data = JSON.parse(script.textContent);
+          // Handle both single Event objects and arrays
+          const events = Array.isArray(data) ? data : [data];
+          eventData = events.find(item => item['@type'] === 'Event');
+          if (eventData) break;
+        } catch (e) {
+          console.log('Failed to parse JSON-LD:', e);
+        }
       }
 
-      // Try to find image
-      const ogImage = doc.querySelector('meta[property="og:image"]')?.getAttribute('content');
-      if (ogImage) {
-        scrapedData.image_url = ogImage.startsWith('http') ? ogImage : new URL(ogImage, url).href;
+      if (eventData) {
+        console.log('Found structured event data:', eventData);
+
+        // Extract title
+        if (eventData.name) {
+          scrapedData.title = eventData.name;
+        }
+
+        // Extract description
+        if (eventData.description) {
+          scrapedData.short_description = eventData.description.substring(0, 200);
+          scrapedData.full_description = eventData.description;
+        }
+
+        // Extract date and time
+        if (eventData.startDate) {
+          const startDate = new Date(eventData.startDate);
+          scrapedData.date = startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+          scrapedData.time = startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        }
+
+        // Extract location
+        if (eventData.location) {
+          if (typeof eventData.location === 'string') {
+            scrapedData.location_name = eventData.location;
+          } else if (eventData.location.name) {
+            scrapedData.location_name = eventData.location.name;
+            if (eventData.location.address) {
+              const addr = eventData.location.address;
+              if (typeof addr === 'string') {
+                scrapedData.location_address = addr;
+              } else if (addr.streetAddress || addr.addressLocality) {
+                scrapedData.location_address = [addr.streetAddress, addr.addressLocality, addr.addressRegion].filter(Boolean).join(', ');
+              }
+            }
+          }
+        }
+
+        // Extract organizer
+        if (eventData.organizer) {
+          if (typeof eventData.organizer === 'string') {
+            scrapedData.organization = 'Other';
+            scrapedData.organization_custom = eventData.organizer;
+          } else if (eventData.organizer.name) {
+            scrapedData.organization = 'Other';
+            scrapedData.organization_custom = eventData.organizer.name;
+          }
+        }
+
+        // Extract image
+        if (eventData.image) {
+          const imageUrl = typeof eventData.image === 'string' ? eventData.image : eventData.image.url || eventData.image[0];
+          if (imageUrl) {
+            scrapedData.image_url = imageUrl.startsWith('http') ? imageUrl : new URL(imageUrl, url).href;
+          }
+        }
+      }
+
+      // Fallback to meta tags if structured data not found
+      if (!scrapedData.title) {
+        const title = doc.querySelector('h1')?.textContent?.trim() ||
+                     doc.querySelector('meta[property="og:title"]')?.getAttribute('content') ||
+                     doc.querySelector('title')?.textContent?.trim() || '';
+        scrapedData.title = title;
+      }
+
+      if (!scrapedData.short_description) {
+        const metaDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content') ||
+                        doc.querySelector('meta[property="og:description"]')?.getAttribute('content');
+        if (metaDesc) {
+          scrapedData.short_description = metaDesc;
+          scrapedData.full_description = metaDesc;
+        }
+      }
+
+      if (!scrapedData.image_url) {
+        const ogImage = doc.querySelector('meta[property="og:image"]')?.getAttribute('content');
+        if (ogImage) {
+          scrapedData.image_url = ogImage.startsWith('http') ? ogImage : new URL(ogImage, url).href;
+        }
       }
 
       // Update the event with scraped data
@@ -629,17 +707,6 @@ function EventSlotsManager() {
                   </button>
                 )}
 
-                {/* Move Down Button */}
-                {hasEvent && slotNumber < 7 && (
-                  <button
-                    onClick={() => handleMoveDown(slotNumber)}
-                    disabled={saving[slotNumber]}
-                    className="px-4 py-2 bg-blue-600 text-white rounded font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
-                  >
-                    <ArrowDown className="w-4 h-4" />
-                    Move Down
-                  </button>
-                )}
 
                 {/* Save Button */}
                 <button

@@ -23,6 +23,7 @@ function Dashboard() {
   const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'dashboard');
   const [connections, setConnections] = useState([]);
   const [loadingConnections, setLoadingConnections] = useState(true);
+  const [connectionLikedEvents, setConnectionLikedEvents] = useState({});
   const [userFirstName, setUserFirstName] = useState('there');
   const [selectedConnectionId, setSelectedConnectionId] = useState(null);
   const [events, setEvents] = useState([]);
@@ -404,6 +405,7 @@ const getGreeting = () => {
           const initials = fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
           return {
+            userId: match.matched_user_id,
             name: fullName,
             title: `${matchedUser.title || ''} at ${matchedUser.company || ''}`.trim(),
             similarity: `${match.compatibility_score}%`,
@@ -415,6 +417,50 @@ const getGreeting = () => {
             isReal: true
           };
         });
+
+        // Fetch liked events for each connection (max 3 per connection)
+        const likedEventsMap = {};
+        for (const connection of transformedConnections) {
+          try {
+            // Get event IDs this user has liked or registered for
+            const [likesResult, clicksResult] = await Promise.all([
+              supabase
+                .from('event_likes')
+                .select('event_id, created_at')
+                .eq('user_id', connection.userId)
+                .order('created_at', { ascending: false })
+                .limit(3),
+              supabase
+                .from('event_registration_clicks')
+                .select('event_id, created_at')
+                .eq('user_id', connection.userId)
+                .order('created_at', { ascending: false })
+                .limit(3)
+            ]);
+
+            // Combine and get unique event IDs (most recent first)
+            const allInteractions = [
+              ...(likesResult.data || []),
+              ...(clicksResult.data || [])
+            ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            const uniqueEventIds = [...new Set(allInteractions.map(i => i.event_id))].slice(0, 3);
+
+            // Fetch event details
+            if (uniqueEventIds.length > 0) {
+              const { data: eventsData } = await supabase
+                .from('events')
+                .select('id, title, image_url')
+                .in('id', uniqueEventIds);
+
+              likedEventsMap[connection.userId] = eventsData || [];
+            }
+          } catch (error) {
+            console.error(`Error loading liked events for ${connection.name}:`, error);
+          }
+        }
+
+        setConnectionLikedEvents(likedEventsMap);
 
         // Only set connections if we got data, otherwise keep empty array
         if (transformedConnections.length > 0) {
@@ -582,6 +628,7 @@ const getGreeting = () => {
                     }
 
                     // Real connection card
+                    const likedEvents = connectionLikedEvents[person.userId] || [];
                     return (
                       <div
                         key={index}
@@ -618,7 +665,33 @@ const getGreeting = () => {
                                 </span>
                               ))}
                             </div>
-                            <p className="text-xs text-gray-500">Click to view full profile</p>
+                            {/* Liked Events */}
+                            {likedEvents.length > 0 && (
+                              <div className="mt-2 pt-2 border-t border-gray-100">
+                                <p className="text-xs text-gray-500 mb-1">Interested in:</p>
+                                <div className="flex gap-1">
+                                  {likedEvents.map((event, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="w-12 h-12 rounded overflow-hidden border border-gray-200"
+                                      title={event.title}
+                                    >
+                                      {event.image_url ? (
+                                        <img
+                                          src={event.image_url}
+                                          alt={event.title}
+                                          className="w-full h-full object-cover"
+                                        />
+                                      ) : (
+                                        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                                          <Heart className="w-5 h-5 text-red-500" />
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
