@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Upload, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Upload, Trash2, ChevronDown, ChevronUp, ArrowDown } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
 
 function EventSlotsManager() {
@@ -7,6 +7,9 @@ function EventSlotsManager() {
   const [loading, setLoading] = useState(true);
   const [expandedSlot, setExpandedSlot] = useState(null);
   const [saving, setSaving] = useState({});
+  const [scrapeUrls, setScrapeUrls] = useState({});
+  const [scraping, setScraping] = useState({});
+  const [scrapeErrors, setScrapeErrors] = useState({});
 
   const organizations = [
     'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
@@ -161,6 +164,114 @@ function EventSlotsManager() {
     }
   };
 
+  const handleMoveDown = async (slotNumber) => {
+    if (slotNumber >= 7) return; // Can't move down from slot 7
+
+    const currentEvent = events[slotNumber];
+    const nextEvent = events[slotNumber + 1];
+
+    if (!currentEvent) {
+      alert('Cannot move an empty slot');
+      return;
+    }
+
+    setSaving(prev => ({ ...prev, [slotNumber]: true, [slotNumber + 1]: true }));
+
+    try {
+      // Swap slot numbers in database
+      if (nextEvent) {
+        // Both slots have events - swap them
+        await supabase
+          .from('events')
+          .update({ slot_number: slotNumber })
+          .eq('slot_number', slotNumber + 1);
+
+        await supabase
+          .from('events')
+          .update({ slot_number: slotNumber + 1 })
+          .eq('slot_number', slotNumber);
+      } else {
+        // Only current slot has event - just move it down
+        await supabase
+          .from('events')
+          .update({ slot_number: slotNumber + 1 })
+          .eq('slot_number', slotNumber);
+      }
+
+      // Reload events to reflect changes
+      await loadEvents();
+      alert(`Event moved from Slot ${slotNumber} to Slot ${slotNumber + 1}`);
+    } catch (error) {
+      console.error('Error moving event:', error);
+      alert('Failed to move event: ' + error.message);
+    } finally {
+      setSaving(prev => ({ ...prev, [slotNumber]: false, [slotNumber + 1]: false }));
+    }
+  };
+
+  const handleScrapeUrl = async (slotNumber) => {
+    const url = scrapeUrls[slotNumber];
+    if (!url) {
+      setScrapeErrors(prev => ({ ...prev, [slotNumber]: 'Please enter a URL' }));
+      return;
+    }
+
+    setScraping(prev => ({ ...prev, [slotNumber]: true }));
+    setScrapeErrors(prev => ({ ...prev, [slotNumber]: '' }));
+
+    try {
+      const proxyUrl = 'https://api.allorigins.win/raw?url=';
+      const response = await fetch(proxyUrl + encodeURIComponent(url));
+      const html = await response.text();
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      let scrapedData = { registration_url: url };
+
+      // Try to find title
+      const title = doc.querySelector('h1')?.textContent?.trim() ||
+                   doc.querySelector('meta[property="og:title"]')?.getAttribute('content') ||
+                   doc.querySelector('title')?.textContent?.trim() || '';
+      scrapedData.title = title;
+
+      // Try to find description
+      const metaDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content') ||
+                      doc.querySelector('meta[property="og:description"]')?.getAttribute('content');
+      if (metaDesc) {
+        scrapedData.short_description = metaDesc;
+        scrapedData.full_description = metaDesc;
+      }
+
+      // Try to find image
+      const ogImage = doc.querySelector('meta[property="og:image"]')?.getAttribute('content');
+      if (ogImage) {
+        scrapedData.image_url = ogImage.startsWith('http') ? ogImage : new URL(ogImage, url).href;
+      }
+
+      // Update the event with scraped data
+      setEvents(prev => ({
+        ...prev,
+        [slotNumber]: {
+          ...(prev[slotNumber] || { ...emptyEvent, slot_number: slotNumber }),
+          ...scrapedData,
+          title: scrapedData.title || prev[slotNumber]?.title || '',
+          short_description: scrapedData.short_description || prev[slotNumber]?.short_description || '',
+          full_description: scrapedData.full_description || prev[slotNumber]?.full_description || '',
+          image_url: scrapedData.image_url || prev[slotNumber]?.image_url || '',
+          registration_url: scrapedData.registration_url
+        }
+      }));
+
+      alert('Content scraped! Please review and fill in remaining details.');
+    } catch (error) {
+      console.error('Scraping error:', error);
+      setScrapeErrors(prev => ({ ...prev, [slotNumber]: 'Unable to scrape this URL. Please enter details manually.' }));
+    } finally {
+      setScraping(prev => ({ ...prev, [slotNumber]: false }));
+    }
+  };
+
   const toggleSlot = (slotNumber) => {
     setExpandedSlot(expandedSlot === slotNumber ? null : slotNumber);
   };
@@ -192,23 +303,35 @@ function EventSlotsManager() {
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            {hasEvent && (
-              <button
-                onClick={() => handleDeleteEvent(slotNumber)}
-                disabled={saving[slotNumber]}
-                className="px-3 py-1 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 disabled:bg-gray-400 flex items-center gap-1"
-              >
-                <Trash2 className="w-3 h-3" />
-                Delete
-              </button>
-            )}
-          </div>
         </div>
 
         {/* Expanded Form */}
         {isExpanded && (
           <div className="space-y-3 bg-gray-50 p-4 rounded">
+            {/* URL Scraper */}
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-3 rounded border border-blue-200">
+              <p className="text-xs font-semibold text-gray-900 mb-2">✨ Quick Add from URL (Optional)</p>
+              <p className="text-xs text-gray-600 mb-2">Paste an Eventbrite or event URL to auto-fill details</p>
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  value={scrapeUrls[slotNumber] || ''}
+                  onChange={(e) => setScrapeUrls(prev => ({ ...prev, [slotNumber]: e.target.value }))}
+                  placeholder="https://www.eventbrite.com/e/..."
+                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs"
+                  disabled={scraping[slotNumber]}
+                />
+                <button
+                  onClick={() => handleScrapeUrl(slotNumber)}
+                  disabled={scraping[slotNumber]}
+                  className="px-3 py-1 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 disabled:bg-gray-400"
+                >
+                  {scraping[slotNumber] ? 'Scraping...' : 'Scrape'}
+                </button>
+              </div>
+              {scrapeErrors[slotNumber] && <p className="text-xs text-red-600 mt-1">{scrapeErrors[slotNumber]}</p>}
+            </div>
+
             {/* Event Image */}
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Event Image *</label>
@@ -403,15 +526,42 @@ function EventSlotsManager() {
               </div>
             </div>
 
-            {/* Save Button */}
+            {/* Action Buttons */}
             <div className="pt-3 border-t">
-              <button
-                onClick={() => handleSaveEvent(slotNumber)}
-                disabled={saving[slotNumber]}
-                className="w-full px-4 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                {saving[slotNumber] ? 'Saving...' : `Save Event Slot ${slotNumber}`}
-              </button>
+              <div className="flex gap-2">
+                {/* Delete Button */}
+                {hasEvent && (
+                  <button
+                    onClick={() => handleDeleteEvent(slotNumber)}
+                    disabled={saving[slotNumber]}
+                    className="px-4 py-2 bg-red-600 text-white rounded font-medium hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </button>
+                )}
+
+                {/* Move Down Button */}
+                {hasEvent && slotNumber < 7 && (
+                  <button
+                    onClick={() => handleMoveDown(slotNumber)}
+                    disabled={saving[slotNumber]}
+                    className="px-4 py-2 bg-blue-600 text-white rounded font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    <ArrowDown className="w-4 h-4" />
+                    Move Down
+                  </button>
+                )}
+
+                {/* Save Button */}
+                <button
+                  onClick={() => handleSaveEvent(slotNumber)}
+                  disabled={saving[slotNumber]}
+                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                  {saving[slotNumber] ? 'Saving...' : `Save Event Slot ${slotNumber}`}
+                </button>
+              </div>
             </div>
           </div>
         )}
