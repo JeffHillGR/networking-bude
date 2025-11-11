@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Upload, X, Link2, Eye, EyeOff } from 'lucide-react';
+import { supabase } from '../lib/supabase.js';
+import EventSlotsManager from './EventSlotsManager.jsx';
 
 function AdminPanel() {
   const [password, setPassword] = useState('');
@@ -125,14 +127,14 @@ function AdminPanel() {
               Events & Banner Ads
             </button>
             <button
-              onClick={() => setActiveTab('eventDetailAds')}
+              onClick={() => setActiveTab('resources')}
               className={`px-4 py-4 font-semibold border-b-2 transition-colors ${
-                activeTab === 'eventDetailAds'
+                activeTab === 'resources'
                   ? 'border-green-600 text-green-600'
                   : 'border-transparent text-gray-600 hover:text-gray-900'
               }`}
             >
-              Event Details Banner Ads
+              Resources & Insights
             </button>
             <button
               onClick={() => setActiveTab('moderation')}
@@ -166,14 +168,7 @@ function AdminPanel() {
             removeAd={removeAd}
           />
         )}
-        {activeTab === 'eventDetailAds' && (
-          <EventDetailAdsTab
-            ads={ads}
-            handleImageUpload={handleImageUpload}
-            handleUrlChange={handleUrlChange}
-            removeAd={removeAd}
-          />
-        )}
+        {activeTab === 'resources' && <ResourcesInsightsTab />}
         {activeTab === 'moderation' && <ModerationTab />}
       </div>
     </div>
@@ -181,23 +176,51 @@ function AdminPanel() {
 }
 
 function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
-  // Load most recent featured content from localStorage if exists
-  const loadFeaturedContent = () => {
-    const saved = localStorage.getItem('featuredContent1');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return {
-      title: '',
-      description: '',
-      image: '',
-      url: '',
-      tags: '',
-      sponsoredBy: ''
-    };
-  };
+  const [featuredContent, setFeaturedContent] = useState({
+    title: '',
+    description: '',
+    image: '',
+    url: '',
+    tags: '',
+    sponsoredBy: '',
+    fullContent: '',
+    author: ''
+  });
 
-  const [featuredContent, setFeaturedContent] = useState(loadFeaturedContent());
+  // Load featured content #1 from Supabase on mount
+  useEffect(() => {
+    const loadFeaturedContent = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('featured_content')
+          .select('*')
+          .eq('slot_number', 1)
+          .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
+          console.error('Error loading featured content #1:', error);
+          return;
+        }
+
+        if (data) {
+          setFeaturedContent({
+            title: data.title || '',
+            description: data.description || '',
+            image: data.image || '',
+            url: data.url || '',
+            tags: data.tags || '',
+            sponsoredBy: data.sponsored_by || '',
+            fullContent: data.full_content || '',
+            author: data.author || ''
+          });
+        }
+      } catch (err) {
+        console.error('Error in loadFeaturedContent:', err);
+      }
+    };
+
+    loadFeaturedContent();
+  }, []);
   const [scrapeUrl, setScrapeUrl] = useState('');
   const [isScraping, setIsScraping] = useState(false);
   const [scrapeError, setScrapeError] = useState('');
@@ -262,28 +285,119 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
     }
   };
 
-  const handleSaveContent = () => {
-    localStorage.setItem('featuredContent1', JSON.stringify(featuredContent));
-    alert('Featured Content #1 saved successfully!');
+  const handleSaveContent = async () => {
+    try {
+      const { error } = await supabase
+        .from('featured_content')
+        .upsert({
+          slot_number: 1,
+          title: featuredContent.title,
+          description: featuredContent.description,
+          image: featuredContent.image,
+          url: featuredContent.url || null,
+          tags: featuredContent.tags || null,
+          sponsored_by: featuredContent.sponsoredBy || null,
+          full_content: featuredContent.fullContent || null,
+          author: featuredContent.author || null
+        }, {
+          onConflict: 'slot_number'
+        });
+
+      if (error) {
+        console.error('Error saving featured content #1:', error);
+        alert('Failed to save: ' + error.message);
+        return;
+      }
+
+      alert('Featured Content #1 saved successfully!');
+    } catch (err) {
+      console.error('Error in handleSaveContent:', err);
+      alert('Failed to save content');
+    }
+  };
+
+  const handleImageUploadToSupabase = async (file, contentNumber) => {
+    if (!file) return;
+
+    try {
+      // Create a unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `featured-content-${contentNumber}-${Date.now()}.${fileExt}`;
+      const filePath = `featured-images/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('featured-content')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) {
+        console.error('Upload error:', error);
+        alert('Failed to upload image: ' + error.message);
+        return null;
+      }
+
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from('featured-content')
+        .getPublicUrl(filePath);
+
+      return publicUrlData.publicUrl;
+    } catch (error) {
+      console.error('Error uploading to Supabase:', error);
+      alert('Failed to upload image to Supabase');
+      return null;
+    }
   };
 
   // Featured Content #2 handlers
-  const loadFeaturedContent2 = () => {
-    const saved = localStorage.getItem('featuredContent2');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return {
-      title: '',
-      description: '',
-      image: '',
-      url: '',
-      tags: '',
-      sponsoredBy: ''
-    };
-  };
+  const [featuredContent2, setFeaturedContent2] = useState({
+    title: '',
+    description: '',
+    image: '',
+    url: '',
+    tags: '',
+    sponsoredBy: '',
+    fullContent: '',
+    author: ''
+  });
 
-  const [featuredContent2, setFeaturedContent2] = useState(loadFeaturedContent2());
+  // Load featured content #2 from Supabase on mount
+  useEffect(() => {
+    const loadFeaturedContent2 = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('featured_content')
+          .select('*')
+          .eq('slot_number', 2)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error loading featured content #2:', error);
+          return;
+        }
+
+        if (data) {
+          setFeaturedContent2({
+            title: data.title || '',
+            description: data.description || '',
+            image: data.image || '',
+            url: data.url || '',
+            tags: data.tags || '',
+            sponsoredBy: data.sponsored_by || '',
+            fullContent: data.full_content || '',
+            author: data.author || ''
+          });
+        }
+      } catch (err) {
+        console.error('Error in loadFeaturedContent2:', err);
+      }
+    };
+
+    loadFeaturedContent2();
+  }, []);
   const [scrapeUrl2, setScrapeUrl2] = useState('');
   const [isScraping2, setIsScraping2] = useState(false);
   const [scrapeError2, setScrapeError2] = useState('');
@@ -344,28 +458,83 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
     }
   };
 
-  const handleSaveContent2 = () => {
-    localStorage.setItem('featuredContent2', JSON.stringify(featuredContent2));
-    alert('Featured Content #2 saved successfully!');
+  const handleSaveContent2 = async () => {
+    try {
+      const { error } = await supabase
+        .from('featured_content')
+        .upsert({
+          slot_number: 2,
+          title: featuredContent2.title,
+          description: featuredContent2.description,
+          image: featuredContent2.image,
+          url: featuredContent2.url || null,
+          tags: featuredContent2.tags || null,
+          sponsored_by: featuredContent2.sponsoredBy || null,
+          full_content: featuredContent2.fullContent || null,
+          author: featuredContent2.author || null
+        }, {
+          onConflict: 'slot_number'
+        });
+
+      if (error) {
+        console.error('Error saving featured content #2:', error);
+        alert('Failed to save: ' + error.message);
+        return;
+      }
+
+      alert('Featured Content #2 saved successfully!');
+    } catch (err) {
+      console.error('Error in handleSaveContent2:', err);
+      alert('Failed to save content');
+    }
   };
 
   // Featured Content #3 handlers
-  const loadFeaturedContent3 = () => {
-    const saved = localStorage.getItem('featuredContent3');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return {
-      title: '',
-      description: '',
-      image: '',
-      url: '',
-      tags: '',
-      sponsoredBy: ''
-    };
-  };
+  const [featuredContent3, setFeaturedContent3] = useState({
+    title: '',
+    description: '',
+    image: '',
+    url: '',
+    tags: '',
+    sponsoredBy: '',
+    fullContent: '',
+    author: ''
+  });
 
-  const [featuredContent3, setFeaturedContent3] = useState(loadFeaturedContent3());
+  // Load featured content #3 from Supabase on mount
+  useEffect(() => {
+    const loadFeaturedContent3 = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('featured_content')
+          .select('*')
+          .eq('slot_number', 3)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error loading featured content #3:', error);
+          return;
+        }
+
+        if (data) {
+          setFeaturedContent3({
+            title: data.title || '',
+            description: data.description || '',
+            image: data.image || '',
+            url: data.url || '',
+            tags: data.tags || '',
+            sponsoredBy: data.sponsored_by || '',
+            fullContent: data.full_content || '',
+            author: data.author || ''
+          });
+        }
+      } catch (err) {
+        console.error('Error in loadFeaturedContent3:', err);
+      }
+    };
+
+    loadFeaturedContent3();
+  }, []);
   const [scrapeUrl3, setScrapeUrl3] = useState('');
   const [isScraping3, setIsScraping3] = useState(false);
   const [scrapeError3, setScrapeError3] = useState('');
@@ -426,9 +595,35 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
     }
   };
 
-  const handleSaveContent3 = () => {
-    localStorage.setItem('featuredContent3', JSON.stringify(featuredContent3));
-    alert('Featured Content #3 saved successfully!');
+  const handleSaveContent3 = async () => {
+    try {
+      const { error } = await supabase
+        .from('featured_content')
+        .upsert({
+          slot_number: 3,
+          title: featuredContent3.title,
+          description: featuredContent3.description,
+          image: featuredContent3.image,
+          url: featuredContent3.url || null,
+          tags: featuredContent3.tags || null,
+          sponsored_by: featuredContent3.sponsoredBy || null,
+          full_content: featuredContent3.fullContent || null,
+          author: featuredContent3.author || null
+        }, {
+          onConflict: 'slot_number'
+        });
+
+      if (error) {
+        console.error('Error saving featured content #3:', error);
+        alert('Failed to save: ' + error.message);
+        return;
+      }
+
+      alert('Featured Content #3 saved successfully!');
+    } catch (err) {
+      console.error('Error in handleSaveContent3:', err);
+      alert('Failed to save content');
+    }
   };
 
   return (
@@ -488,14 +683,8 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
         {/* Featured Item #1 - Editable */}
         <div className="border-2 border-blue-300 rounded-lg p-4 bg-blue-50 mb-4">
-          <div className="flex items-center justify-between mb-3">
+          <div className="mb-3">
             <h4 className="font-bold text-gray-900">Featured Item #1</h4>
-            <button
-              onClick={handleSaveContent}
-              className="px-3 py-1 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700"
-            >
-              Save Content
-            </button>
           </div>
 
           <div className="space-y-3 bg-white p-3 rounded">
@@ -537,13 +726,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
             {/* Description */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Description *</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Card Preview Text *</label>
               <textarea
                 value={featuredContent.description}
                 onChange={(e) => handleContentChange('description', e.target.value)}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
                 rows="3"
-                placeholder="Brief description of the content..."
+                placeholder="Brief teaser shown on the dashboard card (2-3 sentences)"
               />
             </div>
 
@@ -564,14 +753,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const file = e.target.files[0];
                       if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          handleContentChange('image', reader.result);
-                        };
-                        reader.readAsDataURL(file);
+                        const publicUrl = await handleImageUploadToSupabase(file, 1);
+                        if (publicUrl) {
+                          handleContentChange('image', publicUrl);
+                        }
                       }
                     }}
                     className="hidden"
@@ -585,13 +773,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
             {/* URL Link */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Content URL *</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Content URL (optional)</label>
               <input
                 type="url"
                 value={featuredContent.url}
                 onChange={(e) => handleContentChange('url', e.target.value)}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                placeholder="https://example.com/article"
+                placeholder="https://example.com/article (leave blank for no link)"
               />
             </div>
 
@@ -619,19 +807,50 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
               />
               <p className="text-xs text-gray-500 mt-1">Only displays on dashboard if filled in</p>
             </div>
+
+            {/* Author */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Author (optional)</label>
+              <input
+                type="text"
+                value={featuredContent.author}
+                onChange={(e) => handleContentChange('author', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                placeholder="e.g., Jeff Hill"
+              />
+              <p className="text-xs text-gray-500 mt-1">Displays under title for blog posts</p>
+            </div>
+
+            {/* Full Content */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Full Blog Content (if applicable)</label>
+              <textarea
+                value={featuredContent.fullContent}
+                onChange={(e) => handleContentChange('fullContent', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                rows="8"
+                maxLength={5000}
+                placeholder="For blog posts without external URLs, enter the full article text here (max ~1000 words)"
+              />
+              <p className="text-xs text-gray-500 mt-1">{featuredContent.fullContent?.length || 0}/5000 characters (~{Math.round((featuredContent.fullContent?.length || 0) / 5)} words)</p>
+            </div>
+          </div>
+
+          {/* Save Button */}
+          <div className="mt-4">
+            <button
+              onClick={handleSaveContent}
+              className="w-full px-4 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700"
+            >
+              Save Featured Content #1
+            </button>
           </div>
         </div>
 
         {/* Featured Item #2 - Editable */}
         <div className="border-2 border-green-300 rounded-lg p-4 bg-green-50 mb-4">
-          <div className="flex items-center justify-between mb-3">
+          <div className="mb-3">
             <h4 className="font-bold text-gray-900">Featured Item #2</h4>
-            <button
-              onClick={handleSaveContent2}
-              className="px-3 py-1 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700"
-            >
-              Save Content
-            </button>
           </div>
 
           <div className="space-y-3 bg-white p-3 rounded">
@@ -673,13 +892,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
             {/* Description */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Description *</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Card Preview Text *</label>
               <textarea
                 value={featuredContent2.description}
                 onChange={(e) => handleContentChange2('description', e.target.value)}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
                 rows="3"
-                placeholder="Brief description of the content..."
+                placeholder="Brief teaser shown on the dashboard card (2-3 sentences)"
               />
             </div>
 
@@ -700,14 +919,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const file = e.target.files[0];
                       if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          handleContentChange2('image', reader.result);
-                        };
-                        reader.readAsDataURL(file);
+                        const publicUrl = await handleImageUploadToSupabase(file, 2);
+                        if (publicUrl) {
+                          handleContentChange2('image', publicUrl);
+                        }
                       }
                     }}
                     className="hidden"
@@ -721,13 +939,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
             {/* URL Link */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Content URL *</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Content URL (optional)</label>
               <input
                 type="url"
                 value={featuredContent2.url}
                 onChange={(e) => handleContentChange2('url', e.target.value)}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                placeholder="https://example.com/article"
+                placeholder="https://example.com/article (leave blank for no link)"
               />
             </div>
 
@@ -755,19 +973,50 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
               />
               <p className="text-xs text-gray-500 mt-1">Only displays on dashboard if filled in</p>
             </div>
+
+            {/* Author */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Author (optional)</label>
+              <input
+                type="text"
+                value={featuredContent2.author}
+                onChange={(e) => handleContentChange2('author', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                placeholder="e.g., Jeff Hill"
+              />
+              <p className="text-xs text-gray-500 mt-1">Displays under title for blog posts</p>
+            </div>
+
+            {/* Full Content */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Full Blog Content (if applicable)</label>
+              <textarea
+                value={featuredContent2.fullContent}
+                onChange={(e) => handleContentChange2('fullContent', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                rows="8"
+                maxLength={5000}
+                placeholder="For blog posts without external URLs, enter the full article text here (max ~1000 words)"
+              />
+              <p className="text-xs text-gray-500 mt-1">{featuredContent2.fullContent?.length || 0}/5000 characters (~{Math.round((featuredContent2.fullContent?.length || 0) / 5)} words)</p>
+            </div>
+          </div>
+
+          {/* Save Button */}
+          <div className="mt-4">
+            <button
+              onClick={handleSaveContent2}
+              className="w-full px-4 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700"
+            >
+              Save Featured Content #2
+            </button>
           </div>
         </div>
 
         {/* Featured Item #3 - Editable */}
         <div className="border-2 border-purple-300 rounded-lg p-4 bg-purple-50 mb-4">
-          <div className="flex items-center justify-between mb-3">
+          <div className="mb-3">
             <h4 className="font-bold text-gray-900">Featured Item #3</h4>
-            <button
-              onClick={handleSaveContent3}
-              className="px-3 py-1 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700"
-            >
-              Save Content
-            </button>
           </div>
 
           <div className="space-y-3 bg-white p-3 rounded">
@@ -809,13 +1058,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
             {/* Description */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Description *</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Card Preview Text *</label>
               <textarea
                 value={featuredContent3.description}
                 onChange={(e) => handleContentChange3('description', e.target.value)}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
                 rows="3"
-                placeholder="Brief description of the content..."
+                placeholder="Brief teaser shown on the dashboard card (2-3 sentences)"
               />
             </div>
 
@@ -836,14 +1085,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const file = e.target.files[0];
                       if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          handleContentChange3('image', reader.result);
-                        };
-                        reader.readAsDataURL(file);
+                        const publicUrl = await handleImageUploadToSupabase(file, 3);
+                        if (publicUrl) {
+                          handleContentChange3('image', publicUrl);
+                        }
                       }
                     }}
                     className="hidden"
@@ -857,13 +1105,13 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
             {/* URL Link */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Content URL *</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Content URL (optional)</label>
               <input
                 type="url"
                 value={featuredContent3.url}
                 onChange={(e) => handleContentChange3('url', e.target.value)}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                placeholder="https://example.com/article"
+                placeholder="https://example.com/article (leave blank for no link)"
               />
             </div>
 
@@ -891,6 +1139,43 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
               />
               <p className="text-xs text-gray-500 mt-1">Only displays on dashboard if filled in</p>
             </div>
+
+            {/* Author */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Author (optional)</label>
+              <input
+                type="text"
+                value={featuredContent3.author}
+                onChange={(e) => handleContentChange3('author', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                placeholder="e.g., Jeff Hill"
+              />
+              <p className="text-xs text-gray-500 mt-1">Displays under title for blog posts</p>
+            </div>
+
+            {/* Full Content */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Full Blog Content (if applicable)</label>
+              <textarea
+                value={featuredContent3.fullContent}
+                onChange={(e) => handleContentChange3('fullContent', e.target.value)}
+                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                rows="8"
+                maxLength={5000}
+                placeholder="For blog posts without external URLs, enter the full article text here (max ~1000 words)"
+              />
+              <p className="text-xs text-gray-500 mt-1">{featuredContent3.fullContent?.length || 0}/5000 characters (~{Math.round((featuredContent3.fullContent?.length || 0) / 5)} words)</p>
+            </div>
+          </div>
+
+          {/* Save Button */}
+          <div className="mt-4">
+            <button
+              onClick={handleSaveContent3}
+              className="w-full px-4 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700"
+            >
+              Save Featured Content #3
+            </button>
           </div>
         </div>
       </div>
@@ -932,176 +1217,6 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 }
 
 function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
-  // Load most recent event from localStorage if exists
-  const loadMostRecentEvent = () => {
-    const events = JSON.parse(localStorage.getItem('adminEvents') || '[]');
-    if (events.length > 0) {
-      return events[0]; // Most recent event
-    }
-    return {
-      title: '',
-      description: '',
-      fullDescription: '',
-      date: '',
-      time: '',
-      location: '',
-      fullAddress: '',
-      image: '',
-      badge: 'In-Person',
-      organizerName: '',
-      organizerDescription: '',
-      organizerGeotag: '',
-      tags: '',
-      registrationUrl: ''
-    };
-  };
-
-  const [newEvent, setNewEvent] = useState(loadMostRecentEvent());
-  const [scrapeUrl, setScrapeUrl] = useState('');
-  const [isScraping, setIsScraping] = useState(false);
-  const [scrapeError, setScrapeError] = useState('');
-
-  const organizations = [
-    'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
-    'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo',
-    'Hello West Michigan', 'CARWM', 'Creative Mornings', 'Athena',
-    'Inforum', 'Start Garden'
-  ];
-
-  const handleEventInputChange = (field, value) => {
-    setNewEvent({ ...newEvent, [field]: value });
-  };
-
-  const handleScrapeEvent = async () => {
-    if (!scrapeUrl) {
-      setScrapeError('Please enter a URL');
-      return;
-    }
-
-    setIsScraping(true);
-    setScrapeError('');
-
-    try {
-      // Use CORS proxy for demo purposes
-      const proxyUrl = 'https://api.allorigins.win/raw?url=';
-      const response = await fetch(proxyUrl + encodeURIComponent(scrapeUrl));
-      const html = await response.text();
-
-      // Create a DOM parser
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-
-      // Try to extract event data using common patterns
-      let scrapedData = {
-        registrationUrl: scrapeUrl
-      };
-
-      // Try Schema.org structured data first (most reliable)
-      const jsonLdScripts = doc.querySelectorAll('script[type="application/ld+json"]');
-      let eventData = null;
-
-      jsonLdScripts.forEach(script => {
-        try {
-          const data = JSON.parse(script.textContent);
-          if (data['@type'] === 'Event' || (Array.isArray(data) && data.find(item => item['@type'] === 'Event'))) {
-            eventData = Array.isArray(data) ? data.find(item => item['@type'] === 'Event') : data;
-          }
-        } catch (e) {
-          // Ignore JSON parse errors
-        }
-      });
-
-      if (eventData) {
-        // Extract from Schema.org Event data
-        scrapedData.title = eventData.name || '';
-        scrapedData.description = eventData.description || '';
-        scrapedData.fullDescription = eventData.description || '';
-        scrapedData.image = eventData.image || '';
-
-        if (eventData.startDate) {
-          const startDate = new Date(eventData.startDate);
-          scrapedData.date = startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
-          scrapedData.time = startDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-        }
-
-        if (eventData.location) {
-          if (typeof eventData.location === 'string') {
-            scrapedData.location = eventData.location;
-            scrapedData.fullAddress = eventData.location;
-          } else if (eventData.location.name) {
-            scrapedData.location = eventData.location.name;
-            scrapedData.fullAddress = eventData.location.address?.streetAddress
-              ? `${eventData.location.address.streetAddress}, ${eventData.location.address.addressLocality}, ${eventData.location.address.addressRegion}`
-              : eventData.location.name;
-          }
-        }
-
-        if (eventData.organizer) {
-          scrapedData.organizerName = typeof eventData.organizer === 'string' ? eventData.organizer : eventData.organizer.name;
-        }
-      } else {
-        // Fallback: Try common HTML patterns
-        const title = doc.querySelector('h1')?.textContent?.trim() ||
-                     doc.querySelector('[class*="title"]')?.textContent?.trim() ||
-                     doc.querySelector('title')?.textContent?.trim() || '';
-        scrapedData.title = title;
-
-        // Try to find description
-        const metaDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content');
-        if (metaDesc) {
-          scrapedData.description = metaDesc.substring(0, 200);
-          scrapedData.fullDescription = metaDesc;
-        }
-
-        // Try to find image
-        const ogImage = doc.querySelector('meta[property="og:image"]')?.getAttribute('content');
-        if (ogImage) {
-          scrapedData.image = ogImage.startsWith('http') ? ogImage : new URL(ogImage, scrapeUrl).href;
-        }
-      }
-
-      // Merge scraped data with existing form data (don't overwrite existing values)
-      setNewEvent(prev => ({
-        ...prev,
-        title: scrapedData.title || prev.title,
-        description: scrapedData.description || prev.description,
-        fullDescription: scrapedData.fullDescription || prev.fullDescription,
-        date: scrapedData.date || prev.date,
-        time: scrapedData.time || prev.time,
-        location: scrapedData.location || prev.location,
-        fullAddress: scrapedData.fullAddress || prev.fullAddress,
-        image: scrapedData.image || prev.image,
-        organizerName: scrapedData.organizerName || prev.organizerName,
-        registrationUrl: scrapedData.registrationUrl || prev.registrationUrl
-      }));
-
-      alert('Event data scraped! Please review and edit any missing details.');
-    } catch (error) {
-      console.error('Scraping error:', error);
-      setScrapeError('Unable to scrape this URL. Please enter details manually or try a different URL.');
-    } finally {
-      setIsScraping(false);
-    }
-  };
-
-  const handleSaveEvent = () => {
-    // Update or save event to localStorage
-    const events = JSON.parse(localStorage.getItem('adminEvents') || '[]');
-
-    // If event already has an ID, update it; otherwise create new
-    if (newEvent.id) {
-      const updatedEvents = [newEvent, ...events.filter(e => e.id !== newEvent.id)];
-      localStorage.setItem('adminEvents', JSON.stringify(updatedEvents));
-    } else {
-      const eventWithId = { ...newEvent, id: Date.now() };
-      events.unshift(eventWithId); // Add to beginning
-      localStorage.setItem('adminEvents', JSON.stringify(events));
-      setNewEvent(eventWithId); // Update form with ID
-    }
-
-    alert('Event saved successfully!');
-  };
-
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6">Events Page Content and Ads</h2>
@@ -1110,257 +1225,7 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col">
           <div className="bg-white rounded-lg p-8 border border-gray-200 mb-6">
-            <h3 className="text-xl font-semibold mb-4">Events Page Listings</h3>
-
-            <div className="space-y-3">
-              {/* Event 1 - Input Form */}
-              <div className="border-2 border-blue-300 rounded-lg p-3 bg-blue-50">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-bold text-sm text-gray-900">Event Slot 1 - Create New Event</h4>
-                  <button
-                    onClick={handleSaveEvent}
-                    className="px-3 py-1 bg-green-600 text-white rounded text-xs font-medium hover:bg-green-700"
-                  >
-                    Save Event
-                  </button>
-                </div>
-
-                <div className="space-y-2 bg-white p-3 rounded">
-                  {/* URL Scraper - Optional */}
-                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-3 rounded border border-blue-200 mb-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-sm font-semibold text-gray-900">✨ Quick Add from URL (Optional)</span>
-                    </div>
-                    <p className="text-xs text-gray-600 mb-2">Paste an event page URL to automatically fill in details. Works with Eventbrite, Meetup, and many organization websites.</p>
-                    <div className="flex gap-2">
-                      <input
-                        type="url"
-                        value={scrapeUrl}
-                        onChange={(e) => setScrapeUrl(e.target.value)}
-                        placeholder="https://example.com/event-page"
-                        className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs"
-                        disabled={isScraping}
-                      />
-                      <button
-                        onClick={handleScrapeEvent}
-                        disabled={isScraping}
-                        className="px-3 py-1 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                      >
-                        {isScraping ? 'Scraping...' : 'Scrape Event'}
-                      </button>
-                    </div>
-                    {scrapeError && (
-                      <p className="text-xs text-red-600 mt-1">{scrapeError}</p>
-                    )}
-                  </div>
-
-                  {/* Event Image - First */}
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-0.5">Event Image *</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={newEvent.image}
-                        onChange={(e) => handleEventInputChange('image', e.target.value)}
-                        className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs"
-                        placeholder="Image URL or upload below"
-                      />
-                      <label className="px-3 py-1 bg-gray-200 text-gray-700 rounded text-xs font-medium hover:bg-gray-300 cursor-pointer flex items-center gap-1">
-                        <Upload className="w-3 h-3" />
-                        Upload
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                              const reader = new FileReader();
-                              reader.onloadend = () => {
-                                handleEventInputChange('image', reader.result);
-                              };
-                              reader.readAsDataURL(file);
-                            }
-                          }}
-                          className="hidden"
-                        />
-                      </label>
-                    </div>
-                    {newEvent.image && (
-                      <img src={newEvent.image} alt="Preview" className="mt-1 w-full h-24 object-cover rounded" />
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-0.5">Event Title *</label>
-                      <input
-                        type="text"
-                        value={newEvent.title}
-                        onChange={(e) => handleEventInputChange('title', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                        placeholder="e.g., Tech Leaders Breakfast"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-0.5">Event Badge</label>
-                      <select
-                        value={newEvent.badge}
-                        onChange={(e) => handleEventInputChange('badge', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      >
-                        <option>In-Person</option>
-                        <option>Virtual</option>
-                        <option>Hybrid</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-0.5">Short Description *</label>
-                    <textarea
-                      value={newEvent.description}
-                      onChange={(e) => handleEventInputChange('description', e.target.value)}
-                      className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      rows="2"
-                      placeholder="Brief description for event listings"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-0.5">Full Description *</label>
-                    <textarea
-                      value={newEvent.fullDescription}
-                      onChange={(e) => handleEventInputChange('fullDescription', e.target.value)}
-                      className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                      rows="3"
-                      placeholder="Detailed description for event detail page"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-0.5">Date *</label>
-                      <input
-                        type="text"
-                        value={newEvent.date}
-                        onChange={(e) => handleEventInputChange('date', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                        placeholder="e.g., Thursday, September 19, 2025"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-0.5">Time *</label>
-                      <input
-                        type="text"
-                        value={newEvent.time}
-                        onChange={(e) => handleEventInputChange('time', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                        placeholder="e.g., 8:00 AM - 10:00 AM"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-0.5">Location Name *</label>
-                      <input
-                        type="text"
-                        value={newEvent.location}
-                        onChange={(e) => handleEventInputChange('location', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                        placeholder="e.g., Bamboo Grand Rapids"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-0.5">Full Address *</label>
-                      <input
-                        type="text"
-                        value={newEvent.fullAddress}
-                        onChange={(e) => handleEventInputChange('fullAddress', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                        placeholder="e.g., 33 Commerce Ave SW, Grand Rapids, MI 49503"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="border-t pt-2">
-                    <h5 className="font-semibold text-xs text-gray-900 mb-2">Organizer Information</h5>
-                    <div className="space-y-2">
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="block text-xs font-medium text-gray-700 mb-0.5">Organizer Name *</label>
-                          <input
-                            type="text"
-                            value={newEvent.organizerName}
-                            onChange={(e) => handleEventInputChange('organizerName', e.target.value)}
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                            placeholder="e.g., Creative Mornings GR"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-gray-700 mb-0.5">Organization *</label>
-                          <select
-                            value={newEvent.organizerGeotag}
-                            onChange={(e) => handleEventInputChange('organizerGeotag', e.target.value)}
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                          >
-                            <option value="">Select organization...</option>
-                            {organizations.map((org, index) => (
-                              <option key={index} value={org}>{org}</option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-0.5">Organizer Description</label>
-                        <textarea
-                          value={newEvent.organizerDescription}
-                          onChange={(e) => handleEventInputChange('organizerDescription', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                          rows="2"
-                          placeholder="Brief description of the organizing entity"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-0.5">Tags (comma-separated)</label>
-                      <input
-                        type="text"
-                        value={newEvent.tags}
-                        onChange={(e) => handleEventInputChange('tags', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                        placeholder="e.g., Design, Creativity, Networking"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-0.5">Registration URL *</label>
-                      <input
-                        type="text"
-                        value={newEvent.registrationUrl}
-                        onChange={(e) => handleEventInputChange('registrationUrl', e.target.value)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                        placeholder="https://..."
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Event 2 - Placeholder */}
-              <div className="border-2 border-gray-300 rounded-lg p-3 bg-gray-50">
-                <h4 className="font-bold text-sm text-gray-900 mb-1">Event Slot 2</h4>
-                <p className="text-gray-500 text-xs">Available for future event creation</p>
-              </div>
-
-              {/* Event 3 - Placeholder */}
-              <div className="border-2 border-gray-300 rounded-lg p-3 bg-gray-50">
-                <h4 className="font-bold text-sm text-gray-900 mb-1">Event Slot 3</h4>
-                <p className="text-gray-500 text-xs">Available for future event creation</p>
-              </div>
-            </div>
+            <EventSlotsManager />
           </div>
 
           {/* Bottom Banner Ad - pushed to bottom */}
@@ -1410,43 +1275,403 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
   );
 }
 
-function EventDetailAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
+function ResourcesInsightsTab() {
+  const [contentSlots, setContentSlots] = useState([
+    { slot_number: 1, title: '', description: '', image: '', url: '', tags: '', sponsored_by: '', full_content: '', author: '' },
+    { slot_number: 2, title: '', description: '', image: '', url: '', tags: '', sponsored_by: '', full_content: '', author: '' },
+    { slot_number: 3, title: '', description: '', image: '', url: '', tags: '', sponsored_by: '', full_content: '', author: '' }
+  ]);
+  const [loading, setLoading] = useState(true);
+  const [activeSlot, setActiveSlot] = useState(1);
+
+  // Load all content slots from Supabase
+  useEffect(() => {
+    const loadContentSlots = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('featured_content')
+          .select('*')
+          .order('slot_number', { ascending: true });
+
+        if (error) {
+          console.error('Error loading content slots:', error);
+          return;
+        }
+
+        if (data) {
+          const updatedSlots = [1, 2, 3].map(slotNum => {
+            const existing = data.find(item => item.slot_number === slotNum);
+            return existing ? {
+              slot_number: slotNum,
+              title: existing.title || '',
+              description: existing.description || '',
+              image: existing.image || '',
+              url: existing.url || '',
+              tags: existing.tags || '',
+              sponsored_by: existing.sponsored_by || '',
+              full_content: existing.full_content || '',
+              author: existing.author || ''
+            } : {
+              slot_number: slotNum,
+              title: '',
+              description: '',
+              image: '',
+              url: '',
+              tags: '',
+              sponsored_by: '',
+              full_content: '',
+              author: ''
+            };
+          });
+          setContentSlots(updatedSlots);
+        }
+      } catch (err) {
+        console.error('Error loading content:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadContentSlots();
+  }, []);
+
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold mb-6">Event Details Banner Ads</h2>
+      <h2 className="text-2xl font-bold mb-6">Resources & Insights Management</h2>
       <p className="text-gray-600 mb-6">
-        Manage 728x160 banner ads that appear at the bottom of individual event detail pages.
-        Use content tags to target specific types of events (e.g., Technology, Leadership, Networking).
+        Manage all three featured content slots displayed on the Dashboard and Resources pages.
       </p>
 
-      <div className="bg-white rounded-lg p-6 border border-gray-200">
-        <h3 className="text-xl font-semibold mb-4">Banner Ad Management</h3>
-        <p className="text-gray-600 mb-6">
-          Upload a banner ad with targeted content tags. The ad will only display on event detail pages
-          where the event's tags match your ad's tags.
-        </p>
+      {/* Slot Selector */}
+      <div className="flex gap-4 mb-6">
+        {[1, 2, 3].map((slotNum) => (
+          <button
+            key={slotNum}
+            onClick={() => setActiveSlot(slotNum)}
+            className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+              activeSlot === slotNum
+                ? 'bg-green-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            Content Slot #{slotNum}
+          </button>
+        ))}
+      </div>
 
-        <InlineAdEditor
-          title="Event Detail Page - Banner Ad"
-          slot="eventDetailBanner"
-          ad={ads.eventDetailBanner}
-          onImageUpload={handleImageUpload}
-          onUrlChange={handleUrlChange}
-          onRemove={removeAd}
-          dimensions="728x160px"
-          description="Banner ad at bottom of individual event detail pages"
-          aspectRatio="728/160"
-        />
-
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h4 className="font-semibold text-sm text-blue-900 mb-2">How Tag Targeting Works:</h4>
-          <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
-            <li>Enter tags like "Technology, Innovation, AI" in the Content Tags field above</li>
-            <li>Your ad will only show on events that have at least one matching tag</li>
-            <li>Example: An ad tagged "Leadership, Networking" shows on leadership forums and networking events</li>
-            <li>Leave tags empty to show the ad on all event detail pages</li>
-          </ul>
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading content...</p>
         </div>
+      ) : (
+        <ContentSlotEditor
+          content={contentSlots[activeSlot - 1]}
+          onUpdate={(updatedContent) => {
+            const newSlots = [...contentSlots];
+            newSlots[activeSlot - 1] = updatedContent;
+            setContentSlots(newSlots);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function ContentSlotEditor({ content, onUpdate }) {
+  const [formData, setFormData] = useState(content);
+  const [scrapeUrl, setScrapeUrl] = useState('');
+  const [isScraping, setIsScraping] = useState(false);
+  const [scrapeError, setScrapeError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setFormData(content);
+  }, [content]);
+
+  const handleChange = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  const handleScrapeContent = async () => {
+    if (!scrapeUrl) {
+      setScrapeError('Please enter a URL');
+      return;
+    }
+
+    setIsScraping(true);
+    setScrapeError('');
+
+    try {
+      const proxyUrl = 'https://api.allorigins.win/raw?url=';
+      const response = await fetch(proxyUrl + encodeURIComponent(scrapeUrl));
+      const html = await response.text();
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      const title = doc.querySelector('meta[property="og:title"]')?.content ||
+                   doc.querySelector('title')?.textContent ||
+                   '';
+
+      const description = doc.querySelector('meta[property="og:description"]')?.content ||
+                         doc.querySelector('meta[name="description"]')?.content ||
+                         '';
+
+      const image = doc.querySelector('meta[property="og:image"]')?.content ||
+                   doc.querySelector('meta[name="twitter:image"]')?.content ||
+                   '';
+
+      const author = doc.querySelector('meta[name="author"]')?.content ||
+                    doc.querySelector('.author')?.textContent ||
+                    '';
+
+      setFormData({
+        ...formData,
+        title: title.trim(),
+        description: description.trim(),
+        image: image,
+        url: scrapeUrl,
+        author: author.trim()
+      });
+
+      setScrapeUrl('');
+    } catch (error) {
+      console.error('Scrape error:', error);
+      setScrapeError('Failed to scrape content. Try entering manually.');
+    } finally {
+      setIsScraping(false);
+    }
+  };
+
+  const handleImageUpload = (file) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData({ ...formData, image: reader.result });
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('featured_content')
+        .upsert({
+          slot_number: formData.slot_number,
+          title: formData.title,
+          description: formData.description,
+          image: formData.image,
+          url: formData.url,
+          tags: formData.tags,
+          sponsored_by: formData.sponsored_by,
+          full_content: formData.full_content,
+          author: formData.author
+        }, {
+          onConflict: 'slot_number'
+        });
+
+      if (error) throw error;
+
+      alert('Content saved successfully!');
+      onUpdate(formData);
+    } catch (error) {
+      console.error('Save error:', error);
+      alert('Failed to save content: ' + error.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete the content in Slot ${formData.slot_number}? This action cannot be undone.`
+    );
+
+    if (!confirmDelete) return;
+
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('featured_content')
+        .delete()
+        .eq('slot_number', formData.slot_number);
+
+      if (error) throw error;
+
+      alert('Content deleted successfully!');
+      // Reset form to empty state
+      onUpdate({
+        slot_number: formData.slot_number,
+        title: '',
+        description: '',
+        image: '',
+        url: '',
+        tags: '',
+        sponsored_by: '',
+        full_content: '',
+        author: ''
+      });
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('Failed to delete content: ' + error.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg p-6 border border-gray-200 space-y-6">
+      {/* URL Scraper */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Scrape from URL</label>
+        <div className="flex gap-2">
+          <input
+            type="url"
+            value={scrapeUrl}
+            onChange={(e) => setScrapeUrl(e.target.value)}
+            placeholder="https://example.com/article"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg"
+          />
+          <button
+            onClick={handleScrapeContent}
+            disabled={isScraping}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+          >
+            {isScraping ? 'Scraping...' : 'Scrape'}
+          </button>
+        </div>
+        {scrapeError && <p className="text-red-600 text-sm mt-1">{scrapeError}</p>}
+      </div>
+
+      {/* Title */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Title *</label>
+        <input
+          type="text"
+          value={formData.title}
+          onChange={(e) => handleChange('title', e.target.value)}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+        />
+      </div>
+
+      {/* Preview Description */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Preview Description *</label>
+        <textarea
+          value={formData.description}
+          onChange={(e) => handleChange('description', e.target.value)}
+          rows="3"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+        />
+      </div>
+
+      {/* Image */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Image</label>
+        <div className="flex gap-4">
+          <input
+            type="url"
+            value={formData.image}
+            onChange={(e) => handleChange('image', e.target.value)}
+            placeholder="https://example.com/image.jpg"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg"
+          />
+          <label className="px-6 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 cursor-pointer flex items-center gap-2">
+            <Upload className="w-4 h-4" />
+            Upload
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => handleImageUpload(e.target.files[0])}
+            />
+          </label>
+        </div>
+        {formData.image && (
+          <img src={formData.image} alt="Preview" className="mt-2 w-48 h-48 object-cover rounded border" />
+        )}
+      </div>
+
+      {/* External URL */}
+      <div>
+        <label className="block text-sm font-medium mb-2">External Site URL (if applicable)</label>
+        <input
+          type="url"
+          value={formData.url}
+          onChange={(e) => handleChange('url', e.target.value)}
+          placeholder="https://example.com"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+        />
+      </div>
+
+      {/* Full Content */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Full Content (if blog post)</label>
+        <textarea
+          value={formData.full_content}
+          onChange={(e) => handleChange('full_content', e.target.value)}
+          rows="8"
+          placeholder="Full article content for blog posts..."
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg font-mono text-sm"
+        />
+      </div>
+
+      {/* Author */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Author (if applicable)</label>
+        <input
+          type="text"
+          value={formData.author}
+          onChange={(e) => handleChange('author', e.target.value)}
+          placeholder="Author name"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+        />
+      </div>
+
+      {/* Professional Interest Tags */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Professional Interest Tags</label>
+        <input
+          type="text"
+          value={formData.tags}
+          onChange={(e) => handleChange('tags', e.target.value)}
+          placeholder="Technology, Leadership, Innovation"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+        />
+        <p className="text-xs text-gray-500 mt-1">Comma-separated tags</p>
+      </div>
+
+      {/* Sponsored By */}
+      <div>
+        <label className="block text-sm font-medium mb-2">Sponsored By (optional)</label>
+        <input
+          type="text"
+          value={formData.sponsored_by}
+          onChange={(e) => handleChange('sponsored_by', e.target.value)}
+          placeholder="Company name"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+        />
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex justify-between gap-4 pt-4 border-t">
+        <button
+          onClick={handleDelete}
+          disabled={isSaving}
+          className="px-8 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400 font-semibold"
+        >
+          {isSaving ? 'Deleting...' : 'Delete Content'}
+        </button>
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 font-semibold"
+        >
+          {isSaving ? 'Saving...' : 'Save Content'}
+        </button>
       </div>
     </div>
   );

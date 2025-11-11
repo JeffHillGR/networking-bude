@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext({});
@@ -11,25 +11,121 @@ export const useAuth = () => {
   return context;
 };
 
+// Session timeout configuration
+const INACTIVITY_TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+const ACTIVITY_CHECK_INTERVAL = 60 * 1000; // Check every minute
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  // Update last activity timestamp
+  const updateActivity = useCallback(() => {
+    if (user && !rememberMe) {
+      const now = Date.now();
+      localStorage.setItem('lastActivity', now.toString());
+    }
+  }, [user, rememberMe]);
+
+  // Check if session should timeout due to inactivity
+  const checkInactivity = useCallback(async () => {
+    if (!user || rememberMe) return;
+
+    const lastActivity = localStorage.getItem('lastActivity');
+    if (!lastActivity) {
+      // First time, set activity
+      updateActivity();
+      return;
+    }
+
+    const timeSinceActivity = Date.now() - parseInt(lastActivity);
+
+    if (timeSinceActivity > INACTIVITY_TIMEOUT) {
+      console.log('Session timeout due to inactivity');
+
+      // Sign out using Supabase directly
+      await supabase.auth.signOut();
+
+      // Clear localStorage
+      localStorage.removeItem('onboardingCompleted');
+      localStorage.removeItem('lastActivity');
+      localStorage.removeItem('rememberMe');
+
+      // Reset state
+      setRememberMe(false);
+
+      alert('Your session has expired due to inactivity. Please sign in again.');
+    }
+  }, [user, rememberMe, updateActivity]);
 
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Check for remember me preference
+      if (session?.user) {
+        const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
+        setRememberMe(savedRememberMe);
+
+        if (!savedRememberMe) {
+          updateActivity();
+        }
+      }
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
+
+      if (session?.user) {
+        const savedRememberMe = localStorage.getItem('rememberMe') === 'true';
+        setRememberMe(savedRememberMe);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Track user activity
+  useEffect(() => {
+    if (!user) return;
+
+    // Activity events to track
+    const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+
+    // Throttle activity updates to avoid excessive writes
+    let activityTimeout;
+    const handleActivity = () => {
+      clearTimeout(activityTimeout);
+      activityTimeout = setTimeout(() => {
+        updateActivity();
+      }, 5000); // Update at most every 5 seconds
+    };
+
+    // Add event listeners
+    activityEvents.forEach(event => {
+      window.addEventListener(event, handleActivity, true);
+    });
+
+    // Initial activity update
+    updateActivity();
+
+    // Check for inactivity periodically
+    const inactivityInterval = setInterval(checkInactivity, ACTIVITY_CHECK_INTERVAL);
+
+    return () => {
+      // Cleanup
+      activityEvents.forEach(event => {
+        window.removeEventListener(event, handleActivity, true);
+      });
+      clearInterval(inactivityInterval);
+      clearTimeout(activityTimeout);
+    };
+  }, [user, updateActivity, checkInactivity]);
 
   const signUp = async (email, password, userData) => {
     try {
@@ -83,7 +179,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const signIn = async (email, password) => {
+  const signIn = async (email, password, rememberMeOption = false) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -91,6 +187,16 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (error) throw error;
+
+      // Save remember me preference
+      setRememberMe(rememberMeOption);
+      localStorage.setItem('rememberMe', rememberMeOption.toString());
+
+      // If not remembering, set initial activity timestamp
+      if (!rememberMeOption) {
+        localStorage.setItem('lastActivity', Date.now().toString());
+      }
+
       return { data, error: null };
     } catch (error) {
       console.error('Sign in error:', error);
@@ -105,6 +211,11 @@ export const AuthProvider = ({ children }) => {
 
       // Clear localStorage
       localStorage.removeItem('onboardingCompleted');
+      localStorage.removeItem('lastActivity');
+      localStorage.removeItem('rememberMe');
+
+      // Reset state
+      setRememberMe(false);
 
       return { error: null };
     } catch (error) {
@@ -130,6 +241,8 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
+    rememberMe,
+    setRememberMe,
     signUp,
     signIn,
     signOut,

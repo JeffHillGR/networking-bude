@@ -155,6 +155,13 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
     }
   }, []);
 
+  // Sync profile email with authenticated user's email
+  useEffect(() => {
+    if (user?.email && profile.email !== user.email) {
+      setProfile(prev => ({ ...prev, email: user.email }));
+    }
+  }, [user?.email]);
+
   // Load profile from Supabase if localStorage is empty
   useEffect(() => {
     async function loadProfileFromSupabase() {
@@ -328,6 +335,27 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
       const firstName = names[0] || '';
       const lastName = names.slice(1).join(' ') || '';
 
+      // Check if email has changed
+      const emailChanged = profile.email && user?.email && profile.email !== user.email;
+
+      // Update email in Supabase Auth if changed
+      if (emailChanged) {
+        const { error: emailError } = await supabase.auth.updateUser({
+          email: profile.email
+        });
+
+        if (emailError) {
+          console.error('Error updating email:', emailError);
+          if (emailError.message.includes('already registered')) {
+            throw new Error('This email is already in use. Please choose a different email.');
+          }
+          throw new Error('Failed to update email. Please try again.');
+        }
+
+        // Show special message for email change
+        alert('Email update initiated! Please check your new email address (' + profile.email + ') for a confirmation link to complete the change. Your current email will remain active until you confirm.');
+      }
+
       // Update Supabase database
       if (user?.email) {
         // First, get the user's database ID from their email
@@ -343,30 +371,37 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
         }
 
         // Now update with the correct database user ID
+        const updateData = {
+          first_name: firstName,
+          last_name: lastName,
+          name: profile.fullName,
+          title: profile.jobTitle,
+          company: profile.company,
+          industry: profile.industry,
+          zip_code: profile.zipCode || '',
+          organizations_current: profile.organizations || [],
+          organizations_interested: profile.organizationsToCheckOut || [],
+          organizations_other: profile.organizationsOther || '',
+          organizations_to_check_out_other: profile.organizationsToCheckOutOther || '',
+          professional_interests: Array.isArray(selectedInterests) ? selectedInterests : [],
+          professional_interests_other: profile.professionalInterestsOther || '',
+          personal_interests: profile.personalInterests || '',
+          networking_goals: profile.networkingGoals || '',
+          same_industry_preference: profile.sameIndustry || '',
+          gender: profile.gender || '',
+          gender_preference: profile.genderPreference || '',
+          year_born: profile.dob ? new Date(profile.dob).getFullYear() : null,
+          year_born_connect: profile.dobPreference || ''
+        };
+
+        // Add email to database update if it changed (will be updated after confirmation)
+        if (emailChanged) {
+          updateData.email = profile.email;
+        }
+
         const { error } = await supabase
           .from('users')
-          .update({
-            first_name: firstName,
-            last_name: lastName,
-            name: profile.fullName,
-            title: profile.jobTitle,
-            company: profile.company,
-            industry: profile.industry,
-            zip_code: profile.zipCode || '',
-            organizations_current: profile.organizations || [],
-            organizations_interested: profile.organizationsToCheckOut || [],
-            organizations_other: profile.organizationsOther || '',
-            organizations_to_check_out_other: profile.organizationsToCheckOutOther || '',
-            professional_interests: Array.isArray(selectedInterests) ? selectedInterests : [],
-            professional_interests_other: profile.professionalInterestsOther || '',
-            personal_interests: profile.personalInterests || '',
-            networking_goals: profile.networkingGoals || '',
-            same_industry_preference: profile.sameIndustry || '',
-            gender: profile.gender || '',
-            gender_preference: profile.genderPreference || '',
-            year_born: profile.dob ? new Date(profile.dob).getFullYear() : null,
-            year_born_connect: profile.dobPreference || ''
-          })
+          .update(updateData)
           .eq('id', userData.id);
 
         if (error) {
@@ -385,7 +420,9 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
       localStorage.setItem('userJobTitle', profile.jobTitle);
       localStorage.setItem('userCompany', profile.company);
 
-      showSuccess('Profile updated successfully!');
+      if (!emailChanged) {
+        showSuccess('Profile updated successfully!');
+      }
 
       // Trigger matching algorithm after profile update (don't wait for it)
       runMatchingAlgorithm().catch(err => {
@@ -768,7 +805,7 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
                   />
                   <label
                     htmlFor="photo-upload"
-                    className="cursor-pointer inline-block bg-[#009900] text-white px-4 py-2 rounded-lg hover:bg-[#007700] transition-colors"
+                    className="cursor-pointer inline-block bg-[#009900] text-white px-4 py-2 rounded-lg hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00]"
                   >
                     {uploadingPhoto ? 'Uploading...' : 'Upload Photo'}
                   </label>

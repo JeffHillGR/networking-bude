@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, Clock, User, TrendingUp, ArrowLeft, Send } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
 function Connections({ onBackToDashboard, onNavigateToSettings }) {
   const { user } = useAuth();
+  const featuredCardRef = useRef(null);
   const [activeTab, setActiveTab] = useState('recommended');
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showConnectModal, setShowConnectModal] = useState(false);
@@ -283,9 +284,16 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
 
   const currentCard = allCards[currentCardIndex];
 
+  // Track user engagement for share prompt
+  const trackEngagement = () => {
+    const currentCount = parseInt(localStorage.getItem('userEngagementCount') || '0', 10);
+    localStorage.setItem('userEngagementCount', (currentCount + 1).toString());
+  };
+
   const handleConnect = () => {
     // Open modal to send connection request
     setShowConnectModal(true);
+    trackEngagement(); // Count opening connection modal as engagement
   };
 
   const handleSendConnectionRequest = async () => {
@@ -371,6 +379,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
       return;
     }
 
+    trackEngagement(); // Count saving for later as engagement
+
     try {
       // Update match status to 'perhaps' with timestamp (hidden for 1 week)
       const { error } = await supabase
@@ -388,6 +398,9 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
         throw error;
       }
 
+      // Remove from local connections array
+      setConnections(prev => prev.filter(conn => conn.id !== currentCard.id));
+
       // Move to next card (person is now hidden for 1 week)
       nextCard();
     } catch (error) {
@@ -396,15 +409,32 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
   };
 
   const handleNoThanks = async () => {
+    // Safety check: ensure currentCard exists and has an ID
+    if (!currentCard || !currentCard.id || !currentUserId) {
+      console.warn('Cannot mark as no thanks: missing required data', {
+        hasCurrentCard: !!currentCard,
+        isPlaceholder: currentCard?.isPlaceholder,
+        hasId: !!currentCard?.id,
+        currentUserId
+      });
+      return;
+    }
+
     try {
       // Update match status to 'passed' in database
       const { error } = await supabase
         .from('matches')
-        .update({ status: 'passed' })
+        .update({
+          status: 'passed',
+          updated_at: new Date().toISOString()
+        })
         .eq('user_id', currentUserId)
         .eq('matched_user_id', currentCard.id);
 
       if (error) throw error;
+
+      // Remove from local connections array
+      setConnections(prev => prev.filter(conn => conn.id !== currentCard.id));
 
       // Add to passed connections
       setPassedConnections(prev => [...prev, currentCard.id]);
@@ -449,7 +479,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Monday Reset Banner */}
         {showMondayBanner && (
-          <div className="mb-6 bg-gradient-to-r from-[#009900] to-[#D0ED00] rounded-lg p-4 shadow-lg">
+          <div className="mb-6 bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] rounded-lg p-4 shadow-lg">
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0">
@@ -519,7 +549,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
         {activeTab === 'recommended' ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative">
             {/* Large Card View for Recommended */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2" ref={featuredCardRef}>
               <div className="text-center mb-4">
                 <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black">
                   <h2 className="text-xl font-bold text-black">Discover New Connections</h2>
@@ -612,6 +642,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
                     <img
                       src={currentCard.photo}
                       alt={currentCard.name}
+                      loading="lazy"
                       className="w-32 h-32 rounded-full object-cover mb-4 shadow-lg border-4 border-black"
                     />
                   ) : (
@@ -748,7 +779,14 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
               {allCards.map((person, index) => (
                 <div
                   key={person.isPlaceholder ? `placeholder-${index}` : person.id}
-                  onClick={() => setCurrentCardIndex(index)}
+                  onClick={() => {
+                    setCurrentCardIndex(index);
+                    trackEngagement(); // Count viewing a connection card as engagement
+                    // Scroll to featured card on mobile
+                    if (featuredCardRef.current) {
+                      featuredCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                  }}
                   className={`bg-white rounded-lg p-4 shadow-sm transition-shadow ${person.isPlaceholder ? 'cursor-default opacity-60' : 'hover:shadow-md cursor-pointer'}`}
                 >
                   {person.isPlaceholder ? (
@@ -777,6 +815,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
                             <img
                               src={person.photo}
                               alt={person.name}
+                              loading="lazy"
                               className="w-12 h-12 rounded-full object-cover flex-shrink-0 border-2 border-black"
                             />
                           ) : (
@@ -997,7 +1036,10 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
                 {filteredConnections.map((person) => (
                   <div
                     key={person.id}
-                    onClick={() => setSelectedConnection(person)}
+                    onClick={() => {
+                      setSelectedConnection(person);
+                      trackEngagement(); // Count viewing saved/pending connection details as engagement
+                    }}
                     className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-all cursor-pointer"
                   >
                     <div className="flex gap-4">
@@ -1005,6 +1047,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
                         <img
                           src={person.photo}
                           alt={person.name}
+                          loading="lazy"
                           className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover flex-shrink-0 border-2 border-black"
                         />
                       ) : (
@@ -1105,6 +1148,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
                   <img
                     src={selectedConnection.photo}
                     alt={selectedConnection.name}
+                    loading="lazy"
                     className="w-32 h-32 rounded-full object-cover mb-4 shadow-lg border-4 border-black"
                   />
                 ) : (
@@ -1263,6 +1307,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
                 <img
                   src={person.photo}
                   alt={person.name}
+                  loading="lazy"
                   className="w-16 h-16 rounded-full object-cover border-2 border-black"
                 />
               ) : (

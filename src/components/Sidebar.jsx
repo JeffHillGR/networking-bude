@@ -86,7 +86,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
               className="w-full flex items-center justify-center mb-4 cursor-pointer hover:opacity-80 transition-opacity"
             >
               <img
-                src="/BudE-Logo-Final.png"
+                src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png"
                 alt="BudE Logo"
                 className="w-full h-auto"
               />
@@ -181,7 +181,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
               await signOut();
               window.location.href = '/';
             }}
-            className="w-full py-2 text-xs text-gray-600 hover:text-[#009900] hover:bg-gray-50 rounded transition-colors mb-1"
+            className="w-full py-2 text-xs text-[#009900] font-bold hover:bg-gray-50 rounded transition-colors mb-1"
           >
             Logout
           </button>

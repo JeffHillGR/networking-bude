@@ -38,10 +38,17 @@ function Dashboard() {
   const [connections, setConnections] = useState([]);
   const [loadingConnections, setLoadingConnections] = useState(true);
   const [userFirstName, setUserFirstName] = useState("there");
+  const [events, setEvents] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const [featuredContentIndex, setFeaturedContentIndex] = useState(0);
+  const [loadedFeaturedContent, setLoadedFeaturedContent] = useState([
+    null,
+    null,
+    null,
+  ]);
   const [showSponsorModal, setShowSponsorModal] = useState(false);
   const [showSharePrompt, setShowSharePrompt] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
   const [adInquirySubmitted, setAdInquirySubmitted] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -224,6 +231,188 @@ function Dashboard() {
     }
   };
 
+  // Check if user should see share prompt based on engagement or time
+  useEffect(() => {
+    const checkEngagement = () => {
+      const hasSeenSharePrompt = localStorage.getItem("hasSeenSharePrompt");
+      const lastSharePromptDate = localStorage.getItem("lastSharePromptDate");
+      const engagementCount = parseInt(
+        localStorage.getItem("userEngagementCount") || "0",
+        10,
+      );
+
+      if (!hasSeenSharePrompt) {
+        // First time: Show after 4 meaningful interactions
+        if (engagementCount >= 4) {
+          setShowSharePrompt(true);
+          localStorage.setItem("hasSeenSharePrompt", "true");
+          localStorage.setItem("lastSharePromptDate", new Date().toISOString());
+        }
+      } else if (lastSharePromptDate) {
+        // Returning users: Show every 14 days minimum
+        const hoursSinceLastPrompt = Math.floor(
+          (new Date() - new Date(lastSharePromptDate)) / (1000 * 60 * 60),
+        );
+        if (hoursSinceLastPrompt >= 336) {
+          // 14 days = 336 hours
+          setShowSharePrompt(true);
+          localStorage.setItem("lastSharePromptDate", new Date().toISOString());
+        }
+      }
+    };
+
+    // Check on mount
+    checkEngagement();
+
+    // Also check periodically (every 3 seconds) in case user navigates back to dashboard
+    const interval = setInterval(checkEngagement, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Prevent scroll restoration and bounce-to-top on mobile
+  useEffect(() => {
+    // Disable automatic scroll restoration
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    // Scroll to top only on first mount
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Load user's first name from Supabase
+  useEffect(() => {
+    async function loadUserName() {
+      if (!user) return;
+
+      try {
+        const response = await fetch("/api/submitFeedback", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...feedbackData,
+            submittedAt: new Date().toISOString(),
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Failed to submit feedback");
+        }
+
+        // Show success message in modal
+        setFeedbackSubmitted(true);
+
+        // Reset form after 3 seconds and close modal
+        setTimeout(() => {
+          setFeedbackSubmitted(false);
+          setShowFeedbackModal(false);
+          setFeedbackData({
+            name: "",
+            email: "",
+            signUpSmoothness: "",
+            navigationEase: "",
+            confusingSteps: "",
+            visualAppeal: "",
+            brandClarity: "",
+            performance: "",
+            crashesOrBugs: "",
+            usefulFeatures: "",
+            missingFeatures: "",
+            corePurposeUnderstood: "",
+            valueProposition: "",
+            solvesRealProblem: "",
+            wouldUseOrRecommend: "",
+            reasonToComeBack: "",
+            overallSatisfaction: "",
+            overallRating: "",
+            netPromoterScore: "",
+          });
+        }, 3000);
+      } catch (error) {
+        console.error("Error submitting feedback:", error);
+
+        // Check if we're on localhost
+        if (
+          window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1"
+        ) {
+          alert(
+            "API endpoints are not available on localhost. Please test feedback submission on the Vercel deployment at your live URL.\n\nFor local testing, the form validation and UI work correctly - only the actual Google Sheets submission requires the production environment.",
+          );
+        } else {
+          alert(
+            "There was an error submitting your feedback. Please try again or contact support if the problem persists.",
+          );
+        }
+      }
+    }
+
+    // Handle contact form submission
+    // Removed returning user banner - data is now saved to Supabase
+    const handleDismissReturningUserBanner = () => {
+      // Deprecated - keeping for backwards compatibility
+      setShowReturningUserBanner(false);
+    };
+
+    const handleSubmitContact = async (e) => {
+      e.preventDefault();
+      setIsSubmittingContact(true);
+
+      try {
+        const response = await fetch("/api/submitContact", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...contactData,
+            submittedAt: new Date().toISOString(),
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Failed to submit contact form");
+        }
+
+        // Show success message in modal
+        setContactSubmitted(true);
+
+        // Reset form after 3 seconds and close modal
+        setTimeout(() => {
+          setContactSubmitted(false);
+          setShowContactModal(false);
+          setContactData({
+            name: "",
+            email: "",
+            message: "",
+          });
+        }, 3000);
+      } catch (error) {
+        console.error("Error submitting contact form:", error);
+
+        // Check if we're on localhost
+        if (
+          window.location.hostname === "localhost" ||
+          window.location.hostname === "127.0.0.1"
+        ) {
+          alert(
+            "API endpoints are not available on localhost. Please test on the Vercel deployment.\n\nFor now, please email grjeff@gmail.com directly.",
+          );
+        } else {
+          alert(
+            "There was an error submitting your message. Please email grjeff@gmail.com directly.",
+          );
+        }
+      } finally {
+        setIsSubmittingContact(false);
+      }
+    };
+  }, []);
+
   // Check if user should see share prompt (every 5 days)
   useEffect(() => {
     const lastSharePromptDate = localStorage.getItem("lastSharePromptDate");
@@ -258,16 +447,16 @@ function Dashboard() {
   // Handle URL parameters for navigation
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
-    const tab = urlParams.get('tab');
-    const highlightUser = urlParams.get('highlightUser');
-    
-    if (tab === 'connections') {
-      setActiveTab('connections');
+    const tab = urlParams.get("tab");
+    const highlightUser = urlParams.get("highlightUser");
+
+    if (tab === "connections") {
+      setActiveTab("connections");
     }
-    
+
     // Store highlightUser for Connections component
     if (highlightUser) {
-      sessionStorage.setItem('highlightUserId', highlightUser);
+      sessionStorage.setItem("highlightUserId", highlightUser);
     }
   }, [location.search]);
 
@@ -307,21 +496,48 @@ function Dashboard() {
     return "Good Evening";
   };
 
-  // Load admin-created featured content from localStorage
-  const adminContent1 = localStorage.getItem("featuredContent1");
-  const adminFeaturedContent1 = adminContent1
-    ? JSON.parse(adminContent1)
-    : null;
+  // Load featured content from Supabase on mount
+  useEffect(() => {
+    const loadFeaturedContent = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("featured_content")
+          .select("*")
+          .order("slot_number", { ascending: true });
 
-  const adminContent2 = localStorage.getItem("featuredContent2");
-  const adminFeaturedContent2 = adminContent2
-    ? JSON.parse(adminContent2)
-    : null;
+        if (error) {
+          console.error("Error loading featured content:", error);
+          return;
+        }
 
-  const adminContent3 = localStorage.getItem("featuredContent3");
-  const adminFeaturedContent3 = adminContent3
-    ? JSON.parse(adminContent3)
-    : null;
+        if (data && data.length > 0) {
+          const contentArray = [null, null, null];
+
+          data.forEach((item) => {
+            const index = item.slot_number - 1;
+            if (index >= 0 && index < 3) {
+              contentArray[index] = {
+                image: item.image,
+                title: item.title,
+                description: item.description,
+                url: item.url,
+                tags: item.tags,
+                sponsoredBy: item.sponsored_by,
+                fullContent: item.full_content,
+                author: item.author,
+              };
+            }
+          });
+
+          setLoadedFeaturedContent(contentArray);
+        }
+      } catch (err) {
+        console.error("Error in loadFeaturedContent:", err);
+      }
+    };
+
+    loadFeaturedContent();
+  }, []);
 
   const defaultFeaturedContent = [
     {
@@ -357,18 +573,18 @@ function Dashboard() {
     },
   ];
 
-  // Build featured content array: use admin content where available, otherwise use defaults
+  // Build featured content array: use database content where available, otherwise use defaults
   const slot1 =
-    adminFeaturedContent1 && adminFeaturedContent1.title
-      ? adminFeaturedContent1
+    loadedFeaturedContent[0] && loadedFeaturedContent[0].title
+      ? loadedFeaturedContent[0]
       : defaultFeaturedContent[0];
   const slot2 =
-    adminFeaturedContent2 && adminFeaturedContent2.title
-      ? adminFeaturedContent2
+    loadedFeaturedContent[1] && loadedFeaturedContent[1].title
+      ? loadedFeaturedContent[1]
       : defaultFeaturedContent[1];
   const slot3 =
-    adminFeaturedContent3 && adminFeaturedContent3.title
-      ? adminFeaturedContent3
+    loadedFeaturedContent[2] && loadedFeaturedContent[2].title
+      ? loadedFeaturedContent[2]
       : defaultFeaturedContent[2];
 
   const featuredContent = [slot1, slot2, slot3];
@@ -396,18 +612,18 @@ function Dashboard() {
           .from("matches")
           .select(
             `
-            matched_user_id,
-            compatibility_score,
-            matched_user:users!matches_matched_user_id_fkey (
-              first_name,
-              last_name,
-              name,
-              title,
-              company,
-              photo,
-              professional_interests
-            )
-          `,
+          matched_user_id,
+          compatibility_score,
+          matched_user:users!matches_matched_user_id_fkey (
+            first_name,
+            last_name,
+            name,
+            title,
+            company,
+            photo,
+            professional_interests
+          )
+        `,
           )
           .eq("user_id", userData.id)
           .eq("status", "recommended")
@@ -463,73 +679,49 @@ function Dashboard() {
     fetchConnections();
   }, [user]);
 
-  // Load admin-created events from localStorage
-  const adminEvents = JSON.parse(localStorage.getItem("adminEvents") || "[]");
+  // Load events from Supabase
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("events")
+          .select("*")
+          .order("slot_number", { ascending: true });
 
-  // Featured events - Real Grand Rapids networking events
-  const events = [
-    {
-      id: 1,
-      title: "Bamboo Grand Rapids: Grand Opening Celebration",
-      date: "12/4/2025",
-      time: "4:00 PM - 8:00 PM",
-      location: "2 Fulton Street West",
-      organizerName: "Bamboo Detroit",
-      fullAddress: "2 Fulton Street West, Grand Rapids, MI 49503",
-      image:
-        "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1120287333%2F84709515697%2F1%2Foriginal.20250910-174858?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.208333333333&fp-y=0.621848739496&s=9f37de221b0249dee8dd7ee347395056",
-      badge: "In-Person",
-      tags: ["Entrepreneurship", "Innovation", "Startup"],
-    },
-    {
-      id: 2,
-      title: "Talent & Inclusion Summit",
-      date: "11/11/2025",
-      time: "8:00 AM - 1:00 PM",
-      location: "JW Marriott Grand Rapids",
-      organizerName: "Grand Rapids Chamber",
-      fullAddress: "235 Louis St NW, Grand Rapids, MI 49503",
-      image:
-        "https://grandrapids.org/wp-content/uploads/2024/10/GRC_TIS-1-2048x1152.jpg",
-      badge: "In-Person",
-    },
-    {
-      id: 3,
-      title: "17th Annual Jay & Betty Van Andel Legacy Awards Gala",
-      date: "11/12/2025",
-      time: "Evening Event",
-      location: "JW Marriott Grand Rapids",
-      organizerName: "Grand Rapids Public Museum",
-      fullAddress: "JW Marriott Grand Rapids, MI",
-      image:
-        "https://i0.wp.com/www.grpm.org/wp-content/uploads/2025/06/2025_Gala_Web-Header_Option-05.png",
-      badge: "In-Person",
-    },
-    {
-      id: 4,
-      title: "Place Matters Summit 2025",
-      date: "11/6/2025",
-      time: "12:00 PM - 5:00 PM",
-      location: "The Rockford Corner Bar",
-      organizerName: "The Right Place",
-      fullAddress: "The Rockford Corner Bar, Rockford, MI",
-      image:
-        "https://web.cvent.com/event_guestside_app/_next/image?url=https%3A%2F%2Fimages.cvent.com%2Fc49e750ef94b4a73879b4e57ae9c1393%2Fa261375d7d47fd2cd2c68c3a86dd821f%2Fd978795e378242b5af5233c775c250e4%2Ff65bb8e0f27745f5bcf821b889bc6407!_!eb5aa18403450c956b23c2a0b455af07.jpeg&w=3840&q=75",
-      badge: "In-Person",
-    },
-    {
-      id: 5,
-      title: "WMHCC Conecta Membership Meeting",
-      date: "11/25/2025",
-      time: "5:00 PM - 7:00 PM",
-      location: "Acrisure",
-      organizerName: "West Michigan Hispanic Chamber of Commerce",
-      fullAddress: "Acrisure, Grand Rapids, MI",
-      image:
-        "https://chambermaster.blob.core.windows.net/userfiles/UserFiles/chambers/2018/Image/November25Conecta.png",
-      badge: "In-Person",
-    },
-  ];
+        if (error) throw error;
+
+        // Transform data to match the expected format
+        const transformedEvents = data.map((event) => ({
+          id: event.id,
+          title: event.title,
+          date: event.date,
+          time: event.time,
+          location: event.location_name,
+          organizerName:
+            event.organization === "Other"
+              ? event.organization_custom
+              : event.organization,
+          fullAddress: event.full_address,
+          image: event.image_url,
+          badge: event.event_badge,
+          tags: event.tags ? event.tags.split(",").map((t) => t.trim()) : [],
+          description: event.short_description,
+          fullDescription: event.full_description,
+          organizerDescription: event.organizer_description,
+          registrationUrl: event.registration_url,
+          isFeatured: event.is_featured,
+        }));
+
+        setEvents(transformedEvents);
+      } catch (error) {
+        console.error("Error loading events:", error);
+      } finally {
+        setLoadingEvents(false);
+      }
+    };
+
+    loadEvents();
+  }, []);
 
   const navItems = [
     { id: "dashboard", icon: Home, label: "Dashboard" },
@@ -556,7 +748,7 @@ function Dashboard() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-4 text-white">
                 <h2 className="text-xl md:text-2xl font-bold tracking-tight">
-                  Discover. Connect. Grow.
+                  Connect. Discover. Grow.
                 </h2>
               </div>
             </div>
@@ -660,7 +852,10 @@ function Dashboard() {
                             key={index}
                             onClick={() => {
                               // Store the user ID for highlighting in connections
-                              sessionStorage.setItem('highlightUserId', person.id);
+                              sessionStorage.setItem(
+                                "highlightUserId",
+                                person.id,
+                              );
                               setActiveTab("connections");
                               window.scrollTo({ top: 0, behavior: "instant" });
                             }}
@@ -784,7 +979,7 @@ function Dashboard() {
                     className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black cursor-pointer hover:bg-gray-50 transition-colors"
                   >
                     <h3 className="font-bold text-black text-lg">
-                      Resources & Insights
+                      All Resources and Insights →
                     </h3>
                   </div>
                   <p className="text-xs text-gray-500 mt-0.5">
@@ -792,71 +987,46 @@ function Dashboard() {
                   </p>
                 </div>
 
-                {/* Carousel Content with Thumbnail on Left */}
+                {/* Featured Content with Thumbnail on Left */}
                 <div
                   onClick={() => {
-                    if (featuredContent[featuredContentIndex].url) {
-                      window.open(
-                        featuredContent[featuredContentIndex].url,
-                        "_blank",
-                      );
-                    }
+                    // Track engagement when viewing featured content
+                    const currentCount = parseInt(
+                      localStorage.getItem("userEngagementCount") || "0",
+                      10,
+                    );
+                    localStorage.setItem(
+                      "userEngagementCount",
+                      (currentCount + 1).toString(),
+                    );
+                    navigate("/resources-insights");
                   }}
                   className="flex flex-col md:flex-row items-start gap-4 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition-colors cursor-pointer"
                 >
                   {/* Thumbnail Image */}
                   <img
-                    src={featuredContent[featuredContentIndex].image}
-                    alt={featuredContent[featuredContentIndex].title}
+                    src={featuredContent[0].image}
+                    alt={featuredContent[0].title}
                     className="w-32 h-32 md:w-36 md:h-36 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm"
                   />
 
-                  {/* Carousel Navigation - Horizontal: < 1 of 3 > */}
-                  <div className="flex items-center gap-2 self-start">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setFeaturedContentIndex(
-                          (featuredContentIndex - 1 + featuredContent.length) %
-                            featuredContent.length,
-                        );
-                      }}
-                      className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                      aria-label="Previous tip"
-                    >
-                      <ChevronLeft className="w-5 h-5 text-gray-700" />
-                    </button>
-
-                    <span className="text-sm font-medium text-gray-800 px-3 py-2 bg-gray-100 rounded-lg whitespace-nowrap">
-                      {featuredContentIndex + 1} of {featuredContent.length}
-                    </span>
-
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setFeaturedContentIndex(
-                          (featuredContentIndex + 1) % featuredContent.length,
-                        );
-                      }}
-                      className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                      aria-label="Next tip"
-                    >
-                      <ChevronRight className="w-5 h-5 text-gray-700" />
-                    </button>
-                  </div>
-
-                  {/* Right side: Content */}
+                  {/* Content */}
                   <div className="flex-1 min-w-0">
                     <h4 className="font-bold text-gray-900 mb-2 text-lg leading-tight">
-                      {featuredContent[featuredContentIndex].title}
+                      {featuredContent[0].title}
                     </h4>
+                    {featuredContent[0].author && (
+                      <p className="text-xs text-gray-500 italic mb-2">
+                        By {featuredContent[0].author}
+                      </p>
+                    )}
                     <p className="text-sm text-gray-600 mb-2 line-clamp-2 leading-relaxed">
-                      {featuredContent[featuredContentIndex].description}
+                      {featuredContent[0].description}
                     </p>
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                      {featuredContent[featuredContentIndex].tags && (
+                      {featuredContent[0].tags && (
                         <div className="flex gap-2 flex-wrap">
-                          {featuredContent[featuredContentIndex].tags
+                          {featuredContent[0].tags
                             .split(",")
                             .slice(0, 2)
                             .map((tag, i) => (
@@ -869,13 +1039,13 @@ function Dashboard() {
                             ))}
                         </div>
                       )}
-                      {featuredContent[featuredContentIndex].sponsoredBy && (
+                      {featuredContent[0].sponsoredBy && (
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-gray-400">
                             Sponsored by
                           </span>
                           <span className="text-xs font-medium text-gray-700">
-                            {featuredContent[featuredContentIndex].sponsoredBy}
+                            {featuredContent[0].sponsoredBy}
                           </span>
                         </div>
                       )}
@@ -1048,13 +1218,14 @@ function Dashboard() {
       className="bg-gray-50 pb-32 md:pb-0"
       style={{ minHeight: "100dvh", WebkitOverflowScrolling: "touch" }}
     >
-      <div className="bg-gradient-to-r from-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
+      <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
         <span className="font-medium">
           Welcome to Networking BudE •{" "}
           <button
             onClick={() => {
               localStorage.removeItem("onboardingCompleted");
               window.location.href = "/";
+              // @ todo must log out here.
             }}
             className="underline hover:no-underline font-medium"
           >
@@ -1063,12 +1234,6 @@ function Dashboard() {
         </span>
       </div>
       <div className="md:flex">
-        <Sidebar
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          onContactUsClick={() => setShowContactModal(true)}
-        />
-
         <main className="flex-1 w-full overflow-x-hidden">
           {/* Mobile Header */}
           <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
@@ -1081,7 +1246,7 @@ function Dashboard() {
                 <Menu className="w-6 h-6" />
               </button>
               <img
-                src="/BudE-Logo-Final.png"
+                src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png"
                 alt="BudE Logo"
                 className="h-16 w-auto"
               />
@@ -1472,37 +1637,92 @@ function Dashboard() {
                 Loving BudE? Share it!
               </h3>
               <p className="text-gray-600 mb-6">
-                Help grow our networking community! Invite friends and
-                colleagues who would benefit from making meaningful connections.
+                Help grow our networking community! Copy the link below and
+                share with friends and colleagues.
               </p>
-              <div className="flex flex-col gap-3">
-                <button
-                  onClick={() => {
-                    const shareText = `Check out Networking BudE - it's helping me make meaningful professional connections! ${window.location.origin}`;
-                    if (navigator.share) {
-                      navigator
-                        .share({
-                          title: "Networking BudE",
-                          text: shareText,
-                        })
-                        .catch(() => {});
-                    } else {
-                      navigator.clipboard.writeText(shareText);
-                      alert("Link copied to clipboard!");
-                    }
-                    setShowSharePrompt(false);
-                  }}
-                  className="w-full bg-[#009900] text-white py-3 rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00]"
-                >
-                  Share with Friends
-                </button>
-                <button
-                  onClick={() => setShowSharePrompt(false)}
-                  className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-                >
-                  Maybe Later
-                </button>
+
+              {/* Link Display with Copy Button */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex-1 overflow-hidden">
+                    <p className="text-sm text-gray-500 mb-1">Share Link:</p>
+                    <p className="text-sm font-mono text-gray-900 truncate">
+                      {window.location.origin}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      try {
+                        if (
+                          navigator.clipboard &&
+                          navigator.clipboard.writeText
+                        ) {
+                          navigator.clipboard
+                            .writeText(window.location.origin)
+                            .then(() => {
+                              setLinkCopied(true);
+                              setTimeout(() => setLinkCopied(false), 2000);
+                            })
+                            .catch(() => {
+                              prompt("Copy this link:", window.location.origin);
+                            });
+                        } else {
+                          prompt("Copy this link:", window.location.origin);
+                        }
+                      } catch (err) {
+                        prompt("Copy this link:", window.location.origin);
+                      }
+                    }}
+                    className="flex-shrink-0 bg-[#009900] text-white px-4 py-2 rounded-lg hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] flex items-center gap-2"
+                  >
+                    {linkCopied ? (
+                      <>
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                        <span>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                          />
+                        </svg>
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
+
+              <button
+                onClick={() => {
+                  setShowSharePrompt(false);
+                  setLinkCopied(false);
+                }}
+                className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

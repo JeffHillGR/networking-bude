@@ -1,17 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Calendar, MapPin, Heart, ExternalLink, Share2, User, Home, TrendingUp, Users } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Heart, ExternalLink, Share2, User, Home, TrendingUp, Users, X } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
+import { supabase } from '../lib/supabase.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 function EventDetail() {
   const navigate = useNavigate();
   const { eventId } = useParams();
+  const { user } = useAuth();
   const [isFavorited, setIsFavorited] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
   const [adInquirySubmitted, setAdInquirySubmitted] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [showScientistModal, setShowScientistModal] = useState(false);
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showSignupPrompt, setShowSignupPrompt] = useState(false);
+
+  // Track user engagement when viewing event details
+  useEffect(() => {
+    const currentCount = parseInt(localStorage.getItem('userEngagementCount') || '0', 10);
+    localStorage.setItem('userEngagementCount', (currentCount + 1).toString());
+  }, [eventId]); // Track once per event view
+
+  // Check if non-authenticated user has already viewed content
+  useEffect(() => {
+    if (!user) {
+      const hasViewedPublicContent = sessionStorage.getItem('hasViewedPublicContent');
+      if (!hasViewedPublicContent) {
+        // First view is free, mark it
+        sessionStorage.setItem('hasViewedPublicContent', 'true');
+      }
+      // Don't show prompt immediately - wait for them to try to navigate
+    }
+  }, [user, eventId]);
 
   // Format phone number as user types: (XXX) XXX-XXXX
   const formatPhoneNumber = (value) => {
@@ -27,10 +52,58 @@ function EventDetail() {
     return value;
   };
 
-  // Load admin-created events from localStorage
-  const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
+  // Load event from Supabase
+  useEffect(() => {
+    const loadEvent = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select('*')
+          .eq('id', eventId)
+          .single();
 
-  // Real event data - Grand Rapids networking events
+        if (error) throw error;
+
+        if (data) {
+          // Transform data to match expected format
+          const transformedEvent = {
+            id: data.id,
+            title: data.title,
+            description: data.short_description,
+            fullDescription: data.full_description,
+            date: data.date,
+            time: data.time,
+            location: data.location_name,
+            fullAddress: data.full_address,
+            image: data.image_url,
+            badge: data.event_badge,
+            organizer: {
+              name: data.organization === 'Other' ? data.organization_custom : data.organization,
+              avatar: (data.organization === 'Other' ? data.organization_custom : data.organization)
+                ?.split(' ')
+                .map(w => w[0])
+                .join('')
+                .slice(0, 2)
+                .toUpperCase() || 'EO',
+              description: data.organizer_description || 'Event organization details'
+            },
+            tags: data.tags ? data.tags.split(',').map(t => t.trim()) : [],
+            registrationUrl: data.registration_url
+          };
+
+          setEvent(transformedEvent);
+        }
+      } catch (error) {
+        console.error('Error loading event:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEvent();
+  }, [eventId]);
+
+  // Fallback event data for backward compatibility (can be removed after migration)
   const defaultEventData = {
     1: {
       id: 1,
@@ -108,25 +181,6 @@ function EventDetail() {
       tags: ['Networking', 'Hispanic Business', 'Community', 'Chamber', 'Professional Development'],
       registrationUrl: 'https://members.westmihcc.org/events/details/wmhcc-conecta-membership-meeting-hosted-by-acrisure-2908'
     },
-    8: {
-      id: 8,
-      title: 'ATHENA Leadership Forum 2025',
-      description: 'Leading Through Connection: The Role of Mentorship in Every Season of Life. This final ATHENA Leadership Forum explores mentorship\'s transformative impact on leadership and personal growth.',
-      fullDescription: 'Join the Grand Rapids Chamber for the final ATHENA Leadership Forum of 2025, "Leading Through Connection: The Role of Mentorship in Every Season of Life."\n\nThis engaging forum features Megan Rydecki, Director of the Hauenstein Center for Presidential Studies at Grand Valley State University, who will explore how mentorship shapes leadership development throughout different life stages.\n\nWhether you\'re seeking a mentor, currently mentoring others, or interested in understanding how mentorship drives personal and professional growth, this forum offers valuable insights and networking opportunities.\n\nThe ATHENA Leadership Forum series celebrates and supports women leaders while fostering inclusive leadership development across all sectors. Join fellow professionals at The High Five GR for an afternoon of learning, connection, and inspiration.\n\nRegistration required. Event is open to all professionals interested in leadership development and mentorship.',
-      date: 'Tuesday, November 4, 2025',
-      time: '3:00 PM - 5:00 PM',
-      location: 'The High Five GR',
-      fullAddress: 'The High Five GR, Grand Rapids, MI',
-      image: 'https://grandrapids.org/wp-content/uploads/2025/01/Graphic-ATHENA-Leadership-Forum-11.04.25-1536x864.jpg',
-      badge: 'In-Person',
-      organizer: {
-        name: 'Grand Rapids Chamber',
-        avatar: 'GR',
-        description: 'The Grand Rapids Chamber advocates for business growth, economic development, and inclusive workplace cultures throughout West Michigan.'
-      },
-      tags: ['Leadership', 'Mentorship', 'Women in Leadership', 'Professional Development', 'Networking'],
-      registrationUrl: 'https://grandrapids.org/event/athena-leadership-forum-2025-11-04/'
-    },
     6: {
       id: 6,
       title: 'Gabe Karp – Best-selling Author and Keynote Speaker',
@@ -167,22 +221,22 @@ function EventDetail() {
     },
     4: {
       id: 4,
-      title: 'Place Matters Summit 2025',
-      description: 'Join community leaders from government, business, and nonprofits for meaningful discussions on nurturing vibrant communities and neighborhoods.',
-      fullDescription: 'The Place Matters Summit brings together community leaders from government, business, non-profit, and association industries for meaningful discussions on creating vibrant communities.\n\nFeatured Keynote: "Redefining Community: People, Places, Purpose" by Allyson Brunette. This powerful presentation addresses how social institutions are deteriorating due to digital-induced isolation and poor urban design, and offers solutions for rebuilding authentic community connections.\n\nAdditional Session: "Growth, Development, and Community Character: You Can Have it All!" presented by Dan Leonard, Redevelopment Services Director at Michigan Economic Development Corporation. Learn how communities can balance growth with preserving their unique character.\n\nThis summit provides valuable insights and inspiration to take proactive steps in nurturing vibrant communities and neighborhoods across West Michigan. Previous summits have sold out, demonstrating strong community interest in place-making and community development.\n\nOrganized by The Right Place, the regional economic development organization serving Greater Grand Rapids.',
-      date: 'Thursday, November 6, 2025',
-      time: '12:00 PM - 5:00 PM',
-      location: 'The Rockford Corner Bar',
-      fullAddress: 'The Rockford Corner Bar, Rockford, MI',
-      image: 'https://web.cvent.com/event_guestside_app/_next/image?url=https%3A%2F%2Fimages.cvent.com%2Fc49e750ef94b4a73879b4e57ae9c1393%2Fa261375d7d47fd2cd2c68c3a86dd821f%2Fd978795e378242b5af5233c775c250e4%2Ff65bb8e0f27745f5bcf821b889bc6407!_!eb5aa18403450c956b23c2a0b455af07.jpeg&w=3840&q=75',
+      title: '2026 Economic Outlook',
+      description: 'Join economic experts and business leaders for insights into the 2026 economic forecast. Discuss trends, challenges, and opportunities shaping West Michigan\'s business landscape.',
+      fullDescription: 'Join The Right Place for the annual Economic Outlook event, bringing together economic experts and business leaders to discuss the 2026 economic forecast for West Michigan and beyond.\n\nThis essential event provides valuable insights into:\n• National and regional economic trends for 2026\n• Labor market projections and workforce development\n• Industry-specific forecasts and opportunities\n• Real estate and development outlook\n• Key challenges and strategic opportunities for businesses\n\nFeaturing expert presentations and panel discussions with economists, business leaders, and industry analysts who will help you make informed decisions for the year ahead.\n\nWhether you\'re a CEO, business owner, investor, or community leader, the Economic Outlook provides the intelligence you need to navigate the evolving economic landscape and position your organization for success in 2026.\n\nNetworking lunch included. This annual event consistently draws 300+ regional business leaders and typically sells out.\n\nOrganized by The Right Place, the regional economic development organization serving Greater Grand Rapids.',
+      date: 'Monday, December 9, 2025',
+      time: '11:30 AM - 1:30 PM',
+      location: 'Amway Grand Plaza Hotel',
+      fullAddress: 'Amway Grand Plaza Hotel, Grand Rapids, MI',
+      image: 'https://rightplace.nyc3.cdn.digitaloceanspaces.com/production/uploads/images/Economic-Outlook-2026-Email-Header.png',
       badge: 'In-Person',
       organizer: {
         name: 'The Right Place',
         avatar: 'RP',
         description: 'The Right Place is the regional economic development organization serving Greater Grand Rapids, focused on business growth, talent attraction, and community development.'
       },
-      tags: ['Community Development', 'Leadership', 'Networking', 'Urban Planning', 'Economic Development'],
-      registrationUrl: 'https://web.cvent.com/event/d978795e-3782-42b5-af52-33c775c250e4/summary'
+      tags: ['Economic Forecast', 'Business Strategy', 'Leadership', 'Networking', 'Regional Development'],
+      registrationUrl: 'https://www.rightplace.org/events/economic-outlook-for-2026'
     },
     8: {
       id: 8,
@@ -205,23 +259,34 @@ function EventDetail() {
     }
   };
 
-  // Find admin event by ID first, fall back to default events
-  const adminEvent = adminEvents.find(e => String(e.id) === String(eventId));
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading event details...</p>
+        </div>
+      </div>
+    );
+  }
 
-  // If admin event exists, format it with proper structure
-  let event;
-  if (adminEvent) {
-    event = {
-      ...adminEvent,
-      organizer: {
-        name: adminEvent.organizerName || 'Event Organizer',
-        avatar: adminEvent.organizerName ? adminEvent.organizerName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : 'EO',
-        description: adminEvent.organizerDescription || 'Event organization details'
-      },
-      tags: adminEvent.tags ? adminEvent.tags.split(',').map(t => t.trim()) : []
-    };
-  } else {
-    event = defaultEventData[eventId] || defaultEventData[1];
+  // Show error if event not found
+  if (!event) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Event Not Found</h2>
+          <p className="text-gray-600 mb-4">The event you're looking for doesn't exist.</p>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    );
   }
 
   // Suggested connections - currently disabled (will show real connections in future)
@@ -230,7 +295,7 @@ function EventDetail() {
   return (
     <>
       {/* Top banner matching site header - spans full width */}
-      <div className="bg-gradient-to-r from-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
+      <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
         <span className="font-medium">
           Welcome to Networking BudE • <button
           onClick={() => {
@@ -245,13 +310,25 @@ function EventDetail() {
       </div>
 
       <div className="flex min-h-screen bg-gray-50">
-        <Sidebar activeTab="events" setActiveTab={() => navigate('/dashboard')} />
+        <Sidebar activeTab="events" setActiveTab={(tab) => {
+          if (!user && sessionStorage.getItem('hasViewedPublicContent')) {
+            setShowSignupPrompt(true);
+          } else {
+            navigate('/dashboard');
+          }
+        }} />
 
         <div className="flex-1">
           <div className="bg-white border-b border-gray-200">
           <div className="px-4 py-4">
             <button
-              onClick={() => navigate('/dashboard', { state: { activeTab: 'events' } })}
+              onClick={() => {
+                if (!user && sessionStorage.getItem('hasViewedPublicContent')) {
+                  setShowSignupPrompt(true);
+                } else {
+                  navigate('/dashboard', { state: { activeTab: 'events' } });
+                }
+              }}
               className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -508,74 +585,119 @@ function EventDetail() {
         </div>
       </div>
 
-      {/* Share Modal */}
-      {showShareModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowShareModal(false)}>
-          <div className="bg-white rounded-lg p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-gray-900">Share Event</h2>
-              <button
-                onClick={() => setShowShareModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+      {/* Share Event Modal */}
+      {showShareModal && event && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 relative">
+            <button
+              onClick={() => {
+                setShowShareModal(false);
+                setLinkCopied(false);
+              }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Share2 className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Share Event</h3>
+              <p className="text-sm text-gray-600">{event.title}</p>
             </div>
 
-            <p className="text-gray-600 mb-6">Share this event with your network</p>
-
-            <div className="space-y-3">
-              {/* LinkedIn Share */}
-              <a
-                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-4 p-4 bg-[#0A66C2] text-white rounded-lg hover:bg-[#004182] transition-colors"
-              >
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                </svg>
-                <div className="flex-1">
-                  <div className="font-semibold">Share on LinkedIn</div>
-                  <div className="text-sm opacity-90">Share with your professional network</div>
+            {/* Link Display with Copy Button */}
+            <div className="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex-1 overflow-hidden">
+                  <p className="text-sm text-gray-500 mb-1">Event Link:</p>
+                  <p className="text-sm font-mono text-gray-900 truncate">{window.location.href}</p>
                 </div>
-              </a>
-
-              {/* Facebook Share */}
-              <a
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-4 p-4 bg-[#1877F2] text-white rounded-lg hover:bg-[#145dbf] transition-colors"
-              >
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
-                <div className="flex-1">
-                  <div className="font-semibold">Share on Facebook</div>
-                  <div className="text-sm opacity-90">Share with friends and family</div>
-                </div>
-              </a>
-
-              {/* Copy Link */}
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  alert('Link copied to clipboard!');
-                }}
-                className="flex items-center gap-4 p-4 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition-colors w-full text-left"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                <div className="flex-1">
-                  <div className="font-semibold">Copy Link</div>
-                  <div className="text-sm text-gray-600">Copy event link to clipboard</div>
-                </div>
-              </button>
+                <button
+                  onClick={() => {
+                    try {
+                      if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(window.location.href).then(() => {
+                          setLinkCopied(true);
+                          setTimeout(() => setLinkCopied(false), 2000);
+                        }).catch(() => {
+                          prompt('Copy this link:', window.location.href);
+                        });
+                      } else {
+                        prompt('Copy this link:', window.location.href);
+                      }
+                    } catch (err) {
+                      prompt('Copy this link:', window.location.href);
+                    }
+                  }}
+                  className="flex-shrink-0 bg-[#009900] text-white px-4 py-2 rounded-lg hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] flex items-center gap-2"
+                >
+                  {linkCopied ? (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
+
+            {/* Share Options */}
+            <div className="space-y-2 mb-4">
+              <p className="text-sm font-medium text-gray-700 mb-2">Share to:</p>
+              <div className="grid grid-cols-2 gap-2">
+                <a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#0077B5] text-white rounded-lg hover:bg-[#006399] transition-colors text-sm"
+                >
+                  LinkedIn
+                </a>
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#145dbf] transition-colors text-sm"
+                >
+                  Facebook
+                </a>
+                <a
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent('Check out this event: ' + event.title)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm"
+                >
+                  X
+                </a>
+                <a
+                  href={`mailto:?subject=${encodeURIComponent('Check out this event: ' + event.title)}&body=${encodeURIComponent('I thought you might be interested in this event:\n\n' + event.title + '\n\n' + window.location.href)}`}
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
+                >
+                  Email
+                </a>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setShowShareModal(false);
+                setLinkCopied(false);
+              }}
+              className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
@@ -770,6 +892,39 @@ function EventDetail() {
                 className="px-6 md:px-8 py-2 md:py-3 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
               >
                 Got it!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Signup Prompt Modal for Non-Authenticated Users */}
+      {showSignupPrompt && !user && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl border-4 border-[#D0ED00]">
+            <div className="text-center">
+              <div className="mb-6">
+                <div className="w-20 h-20 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto">
+                  <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">Create an Account for Full Access</h2>
+              <p className="text-gray-600 mb-6">
+                It only takes 2 minutes to join our networking community and unlock all events and content!
+              </p>
+              <button
+                onClick={() => window.location.href = '/'}
+                className="w-full bg-[#009900] text-white py-3 rounded-lg font-bold hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] mb-3"
+              >
+                Create Account
+              </button>
+              <button
+                onClick={() => setShowSignupPrompt(false)}
+                className="text-gray-500 text-sm hover:text-gray-700"
+              >
+                Maybe later
               </button>
             </div>
           </div>

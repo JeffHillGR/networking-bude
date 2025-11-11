@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, Calendar, Users, ExternalLink, X, TrendingUp, ArrowLeft } from 'lucide-react';
+import { Search, MapPin, Calendar, Users, ExternalLink, X, TrendingUp, ArrowLeft, Share2 } from 'lucide-react';
+import { supabase } from '../lib/supabase.js';
 
 function Events({ onBackToDashboard }) {
   const navigate = useNavigate();
@@ -20,6 +21,17 @@ function Events({ onBackToDashboard }) {
     submitterEmail: '',
     eventUrl: ''
   });
+  const [allEvents, setAllEvents] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareEvent, setShareEvent] = useState(null);
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  // Track user engagement for share prompt
+  const trackEngagement = () => {
+    const currentCount = parseInt(localStorage.getItem('userEngagementCount') || '0', 10);
+    localStorage.setItem('userEngagementCount', (currentCount + 1).toString());
+  };
 
   // Format phone number as user types: (XXX) XXX-XXXX
   const formatPhoneNumber = (value) => {
@@ -52,66 +64,55 @@ function Events({ onBackToDashboard }) {
     });
   }, []);
 
-  // Load admin-created events from localStorage
-  const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
+  // Load events from Supabase
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select('*')
+          .order('slot_number', { ascending: true });
 
-  // Helper function to parse date strings (MM/DD/YYYY) into Date objects for sorting
+        if (error) throw error;
+
+        // Transform data to match the expected format
+        const transformedEvents = data.map(event => ({
+          id: event.id,
+          title: event.title,
+          description: event.short_description,
+          date: event.date,
+          time: event.time,
+          location: event.location_name,
+          organizerName: event.organization === 'Other' ? event.organization_custom : event.organization,
+          image: event.image_url,
+          badge: event.event_badge,
+          isFeatured: event.is_featured
+        }));
+
+        setAllEvents(transformedEvents);
+      } catch (error) {
+        console.error('Error loading events:', error);
+      } finally {
+        setLoadingEvents(false);
+      }
+    };
+
+    loadEvents();
+  }, []);
+
+  // Separate featured and non-featured events
+  const featuredEvents = allEvents.filter(e => e.isFeatured);
+  const upcomingEvents = allEvents.filter(e => !e.isFeatured);
+
+  // Helper function to parse date strings for sorting
   const parseEventDate = (dateString) => {
-    const [month, day, year] = dateString.split('/');
-    return new Date(year, month - 1, day);
-  };
-
-  // Featured events in custom order (not sorted by date)
-  const featuredEvents = [
-    {
-      id: 1,
-      title: 'Bamboo Grand Rapids: Grand Opening Celebration',
-      description: 'Celebrate the grand opening of Bamboo Grand Rapids, a new center for entrepreneurship, creativity, and innovation in downtown Grand Rapids.',
-      date: '12/4/2025',
-      time: '4:00 PM - 8:00 PM',
-      location: '2 Fulton Street West',
-      organizerName: 'Bamboo Detroit',
-      attendees: '500',
-      image: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F1120287333%2F84709515697%2F1%2Foriginal.20250910-174858?crop=focalpoint&fit=crop&w=940&auto=format%2Ccompress&q=75&sharp=10&fp-x=0.208333333333&fp-y=0.621848739496&s=9f37de221b0249dee8dd7ee347395056',
-      badge: 'In-Person'
-    },
-    {
-      id: 2,
-      title: 'Talent & Inclusion Summit',
-      description: 'This signature Chamber event brings together executives, HR professionals, and thought leaders focused on workforce development. The 2025 theme is "Unlocking Talent, Inclusion, and Retention for a Stronger West Michigan."',
-      date: '11/11/2025',
-      time: '8:00 AM - 1:00 PM',
-      location: 'JW Marriott Grand Rapids',
-      organizerName: 'Grand Rapids Chamber',
-      attendees: '200+',
-      image: 'https://grandrapids.org/wp-content/uploads/2024/10/GRC_TIS-1-2048x1152.jpg',
-      badge: 'In-Person'
-    },
-    {
-      id: 3,
-      title: '17th Annual Jay & Betty Van Andel Legacy Awards Gala',
-      description: 'Celebrate community leadership and impact at this elegant gala honoring the Van Andel legacy and supporting the Grand Rapids Public Museum.',
-      date: '11/12/2025',
-      time: '6:00 PM - 10:00 PM',
-      location: 'JW Marriott Grand Rapids',
-      organizerName: 'Grand Rapids Public Museum',
-      attendees: '300+',
-      image: 'https://www.grpm.org/wp-content/uploads/2025/06/2025_Gala_Web-Header_Option-05.png',
-      badge: 'In-Person'
-    },
-    {
-      id: 4,
-      title: 'Place Matters Summit 2025',
-      description: 'Join community leaders from government, business, and nonprofits for meaningful discussions on nurturing vibrant communities and neighborhoods.',
-      date: '11/6/2025',
-      time: '12:00 PM - 5:00 PM',
-      location: 'The Rockford Corner Bar',
-      organizerName: 'The Right Place',
-      attendees: '150+',
-      image: 'https://web.cvent.com/event_guestside_app/_next/image?url=https%3A%2F%2Fimages.cvent.com%2Fc49e750ef94b4a73879b4e57ae9c1393%2Fa261375d7d47fd2cd2c68c3a86dd821f%2Fd978795e378242b5af5233c775c250e4%2Ff65bb8e0f27745f5bcf821b889bc6407!_!eb5aa18403450c956b23c2a0b455af07.jpeg&w=3840&q=75',
-      badge: 'In-Person'
+    // Handle different date formats
+    if (dateString.includes('/')) {
+      const [month, day, year] = dateString.split('/');
+      return new Date(year, month - 1, day);
     }
-  ];
+    return new Date(dateString);
+  };
 
   const handleSubmitEvent = async (e) => {
     e.preventDefault();
@@ -158,60 +159,8 @@ function Events({ onBackToDashboard }) {
     }
   };
 
-  const moreEvents = [
-    {
-      id: 5,
-      title: 'WMHCC Conecta Membership Meeting',
-      description: 'Join the West Michigan Hispanic Chamber of Commerce for the monthly Conecta membership meeting. Network with fellow chamber members, learn about upcoming initiatives, and celebrate Hispanic business community achievements. Hosted by Acrisure.',
-      date: '11/25/2025',
-      time: '5:00 PM - 7:00 PM',
-      location: 'Acrisure',
-      organizerName: 'West Michigan Hispanic Chamber of Commerce',
-      attendees: '75+',
-      price: 'Free for Members',
-      badge: 'In-Person',
-      image: 'https://chambermaster.blob.core.windows.net/userfiles/UserFiles/chambers/2018/Image/November25Conecta.png'
-    },
-    {
-      id: 8,
-      title: 'ATHENA Leadership Forum 2025',
-      description: 'Leading Through Connection: The Role of Mentorship in Every Season of Life. This final ATHENA Leadership Forum explores mentorship\'s transformative impact on leadership and personal growth, featuring Megan Rydecki, Director of the Hauenstein Center for Presidential Studies.',
-      date: '11/4/2025',
-      time: '3:00 PM - 5:00 PM',
-      location: 'The High Five GR',
-      organizerName: 'Grand Rapids Chamber',
-      attendees: '100+',
-      price: 'Registration Required',
-      badge: 'In-Person',
-      image: 'https://grandrapids.org/wp-content/uploads/2025/01/Graphic-ATHENA-Leadership-Forum-11.04.25-1536x864.jpg'
-    },
-    {
-      id: 6,
-      title: 'Gabe Karp – Best-selling Author and Keynote Speaker',
-      description: 'Globally recognized expert in leadership and high-performance teams. Author of "Don\'t Get Mad at Penguins," presenting his proprietary system for leveraging conflict effectively. Operating Partner at Detroit Venture Partners.',
-      date: '11/17/2025',
-      time: '11:30 AM - 1:30 PM',
-      location: 'JW Marriott Grand Rapids',
-      attendees: '200+',
-      organizerName: 'Economic Club of Grand Rapids',
-      price: 'Registration Required',
-      badge: 'In-Person',
-      image: 'https://miro.medium.com/v2/resize:fit:1100/format:webp/1*x7S7Iiz737OW5qXQGSpy3w.jpeg'
-    },
-    {
-      id: 7,
-      title: 'West Michigan Capstone Dinner 2025',
-      description: 'Celebrating 20 years of Inforum helping women lead and succeed in West Michigan. Featuring fireside chat with Andi Owen, CEO of MillerKnoll, discussing her leadership journey and insights.',
-      date: '11/20/2025',
-      time: '5:30 PM - 7:45 PM',
-      location: 'JW Marriott Grand Rapids',
-      attendees: '200+',
-      organizerName: 'Inforum',
-      price: 'Registration Required',
-      badge: 'In-Person',
-      image: 'https://npr.brightspotcdn.com/dims4/default/ec2181b/2147483647/strip/true/crop/383x214%2B0%2B0/resize/880x492!/quality/90/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2Flegacy%2Fsites%2Fwgvu%2Ffiles%2F201511%2FInforum.jpg'
-    }
-  ];
+  // Use upcomingEvents from Supabase (non-featured events)
+  const moreEvents = upcomingEvents;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -300,7 +249,10 @@ function Events({ onBackToDashboard }) {
                 {featuredEvents.map((event) => (
                   <div
                     key={event.id}
-                    onClick={() => navigate(`/events/${event.id}`)}
+                    onClick={() => {
+                      trackEngagement(); // Count viewing event as engagement
+                      navigate(`/events/${event.id}`);
+                    }}
                     className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                   >
                     <div className="relative h-48 bg-white">
@@ -336,7 +288,18 @@ function Events({ onBackToDashboard }) {
                           <span className="text-[#009900] font-medium">Who's Going - Feature Coming Soon</span>
                         </div>
                       </div>
-                      <div className="flex justify-end">
+                      <div className="flex justify-between items-center">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShareEvent(event);
+                            setShowShareModal(true);
+                          }}
+                          className="text-gray-600 hover:text-[#009900] transition-colors"
+                          title="Share event"
+                        >
+                          <Share2 className="h-5 w-5" />
+                        </button>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -361,7 +324,10 @@ function Events({ onBackToDashboard }) {
                 {[...moreEvents].sort((a, b) => parseEventDate(a.date) - parseEventDate(b.date)).map((event) => (
                   <div
                     key={event.id}
-                    onClick={() => navigate(`/events/${event.id}`)}
+                    onClick={() => {
+                      trackEngagement(); // Count viewing event as engagement
+                      navigate(`/events/${event.id}`);
+                    }}
                     className={`bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md transition-shadow cursor-pointer relative ${event.isTrending ? 'border-2 border-green-200' : ''}`}
                   >
                     <div className="flex flex-col md:flex-row gap-4 md:gap-6">
@@ -412,16 +378,29 @@ function Events({ onBackToDashboard }) {
                               <span className="text-xs text-gray-600">{event.price}</span>
                             )}
                           </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/events/${event.id}`);
-                            }}
-                            className="flex items-center gap-2 text-[#009900] font-medium hover:text-[#007700] text-sm md:text-base whitespace-nowrap"
-                          >
-                            View Details
-                            <ExternalLink className="h-4 w-4" />
-                          </button>
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShareEvent(event);
+                                setShowShareModal(true);
+                              }}
+                              className="text-gray-600 hover:text-[#009900] transition-colors"
+                              title="Share event"
+                            >
+                              <Share2 className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/events/${event.id}`);
+                              }}
+                              className="flex items-center gap-2 text-[#009900] font-medium hover:text-[#007700] text-sm md:text-base whitespace-nowrap"
+                            >
+                              View Details
+                              <ExternalLink className="h-4 w-4" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -819,6 +798,126 @@ function Events({ onBackToDashboard }) {
                 </div>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Share Event Modal */}
+      {showShareModal && shareEvent && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 relative">
+            <button
+              onClick={() => {
+                setShowShareModal(false);
+                setShareEvent(null);
+                setLinkCopied(false);
+              }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Share2 className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Share Event</h3>
+              <p className="text-sm text-gray-600">{shareEvent.title}</p>
+            </div>
+
+            {/* Link Display with Copy Button */}
+            <div className="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex-1 overflow-hidden">
+                  <p className="text-sm text-gray-500 mb-1">Event Link:</p>
+                  <p className="text-sm font-mono text-gray-900 truncate">{`${window.location.origin}/events/${shareEvent.id}`}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    const eventLink = `${window.location.origin}/events/${shareEvent.id}`;
+                    try {
+                      if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(eventLink).then(() => {
+                          setLinkCopied(true);
+                          setTimeout(() => setLinkCopied(false), 2000);
+                        }).catch(() => {
+                          prompt('Copy this link:', eventLink);
+                        });
+                      } else {
+                        prompt('Copy this link:', eventLink);
+                      }
+                    } catch (err) {
+                      prompt('Copy this link:', eventLink);
+                    }
+                  }}
+                  className="flex-shrink-0 bg-[#009900] text-white px-4 py-2 rounded-lg hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] flex items-center gap-2"
+                >
+                  {linkCopied ? (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Share Options */}
+            <div className="space-y-2 mb-4">
+              <p className="text-sm font-medium text-gray-700 mb-2">Share to:</p>
+              <div className="grid grid-cols-2 gap-2">
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.origin + '/events/' + shareEvent.id)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#145dbf] transition-colors text-sm"
+                >
+                  Facebook
+                </a>
+                <a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin + '/events/' + shareEvent.id)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#0077B5] text-white rounded-lg hover:bg-[#006399] transition-colors text-sm"
+                >
+                  LinkedIn
+                </a>
+                <a
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.origin + '/events/' + shareEvent.id)}&text=${encodeURIComponent('Check out this event: ' + shareEvent.title)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm"
+                >
+                  X
+                </a>
+                <a
+                  href={`mailto:?subject=${encodeURIComponent('Check out this event: ' + shareEvent.title)}&body=${encodeURIComponent('I thought you might be interested in this event:\n\n' + shareEvent.title + '\n\n' + window.location.origin + '/events/' + shareEvent.id)}`}
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
+                >
+                  Email
+                </a>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setShowShareModal(false);
+                setShareEvent(null);
+                setLinkCopied(false);
+              }}
+              className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

@@ -1,9 +1,18 @@
 function TermsPage() {
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] border-b border-gray-200 px-6 py-8">
+        <div className="text-center">
+          <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
+            <h1 className="text-3xl font-bold text-black">Terms of Service</h1>
+          </div>
+          <p className="text-white mt-2">Last updated: October 3, 2025</p>
+        </div>
+      </div>
+
+      <div className="py-12 px-4">
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Terms of Service</h1>
-        <p className="text-sm text-gray-500 mb-8">Last updated: October 3, 2025</p>
 
         <div className="space-y-6 text-gray-700">
           <section>
@@ -81,6 +90,7 @@ function TermsPage() {
         <div className="mt-8 pt-6 border-t border-gray-200">
           <p className="text-sm text-gray-500">© 2025 The BudE System™. All rights reserved.</p>
         </div>
+      </div>
       </div>
     </div>
   );

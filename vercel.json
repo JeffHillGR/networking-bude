@@ -1,6 +1,18 @@
 {
   "rewrites": [
     {
+      "source": "/events/:id",
+      "destination": "/api/meta-tags?url=/events/:id"
+    },
+    {
+      "source": "/resources-insights/:id",
+      "destination": "/api/meta-tags?url=/resources-insights/:id"
+    },
+    {
+      "source": "/resources-insights",
+      "destination": "/api/meta-tags?url=/resources-insights"
+    },
+    {
       "source": "/((?!api/.*).*)",
       "destination": "/index.html"
     }
