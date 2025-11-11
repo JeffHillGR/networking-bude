@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
 function NotificationBell() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -103,7 +105,8 @@ function NotificationBell() {
     // Navigate to relevant page based on notification type
     if (notification.type === 'connection_request') {
       // Navigate to connections tab with user highlighted
-      window.location.href = `/dashboard?tab=connections&highlightUser=${notification.from_user_id}`;
+      navigate(`/dashboard?tab=connections&highlightUser=${notification.from_user_id}`);
+      setShowDropdown(false);
     }
   };
 

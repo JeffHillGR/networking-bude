@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import OnboardingFlow from './components/OnboardingFlow.jsx';
@@ -9,6 +9,21 @@ import ResourcesInsights from './components/ResourcesInsights.jsx';
 import Settings from './components/Settings.jsx';
 import ResetPassword from './components/ResetPassword.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
+
+// Component to protect routes and preserve return URL
+function ProtectedRoute({ children }) {
+  const { user } = useAuth();
+  const location = useLocation();
+  
+  if (!user) {
+    // Store the current location they were trying to go to
+    const returnUrl = `${location.pathname}${location.search}${location.hash}`;
+    sessionStorage.setItem('returnUrl', returnUrl);
+    return <Navigate to="/" replace />;
+  }
+  
+  return children;
+}
 
 function App() {
   const { user } = useAuth();
@@ -25,23 +40,23 @@ function App() {
         />
         <Route
           path="/dashboard"
-          element={user ? <Dashboard /> : <Navigate to="/" />}
+          element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
         />
         <Route
           path="/events"
-          element={user ? <Events /> : <Navigate to="/" />}
+          element={<ProtectedRoute><Events /></ProtectedRoute>}
         />
         <Route
           path="/events/:eventId"
-          element={user ? <EventDetail /> : <Navigate to="/" />}
+          element={<ProtectedRoute><EventDetail /></ProtectedRoute>}
         />
         <Route
           path="/resources-insights"
-          element={user ? <ResourcesInsights /> : <Navigate to="/" />}
+          element={<ProtectedRoute><ResourcesInsights /></ProtectedRoute>}
         />
         <Route
           path="/settings"
-          element={user ? <Settings /> : <Navigate to="/" />}
+          element={<ProtectedRoute><Settings /></ProtectedRoute>}
         />
       </Routes>
     </BrowserRouter>

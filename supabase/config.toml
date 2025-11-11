@@ -80,7 +80,7 @@ enabled = true
 # Port to use for the email testing server web interface.
 port = 54324
 # Uncomment to expose additional ports for testing user applications that send emails.
-# smtp_port = 54325
+smtp_port = 54325
 # pop3_port = 54326
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
@@ -164,7 +164,7 @@ otp_length = 6
 # Number of seconds before the email OTP expires (defaults to 1 hour).
 otp_expiry = 3600
 
-# Use a production-ready SMTP server
+# Use a production-ready SMTP server (commented for local dev)
 # [auth.email.smtp]
 # enabled = true
 # host = "smtp.sendgrid.net"
@@ -173,6 +173,16 @@ otp_expiry = 3600
 # pass = "env(SENDGRID_API_KEY)"
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
+
+# Local development SMTP server
+[auth.email.smtp]
+enabled = true
+host = "localhost"
+port = 54325
+user = "admin"
+pass = "admin"
+admin_email = "admin@networkingbude.local"
+sender_name = "Bude Team"
 
 # Uncomment to customize email template
 # [auth.email.template.invite]

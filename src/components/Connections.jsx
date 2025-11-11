@@ -14,6 +14,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
   const [selectedConnection, setSelectedConnection] = useState(null); // For Saved tab connections
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sendingRequest, setSendingRequest] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [showMondayBanner, setShowMondayBanner] = useState(false);
 
@@ -291,6 +292,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
     const person = selectedConnection || currentCard;
 
     try {
+      setSendingRequest(true);
+      
       // Call the new Supabase Edge Function (handles everything in one atomic operation)
       const { data: result, error } = await supabase.functions.invoke('send-connection-request', {
         body: {
@@ -351,6 +354,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
       setConnectionMessage('');
       setSelectedConnection(null);
       setShowComingSoonModal(true);
+    } finally {
+      setSendingRequest(false);
     }
   };
 
@@ -1310,10 +1315,24 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
               </button>
               <button
                 onClick={handleSendConnectionRequest}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#009900] text-white rounded-lg hover:bg-[#007700] transition-colors font-medium"
+                disabled={sendingRequest}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 text-white rounded-lg transition-colors font-medium ${
+                  sendingRequest 
+                    ? 'bg-gray-400 cursor-not-allowed' 
+                    : 'bg-[#009900] hover:bg-[#007700]'
+                }`}
               >
-                <Send className="w-4 h-4" />
-                Send Request
+                {sendingRequest ? (
+                  <>
+                    <div className="w-4 h-4 animate-spin border-2 border-white border-t-transparent rounded-full" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    Send Request
+                  </>
+                )}
               </button>
             </div>
           </div>

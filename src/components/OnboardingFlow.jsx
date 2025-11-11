@@ -164,8 +164,14 @@ export default function BudEOnboarding() {
     }
 
     if (data?.user) {
-      // Successfully logged in, navigate to dashboard
-      navigate('/dashboard');
+      // Successfully logged in, check for return URL or navigate to dashboard
+      const returnUrl = sessionStorage.getItem('returnUrl');
+      if (returnUrl) {
+        sessionStorage.removeItem('returnUrl');
+        navigate(returnUrl);
+      } else {
+        navigate('/dashboard');
+      }
     }
   };
 

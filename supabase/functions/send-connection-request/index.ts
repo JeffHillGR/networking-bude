@@ -1,160 +1,234 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { Resend } from 'https://esm.sh/resend@3.2.0'
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { Resend } from "https://esm.sh/resend@3.2.0";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
+
+// Check if we're in local development
+const isLocal =
+  Deno.env.get("SUPABASE_URL")?.includes("localhost") ||
+  Deno.env.get("ENVIRONMENT") === "local";
+
+// SMTP email function for local development (uses Supabase's built-in Inbucket SMTP)
+async function sendEmailViaSMTP(
+  to: string,
+  subject: string,
+  html: string,
+  from: string = "admin@networkingbude.local",
+  replyTo?: string,
+) {
+  try {
+    console.log("📧 Sending email via local SMTP server");
+    console.log(`To: ${to}`);
+    console.log(`Subject: ${subject}`);
+    console.log(`From: ${from}`);
+
+    // Import nodemailer for actual SMTP sending
+    const { createTransport } = await import('npm:nodemailer@6.9.10');
+
+    // Create SMTP transporter for local development
+    // Use container IP since edge functions run in same Docker network
+    const transporter = createTransport({
+      host: '172.30.1.7', // Mailpit container IP
+      port: 1025, // Mailpit's internal SMTP port
+      secure: false,
+      auth: undefined, // No auth needed for local Mailpit
+    });
+
+    // Send the email
+    const info = await transporter.sendMail({
+      from,
+      to,
+      subject,
+      html,
+      replyTo,
+    });
+
+    console.log(`📧 Email sent successfully: ${info.messageId}`);
+    console.log(`📧 View emails at: http://localhost:54324`);
+
+    return {
+      success: true,
+      service: "smtp-local",
+      messageId: info.messageId,
+      webUrl: "http://localhost:54324",
+      note: "Email sent via local SMTP - check Inbucket at http://localhost:54324",
+    };
+  } catch (error) {
+    console.error("❌ SMTP email failed:", error.message);
+    
+    return {
+      success: false,
+      service: "smtp-error",
+      messageId: "error",
+      error: error.message,
+      note: "Failed to send email via SMTP",
+    };
+  }
 }
 
 serve(async (req) => {
   // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
     // Initialize Supabase client
     const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
 
     // Get request body
-    const { 
-      currentUserId, 
-      targetUserId, 
-      connectionMessage
-    } = await req.json()
+    const { currentUserId, targetUserId, connectionMessage } = await req.json();
 
     // Validate required fields
     if (!currentUserId || !targetUserId) {
       return new Response(
-        JSON.stringify({ error: 'Missing required fields: currentUserId, targetUserId' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+        JSON.stringify({
+          error: "Missing required fields: currentUserId, targetUserId",
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
     // Get sender user details
     const { data: senderUser, error: senderUserError } = await supabaseClient
-      .from('users')
-      .select('name, email, title, company, photo')
-      .eq('id', currentUserId)
-      .single()
+      .from("users")
+      .select("name, email, title, company, photo")
+      .eq("id", currentUserId)
+      .single();
 
     if (senderUserError || !senderUser) {
-      return new Response(
-        JSON.stringify({ error: 'Sender user not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      return new Response(JSON.stringify({ error: "Sender user not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Get target user details
     const { data: targetUser, error: targetUserError } = await supabaseClient
-      .from('users')
-      .select('name, email, title, company')
-      .eq('id', targetUserId)
-      .single()
+      .from("users")
+      .select("name, email, title, company")
+      .eq("id", targetUserId)
+      .single();
 
     if (targetUserError || !targetUser) {
-      return new Response(
-        JSON.stringify({ error: 'Target user not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      return new Response(JSON.stringify({ error: "Target user not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    const senderName = senderUser.name
-    const senderEmail = senderUser.email
-    const senderTitle = senderUser.title || ''
-    const senderCompany = senderUser.company || ''
-    const senderPhoto = senderUser.photo || null
+    const senderName = senderUser.name;
+    const senderEmail = senderUser.email;
+    const senderTitle = senderUser.title || "";
+    const senderCompany = senderUser.company || "";
+    const senderPhoto = senderUser.photo || null;
 
     // Get the match record to get compatibility score
     const { data: matchRecord, error: matchError } = await supabaseClient
-      .from('matches')
-      .select('compatibility_score')
-      .eq('user_id', currentUserId)
-      .eq('matched_user_id', targetUserId)
-      .single()
+      .from("matches")
+      .select("compatibility_score")
+      .eq("user_id", currentUserId)
+      .eq("matched_user_id", targetUserId)
+      .single();
 
     if (matchError || !matchRecord) {
-      return new Response(
-        JSON.stringify({ error: 'Match record not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      return new Response(JSON.stringify({ error: "Match record not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    const connectionScore = matchRecord.compatibility_score
+    const connectionScore = matchRecord.compatibility_score;
 
     // STEP 1: Update the match status to 'pending' FIRST
     const { error: updateError } = await supabaseClient
-      .from('matches')
+      .from("matches")
       .update({
-        status: 'pending',
-        pending_since: new Date().toISOString()
+        status: "pending",
+        pending_since: new Date().toISOString(),
       })
-      .eq('user_id', currentUserId)
-      .eq('matched_user_id', targetUserId)
+      .eq("user_id", currentUserId)
+      .eq("matched_user_id", targetUserId);
 
     if (updateError) {
-      console.error('Error updating match status:', updateError)
+      console.error("Error updating match status:", updateError);
       return new Response(
-        JSON.stringify({ error: 'Failed to update match status' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+        JSON.stringify({ error: "Failed to update match status" }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
     // STEP 2: Check if the other person already sent a request (mutual connection)
-    const { data: reciprocalMatch, error: reciprocalError } = await supabaseClient
-      .from('matches')
-      .select('status')
-      .eq('user_id', targetUserId)
-      .eq('matched_user_id', currentUserId)
-      .single()
+    const { data: reciprocalMatch, error: reciprocalError } =
+      await supabaseClient
+        .from("matches")
+        .select("status")
+        .eq("user_id", targetUserId)
+        .eq("matched_user_id", currentUserId)
+        .single();
 
-    let connectionResult = 'pending'
+    let connectionResult = "pending";
 
     // If they already requested, create mutual connection
-    if (reciprocalMatch && reciprocalMatch.status === 'pending') {
+    if (reciprocalMatch && reciprocalMatch.status === "pending") {
       // Update both matches to 'connected'
       await supabaseClient
-        .from('matches')
-        .update({ status: 'connected' })
-        .eq('user_id', currentUserId)
-        .eq('matched_user_id', targetUserId)
+        .from("matches")
+        .update({ status: "connected" })
+        .eq("user_id", currentUserId)
+        .eq("matched_user_id", targetUserId);
 
       await supabaseClient
-        .from('matches')
-        .update({ status: 'connected' })
-        .eq('user_id', targetUserId)
-        .eq('matched_user_id', currentUserId)
+        .from("matches")
+        .update({ status: "connected" })
+        .eq("user_id", targetUserId)
+        .eq("matched_user_id", currentUserId);
 
-      connectionResult = 'connected'
+      connectionResult = "connected";
     }
 
     // STEP 3: Create notification for recipient
     const { error: notificationError } = await supabaseClient
-      .from('notifications')
+      .from("notifications")
       .insert({
         user_id: targetUserId,
         from_user_id: currentUserId,
-        type: 'connection_request',
+        type: "connection_request",
         message: `${senderName} wants to connect with you!`,
         is_read: false,
-        created_at: new Date().toISOString()
-      })
+        created_at: new Date().toISOString(),
+      });
 
     if (notificationError) {
-      console.error('Error creating notification:', notificationError)
+      console.error("Error creating notification:", notificationError);
       // Don't fail the entire request for notification errors
     }
 
     // STEP 4: Send email LAST (after all database operations are complete)
-    const resend = new Resend(Deno.env.get('RESEND_API_KEY'))
+    const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
     const getInitials = (name: string) => {
-      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-    }
+      return name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+    };
 
     const emailHtml = `
       <!DOCTYPE html>
@@ -191,23 +265,28 @@ serve(async (req) => {
               <p>Someone wants to connect with you on Networking BudE!</p>
 
               <div class="profile-card">
-                ${senderPhoto
-                  ? `<img src="${senderPhoto}" alt="${senderName}" class="profile-photo" />`
-                  : `<div class="profile-initials">${getInitials(senderName)}</div>`
+                ${
+                  senderPhoto
+                    ? `<img src="${senderPhoto}" alt="${senderName}" class="profile-photo" />`
+                    : `<div class="profile-initials">${getInitials(senderName)}</div>`
                 }
                 <div class="profile-info">
                   <h2 class="profile-name">${senderName}</h2>
-                  ${senderTitle ? `<p class="profile-title">${senderTitle}${senderCompany ? ` at ${senderCompany}` : ''}</p>` : ''}
+                  ${senderTitle ? `<p class="profile-title">${senderTitle}${senderCompany ? ` at ${senderCompany}` : ""}</p>` : ""}
                   <span class="badge">${connectionScore}% Compatible</span>
                 </div>
               </div>
 
-              ${connectionMessage ? `
+              ${
+                connectionMessage
+                  ? `
                 <div class="message-box">
                   <strong>Personal Message:</strong><br>
                   "${connectionMessage}"
                 </div>
-              ` : ''}
+              `
+                  : ""
+              }
 
               <div style="text-align: center;">
                 <a href="https://networking-bude.vercel.app/dashboard?tab=connections&highlightUser=${currentUserId}" class="button">
@@ -226,39 +305,50 @@ serve(async (req) => {
           </div>
         </body>
       </html>
-    `
+    `;
 
-    const emailResult = await resend.emails.send({
-      from: 'BudE Connections <connections@networkingbude.com>',
-      to: targetUser.email,
-      subject: `${senderName} wants to connect with you on Networking BudE`,
-      html: emailHtml,
-      replyTo: senderEmail
-    })
-
-    console.log('✅ Connection email sent successfully:', emailResult)
+    // Send email via Mailpit (local) or Resend (production)
+    let emailResult;
+    if (isLocal) {
+      console.log("🧪 Using SMTP for local email testing");
+      emailResult = await sendEmailViaSMTP(
+        targetUser.email,
+        `${senderName} wants to connect with you on Networking BudE`,
+        emailHtml,
+        "BudE Team <team@mail.networkingbude.com>",
+        senderEmail,
+      );
+      console.log("✅ Connection email logged for SMTP:", emailResult);
+    } else {
+      console.log("📧 Using Resend for production email");
+      emailResult = await resend.emails.send({
+        from: "BudE Team <team@mail.networkingbude.com>",
+        to: targetUser.email,
+        subject: `${senderName} wants to connect with you on Networking BudE`,
+        html: emailHtml,
+        replyTo: senderEmail,
+      });
+      console.log("✅ Connection email sent via Resend:", emailResult);
+    }
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         connectionResult,
-        emailId: emailResult.data?.id,
-        message: 'Connection request sent successfully'
+        emailId: isLocal ? "mailhog-test" : emailResult.data?.id,
+        emailService: isLocal ? emailResult.service : "resend",
+        message: "Connection request sent successfully",
       }),
-      { 
-        status: 200, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    )
-
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   } catch (error) {
-    console.error('Error in send-connection-request function:', error)
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    )
+    console.error("Error in send-connection-request function:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
-})
+});
