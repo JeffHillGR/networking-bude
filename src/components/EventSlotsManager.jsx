@@ -237,12 +237,15 @@ function EventSlotsManager() {
 
         console.log('Deleted both events, now reinserting with swapped slot numbers...');
 
-        // Step 3: Reinsert with swapped slot numbers
+        // Step 3: Reinsert with swapped slot numbers (remove id and timestamps)
+        const { id: currentId, created_at: currentCreated, updated_at: currentUpdated, ...currentEventData } = currentData;
+        const { id: nextId, created_at: nextCreated, updated_at: nextUpdated, ...nextEventData } = nextData;
+
         const { error: insertError } = await supabase
           .from('events')
           .insert([
-            { ...currentData, slot_number: slotNumber + 1, id: undefined },
-            { ...nextData, slot_number: slotNumber, id: undefined }
+            { ...currentEventData, slot_number: slotNumber + 1 },
+            { ...nextEventData, slot_number: slotNumber }
           ]);
 
         if (insertError) {
@@ -272,10 +275,11 @@ function EventSlotsManager() {
 
         if (deleteError) throw deleteError;
 
-        // Reinsert with new slot number
+        // Reinsert with new slot number (remove id and timestamps)
+        const { id, created_at, updated_at, ...cleanEventData } = eventData;
         const { error: insertError } = await supabase
           .from('events')
-          .insert({ ...eventData, slot_number: slotNumber + 1, id: undefined });
+          .insert({ ...cleanEventData, slot_number: slotNumber + 1 });
 
         if (insertError) throw insertError;
       }
