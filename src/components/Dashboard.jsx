@@ -458,7 +458,13 @@ function Dashboard() {
     if (highlightUser) {
       sessionStorage.setItem("highlightUserId", highlightUser);
     }
-  }, [location.search]);
+
+    // Clean up URL parameters after processing
+    if (tab || highlightUser) {
+      // Use replace to avoid adding to browser history
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.search, location.pathname, navigate]);
 
   // Load user's first name from Supabase
   useEffect(() => {
