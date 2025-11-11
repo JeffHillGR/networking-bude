@@ -4,10 +4,12 @@ import { supabase } from '../lib/supabase.js';
 import EventSlotsManager from './EventSlotsManager.jsx';
 
 function AdminPanel() {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [loading, setLoading] = useState(true);
   const [ads, setAds] = useState({
     eventsSidebar1: JSON.parse(localStorage.getItem('ad_eventsSidebar1') || 'null'),
     eventsSidebar2: JSON.parse(localStorage.getItem('ad_eventsSidebar2') || 'null'),
@@ -16,13 +18,43 @@ function AdminPanel() {
     dashboardBottom: JSON.parse(localStorage.getItem('ad_dashboardBottom') || 'null')
   });
 
-  const handleLogin = (e) => {
+  // Check if admin is already signed in
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        setIsAuthenticated(true);
+      }
+      setLoading(false);
+    };
+    checkAuth();
+  }, []);
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (password === 'admin123') {
+    setLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) throw error;
+
       setIsAuthenticated(true);
-    } else {
-      alert('Incorrect password');
+      alert('Admin login successful!');
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Login failed: ' + error.message);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsAuthenticated(false);
   };
 
   const handleImageUpload = (slot, file) => {
@@ -51,19 +83,41 @@ function AdminPanel() {
     setAds({ ...ads, [slot]: null });
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 max-w-md w-full">
           <h1 className="text-2xl font-bold mb-6">Admin Login</h1>
-          <div>
+          <form onSubmit={handleLogin}>
+            <div className="mb-4">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Admin email"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                required
+              />
+            </div>
             <div className="relative mb-4">
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter admin password"
+                placeholder="Admin password"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg pr-10"
+                required
               />
               <button
                 type="button"
@@ -74,12 +128,13 @@ function AdminPanel() {
               </button>
             </div>
             <button
-              onClick={handleLogin}
-              className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
+              type="submit"
+              disabled={loading}
+              className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 disabled:bg-gray-400"
             >
-              Login
+              {loading ? 'Logging in...' : 'Login'}
             </button>
-          </div>
+          </form>
         </div>
       </div>
     );
@@ -92,12 +147,20 @@ function AdminPanel() {
         <div className="max-w-7xl mx-auto px-8 py-4">
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold">Admin Panel</h1>
-            <button
-              onClick={() => window.location.href = '/'}
-              className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
-            >
-              Back to Site
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Logout
+              </button>
+              <button
+                onClick={() => window.location.href = '/'}
+                className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+              >
+                Back to Site
+              </button>
+            </div>
           </div>
         </div>
       </div>

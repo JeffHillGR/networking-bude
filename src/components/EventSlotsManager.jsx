@@ -94,34 +94,55 @@ function EventSlotsManager() {
     setSaving(prev => ({ ...prev, [slotNumber]: true }));
 
     try {
+      console.log('Starting save for slot', slotNumber);
+      console.log('Event data:', event);
+
       const eventData = {
         ...event,
         slot_number: slotNumber,
         is_featured: slotNumber <= 4 // Slots 1-4 are featured
       };
 
+      console.log('Checking if event exists...');
       // Check if event exists
-      const { data: existing } = await supabase
+      const { data: existing, error: checkError } = await supabase
         .from('events')
         .select('id')
         .eq('slot_number', slotNumber)
-        .single();
+        .maybeSingle(); // Use maybeSingle instead of single to avoid error if not found
+
+      if (checkError) {
+        console.error('Error checking existing event:', checkError);
+        throw checkError;
+      }
+
+      console.log('Existing event:', existing);
 
       if (existing) {
         // Update existing
+        console.log('Updating existing event...');
         const { error } = await supabase
           .from('events')
           .update(eventData)
           .eq('slot_number', slotNumber);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Update error:', error);
+          throw error;
+        }
+        console.log('Update successful');
       } else {
         // Insert new
+        console.log('Inserting new event...');
         const { error } = await supabase
           .from('events')
           .insert(eventData);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Insert error:', error);
+          throw error;
+        }
+        console.log('Insert successful');
       }
 
       alert(`Event Slot ${slotNumber} saved successfully!`);
@@ -178,24 +199,85 @@ function EventSlotsManager() {
     setSaving(prev => ({ ...prev, [slotNumber]: true, [slotNumber + 1]: true }));
 
     try {
-      // Swap slot numbers in database
-      if (nextEvent) {
-        // Both slots have events - swap them
-        await supabase
-          .from('events')
-          .update({ slot_number: slotNumber })
-          .eq('slot_number', slotNumber + 1);
+      console.log('Moving down from slot', slotNumber);
 
-        await supabase
+      if (nextEvent) {
+        // Both slots have events - swap them by deleting and reinserting
+        console.log('Swapping two events');
+
+        // Step 1: Fetch both complete event records
+        const { data: currentData, error: fetchError1 } = await supabase
           .from('events')
-          .update({ slot_number: slotNumber + 1 })
-          .eq('slot_number', slotNumber);
+          .select('*')
+          .eq('slot_number', slotNumber)
+          .single();
+
+        if (fetchError1) throw fetchError1;
+
+        const { data: nextData, error: fetchError2 } = await supabase
+          .from('events')
+          .select('*')
+          .eq('slot_number', slotNumber + 1)
+          .single();
+
+        if (fetchError2) throw fetchError2;
+
+        console.log('Fetched both events, now deleting...');
+
+        // Step 2: Delete both events
+        const { error: deleteError } = await supabase
+          .from('events')
+          .delete()
+          .in('slot_number', [slotNumber, slotNumber + 1]);
+
+        if (deleteError) {
+          console.error('Error deleting events:', deleteError);
+          throw deleteError;
+        }
+
+        console.log('Deleted both events, now reinserting with swapped slot numbers...');
+
+        // Step 3: Reinsert with swapped slot numbers
+        const { error: insertError } = await supabase
+          .from('events')
+          .insert([
+            { ...currentData, slot_number: slotNumber + 1, id: undefined },
+            { ...nextData, slot_number: slotNumber, id: undefined }
+          ]);
+
+        if (insertError) {
+          console.error('Error reinserting events:', insertError);
+          throw insertError;
+        }
+
+        console.log('Successfully swapped events');
       } else {
         // Only current slot has event - just move it down
-        await supabase
+        console.log(`Moving slot ${slotNumber} to ${slotNumber + 1}`);
+
+        // Fetch the complete event
+        const { data: eventData, error: fetchError } = await supabase
           .from('events')
-          .update({ slot_number: slotNumber + 1 })
+          .select('*')
+          .eq('slot_number', slotNumber)
+          .single();
+
+        if (fetchError) throw fetchError;
+
+        // Delete the old one
+        const { error: deleteError } = await supabase
+          .from('events')
+          .delete()
           .eq('slot_number', slotNumber);
+
+        if (deleteError) throw deleteError;
+
+        // Reinsert with new slot number
+        const { error: insertError } = await supabase
+          .from('events')
+          .insert({ ...eventData, slot_number: slotNumber + 1, id: undefined });
+
+        if (insertError) throw insertError;
       }
 
       // Reload events to reflect changes
@@ -204,6 +286,8 @@ function EventSlotsManager() {
     } catch (error) {
       console.error('Error moving event:', error);
       alert('Failed to move event: ' + error.message);
+      // Reload to ensure UI is in sync with database
+      await loadEvents();
     } finally {
       setSaving(prev => ({ ...prev, [slotNumber]: false, [slotNumber + 1]: false }));
     }

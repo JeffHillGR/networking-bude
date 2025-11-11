@@ -24,6 +24,7 @@ function Dashboard() {
   const [connections, setConnections] = useState([]);
   const [loadingConnections, setLoadingConnections] = useState(true);
   const [userFirstName, setUserFirstName] = useState('there');
+  const [selectedConnectionId, setSelectedConnectionId] = useState(null);
   const [events, setEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
 const [selectedPlan, setSelectedPlan] = useState(null);
@@ -585,6 +586,7 @@ const getGreeting = () => {
                       <div
                         key={index}
                         onClick={() => {
+                          setSelectedConnectionId(person.id);
                           setActiveTab('connections');
                           window.scrollTo({ top: 0, behavior: 'instant' });
                         }}
@@ -794,8 +796,10 @@ const getGreeting = () => {
 
  case 'connections':
   return <Connections
+    selectedConnectionId={selectedConnectionId}
     onBackToDashboard={() => {
       setActiveTab('dashboard');
+      setSelectedConnectionId(null);
       window.scrollTo({ top: 0, behavior: 'instant' });
     }}
     onNavigateToSettings={() => {

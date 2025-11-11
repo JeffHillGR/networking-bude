@@ -3,7 +3,7 @@ import { X, Clock, User, TrendingUp, ArrowLeft, Send } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
-function Connections({ onBackToDashboard, onNavigateToSettings }) {
+function Connections({ onBackToDashboard, onNavigateToSettings, selectedConnectionId }) {
   const { user } = useAuth();
   const featuredCardRef = useRef(null);
   const [activeTab, setActiveTab] = useState('recommended');
@@ -167,6 +167,25 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
           }
         });
 
+        // Prioritize selected connection if provided
+        if (selectedConnectionId) {
+          // Find the selected connection in recommended
+          const selectedIndex = recommended.findIndex(conn => conn.id === selectedConnectionId);
+
+          if (selectedIndex > 0) {
+            // Move selected connection to the front
+            const selectedConn = recommended.splice(selectedIndex, 1)[0];
+            recommended.unshift(selectedConn);
+          }
+
+          // Also check in saved connections
+          const savedIndex = saved.findIndex(conn => conn.id === selectedConnectionId);
+          if (savedIndex > 0) {
+            const selectedConn = saved.splice(savedIndex, 1)[0];
+            saved.unshift(selectedConn);
+          }
+        }
+
         // Only show recommended (perhaps are hidden for 1 week)
         setConnections(recommended);
         setPendingConnections(pending);
@@ -180,7 +199,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
     }
 
     fetchMatches();
-  }, [user]);
+  }, [user, selectedConnectionId]);
 
   // Check if today is Monday and show banner
   useEffect(() => {
