@@ -338,22 +338,37 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
       // Check if email has changed
       const emailChanged = profile.email && user?.email && profile.email !== user.email;
 
-      // Update email in Supabase Auth if changed
+      // Handle email change with secure two-step verification
       if (emailChanged) {
-        const { error: emailError } = await supabase.auth.updateUser({
-          email: profile.email
-        });
+        try {
+          const response = await fetch('/api/requestEmailChange', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              oldEmail: user.email,
+              newEmail: profile.email,
+              userId: user.id
+            })
+          });
 
-        if (emailError) {
-          console.error('Error updating email:', emailError);
-          if (emailError.message.includes('already registered')) {
-            throw new Error('This email is already in use. Please choose a different email.');
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || 'Failed to initiate email change');
           }
-          throw new Error('Failed to update email. Please try again.');
-        }
 
-        // Show special message for email change
-        alert('Email update initiated! Please check your new email address (' + profile.email + ') for a confirmation link to complete the change. Your current email will remain active until you confirm.');
+          // Show special message for secure email change
+          alert('Email change request initiated!\n\nIMPORTANT: For your security, we need to verify both email addresses:\n\n1. Check your CURRENT email (' + user.email + ') and click the confirmation link\n2. Check your NEW email (' + profile.email + ') and click the confirmation link\n\nBoth confirmations are required before your email will change. You have 24 hours to complete this process.\n\nYour account remains active with your current email until both confirmations are complete.');
+
+          // Don't proceed with other profile updates if email change was requested
+          // User should complete email verification first
+          return;
+        } catch (error) {
+          console.error('Error requesting email change:', error);
+          throw new Error(error.message || 'Failed to initiate email change. Please try again.');
+        }
       }
 
       // Update Supabase database
@@ -394,10 +409,8 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
           year_born_connect: profile.dobPreference || ''
         };
 
-        // Add email to database update if it changed (will be updated after confirmation)
-        if (emailChanged) {
-          updateData.email = profile.email;
-        }
+        // Note: Email updates are handled separately through secure two-step verification
+        // and are NOT included in this update
 
         const { error } = await supabase
           .from('users')

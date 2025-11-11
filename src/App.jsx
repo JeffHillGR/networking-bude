@@ -8,6 +8,8 @@ import EventDetail from './components/EventDetail.jsx';
 import ResourcesInsights from './components/ResourcesInsights.jsx';
 import Settings from './components/Settings.jsx';
 import ResetPassword from './components/ResetPassword.jsx';
+import ConfirmEmailChange from './components/ConfirmEmailChange.jsx';
+import CancelEmailChange from './components/CancelEmailChange.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
       <Routes>
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/confirm-email-change" element={<ConfirmEmailChange />} />
+        <Route path="/cancel-email-change" element={<CancelEmailChange />} />
         <Route
           path="/"
           element={<OnboardingFlow />}
