@@ -1236,7 +1236,7 @@ function Dashboard() {
       <div className="md:flex">
         <main className="flex-1 w-full overflow-x-hidden">
           {/* Mobile Header */}
-          <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
+          <div className="bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
             <div className="flex items-center justify-between">
               <button
                 onClick={() => setShowMobileMenu(true)}
@@ -2323,11 +2323,11 @@ function Dashboard() {
       {/* Mobile Menu Modal */}
       {showMobileMenu && (
         <div
-          className="fixed inset-0 bg-black/50 z-50 md:hidden"
+          className="fixed inset-0 bg-black/50 z-50"
           onClick={() => setShowMobileMenu(false)}
         >
           <div
-            className="fixed right-0 top-0 bottom-0 w-64 bg-white shadow-2xl"
+            className="fixed left-0 top-0 bottom-0 w-64 bg-white shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-4 border-b border-gray-200 flex items-center justify-between">

@@ -316,7 +316,7 @@ serve(async (req) => {
         `${senderName} wants to connect with you on Networking BudE`,
         emailHtml,
         "BudE Team <team@mail.networkingbude.com>",
-        senderEmail,
+        'no-reply@mail.networkingbude.com',
       );
       console.log("✅ Connection email logged for SMTP:", emailResult);
     } else {
@@ -326,7 +326,7 @@ serve(async (req) => {
         to: targetUser.email,
         subject: `${senderName} wants to connect with you on Networking BudE`,
         html: emailHtml,
-        replyTo: senderEmail,
+        replyTo: 'no-reply@mail.networkingbude.com',
       });
       console.log("✅ Connection email sent via Resend:", emailResult);
     }

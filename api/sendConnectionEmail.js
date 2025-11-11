@@ -119,7 +119,7 @@ export default async function handler(req, res) {
       to: recipientEmailAddress,
       subject: `${senderName} wants to connect with you on Networking BudE`,
       html: emailHtml,
-      replyTo: senderEmail
+      replyTo: 'no-reply@mail.networkingbude.com'
     });
 
     console.log('✅ Connection email sent successfully:', data);
