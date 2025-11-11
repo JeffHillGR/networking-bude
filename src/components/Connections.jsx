@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { X, Clock, User, TrendingUp, ArrowLeft, Send } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
 function Connections({ onBackToDashboard, onNavigateToSettings }) {
   const { user } = useAuth();
+  const location = useLocation();
   const featuredCardRef = useRef(null);
   const [activeTab, setActiveTab] = useState('recommended');
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -198,43 +200,55 @@ function Connections({ onBackToDashboard, onNavigateToSettings }) {
     }
   }, []);
 
-  // Handle user highlighting from notification links
+  // Handle user highlighting from notification links and URL parameters
   useEffect(() => {
-    const highlightUserId = sessionStorage.getItem('highlightUserId');
+    // Check both sessionStorage and URL parameters
+    const urlParams = new URLSearchParams(location.search);
+    const urlHighlightUser = urlParams.get('highlightUser');
+    const sessionHighlightUser = sessionStorage.getItem('highlightUserId');
+    const highlightUserId = urlHighlightUser || sessionHighlightUser;
     
-    if (highlightUserId && connections.length > 0) {
-      // Find which tab the user is in
-      const isInPending = pendingConnections.some(p => p.id === highlightUserId);
-      const isInSaved = savedConnections.some(s => s.id === highlightUserId);
-      const isInRecommended = connections.some(c => c.id === highlightUserId);
-      
-      // Switch to the appropriate tab
-      if (isInPending) {
-        setActiveTab('pending');
-      } else if (isInSaved) {
-        setActiveTab('saved');
-      } else if (isInRecommended) {
-        setActiveTab('recommended');
+    if (highlightUserId) {
+      // If we have data loaded, find which tab the user is in
+      if (connections.length > 0 || pendingConnections.length > 0 || savedConnections.length > 0) {
+        const isInPending = pendingConnections.some(p => p.id === highlightUserId);
+        const isInSaved = savedConnections.some(s => s.id === highlightUserId);
+        const isInRecommended = connections.some(c => c.id === highlightUserId);
         
-        // Find the index of the highlighted user and set it as current card
-        const filteredRecs = connections
-          .filter(conn =>
-            !passedConnections.includes(conn.id) &&
-            !savedConnections.some(s => s.id === conn.id) &&
-            !pendingConnections.some(p => p.id === conn.id)
-          )
-          .slice(0, 5);
+        // Switch to the appropriate tab
+        if (isInPending) {
+          setActiveTab('pending');
+        } else if (isInSaved) {
+          setActiveTab('saved');
+        } else if (isInRecommended) {
+          setActiveTab('recommended');
+          
+          // Find the index of the highlighted user and set it as current card
+          const filteredRecs = connections
+            .filter(conn =>
+              !passedConnections.includes(conn.id) &&
+              !savedConnections.some(s => s.id === conn.id) &&
+              !pendingConnections.some(p => p.id === conn.id)
+            )
+            .slice(0, 5);
+          
+          const highlightIndex = filteredRecs.findIndex(c => c.id === highlightUserId);
+          if (highlightIndex !== -1) {
+            setCurrentCardIndex(highlightIndex);
+          }
+        }
         
-        const highlightIndex = filteredRecs.findIndex(c => c.id === highlightUserId);
-        if (highlightIndex !== -1) {
-          setCurrentCardIndex(highlightIndex);
+        // Clear the highlight after using it (only clear sessionStorage, not URL)
+        if (sessionHighlightUser) {
+          sessionStorage.removeItem('highlightUserId');
         }
       }
-      
-      // Clear the highlight after using it
-      sessionStorage.removeItem('highlightUserId');
+      // If URL has highlightUser but sessionStorage doesn't, store it for later
+      else if (urlHighlightUser && !sessionHighlightUser) {
+        sessionStorage.setItem('highlightUserId', urlHighlightUser);
+      }
     }
-  }, [connections, pendingConnections, savedConnections, passedConnections, loading]);
+  }, [connections, pendingConnections, savedConnections, passedConnections, location.search]);
 
   // Filter connections based on active tab and actions taken
   const getFilteredConnections = () => {
