@@ -418,45 +418,67 @@ const getGreeting = () => {
           };
         });
 
-        // Fetch liked events for each connection (max 3 per connection)
+        // Fetch liked events for all connections in bulk (optimized)
         const likedEventsMap = {};
-        for (const connection of transformedConnections) {
+        if (transformedConnections.length > 0) {
           try {
-            // Get event IDs this user has liked or registered for
-            const [likesResult, clicksResult] = await Promise.all([
+            const connectionIds = transformedConnections.map(c => c.userId);
+
+            // Fetch all likes and clicks for all connections at once
+            const [allLikesResult, allClicksResult] = await Promise.all([
               supabase
                 .from('event_likes')
-                .select('event_id, created_at')
-                .eq('user_id', connection.userId)
-                .order('created_at', { ascending: false })
-                .limit(3),
+                .select('event_id, user_id, created_at')
+                .in('user_id', connectionIds),
               supabase
                 .from('event_registration_clicks')
-                .select('event_id, created_at')
-                .eq('user_id', connection.userId)
-                .order('created_at', { ascending: false })
-                .limit(3)
+                .select('event_id, user_id, created_at')
+                .in('user_id', connectionIds)
             ]);
 
-            // Combine and get unique event IDs (most recent first)
-            const allInteractions = [
-              ...(likesResult.data || []),
-              ...(clicksResult.data || [])
-            ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            // Group interactions by user
+            const userInteractions = {};
+            [...(allLikesResult.data || []), ...(allClicksResult.data || [])].forEach(interaction => {
+              if (!userInteractions[interaction.user_id]) {
+                userInteractions[interaction.user_id] = [];
+              }
+              userInteractions[interaction.user_id].push(interaction);
+            });
 
-            const uniqueEventIds = [...new Set(allInteractions.map(i => i.event_id))].slice(0, 3);
+            // Get unique event IDs for each user (max 3)
+            const allEventIds = new Set();
+            const userEventIdsMap = {};
 
-            // Fetch event details
-            if (uniqueEventIds.length > 0) {
+            Object.keys(userInteractions).forEach(userId => {
+              const sorted = userInteractions[userId].sort((a, b) =>
+                new Date(b.created_at) - new Date(a.created_at)
+              );
+              const uniqueEventIds = [...new Set(sorted.map(i => i.event_id))].slice(0, 3);
+              userEventIdsMap[userId] = uniqueEventIds;
+              uniqueEventIds.forEach(id => allEventIds.add(id));
+            });
+
+            // Fetch all event details in one query
+            if (allEventIds.size > 0) {
               const { data: eventsData } = await supabase
                 .from('events')
                 .select('id, title, image_url')
-                .in('id', uniqueEventIds);
+                .in('id', Array.from(allEventIds));
 
-              likedEventsMap[connection.userId] = eventsData || [];
+              const eventsMap = {};
+              (eventsData || []).forEach(event => {
+                eventsMap[event.id] = event;
+              });
+
+              // Map events to users
+              Object.keys(userEventIdsMap).forEach(userId => {
+                likedEventsMap[userId] = userEventIdsMap[userId]
+                  .map(eventId => eventsMap[eventId])
+                  .filter(Boolean);
+              });
             }
           } catch (error) {
-            console.error(`Error loading liked events for ${connection.name}:`, error);
+            console.error('Error loading liked events:', error);
           }
         }
 

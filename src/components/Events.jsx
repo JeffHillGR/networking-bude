@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, Calendar, Users, ExternalLink, X, TrendingUp, ArrowLeft, Share2 } from 'lucide-react';
+import { Search, MapPin, Calendar, Users, ExternalLink, X, TrendingUp, ArrowLeft, Share2, Heart } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
 
 function Events({ onBackToDashboard }) {
@@ -314,12 +314,14 @@ function Events({ onBackToDashboard }) {
                           <MapPin className="h-4 w-4" />
                           <span>{event.location}</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Heart className="h-4 w-4 text-red-500" />
-                          <span className="text-gray-700 font-medium">
-                            {eventInterestCounts[event.id] || 0} interested
-                          </span>
-                        </div>
+                        {eventInterestCounts[event.id] > 0 && (
+                          <div className="flex items-center gap-2">
+                            <Heart className="h-4 w-4 text-red-500" />
+                            <span className="text-gray-700 font-medium">
+                              {eventInterestCounts[event.id]} Interested
+                            </span>
+                          </div>
+                        )}
                       </div>
                       <div className="flex justify-between items-center">
                         <button
@@ -397,12 +399,14 @@ function Events({ onBackToDashboard }) {
                             <MapPin className="h-4 w-4 flex-shrink-0" />
                             <span className="truncate">{event.location}</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Heart className="h-4 w-4 flex-shrink-0 text-red-500" />
-                            <span className="truncate text-gray-700 font-medium">
-                              {eventInterestCounts[event.id] || 0} interested
-                            </span>
-                          </div>
+                          {eventInterestCounts[event.id] > 0 && (
+                            <div className="flex items-center gap-2">
+                              <Heart className="h-4 w-4 flex-shrink-0 text-red-500" />
+                              <span className="truncate text-gray-700 font-medium">
+                                {eventInterestCounts[event.id]} Interested
+                              </span>
+                            </div>
+                          )}
                         </div>
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0 mt-3 md:mt-4">
                           <div className="flex items-center gap-2 flex-wrap">
