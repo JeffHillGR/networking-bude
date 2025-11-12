@@ -6,7 +6,7 @@
 import { Resend } from 'resend';
 import { requireAuth, setCorsHeaders } from './_middleware/auth.js';
 import { createUserRateLimiter, RateLimitPresets } from './_middleware/rateLimit.js';
-import { withValidation, ValidationSchemas } from './_middleware/validation.js';
+import { withValidation } from './_middleware/validation.js';
 
 // Create rate limiter for email sending (10 emails per hour per user)
 const emailRateLimiter = createUserRateLimiter(RateLimitPresets.EMAIL);
@@ -24,6 +24,9 @@ async function handleConnectionEmail(req, res) {
   }
 
   try {
+    // Get base URL from environment variable with fallback
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'https://networking-bude.vercel.app';
+
     // Use validated data from middleware
     const {
       senderName,
@@ -126,7 +129,7 @@ async function handleConnectionEmail(req, res) {
               ` : ''}
 
               <div style="text-align: center;">
-                <a href="${process.env.VITE_APP_URL || 'https://networking-bude.vercel.app'}/dashboard?viewConnection=${senderId || ''}" class="button">
+                <a href="${baseUrl}/dashboard?tab=connections&highlightUser=${senderId || ''}" class="button">
                   View Profile & Respond
                 </a>
               </div>

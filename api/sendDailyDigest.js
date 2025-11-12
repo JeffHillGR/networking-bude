@@ -1,25 +1,36 @@
 /**
  * Vercel Serverless Function: Daily Digest Email
- *
+ * SECURED with cron authentication
  * Sends a daily summary of platform activity to admin
  * Run via Vercel Cron every day at 8 AM
  */
 
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
+import { setCorsHeaders, getServiceRoleClient } from './_middleware/auth.js';
 
 export default async function handler(req, res) {
+  // Set secure CORS headers
+  setCorsHeaders(res, req.headers.origin);
+
   // Verify this is called by Vercel Cron (security check)
   if (req.method !== 'POST' && req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // Verify cron secret for security
+  const cronSecret = req.headers['x-vercel-cron-secret'];
+  if (cronSecret !== process.env.CRON_SECRET) {
+    console.error('❌ Unauthorized daily digest attempt');
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
   try {
+    // Get base URL from environment variable with fallback
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'https://networking-bude.vercel.app';
+
     // Initialize Supabase with service role key
-    const supabase = createClient(
-      process.env.VITE_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    );
+    const supabase = getServiceRoleClient();
 
     // Get date range (last 24 hours)
     const yesterday = new Date();
@@ -197,7 +208,7 @@ export default async function handler(req, res) {
 
               <!-- Actions -->
               <div style="text-align: center; margin-top: 30px;">
-                <a href="https://networking-bude.vercel.app/admin" class="button">View Admin Panel</a>
+                <a href="${baseUrl}/admin" class="button">View Admin Panel</a>
                 <a href="https://supabase.com/dashboard" class="button" style="background: #3ecf8e;">View Database</a>
               </div>
 

@@ -47,6 +47,20 @@ export default function BudEOnboarding() {
       }
     };
   }, []);
+
+  // Clear storage when loading homepage if user is not logged in
+  React.useEffect(() => {
+    if (!user && step === 0) {
+      // Clear all localStorage for this site
+      localStorage.clear();
+      
+      // Clear all sessionStorage for this site
+      sessionStorage.clear();
+      
+      console.log('🧹 All storage cleared for new user session');
+    }
+  }, [user, step]);
+
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showJobTitleSuggestions, setShowJobTitleSuggestions] = useState(false);
@@ -165,8 +179,14 @@ export default function BudEOnboarding() {
     }
 
     if (data?.user) {
-      // Successfully logged in, navigate to dashboard
-      navigate('/dashboard');
+      // Successfully logged in, check for return URL or navigate to dashboard
+      const returnUrl = sessionStorage.getItem('returnUrl');
+      if (returnUrl) {
+        sessionStorage.removeItem('returnUrl');
+        navigate(returnUrl);
+      } else {
+        navigate('/dashboard');
+      }
     }
   };
 

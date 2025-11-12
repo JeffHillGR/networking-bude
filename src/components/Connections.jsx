@@ -1,19 +1,23 @@
 import { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { X, Clock, User, TrendingUp, ArrowLeft, Send } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
 function Connections({ onBackToDashboard, onNavigateToSettings, selectedConnectionId }) {
   const { user } = useAuth();
+  const location = useLocation();
   const featuredCardRef = useRef(null);
   const [activeTab, setActiveTab] = useState('recommended');
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showConnectModal, setShowConnectModal] = useState(false);
   const [showComingSoonModal, setShowComingSoonModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState('');
   const [selectedConnection, setSelectedConnection] = useState(null); // For Saved tab connections
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sendingRequest, setSendingRequest] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [showMondayBanner, setShowMondayBanner] = useState(false);
 
@@ -215,6 +219,56 @@ function Connections({ onBackToDashboard, onNavigateToSettings, selectedConnecti
     }
   }, []);
 
+  // Handle user highlighting from notification links and URL parameters
+  useEffect(() => {
+    // Check both sessionStorage and URL parameters
+    const urlParams = new URLSearchParams(location.search);
+    const urlHighlightUser = urlParams.get('highlightUser');
+    const sessionHighlightUser = sessionStorage.getItem('highlightUserId');
+    const highlightUserId = urlHighlightUser || sessionHighlightUser;
+    
+    if (highlightUserId) {
+      // If we have data loaded, find which tab the user is in
+      if (connections.length > 0 || pendingConnections.length > 0 || savedConnections.length > 0) {
+        const isInPending = pendingConnections.some(p => p.id === highlightUserId);
+        const isInSaved = savedConnections.some(s => s.id === highlightUserId);
+        const isInRecommended = connections.some(c => c.id === highlightUserId);
+        
+        // Switch to the appropriate tab
+        if (isInPending) {
+          setActiveTab('pending');
+        } else if (isInSaved) {
+          setActiveTab('saved');
+        } else if (isInRecommended) {
+          setActiveTab('recommended');
+          
+          // Find the index of the highlighted user and set it as current card
+          const filteredRecs = connections
+            .filter(conn =>
+              !passedConnections.includes(conn.id) &&
+              !savedConnections.some(s => s.id === conn.id) &&
+              !pendingConnections.some(p => p.id === conn.id)
+            )
+            .slice(0, 5);
+          
+          const highlightIndex = filteredRecs.findIndex(c => c.id === highlightUserId);
+          if (highlightIndex !== -1) {
+            setCurrentCardIndex(highlightIndex);
+          }
+        }
+        
+        // Clear the highlight after using it (only clear sessionStorage, not URL)
+        if (sessionHighlightUser) {
+          sessionStorage.removeItem('highlightUserId');
+        }
+      }
+      // If URL has highlightUser but sessionStorage doesn't, store it for later
+      else if (urlHighlightUser && !sessionHighlightUser) {
+        sessionStorage.setItem('highlightUserId', urlHighlightUser);
+      }
+    }
+  }, [connections, pendingConnections, savedConnections, passedConnections, location.search]);
+
   // Filter connections based on active tab and actions taken
   const getFilteredConnections = () => {
     if (activeTab === 'recommended') {
@@ -228,11 +282,24 @@ function Connections({ onBackToDashboard, onNavigateToSettings, selectedConnecti
         )
         .slice(0, 5); // Show top 5 at a time
     } else if (activeTab === 'saved') {
+      // For saved tab, we'll organize differently - return all saved connections
+      // and organize them in the rendering logic
       return savedConnections;
     } else if (activeTab === 'pending') {
       return pendingConnections;
     }
     return connections;
+  };
+
+  // Organize saved connections into confirmed and review later sections
+  const getOrganizedSavedConnections = () => {
+    const confirmedConnections = savedConnections.filter(conn => conn.isMutual);
+    const reviewLaterConnections = savedConnections.filter(conn => !conn.isMutual);
+    
+    return {
+      confirmed: confirmedConnections.sort((a, b) => new Date(b.connectedDate || 0) - new Date(a.connectedDate || 0)),
+      reviewLater: reviewLaterConnections.sort((a, b) => new Date(b.savedDate || 0) - new Date(a.savedDate || 0))
+    };
   };
 
   const filteredConnections = getFilteredConnections();
@@ -266,78 +333,25 @@ function Connections({ onBackToDashboard, onNavigateToSettings, selectedConnecti
     const person = selectedConnection || currentCard;
 
     try {
-      // Update the match status to 'pending' with timestamp
-      const { error: updateError } = await supabase
-        .from('matches')
-        .update({
-          status: 'pending',
-          pending_since: new Date().toISOString()
-        })
-        .eq('user_id', currentUserId)
-        .eq('matched_user_id', person.id);
+      setSendingRequest(true);
+      
+      // Call the new Supabase Edge Function (handles everything in one atomic operation)
+      const { data: result, error } = await supabase.functions.invoke('send-connection-request', {
+        body: {
+          currentUserId,
+          targetUserId: person.id,
+          connectionMessage
+        }
+      });
 
-      if (updateError) throw updateError;
-
-      // Check if the other person already sent a request (mutual connection)
-      const { data: reciprocalMatch, error: reciprocalError } = await supabase
-        .from('matches')
-        .select('status')
-        .eq('user_id', person.id)
-        .eq('matched_user_id', currentUserId)
-        .single();
-
-      let connectionResult = 'pending';
-
-      // If they already requested, create mutual connection
-      if (reciprocalMatch && reciprocalMatch.status === 'pending') {
-        // Update both matches to 'connected'
-        await supabase
-          .from('matches')
-          .update({ status: 'connected' })
-          .eq('user_id', currentUserId)
-          .eq('matched_user_id', person.id);
-
-        await supabase
-          .from('matches')
-          .update({ status: 'connected' })
-          .eq('user_id', person.id)
-          .eq('matched_user_id', currentUserId);
-
-        connectionResult = 'connected';
+      if (error) {
+        throw new Error(error.message || 'Failed to send connection request');
       }
 
-      // Get current user's profile info
-      const { data: currentUserData } = await supabase
-        .from('users')
-        .select('name, title, company')
-        .eq('id', currentUserId)
-        .single();
+      console.log('✅ Connection request sent successfully:', result);
 
-      const senderName = currentUserData?.name || user?.user_metadata?.full_name || user?.email;
-      const senderTitle = currentUserData?.title || '';
-      const senderCompany = currentUserData?.company || '';
-
-      // Create mailto link to open user's email client
-      const subject = `${senderName} wants to connect with you on Networking BudE`;
-      const body = `Hi ${person.name},
-
-I found your profile on Networking BudE and would love to connect! We have a ${person.connectionScore}% compatibility match.
-
-${senderTitle && senderCompany ? `About me: ${senderTitle} at ${senderCompany}` : ''}
-
-${connectionMessage ? `Personal message:\n"${connectionMessage}"\n\n` : ''}Log in to Networking BudE to view my full profile and connect: https://networking-bude.vercel.app/dashboard
-
-Looking forward to connecting!
-
-Best,
-${senderName}`;
-
-      // Open mailto link
-      const mailtoLink = `mailto:${person.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.location.href = mailtoLink;
-
-      // Check if connection became mutual
-      if (connectionResult === 'connected') {
+      // Update local state based on the result
+      if (result.connectionResult === 'connected') {
         // Mutual connection! Add to saved connections
         setSavedConnections(prev => [...prev, {
           id: person.id,
@@ -381,6 +395,8 @@ ${senderName}`;
       setConnectionMessage('');
       setSelectedConnection(null);
       setShowComingSoonModal(true);
+    } finally {
+      setSendingRequest(false);
     }
   };
 
@@ -881,14 +897,171 @@ ${senderName}`;
             </div>
           </div>
         </div>
+        ) : activeTab === 'saved' ? (
+          /* Organized Saved Tab - Confirmed Connections + Review Later */
+          <div className="max-w-2xl mx-auto">
+            {(() => {
+              const { confirmed, reviewLater } = getOrganizedSavedConnections();
+              const totalConnections = confirmed.length + reviewLater.length;
+              
+              if (totalConnections === 0) {
+                return (
+                  <div className="bg-white rounded-lg shadow-lg p-12 text-center">
+                    <p className="text-gray-500 text-lg">
+                      You haven't saved any connections yet. Mark someone as 'Perhaps' to review them later.
+                    </p>
+                  </div>
+                );
+              }
+              
+              return (
+                <div className="space-y-6">
+                  {/* Confirmed Connections Section */}
+                  {confirmed.length > 0 && (
+                    <div>
+                      <div className="mb-4">
+                        <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                          <span className="text-green-600">✅</span>
+                          Confirmed Connections ({confirmed.length})
+                        </h3>
+                        <p className="text-sm text-gray-600">Mutual connections where both people clicked Connect</p>
+                      </div>
+                      <div className="space-y-3">
+                        {confirmed.map((person) => (
+                          <div
+                            key={person.id}
+                            onClick={() => setSelectedConnection(person)}
+                            className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-all cursor-pointer"
+                          >
+                            <div className="flex gap-4">
+                              {person.photo ? (
+                                <img
+                                  src={person.photo}
+                                  alt={person.name}
+                                  className="w-16 h-16 rounded-full object-cover flex-shrink-0 border-2 border-green-500"
+                                />
+                              ) : (
+                                <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center flex-shrink-0 border-2 border-green-500">
+                                  <span className="text-green-600 font-bold text-lg">
+                                    {person.initials}
+                                  </span>
+                                </div>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-bold text-gray-900 text-base">{person.name}</h4>
+                                <p className="text-sm text-gray-600 mb-1">{person.title} at {person.company}</p>
+                                <div className="flex items-center justify-between mb-2">
+                                  <div className="flex items-center gap-2">
+                                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-50 border border-green-200 text-green-700 rounded text-xs font-medium">
+                                      <span>✅</span>
+                                      Connected
+                                    </span>
+                                    <span className="text-xs text-gray-500">{person.connectionScore}% compatible</span>
+                                  </div>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedConnection(person);
+                                      setShowDeleteModal(true);
+                                    }}
+                                    className="px-2 py-1 text-xs text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Review Later Section */}
+                  {reviewLater.length > 0 && (
+                    <div>
+                      <div className="mb-4">
+                        <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                          <span className="text-blue-600">🔖</span>
+                          Review Later ({reviewLater.length})
+                        </h3>
+                        <p className="text-sm text-gray-600">Connections saved for later review and decision</p>
+                      </div>
+                      <div className="space-y-3">
+                        {reviewLater.map((person) => (
+                          <div
+                            key={person.id}
+                            onClick={() => setSelectedConnection(person)}
+                            className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-all cursor-pointer"
+                          >
+                            <div className="flex gap-4">
+                              {person.photo ? (
+                                <img
+                                  src={person.photo}
+                                  alt={person.name}
+                                  className="w-16 h-16 rounded-full object-cover flex-shrink-0 border-2 border-blue-500"
+                                />
+                              ) : (
+                                <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center flex-shrink-0 border-2 border-blue-500">
+                                  <span className="text-blue-600 font-bold text-lg">
+                                    {person.initials}
+                                  </span>
+                                </div>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-bold text-gray-900 text-base">{person.name}</h4>
+                                <p className="text-sm text-gray-600 mb-1">{person.title} at {person.company}</p>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded text-xs font-medium">
+                                    <span>🔖</span>
+                                    Review later
+                                  </span>
+                                  <span className="text-xs text-gray-500">{person.connectionScore}% compatible</span>
+                                </div>
+                                <div className="flex gap-2 mt-2">
+                                  <button
+                                    onClick={async (e) => {
+                                      e.stopPropagation();
+                                      setSelectedConnection(person);
+                                      setShowConnectModal(true);
+                                    }}
+                                    className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                                  >
+                                    Connect
+                                  </button>
+                                  <button
+                                    onClick={async (e) => {
+                                      e.stopPropagation();
+                                      await supabase
+                                        .from('matches')
+                                        .update({ status: 'recommended' })
+                                        .eq('user_id', currentUserId)
+                                        .eq('matched_user_id', person.id);
+                                      setSavedConnections(prev => prev.filter(c => c.id !== person.id));
+                                    }}
+                                    className="px-3 py-1 text-xs border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors"
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
         ) : (
-          /* Centered Card List Layout for Saved and Pending */
+          /* Centered Card List Layout for Pending */
           <div className="max-w-2xl mx-auto">
             {filteredConnections.length === 0 ? (
               <div className="bg-white rounded-lg shadow-lg p-12 text-center">
                 <p className="text-gray-500 text-lg">
-                  {activeTab === 'saved' && "You haven't saved any connections yet. Mark someone as 'Perhaps' to review them later."}
-                  {activeTab === 'pending' && "No pending connection requests. Send a connection request to see it here."}
+                  No pending connection requests. Send a connection request to see it here.
                 </p>
               </div>
             ) : (
@@ -1220,10 +1393,24 @@ ${senderName}`;
               </button>
               <button
                 onClick={handleSendConnectionRequest}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#009900] text-white rounded-lg hover:bg-[#007700] transition-colors font-medium"
+                disabled={sendingRequest}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 text-white rounded-lg transition-colors font-medium ${
+                  sendingRequest 
+                    ? 'bg-gray-400 cursor-not-allowed' 
+                    : 'bg-[#009900] hover:bg-[#007700]'
+                }`}
               >
-                <Send className="w-4 h-4" />
-                Send Request
+                {sendingRequest ? (
+                  <>
+                    <div className="w-4 h-4 animate-spin border-2 border-white border-t-transparent rounded-full" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    Send Request
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -1261,6 +1448,96 @@ ${senderName}`;
             >
               Got it
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Connection Confirmation Modal */}
+      {showDeleteModal && selectedConnection && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="font-bold text-xl text-gray-900">⚠️ Remove Connection?</h3>
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setSelectedConnection(null);
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3 mb-4 p-3 bg-gray-50 rounded-lg">
+              {selectedConnection.photo ? (
+                <img
+                  src={selectedConnection.photo}
+                  alt={selectedConnection.name}
+                  className="w-12 h-12 rounded-full object-cover border-2 border-gray-300"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center">
+                  <span className="text-gray-600 font-bold text-sm">
+                    {selectedConnection.initials}
+                  </span>
+                </div>
+              )}
+              <div>
+                <h4 className="font-semibold text-gray-900">{selectedConnection.name}</h4>
+                <p className="text-sm text-gray-600">{selectedConnection.title} at {selectedConnection.company}</p>
+              </div>
+            </div>
+
+            <p className="text-gray-700 mb-6">
+              Are you sure you want to remove <strong>{selectedConnection.name}</strong> from your connections? 
+              This action cannot be undone.
+            </p>
+
+            <p className="text-sm text-gray-500 mb-6">
+              Note: {selectedConnection.name} will not be notified of this removal.
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setSelectedConnection(null);
+                }}
+                className="flex-1 px-4 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    // Soft delete: Update match status to 'removed' and add hidden_by_user_id
+                    await supabase
+                      .from('matches')
+                      .update({ 
+                        status: 'removed',
+                        hidden_by_user_id: currentUserId,
+                        updated_at: new Date().toISOString()
+                      })
+                      .eq('user_id', currentUserId)
+                      .eq('matched_user_id', selectedConnection.id);
+
+                    // Remove from local state
+                    setSavedConnections(prev => prev.filter(c => c.id !== selectedConnection.id));
+                    
+                    // Close modal
+                    setShowDeleteModal(false);
+                    setSelectedConnection(null);
+                  } catch (error) {
+                    console.error('Error removing connection:', error);
+                    // You could show an error message here
+                  }
+                }}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+              >
+                Remove Connection
+              </button>
+            </div>
           </div>
         </div>
       )}

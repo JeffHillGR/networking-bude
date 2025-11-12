@@ -166,6 +166,10 @@ export const AuthProvider = ({ children }) => {
         }
 
         console.log('✅ Profile inserted successfully:', insertedData);
+        
+        // Default settings are automatically created by the database trigger
+        // No need to manually insert - the trigger handles it
+        console.log('✅ Default user settings will be created by database trigger');
       }
 
       return { data: authData, error: null };
