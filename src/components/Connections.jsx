@@ -3,7 +3,7 @@ import { X, Clock, User, TrendingUp, ArrowLeft, Send } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
-function Connections({ onBackToDashboard, onNavigateToSettings, selectedConnectionId }) {
+function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMessages, selectedConnectionId }) {
   const { user } = useAuth();
   const featuredCardRef = useRef(null);
   const [activeTab, setActiveTab] = useState('recommended');
@@ -201,6 +201,27 @@ function Connections({ onBackToDashboard, onNavigateToSettings, selectedConnecti
     fetchMatches();
   }, [user, selectedConnectionId]);
 
+  // Auto-open modal for selected connection from notification
+  useEffect(() => {
+    if (selectedConnectionId && (savedConnections.length > 0 || connections.length > 0)) {
+      // Find the connection in saved connections first
+      const savedConn = savedConnections.find(conn => conn.id === selectedConnectionId);
+      if (savedConn) {
+        setActiveTab('saved');
+        setSelectedConnection(savedConn);
+        return;
+      }
+
+      // Then check in recommended connections
+      const recommendedConn = connections.find(conn => conn.id === selectedConnectionId);
+      if (recommendedConn) {
+        setActiveTab('recommended');
+        // For recommended tab, we don't use modal, just scroll to it
+        // The connection will be at the front of the list due to the prioritization logic
+      }
+    }
+  }, [selectedConnectionId, savedConnections, connections]);
+
   // Check if today is Monday and show banner
   useEffect(() => {
     const today = new Date();
@@ -325,7 +346,7 @@ I found your profile on Networking BudE and would love to connect! We have a ${p
 
 ${senderTitle && senderCompany ? `About me: ${senderTitle} at ${senderCompany}` : ''}
 
-${connectionMessage ? `Personal message:\n"${connectionMessage}"\n\n` : ''}Log in to Networking BudE to view my full profile and connect: https://networking-bude.vercel.app/dashboard
+${connectionMessage ? `Personal message:\n"${connectionMessage}"\n\n` : ''}Log in to Networking BudE to view my full profile and connect: https://www.networkingbude.com/dashboard
 
 Looking forward to connecting!
 
@@ -1132,14 +1153,67 @@ ${senderName}`;
               )}
 
               {activeTab === 'saved' && selectedConnection.isMutual && (
-                <div className="text-center">
+                <div className="text-center space-y-4">
                   <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 border-2 border-[#009900] text-[#009900] rounded text-sm font-semibold">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                     Mutual Connection
                   </span>
-                  <p className="text-xs text-gray-500 mt-2">Both of you clicked Connect!</p>
+                  <p className="text-xs text-gray-500">Both of you clicked Connect!</p>
+                  <button
+                    onClick={async () => {
+                      // Create or find conversation and navigate to messages
+                      try {
+                        // Ensure user IDs are ordered correctly (smaller first)
+                        const userId1 = currentUserId < selectedConnection.id ? currentUserId : selectedConnection.id;
+                        const userId2 = currentUserId < selectedConnection.id ? selectedConnection.id : currentUserId;
+
+                        // Check if conversation already exists
+                        const { data: existingConv, error: findError } = await supabase
+                          .from('conversations')
+                          .select('id')
+                          .eq('user1_id', userId1)
+                          .eq('user2_id', userId2)
+                          .maybeSingle();
+
+                        if (findError) throw findError;
+
+                        let conversationId;
+
+                        if (existingConv) {
+                          // Conversation exists
+                          conversationId = existingConv.id;
+                        } else {
+                          // Create new conversation
+                          const { data: newConv, error: createError } = await supabase
+                            .from('conversations')
+                            .insert({
+                              user1_id: userId1,
+                              user2_id: userId2
+                            })
+                            .select('id')
+                            .single();
+
+                          if (createError) throw createError;
+                          conversationId = newConv.id;
+                        }
+
+                        // Navigate to messages
+                        if (onNavigateToMessages) {
+                          onNavigateToMessages();
+                        }
+                        setSelectedConnection(null);
+                      } catch (error) {
+                        console.error('Error creating conversation:', error);
+                        alert('Failed to start conversation. Please try again.');
+                      }
+                    }}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#009900] border-2 border-[#D0ED00] text-white rounded-lg hover:bg-[#007700] transition-colors font-medium"
+                  >
+                    <Send className="w-4 h-4" />
+                    Send Message
+                  </button>
                 </div>
               )}
 

@@ -59,7 +59,7 @@ export default async function handler(req, res) {
               </div>
 
               <p style="margin-top: 20px;">
-                <a href="https://networking-bude.vercel.app/admin"
+                <a href="https://www.networkingbude.com/admin"
                    style="display: inline-block; background: #009900; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
                   View in Admin Panel
                 </a>
