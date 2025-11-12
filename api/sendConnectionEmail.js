@@ -1,37 +1,76 @@
 /**
  * Vercel Serverless Function: Send Connection Request Email
- *
- * Sends a simple email notification when a user wants to connect
+ * SECURED with authentication, rate limiting, and validation
  */
 
 import { Resend } from 'resend';
+import { requireAuth, setCorsHeaders } from './_middleware/auth.js';
+import { createUserRateLimiter, RateLimitPresets } from './_middleware/rateLimit.js';
+import { withValidation, ValidationSchemas } from './_middleware/validation.js';
 
-export default async function handler(req, res) {
+// Create rate limiter for email sending (10 emails per hour per user)
+const emailRateLimiter = createUserRateLimiter(RateLimitPresets.EMAIL);
+
+async function handleConnectionEmail(req, res) {
+  // Set secure CORS headers
+  setCorsHeaders(res, req.headers.origin);
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed. Use POST.' });
   }
 
   try {
-    const { senderName, senderEmail, senderId, senderPhoto, senderTitle, senderCompany, recipientName, recipientEmail, message, connectionScore } = req.body;
+    // Use validated data from middleware
+    const {
+      senderName,
+      senderEmail,
+      senderId,
+      senderPhoto,
+      senderTitle,
+      senderCompany,
+      recipientName,
+      recipientEmail,
+      message,
+      connectionScore
+    } = req.validatedData;
 
-    // Validate required fields
-    if (!senderName || !senderEmail || !recipientName || !recipientEmail) {
-      return res.status(400).json({
-        error: 'Missing required fields',
-        required: ['senderName', 'senderEmail', 'recipientName', 'recipientEmail']
+    // Verify the authenticated user matches the sender
+    if (senderId && req.user.id !== senderId) {
+      return res.status(403).json({
+        error: 'Forbidden',
+        message: 'You can only send emails as yourself'
       });
     }
 
-    // Send to the actual recipient's email address
-    const recipientEmailAddress = recipientEmail;
+    // Verify sender email matches authenticated user
+    if (req.user.email !== senderEmail) {
+      return res.status(403).json({
+        error: 'Forbidden',
+        message: 'Sender email must match your account email'
+      });
+    }
 
-    // Initialize Resend (you'll need to add RESEND_API_KEY to Vercel env vars)
+    // Initialize Resend
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     // Create initials for fallback if no photo
     const getInitials = (name) => {
       return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
     };
+
+    // Sanitize message for email (escape HTML)
+    const safeMessage = message
+      ? message
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;')
+      : '';
 
     const emailHtml = `
       <!DOCTYPE html>
@@ -75,19 +114,19 @@ export default async function handler(req, res) {
                 <div class="profile-info">
                   <h2 class="profile-name">${senderName}</h2>
                   ${senderTitle ? `<p class="profile-title">${senderTitle}${senderCompany ? ` at ${senderCompany}` : ''}</p>` : ''}
-                  <span class="badge">${connectionScore}% Compatible</span>
+                  ${connectionScore ? `<span class="badge">${connectionScore}% Compatible</span>` : ''}
                 </div>
               </div>
 
-              ${message ? `
+              ${safeMessage ? `
                 <div class="message-box">
                   <strong>Personal Message:</strong><br>
-                  "${message}"
+                  "${safeMessage}"
                 </div>
               ` : ''}
 
               <div style="text-align: center;">
-                <a href="https://networking-bude.vercel.app/dashboard?viewConnection=${senderId || ''}" class="button">
+                <a href="${process.env.VITE_APP_URL || 'https://networking-bude.vercel.app'}/dashboard?viewConnection=${senderId || ''}" class="button">
                   View Profile & Respond
                 </a>
               </div>
@@ -105,24 +144,24 @@ export default async function handler(req, res) {
       </html>
     `;
 
-    // Log email details before sending
-    console.log('📧 Attempting to send connection email:', {
+    console.log('📧 Sending connection email:', {
       from: 'connections@networkingbude.com',
-      to: recipientEmailAddress,
+      to: recipientEmail,
       subject: `${senderName} wants to connect with you on Networking BudE`,
-      hasApiKey: !!process.env.RESEND_API_KEY
+      authenticated: true,
+      userId: req.user.id
     });
 
     // Send email via Resend
     const data = await resend.emails.send({
       from: 'BudE Connections <connections@networkingbude.com>',
-      to: recipientEmailAddress,
+      to: recipientEmail,
       subject: `${senderName} wants to connect with you on Networking BudE`,
       html: emailHtml,
       replyTo: senderEmail
     });
 
-    console.log('✅ Connection email sent successfully:', data);
+    console.log('✅ Connection email sent successfully:', data.id);
 
     return res.status(200).json({
       success: true,
@@ -139,3 +178,22 @@ export default async function handler(req, res) {
     });
   }
 }
+
+// Compose middleware: validation -> rate limiting -> authentication -> handler
+const validatedHandler = withValidation({
+  senderName: { type: 'string', required: true, maxLength: 100 },
+  senderEmail: { type: 'email', required: true },
+  senderId: { type: 'uuid', required: false },
+  senderPhoto: { type: 'string', required: false, maxLength: 500 },
+  senderTitle: { type: 'string', required: false, maxLength: 100 },
+  senderCompany: { type: 'string', required: false, maxLength: 100 },
+  recipientName: { type: 'string', required: true, maxLength: 100 },
+  recipientEmail: { type: 'email', required: true },
+  message: { type: 'string', required: false, maxLength: 1000 },
+  connectionScore: { type: 'number', required: false, min: 0, max: 100 }
+})(handleConnectionEmail);
+
+const rateLimitedHandler = (req, res) =>
+  emailRateLimiter(req, res, validatedHandler);
+
+export default requireAuth(rateLimitedHandler);
