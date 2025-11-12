@@ -87,6 +87,9 @@ serve(async (req) => {
     // Get request body
     const { currentUserId, targetUserId, connectionMessage } = await req.json();
 
+    // Get base URL from environment variable with fallback
+    const baseUrl = Deno.env.get("NEXT_PUBLIC_APP_URL") || Deno.env.get("APP_URL") || "https://networking-bude.vercel.app";
+
     // Validate required fields
     if (!currentUserId || !targetUserId) {
       return new Response(
@@ -289,7 +292,7 @@ serve(async (req) => {
               }
 
               <div style="text-align: center;">
-                <a href="https://networking-bude.vercel.app/dashboard?tab=connections&highlightUser=${currentUserId}" class="button">
+                <a href="${baseUrl}/dashboard?tab=connections&highlightUser=${currentUserId}" class="button">
                   View Profile & Respond
                 </a>
               </div>
@@ -300,7 +303,7 @@ serve(async (req) => {
             </div>
             <div class="footer">
               <p>This email was sent by Networking BudE<br>
-              <a href="https://networkingbude.com">networkingbude.com</a></p>
+              <a href="${baseUrl}">Networking BudE</a></p>
             </div>
           </div>
         </body>

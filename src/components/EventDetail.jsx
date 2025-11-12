@@ -19,6 +19,8 @@ function EventDetail() {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
+  const [interestedCount, setInterestedCount] = useState(0);
+  const [connectionsInterestedCount, setConnectionsInterestedCount] = useState(0);
 
   // Track user engagement when viewing event details
   useEffect(() => {
@@ -52,7 +54,7 @@ function EventDetail() {
     return value;
   };
 
-  // Load event from Supabase
+  // Load event from Supabase and check if user liked it
   useEffect(() => {
     const loadEvent = async () => {
       try {
@@ -92,6 +94,68 @@ function EventDetail() {
           };
 
           setEvent(transformedEvent);
+
+          // Check if user has liked this event
+          if (user) {
+            const { data: likeData } = await supabase
+              .from('event_likes')
+              .select('id')
+              .eq('event_id', eventId)
+              .eq('user_id', user.id)
+              .maybeSingle();
+
+            setIsFavorited(!!likeData);
+          }
+
+          // Fetch interested count (likes + registration clicks)
+          const [likesResult, clicksResult] = await Promise.all([
+            supabase
+              .from('event_likes')
+              .select('id')
+              .eq('event_id', eventId),
+            supabase
+              .from('event_registration_clicks')
+              .select('id')
+              .eq('event_id', eventId)
+          ]);
+
+          const totalInterested = (likesResult.data?.length || 0) + (clicksResult.data?.length || 0);
+          setInterestedCount(totalInterested);
+
+          // Fetch user's connections who are interested in this event
+          if (user) {
+            // Get user's connection IDs
+            const { data: matchesData } = await supabase
+              .from('matches')
+              .select('matched_user_id')
+              .eq('user_id', user.id);
+
+            const connectionIds = matchesData?.map(m => m.matched_user_id) || [];
+
+            if (connectionIds.length > 0) {
+              // Check which connections liked or registered for this event
+              const [connLikesResult, connClicksResult] = await Promise.all([
+                supabase
+                  .from('event_likes')
+                  .select('user_id')
+                  .eq('event_id', eventId)
+                  .in('user_id', connectionIds),
+                supabase
+                  .from('event_registration_clicks')
+                  .select('user_id')
+                  .eq('event_id', eventId)
+                  .in('user_id', connectionIds)
+              ]);
+
+              // Get unique connection IDs who are interested
+              const interestedConnectionIds = new Set([
+                ...(connLikesResult.data?.map(l => l.user_id) || []),
+                ...(connClicksResult.data?.map(c => c.user_id) || [])
+              ]);
+
+              setConnectionsInterestedCount(interestedConnectionIds.size);
+            }
+          }
         }
       } catch (error) {
         console.error('Error loading event:', error);
@@ -101,7 +165,64 @@ function EventDetail() {
     };
 
     loadEvent();
-  }, [eventId]);
+  }, [eventId, user]);
+
+  // Handle like/unlike
+  const handleToggleLike = async () => {
+    if (!user) {
+      alert('Please sign in to like events');
+      return;
+    }
+
+    try {
+      if (isFavorited) {
+        // Unlike: remove from database
+        const { error } = await supabase
+          .from('event_likes')
+          .delete()
+          .eq('event_id', eventId)
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+        setIsFavorited(false);
+        setInterestedCount(prev => Math.max(0, prev - 1)); // Update count
+      } else {
+        // Like: add to database
+        const { error } = await supabase
+          .from('event_likes')
+          .insert({
+            event_id: eventId,
+            user_id: user.id
+          });
+
+        if (error) throw error;
+        setIsFavorited(true);
+        setInterestedCount(prev => prev + 1); // Update count
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      alert('Failed to update like status');
+    }
+  };
+
+  // Track Register Now button clicks
+  const handleRegisterClick = async () => {
+    if (user) {
+      try {
+        // Record the click (will be ignored if already exists due to unique constraint)
+        await supabase
+          .from('event_registration_clicks')
+          .insert({
+            event_id: eventId,
+            user_id: user.id
+          });
+      } catch (error) {
+        // Silently fail - don't block user from registering
+        console.log('Registration click already recorded or error:', error);
+      }
+    }
+    // Button will open the registration URL via its href
+  };
 
   // Fallback event data for backward compatibility (can be removed after migration)
   const defaultEventData = {
@@ -367,12 +488,13 @@ function EventDetail() {
                   <h2 className="text-3xl font-bold text-gray-900 flex-1">{event.title}</h2>
                   <div className="flex gap-2 ml-4">
                     <button
-                      onClick={() => setIsFavorited(!isFavorited)}
+                      onClick={handleToggleLike}
                       className={`p-2 rounded-full border transition-colors ${
                         isFavorited
                           ? 'bg-red-50 border-red-500 text-red-500'
                           : 'border-gray-300 text-gray-600 hover:border-gray-400'
                       }`}
+                      title={isFavorited ? 'Unlike event' : 'Like event'}
                     >
                       <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
                     </button>
@@ -429,6 +551,7 @@ function EventDetail() {
                   href={event.registrationUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={handleRegisterClick}
                   className="block w-full bg-black text-white text-center py-3 rounded-lg font-bold hover:bg-gray-800 transition-colors mb-4"
                 >
                   Register Now
@@ -467,13 +590,19 @@ function EventDetail() {
                     </div>
                   </div>
 
-                  <div className="flex gap-3">
-                    <Users className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <div className="font-semibold text-gray-900">Attendees</div>
-                      <div className="text-sm text-[#009900] font-medium">Who's Going - Feature Coming Soon</div>
+                  {interestedCount > 0 && (
+                    <div className="flex gap-3">
+                      <Heart className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <div className="font-semibold text-gray-900">{interestedCount} Interested</div>
+                        {connectionsInterestedCount > 0 && (
+                          <div className="text-sm text-gray-600">
+                            {connectionsInterestedCount} Of Your Connections Showed Interest
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
 

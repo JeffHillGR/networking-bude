@@ -15,6 +15,9 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Get base URL from environment variable with fallback
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'https://networking-bude.vercel.app';
+
     // Initialize Supabase with service role key
     const supabase = createClient(
       process.env.VITE_SUPABASE_URL,
@@ -197,7 +200,7 @@ export default async function handler(req, res) {
 
               <!-- Actions -->
               <div style="text-align: center; margin-top: 30px;">
-                <a href="https://networking-bude.vercel.app/admin" class="button">View Admin Panel</a>
+                <a href="${baseUrl}/admin" class="button">View Admin Panel</a>
                 <a href="https://supabase.com/dashboard" class="button" style="background: #3ecf8e;">View Database</a>
               </div>
 

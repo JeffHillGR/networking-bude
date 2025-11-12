@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Upload, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Upload, Trash2, ChevronDown, ChevronUp, ArrowDown } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
 
 function EventSlotsManager() {
@@ -7,11 +7,14 @@ function EventSlotsManager() {
   const [loading, setLoading] = useState(true);
   const [expandedSlot, setExpandedSlot] = useState(null);
   const [saving, setSaving] = useState({});
+  const [scrapeUrls, setScrapeUrls] = useState({});
+  const [scraping, setScraping] = useState({});
+  const [scrapeErrors, setScrapeErrors] = useState({});
 
   const organizations = [
     'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
-    'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo',
-    'Hello West Michigan', 'CARWM', 'Creative Mornings', 'Athena',
+    'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo GR',
+    'Hello West Michigan', 'CARWM', 'Creative Mornings GR', 'Athena',
     'Inforum', 'Start Garden', 'Other'
   ];
 
@@ -91,34 +94,55 @@ function EventSlotsManager() {
     setSaving(prev => ({ ...prev, [slotNumber]: true }));
 
     try {
+      console.log('Starting save for slot', slotNumber);
+      console.log('Event data:', event);
+
       const eventData = {
         ...event,
         slot_number: slotNumber,
         is_featured: slotNumber <= 4 // Slots 1-4 are featured
       };
 
+      console.log('Checking if event exists...');
       // Check if event exists
-      const { data: existing } = await supabase
+      const { data: existing, error: checkError } = await supabase
         .from('events')
         .select('id')
         .eq('slot_number', slotNumber)
-        .single();
+        .maybeSingle(); // Use maybeSingle instead of single to avoid error if not found
+
+      if (checkError) {
+        console.error('Error checking existing event:', checkError);
+        throw checkError;
+      }
+
+      console.log('Existing event:', existing);
 
       if (existing) {
         // Update existing
+        console.log('Updating existing event...');
         const { error } = await supabase
           .from('events')
           .update(eventData)
           .eq('slot_number', slotNumber);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Update error:', error);
+          throw error;
+        }
+        console.log('Update successful');
       } else {
         // Insert new
+        console.log('Inserting new event...');
         const { error } = await supabase
           .from('events')
           .insert(eventData);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Insert error:', error);
+          throw error;
+        }
+        console.log('Insert successful');
       }
 
       alert(`Event Slot ${slotNumber} saved successfully!`);
@@ -161,6 +185,259 @@ function EventSlotsManager() {
     }
   };
 
+  const handleMoveDown = async (slotNumber) => {
+    if (slotNumber >= 7) return; // Can't move down from slot 7
+
+    const currentEvent = events[slotNumber];
+    const nextEvent = events[slotNumber + 1];
+
+    if (!currentEvent) {
+      alert('Cannot move an empty slot');
+      return;
+    }
+
+    setSaving(prev => ({ ...prev, [slotNumber]: true, [slotNumber + 1]: true }));
+
+    try {
+      console.log('Moving down from slot', slotNumber);
+
+      if (nextEvent) {
+        // Both slots have events - swap them by deleting and reinserting
+        console.log('Swapping two events');
+
+        // Step 1: Fetch both complete event records
+        const { data: currentData, error: fetchError1 } = await supabase
+          .from('events')
+          .select('*')
+          .eq('slot_number', slotNumber)
+          .single();
+
+        if (fetchError1) throw fetchError1;
+
+        const { data: nextData, error: fetchError2 } = await supabase
+          .from('events')
+          .select('*')
+          .eq('slot_number', slotNumber + 1)
+          .single();
+
+        if (fetchError2) throw fetchError2;
+
+        console.log('Fetched both events, now deleting...');
+
+        // Step 2: Delete both events
+        const { error: deleteError } = await supabase
+          .from('events')
+          .delete()
+          .in('slot_number', [slotNumber, slotNumber + 1]);
+
+        if (deleteError) {
+          console.error('Error deleting events:', deleteError);
+          throw deleteError;
+        }
+
+        console.log('Deleted both events, now reinserting with swapped slot numbers...');
+
+        // Step 3: Reinsert with swapped slot numbers (remove id and timestamps)
+        const { id: currentId, created_at: currentCreated, updated_at: currentUpdated, ...currentEventData } = currentData;
+        const { id: nextId, created_at: nextCreated, updated_at: nextUpdated, ...nextEventData } = nextData;
+
+        const { error: insertError } = await supabase
+          .from('events')
+          .insert([
+            { ...currentEventData, slot_number: slotNumber + 1 },
+            { ...nextEventData, slot_number: slotNumber }
+          ]);
+
+        if (insertError) {
+          console.error('Error reinserting events:', insertError);
+          throw insertError;
+        }
+
+        console.log('Successfully swapped events');
+      } else {
+        // Only current slot has event - just move it down
+        console.log(`Moving slot ${slotNumber} to ${slotNumber + 1}`);
+
+        // Fetch the complete event
+        const { data: eventData, error: fetchError } = await supabase
+          .from('events')
+          .select('*')
+          .eq('slot_number', slotNumber)
+          .single();
+
+        if (fetchError) throw fetchError;
+
+        // Delete the old one
+        const { error: deleteError } = await supabase
+          .from('events')
+          .delete()
+          .eq('slot_number', slotNumber);
+
+        if (deleteError) throw deleteError;
+
+        // Reinsert with new slot number (remove id and timestamps)
+        const { id, created_at, updated_at, ...cleanEventData } = eventData;
+        const { error: insertError } = await supabase
+          .from('events')
+          .insert({ ...cleanEventData, slot_number: slotNumber + 1 });
+
+        if (insertError) throw insertError;
+      }
+
+      // Reload events to reflect changes
+      await loadEvents();
+      alert(`Event moved from Slot ${slotNumber} to Slot ${slotNumber + 1}`);
+    } catch (error) {
+      console.error('Error moving event:', error);
+      alert('Failed to move event: ' + error.message);
+      // Reload to ensure UI is in sync with database
+      await loadEvents();
+    } finally {
+      setSaving(prev => ({ ...prev, [slotNumber]: false, [slotNumber + 1]: false }));
+    }
+  };
+
+  const handleScrapeUrl = async (slotNumber) => {
+    const url = scrapeUrls[slotNumber];
+    if (!url) {
+      setScrapeErrors(prev => ({ ...prev, [slotNumber]: 'Please enter a URL' }));
+      return;
+    }
+
+    setScraping(prev => ({ ...prev, [slotNumber]: true }));
+    setScrapeErrors(prev => ({ ...prev, [slotNumber]: '' }));
+
+    try {
+      const proxyUrl = 'https://api.allorigins.win/raw?url=';
+      const response = await fetch(proxyUrl + encodeURIComponent(url));
+      const html = await response.text();
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      let scrapedData = { registration_url: url };
+
+      // Try to find JSON-LD structured data (used by Eventbrite and many event sites)
+      const jsonLdScripts = doc.querySelectorAll('script[type="application/ld+json"]');
+      let eventData = null;
+
+      for (const script of jsonLdScripts) {
+        try {
+          const data = JSON.parse(script.textContent);
+          // Handle both single Event objects and arrays
+          const events = Array.isArray(data) ? data : [data];
+          eventData = events.find(item => item['@type'] === 'Event');
+          if (eventData) break;
+        } catch (e) {
+          console.log('Failed to parse JSON-LD:', e);
+        }
+      }
+
+      if (eventData) {
+        console.log('Found structured event data:', eventData);
+
+        // Extract title
+        if (eventData.name) {
+          scrapedData.title = eventData.name;
+        }
+
+        // Extract description
+        if (eventData.description) {
+          scrapedData.short_description = eventData.description.substring(0, 200);
+          scrapedData.full_description = eventData.description;
+        }
+
+        // Extract date and time
+        if (eventData.startDate) {
+          const startDate = new Date(eventData.startDate);
+          scrapedData.date = startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+          scrapedData.time = startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        }
+
+        // Extract location
+        if (eventData.location) {
+          if (typeof eventData.location === 'string') {
+            scrapedData.location_name = eventData.location;
+          } else if (eventData.location.name) {
+            scrapedData.location_name = eventData.location.name;
+            if (eventData.location.address) {
+              const addr = eventData.location.address;
+              if (typeof addr === 'string') {
+                scrapedData.location_address = addr;
+              } else if (addr.streetAddress || addr.addressLocality) {
+                scrapedData.location_address = [addr.streetAddress, addr.addressLocality, addr.addressRegion].filter(Boolean).join(', ');
+              }
+            }
+          }
+        }
+
+        // Extract organizer
+        if (eventData.organizer) {
+          if (typeof eventData.organizer === 'string') {
+            scrapedData.organization = 'Other';
+            scrapedData.organization_custom = eventData.organizer;
+          } else if (eventData.organizer.name) {
+            scrapedData.organization = 'Other';
+            scrapedData.organization_custom = eventData.organizer.name;
+          }
+        }
+
+        // Extract image
+        if (eventData.image) {
+          const imageUrl = typeof eventData.image === 'string' ? eventData.image : eventData.image.url || eventData.image[0];
+          if (imageUrl) {
+            scrapedData.image_url = imageUrl.startsWith('http') ? imageUrl : new URL(imageUrl, url).href;
+          }
+        }
+      }
+
+      // Fallback to meta tags if structured data not found
+      if (!scrapedData.title) {
+        const title = doc.querySelector('h1')?.textContent?.trim() ||
+                     doc.querySelector('meta[property="og:title"]')?.getAttribute('content') ||
+                     doc.querySelector('title')?.textContent?.trim() || '';
+        scrapedData.title = title;
+      }
+
+      if (!scrapedData.short_description) {
+        const metaDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content') ||
+                        doc.querySelector('meta[property="og:description"]')?.getAttribute('content');
+        if (metaDesc) {
+          scrapedData.short_description = metaDesc;
+          scrapedData.full_description = metaDesc;
+        }
+      }
+
+      if (!scrapedData.image_url) {
+        const ogImage = doc.querySelector('meta[property="og:image"]')?.getAttribute('content');
+        if (ogImage) {
+          scrapedData.image_url = ogImage.startsWith('http') ? ogImage : new URL(ogImage, url).href;
+        }
+      }
+
+      // Update the event with scraped data
+      setEvents(prev => ({
+        ...prev,
+        [slotNumber]: {
+          ...(prev[slotNumber] || { ...emptyEvent, slot_number: slotNumber }),
+          ...scrapedData,
+          title: scrapedData.title || prev[slotNumber]?.title || '',
+          short_description: scrapedData.short_description || prev[slotNumber]?.short_description || '',
+          full_description: scrapedData.full_description || prev[slotNumber]?.full_description || '',
+          image_url: scrapedData.image_url || prev[slotNumber]?.image_url || '',
+          registration_url: scrapedData.registration_url
+        }
+      }));
+
+      alert('Content scraped! Please review and fill in remaining details.');
+    } catch (error) {
+      console.error('Scraping error:', error);
+      setScrapeErrors(prev => ({ ...prev, [slotNumber]: 'Unable to scrape this URL. Please enter details manually.' }));
+    } finally {
+      setScraping(prev => ({ ...prev, [slotNumber]: false }));
+    }
+  };
+
   const toggleSlot = (slotNumber) => {
     setExpandedSlot(expandedSlot === slotNumber ? null : slotNumber);
   };
@@ -192,23 +469,35 @@ function EventSlotsManager() {
               )}
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            {hasEvent && (
-              <button
-                onClick={() => handleDeleteEvent(slotNumber)}
-                disabled={saving[slotNumber]}
-                className="px-3 py-1 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 disabled:bg-gray-400 flex items-center gap-1"
-              >
-                <Trash2 className="w-3 h-3" />
-                Delete
-              </button>
-            )}
-          </div>
         </div>
 
         {/* Expanded Form */}
         {isExpanded && (
           <div className="space-y-3 bg-gray-50 p-4 rounded">
+            {/* URL Scraper */}
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-3 rounded border border-blue-200">
+              <p className="text-xs font-semibold text-gray-900 mb-2">✨ Quick Add from URL (Optional)</p>
+              <p className="text-xs text-gray-600 mb-2">Paste an Eventbrite or event URL to auto-fill details</p>
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  value={scrapeUrls[slotNumber] || ''}
+                  onChange={(e) => setScrapeUrls(prev => ({ ...prev, [slotNumber]: e.target.value }))}
+                  placeholder="https://www.eventbrite.com/e/..."
+                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs"
+                  disabled={scraping[slotNumber]}
+                />
+                <button
+                  onClick={() => handleScrapeUrl(slotNumber)}
+                  disabled={scraping[slotNumber]}
+                  className="px-3 py-1 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 disabled:bg-gray-400"
+                >
+                  {scraping[slotNumber] ? 'Scraping...' : 'Scrape'}
+                </button>
+              </div>
+              {scrapeErrors[slotNumber] && <p className="text-xs text-red-600 mt-1">{scrapeErrors[slotNumber]}</p>}
+            </div>
+
             {/* Event Image */}
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Event Image *</label>
@@ -403,15 +692,31 @@ function EventSlotsManager() {
               </div>
             </div>
 
-            {/* Save Button */}
+            {/* Action Buttons */}
             <div className="pt-3 border-t">
-              <button
-                onClick={() => handleSaveEvent(slotNumber)}
-                disabled={saving[slotNumber]}
-                className="w-full px-4 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                {saving[slotNumber] ? 'Saving...' : `Save Event Slot ${slotNumber}`}
-              </button>
+              <div className="flex gap-2">
+                {/* Delete Button */}
+                {hasEvent && (
+                  <button
+                    onClick={() => handleDeleteEvent(slotNumber)}
+                    disabled={saving[slotNumber]}
+                    className="px-4 py-2 bg-red-600 text-white rounded font-medium hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete
+                  </button>
+                )}
+
+
+                {/* Save Button */}
+                <button
+                  onClick={() => handleSaveEvent(slotNumber)}
+                  disabled={saving[slotNumber]}
+                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded font-medium hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                  {saving[slotNumber] ? 'Saving...' : `Save Event Slot ${slotNumber}`}
+                </button>
+              </div>
             </div>
           </div>
         )}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, Calendar, Users, ExternalLink, X, TrendingUp, ArrowLeft, Share2 } from 'lucide-react';
+import { Search, MapPin, Calendar, Users, ExternalLink, X, TrendingUp, ArrowLeft, Share2, Heart } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
 
 function Events({ onBackToDashboard }) {
@@ -23,6 +23,7 @@ function Events({ onBackToDashboard }) {
   });
   const [allEvents, setAllEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
+  const [eventInterestCounts, setEventInterestCounts] = useState({});
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareEvent, setShareEvent] = useState(null);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -75,7 +76,36 @@ function Events({ onBackToDashboard }) {
 
         if (error) throw error;
 
+        // Load interested counts for all events (likes + registration clicks)
+        const eventIds = data.map(e => e.id);
+        let counts = {};
+
+        if (eventIds.length > 0) {
+          const [likesResult, clicksResult] = await Promise.all([
+            supabase
+              .from('event_likes')
+              .select('event_id')
+              .in('event_id', eventIds),
+            supabase
+              .from('event_registration_clicks')
+              .select('event_id')
+              .in('event_id', eventIds)
+          ]);
+
+          // Count unique users interested in each event
+          eventIds.forEach(id => {
+            const likes = likesResult.data?.filter(l => l.event_id === id).length || 0;
+            const clicks = clicksResult.data?.filter(c => c.event_id === id).length || 0;
+            // Note: This counts users who both liked AND clicked as 2
+            // If you want unique users, you'd need to track user_ids
+            counts[id] = likes + clicks;
+          });
+        }
+
+        setEventInterestCounts(counts);
+
         // Transform data to match the expected format
+        // Mark as trending if interested count > 5
         const transformedEvents = data.map(event => ({
           id: event.id,
           title: event.title,
@@ -86,7 +116,8 @@ function Events({ onBackToDashboard }) {
           organizerName: event.organization === 'Other' ? event.organization_custom : event.organization,
           image: event.image_url,
           badge: event.event_badge,
-          isFeatured: event.is_featured
+          isFeatured: event.is_featured,
+          isTrending: (counts[event.id] || 0) > 5
         }));
 
         setAllEvents(transformedEvents);
@@ -283,10 +314,14 @@ function Events({ onBackToDashboard }) {
                           <MapPin className="h-4 w-4" />
                           <span>{event.location}</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4" />
-                          <span className="text-[#009900] font-medium">Who's Going - Feature Coming Soon</span>
-                        </div>
+                        {eventInterestCounts[event.id] > 0 && (
+                          <div className="flex items-center gap-2">
+                            <Heart className="h-4 w-4 text-red-500" />
+                            <span className="text-gray-700 font-medium">
+                              {eventInterestCounts[event.id]} Interested
+                            </span>
+                          </div>
+                        )}
                       </div>
                       <div className="flex justify-between items-center">
                         <button
@@ -364,10 +399,14 @@ function Events({ onBackToDashboard }) {
                             <MapPin className="h-4 w-4 flex-shrink-0" />
                             <span className="truncate">{event.location}</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4 flex-shrink-0" />
-                            <span className="truncate text-[#009900] font-medium">Who's Going - Feature Coming Soon</span>
-                          </div>
+                          {eventInterestCounts[event.id] > 0 && (
+                            <div className="flex items-center gap-2">
+                              <Heart className="h-4 w-4 flex-shrink-0 text-red-500" />
+                              <span className="truncate text-gray-700 font-medium">
+                                {eventInterestCounts[event.id]} Interested
+                              </span>
+                            </div>
+                          )}
                         </div>
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0 mt-3 md:mt-4">
                           <div className="flex items-center gap-2 flex-wrap">

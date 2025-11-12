@@ -37,7 +37,9 @@ function Dashboard() {
   );
   const [connections, setConnections] = useState([]);
   const [loadingConnections, setLoadingConnections] = useState(true);
+  const [connectionLikedEvents, setConnectionLikedEvents] = useState({});
   const [userFirstName, setUserFirstName] = useState("there");
+  const [selectedConnectionId, setSelectedConnectionId] = useState(null);
   const [events, setEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -652,7 +654,7 @@ function Dashboard() {
             .slice(0, 2);
 
           return {
-            id: match.matched_user_id,
+            userId: match.matched_user_id,
             name: fullName,
             title:
               `${matchedUser.title || ""} at ${matchedUser.company || ""}`.trim(),
@@ -667,6 +669,77 @@ function Dashboard() {
             isReal: true,
           };
         });
+
+        // Fetch liked events for all connections in bulk (optimized)
+        const likedEventsMap = {};
+        if (transformedConnections.length > 0) {
+          try {
+            const connectionIds = transformedConnections.map((c) => c.userId);
+
+            // Fetch all likes and clicks for all connections at once
+            const [allLikesResult, allClicksResult] = await Promise.all([
+              supabase
+                .from("event_likes")
+                .select("event_id, user_id, created_at")
+                .in("user_id", connectionIds),
+              supabase
+                .from("event_registration_clicks")
+                .select("event_id, user_id, created_at")
+                .in("user_id", connectionIds),
+            ]);
+
+            // Group interactions by user
+            const userInteractions = {};
+            [
+              ...(allLikesResult.data || []),
+              ...(allClicksResult.data || []),
+            ].forEach((interaction) => {
+              if (!userInteractions[interaction.user_id]) {
+                userInteractions[interaction.user_id] = [];
+              }
+              userInteractions[interaction.user_id].push(interaction);
+            });
+
+            // Get unique event IDs for each user (max 3)
+            const allEventIds = new Set();
+            const userEventIdsMap = {};
+
+            Object.keys(userInteractions).forEach((userId) => {
+              const sorted = userInteractions[userId].sort(
+                (a, b) => new Date(b.created_at) - new Date(a.created_at),
+              );
+              const uniqueEventIds = [
+                ...new Set(sorted.map((i) => i.event_id)),
+              ].slice(0, 3);
+              userEventIdsMap[userId] = uniqueEventIds;
+              uniqueEventIds.forEach((id) => allEventIds.add(id));
+            });
+
+            // Fetch all event details in one query
+            if (allEventIds.size > 0) {
+              const { data: eventsData } = await supabase
+                .from("events")
+                .select("id, title, image_url")
+                .in("id", Array.from(allEventIds));
+
+              const eventsMap = {};
+              (eventsData || []).forEach((event) => {
+                eventsMap[event.id] = event;
+              });
+
+              // Map events to users
+              Object.keys(userEventIdsMap).forEach((userId) => {
+                likedEventsMap[userId] = userEventIdsMap[userId]
+                  .map((eventId) => eventsMap[eventId])
+                  .filter(Boolean);
+              });
+            }
+          } catch (error) {
+            console.error("Error loading liked events:", error);
+          }
+        }
+
+        setConnectionLikedEvents(likedEventsMap);
 
         // Only set connections if we got data, otherwise keep empty array
         if (transformedConnections.length > 0) {
@@ -815,7 +888,6 @@ function Dashboard() {
                     : [0, 1, 2].map((index) => {
                         const person = connections[index];
                         const isPlaceholder = !person;
-
                         if (isPlaceholder) {
                           // Blurred placeholder card
                           return (
@@ -857,11 +929,7 @@ function Dashboard() {
                           <div
                             key={index}
                             onClick={() => {
-                              // Store the user ID for highlighting in connections
-                              sessionStorage.setItem(
-                                "highlightUserId",
-                                person.id,
-                              );
+                              setSelectedConnectionId(person.id);
                               setActiveTab("connections");
                               window.scrollTo({ top: 0, behavior: "instant" });
                             }}
@@ -911,6 +979,35 @@ function Dashboard() {
                                 </p>
                               </div>
                             </div>
+                            {/* Liked Events */}
+                            {likedEvents.length > 0 && (
+                              <div className="mt-2 pt-2 border-t border-gray-100">
+                                <p className="text-xs text-gray-500 mb-1">
+                                  Interested in:
+                                </p>
+                                <div className="flex gap-1">
+                                  {likedEvents.map((event, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="w-12 h-12 rounded overflow-hidden border border-gray-200"
+                                      title={event.title}
+                                    >
+                                      {event.image_url ? (
+                                        <img
+                                          src={event.image_url}
+                                          alt={event.title}
+                                          className="w-full h-full object-cover"
+                                        />
+                                      ) : (
+                                        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                                          <Heart className="w-5 h-5 text-red-500" />
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         );
                       })}
@@ -1150,6 +1247,7 @@ function Dashboard() {
           <Connections
             onBackToDashboard={() => {
               setActiveTab("dashboard");
+              setSelectedConnectionId(null);
               window.scrollTo({ top: 0, behavior: "instant" });
             }}
             onNavigateToSettings={() => {
@@ -1240,9 +1338,14 @@ function Dashboard() {
         </span>
       </div>
       <div className="md:flex">
+        <Sidebar 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab}
+          onContactUsClick={() => setShowContactModal(true)}
+        />
         <main className="flex-1 w-full overflow-x-hidden">
           {/* Mobile Header */}
-          <div className="bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
+          <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
             <div className="flex items-center justify-between">
               <button
                 onClick={() => setShowMobileMenu(true)}

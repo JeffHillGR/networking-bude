@@ -14,6 +14,8 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Get base URL from environment variable with fallback
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'https://networking-bude.vercel.app';
     const { type, table, record, old_record } = req.body;
 
     // Only handle INSERT events on users table
@@ -59,7 +61,7 @@ export default async function handler(req, res) {
               </div>
 
               <p style="margin-top: 20px;">
-                <a href="https://networking-bude.vercel.app/admin"
+                <a href="${baseUrl}/admin"
                    style="display: inline-block; background: #009900; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
                   View in Admin Panel
                 </a>

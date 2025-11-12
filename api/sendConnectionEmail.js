@@ -14,6 +14,9 @@ export default async function handler(req, res) {
   try {
     const { senderName, senderEmail, senderId, senderPhoto, senderTitle, senderCompany, recipientName, recipientEmail, message, connectionScore } = req.body;
 
+    // Get base URL from environment variable with fallback
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'https://networking-bude.vercel.app';
+
     // Validate required fields
     if (!senderName || !senderEmail || !recipientName || !recipientEmail) {
       return res.status(400).json({
@@ -87,7 +90,7 @@ export default async function handler(req, res) {
               ` : ''}
 
               <div style="text-align: center;">
-                <a href="https://networking-bude.vercel.app/dashboard?tab=connections&highlightUser=${senderId || ''}" class="button">
+                <a href="${baseUrl}/dashboard?tab=connections&highlightUser=${senderId || ''}" class="button">
                   View Profile & Respond
                 </a>
               </div>
@@ -98,7 +101,7 @@ export default async function handler(req, res) {
             </div>
             <div class="footer">
               <p>This email was sent by Networking BudE<br>
-              <a href="https://networkingbude.com">networkingbude.com</a></p>
+              <a href="${baseUrl}">Networking BudE</a></p>
             </div>
           </div>
         </body>

@@ -219,7 +219,7 @@ serve(async (req) => {
     console.log(`📊 Found ${users.length} users`);
 
     const algorithmUsers = users.map(convertUserToAlgorithmFormat);
-    const matchThreshold = 1; //65; // Raised to 65% to reduce match count per user
+    const matchThreshold = 65; // Raised to 65% to reduce match count per user
     let totalMatches = 0;
 
     // For each user, calculate matches
