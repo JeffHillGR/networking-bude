@@ -949,15 +949,7 @@ default:
     <div className="bg-gray-50 pb-32 md:pb-0" style={{ minHeight: '100dvh', WebkitOverflowScrolling: 'touch' }}>
     <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
       <span className="font-medium">
-        Welcome to Networking BudE • <button
-        onClick={() => {
-          localStorage.removeItem('onboardingCompleted');
-          window.location.href = '/';
-        }}
-        className="underline hover:no-underline font-medium"
-      >
-        Reset to Onboarding
-      </button>
+        Welcome to Networking BudE
       </span>
     </div>
     <div className="md:flex">
@@ -1262,23 +1254,24 @@ default:
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex-1 overflow-hidden">
                     <p className="text-sm text-gray-500 mb-1">Share Link:</p>
-                    <p className="text-sm font-mono text-gray-900 truncate">{window.location.origin}</p>
+                    <p className="text-sm font-mono text-gray-900 truncate">https://www.networkingbude.com</p>
                   </div>
                   <button
                     onClick={() => {
+                      const shareUrl = 'https://www.networkingbude.com';
                       try {
                         if (navigator.clipboard && navigator.clipboard.writeText) {
-                          navigator.clipboard.writeText(window.location.origin).then(() => {
+                          navigator.clipboard.writeText(shareUrl).then(() => {
                             setLinkCopied(true);
                             setTimeout(() => setLinkCopied(false), 2000);
                           }).catch(() => {
-                            prompt('Copy this link:', window.location.origin);
+                            prompt('Copy this link:', shareUrl);
                           });
                         } else {
-                          prompt('Copy this link:', window.location.origin);
+                          prompt('Copy this link:', shareUrl);
                         }
                       } catch (err) {
-                        prompt('Copy this link:', window.location.origin);
+                        prompt('Copy this link:', shareUrl);
                       }
                     }}
                     className="flex-shrink-0 bg-[#009900] text-white px-4 py-2 rounded-lg hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] flex items-center gap-2"

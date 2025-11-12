@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { useAuth } from './contexts/AuthContext.jsx';
 import Dashboard from './components/Dashboard.jsx';
 import OnboardingFlow from './components/OnboardingFlow.jsx';
@@ -16,9 +17,10 @@ function App() {
   const { user } = useAuth();
 
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <Routes>
+    <HelmetProvider>
+      <BrowserRouter>
+        <ScrollToTop />
+        <Routes>
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/confirm-email-change" element={<ConfirmEmailChange />} />
@@ -52,7 +54,8 @@ function App() {
           element={user ? <Settings /> : <Navigate to="/" />}
         />
       </Routes>
-    </BrowserRouter>
+      </BrowserRouter>
+    </HelmetProvider>
   );
 }
 

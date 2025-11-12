@@ -73,13 +73,62 @@ function EventSlotsManager() {
     }));
   };
 
-  const handleImageUpload = (slotNumber, file) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      handleInputChange(slotNumber, 'image_url', reader.result);
-    };
-    if (file) {
+  const handleImageUpload = async (slotNumber, file) => {
+    if (!file) return;
+
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      alert('Image must be smaller than 5MB. Please compress or resize the image.');
+      return;
+    }
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Only JPEG, PNG, and WebP images are allowed.');
+      return;
+    }
+
+    try {
+      // Show temporary preview while uploading
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleInputChange(slotNumber, 'image_url', reader.result);
+      };
       reader.readAsDataURL(file);
+
+      // Create a unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `event-${slotNumber}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('event-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true // Allow overwriting if same filename
+        });
+
+      if (error) {
+        console.error('Upload error:', error);
+        alert('Failed to upload image: ' + error.message);
+        return;
+      }
+
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from('event-images')
+        .getPublicUrl(filePath);
+
+      // Update with the actual Supabase URL
+      handleInputChange(slotNumber, 'image_url', publicUrlData.publicUrl);
+
+      console.log('Image uploaded successfully:', publicUrlData.publicUrl);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Failed to upload image. Please try again.');
     }
   };
 

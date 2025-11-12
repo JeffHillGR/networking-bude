@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Calendar, MapPin, Heart, ExternalLink, Share2, User, Home, TrendingUp, Users, X } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
 import { supabase } from '../lib/supabase.js';
@@ -415,6 +416,33 @@ function EventDetail() {
 
   return (
     <>
+      {/* Dynamic Meta Tags for Social Sharing */}
+      {event && (
+        <Helmet>
+          <title>{event.title} | Networking BudE</title>
+          <meta name="description" content={event.description || `Join us for ${event.title} - Find your networking buddy and never attend events alone!`} />
+
+          {/* Open Graph / Facebook */}
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content={`https://www.networkingbude.com/events/${eventId}`} />
+          <meta property="og:title" content={event.title} />
+          <meta property="og:description" content={event.description || `Join us for ${event.title} on Networking BudE`} />
+          <meta property="og:image" content={event.image_url || 'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png'} />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          <meta property="og:site_name" content="Networking BudE" />
+
+          {/* Twitter */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:url" content={`https://www.networkingbude.com/events/${eventId}`} />
+          <meta name="twitter:title" content={event.title} />
+          <meta name="twitter:description" content={event.description || `Join us for ${event.title} on Networking BudE`} />
+          <meta name="twitter:image" content={event.image_url || 'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png'} />
+
+          {/* LinkedIn - uses Open Graph tags */}
+        </Helmet>
+      )}
+
       {/* Top banner matching site header - spans full width */}
       <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
         <span className="font-medium">
