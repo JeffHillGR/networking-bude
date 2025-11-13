@@ -695,33 +695,6 @@ const getGreeting = () => {
                                 </span>
                               ))}
                             </div>
-                            {/* Liked Events */}
-                            {likedEvents.length > 0 && (
-                              <div className="mt-2 pt-2 border-t border-gray-100">
-                                <p className="text-xs text-gray-500 mb-1">Interested in:</p>
-                                <div className="flex gap-1">
-                                  {likedEvents.map((event, idx) => (
-                                    <div
-                                      key={idx}
-                                      className="w-12 h-12 rounded overflow-hidden border border-gray-200"
-                                      title={event.title}
-                                    >
-                                      {event.image_url ? (
-                                        <img
-                                          src={event.image_url}
-                                          alt={event.title}
-                                          className="w-full h-full object-cover"
-                                        />
-                                      ) : (
-                                        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                                          <Heart className="w-5 h-5 text-red-500" />
-                                        </div>
-                                      )}
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
                           </div>
                         </div>
                       </div>
