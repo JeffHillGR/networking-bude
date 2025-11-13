@@ -162,6 +162,52 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
     }
   }, [user?.email]);
 
+  // Load notification preferences from Supabase
+  useEffect(() => {
+    async function loadNotificationPreferences() {
+      if (!user) return;
+
+      try {
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', user.email)
+          .single();
+
+        if (userError) {
+          console.error('Error finding user:', userError);
+          return;
+        }
+
+        const { data: prefs, error } = await supabase
+          .from('notification_preferences')
+          .select('*')
+          .eq('user_id', userData.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+          console.error('Error loading notification preferences:', error);
+          return;
+        }
+
+        if (prefs) {
+          setNotifications({
+            emailNotifications: prefs.email_notifications,
+            pushNotifications: prefs.push_notifications,
+            newMessages: prefs.new_messages,
+            newMatches: prefs.new_matches,
+            eventReminders: prefs.event_reminders,
+            weeklyDigest: prefs.weekly_digest
+          });
+        }
+      } catch (error) {
+        console.error('Error loading notification preferences:', error);
+      }
+    }
+
+    loadNotificationPreferences();
+  }, [user]);
+
   // Load profile from Supabase if localStorage is empty
   useEffect(() => {
     async function loadProfileFromSupabase() {
@@ -268,12 +314,12 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
     confirmPassword: ''
   });
 
-  // Notifications state - Default: ALL OFF (connection requests always show in bell regardless)
+  // Notifications state - Default: First 4 ON, last 2 OFF (will be loaded from database)
   const [notifications, setNotifications] = useState({
-    emailNotifications: false,
-    pushNotifications: false,
-    newMessages: false,
-    newMatches: false,  // User can opt-in to get emails when algorithm finds new matches
+    emailNotifications: true,
+    pushNotifications: true,
+    newMessages: true,
+    newMatches: true,
     eventReminders: false,
     weeklyDigest: false
   });
@@ -635,7 +681,7 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
       showSuccess('Notification preferences saved!');
     } catch (error) {
       console.error('Error saving notification preferences:', error);
-      showError('Failed to save notification preferences. Please try again.');
+      alert('Failed to save notification preferences. Please try again.');
     }
   };
 
@@ -1747,7 +1793,7 @@ function ToggleSetting({ label, description, checked, onChange }) {
       <button
         onClick={() => onChange(!checked)}
         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-          checked ? 'bg-black' : 'bg-gray-300'
+          checked ? 'bg-[#009900]' : 'bg-gray-300'
         }`}
       >
         <span

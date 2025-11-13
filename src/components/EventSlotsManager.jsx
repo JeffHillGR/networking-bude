@@ -126,6 +126,7 @@ function EventSlotsManager() {
       handleInputChange(slotNumber, 'image_url', publicUrlData.publicUrl);
 
       console.log('Image uploaded successfully:', publicUrlData.publicUrl);
+      alert('Image uploaded successfully!');
     } catch (error) {
       console.error('Error uploading image:', error);
       alert('Failed to upload image. Please try again.');

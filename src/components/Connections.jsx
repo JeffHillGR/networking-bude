@@ -16,6 +16,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [showMondayBanner, setShowMondayBanner] = useState(false);
+  const [connectionLikedEvents, setConnectionLikedEvents] = useState({});
 
   // localStorage state for tracking actions
   const [passedConnections, setPassedConnections] = useState(() => {
@@ -185,6 +186,73 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
             saved.unshift(selectedConn);
           }
         }
+
+        // Fetch liked events for all connections (same as Dashboard)
+        const likedEventsMap = {};
+        const allConnections = [...recommended, ...saved, ...pending];
+        if (allConnections.length > 0) {
+          try {
+            const connectionIds = allConnections.map(c => c.userId);
+
+            // Fetch all likes and clicks for all connections at once
+            const [allLikesResult, allClicksResult] = await Promise.all([
+              supabase
+                .from('event_likes')
+                .select('event_id, user_id, created_at')
+                .in('user_id', connectionIds),
+              supabase
+                .from('event_registration_clicks')
+                .select('event_id, user_id, created_at')
+                .in('user_id', connectionIds)
+            ]);
+
+            // Group interactions by user
+            const userInteractions = {};
+            [...(allLikesResult.data || []), ...(allClicksResult.data || [])].forEach(interaction => {
+              if (!userInteractions[interaction.user_id]) {
+                userInteractions[interaction.user_id] = [];
+              }
+              userInteractions[interaction.user_id].push(interaction);
+            });
+
+            // Get unique event IDs for each user (max 3)
+            const allEventIds = new Set();
+            const userEventIdsMap = {};
+
+            Object.keys(userInteractions).forEach(userId => {
+              const sorted = userInteractions[userId].sort((a, b) =>
+                new Date(b.created_at) - new Date(a.created_at)
+              );
+              const uniqueEventIds = [...new Set(sorted.map(i => i.event_id))].slice(0, 3);
+              userEventIdsMap[userId] = uniqueEventIds;
+              uniqueEventIds.forEach(id => allEventIds.add(id));
+            });
+
+            // Fetch all event details in one query
+            if (allEventIds.size > 0) {
+              const { data: eventsData } = await supabase
+                .from('events')
+                .select('id, title, image_url')
+                .in('id', Array.from(allEventIds));
+
+              const eventsMap = {};
+              (eventsData || []).forEach(event => {
+                eventsMap[event.id] = event;
+              });
+
+              // Map events to users
+              Object.keys(userEventIdsMap).forEach(userId => {
+                likedEventsMap[userId] = userEventIdsMap[userId]
+                  .map(eventId => eventsMap[eventId])
+                  .filter(Boolean);
+              });
+            }
+          } catch (error) {
+            console.error('Error loading liked events:', error);
+          }
+        }
+
+        setConnectionLikedEvents(likedEventsMap);
 
         // Only show recommended (perhaps are hidden for 1 week)
         setConnections(recommended);
@@ -771,6 +839,34 @@ ${senderName}`;
                     <div>
                       <p className="text-sm font-semibold text-gray-700 mb-1">Networking Goals:</p>
                       <p className="text-gray-600 text-sm">{currentCard.networkingGoals}</p>
+                    </div>
+                  )}
+
+                  {/* Liked Events */}
+                  {connectionLikedEvents[currentCard.userId]?.length > 0 && (
+                    <div className="pt-4 border-t border-gray-200">
+                      <p className="text-sm font-semibold text-gray-700 mb-2">Interested in:</p>
+                      <div className="flex gap-2">
+                        {connectionLikedEvents[currentCard.userId].map((event, idx) => (
+                          <div
+                            key={idx}
+                            className="w-16 h-16 rounded overflow-hidden border border-gray-200"
+                            title={event.title}
+                          >
+                            {event.image_url ? (
+                              <img
+                                src={event.image_url}
+                                alt={event.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                                <span className="text-xs text-gray-400">Event</span>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>

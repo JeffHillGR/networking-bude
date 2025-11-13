@@ -427,7 +427,7 @@ function EventDetail() {
           <meta property="og:url" content={`https://www.networkingbude.com/events/${eventId}`} />
           <meta property="og:title" content={event.title} />
           <meta property="og:description" content={event.description || `Join us for ${event.title} on Networking BudE`} />
-          <meta property="og:image" content={event.image_url || 'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png'} />
+          <meta property="og:image" content={event.image || 'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png'} />
           <meta property="og:image:width" content="1200" />
           <meta property="og:image:height" content="630" />
           <meta property="og:site_name" content="Networking BudE" />
@@ -437,7 +437,7 @@ function EventDetail() {
           <meta name="twitter:url" content={`https://www.networkingbude.com/events/${eventId}`} />
           <meta name="twitter:title" content={event.title} />
           <meta name="twitter:description" content={event.description || `Join us for ${event.title} on Networking BudE`} />
-          <meta name="twitter:image" content={event.image_url || 'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png'} />
+          <meta name="twitter:image" content={event.image || 'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png'} />
 
           {/* LinkedIn - uses Open Graph tags */}
         </Helmet>

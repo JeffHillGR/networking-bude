@@ -577,7 +577,15 @@ const getGreeting = () => {
                 <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
                 <p className="text-sm text-gray-600 mt-1">Let's make some meaningful connections today</p>
               </div>
-              <NotificationBell />
+              <NotificationBell
+                onNavigate={(tab, userId) => {
+                  setActiveTab(tab);
+                  if (userId) {
+                    setSelectedConnectionId(userId);
+                  }
+                  window.scrollTo({ top: 0, behavior: 'instant' });
+                }}
+              />
             </div>
 
             {/* Events and Connections Side by Side */}
@@ -655,7 +663,7 @@ const getGreeting = () => {
                       <div
                         key={index}
                         onClick={() => {
-                          setSelectedConnectionId(person.id);
+                          setSelectedConnectionId(person.userId);
                           setActiveTab('connections');
                           window.scrollTo({ top: 0, behavior: 'instant' });
                         }}
@@ -901,6 +909,10 @@ const getGreeting = () => {
       setActiveTab('settings');
       window.scrollTo({ top: 0, behavior: 'instant' });
     }}
+    onNavigateToMessages={() => {
+      setActiveTab('messages');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }}
   />;
 
   case 'messages':
@@ -972,7 +984,16 @@ default:
                 alt="BudE Logo"
                 className="h-16 w-auto"
               />
-              <NotificationBell />
+              <NotificationBell
+                onNavigate={(tab, userId) => {
+                  setActiveTab(tab);
+                  if (userId) {
+                    setSelectedConnectionId(userId);
+                  }
+                  setShowMobileMenu(false);
+                  window.scrollTo({ top: 0, behavior: 'instant' });
+                }}
+              />
             </div>
           </div>
 
