@@ -380,32 +380,49 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
       // So this click makes it mutual → change to 'connected'
       if (currentMatch && currentMatch.status === 'pending') {
         console.log('Other person already requested! Making it mutual connection...');
+
+        // Update BOTH rows to 'connected' (one for each user)
+        // Row 1: Other person's row (the one we found with 'pending')
         await supabase
           .from('matches')
           .update({ status: 'connected' })
           .eq('user_id', currentMatch.user_id)
           .eq('matched_user_id', currentMatch.matched_user_id);
 
+        // Row 2: Current user's row
+        await supabase
+          .from('matches')
+          .update({ status: 'connected' })
+          .eq('user_id', currentUserId)
+          .eq('matched_user_id', person.id);
+
         connectionResult = 'connected';
       } else if (currentMatch) {
         // Status is 'recommended' or something else, so this is the first request
         console.log('First connection request, setting to pending...');
-        const { data: updateData, error: updateError } = await supabase
+
+        // Update BOTH rows to 'pending' (both users should see it in Pending tab)
+        // Row 1: Current user's row
+        await supabase
           .from('matches')
           .update({
             status: 'pending',
             pending_since: new Date().toISOString()
           })
-          .eq('user_id', currentMatch.user_id)
-          .eq('matched_user_id', currentMatch.matched_user_id)
-          .select();
+          .eq('user_id', currentUserId)
+          .eq('matched_user_id', person.id);
 
-        console.log('Update result:', { updateData, updateError });
+        // Row 2: Other person's row
+        await supabase
+          .from('matches')
+          .update({
+            status: 'pending',
+            pending_since: new Date().toISOString()
+          })
+          .eq('user_id', person.id)
+          .eq('matched_user_id', currentUserId);
 
-        if (updateError) {
-          console.error('Failed to update to pending:', updateError);
-          throw updateError;
-        }
+        console.log('Both rows updated to pending');
 
         connectionResult = 'pending';
       }
