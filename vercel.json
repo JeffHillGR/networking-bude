@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
       "source": "/events/:id",
       "destination": "/api/meta-tags?url=/events/:id"
     },
@@ -13,7 +17,7 @@
       "destination": "/api/meta-tags?url=/resources-insights"
     },
     {
-      "source": "/((?!api/.*).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
