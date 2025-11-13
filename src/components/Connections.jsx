@@ -193,10 +193,6 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
         if (allConnections.length > 0) {
           try {
             const connectionIds = allConnections.map(c => c.userId);
-            // Also include current user's ID to show their own liked events
-            if (userData.id && !connectionIds.includes(userData.id)) {
-              connectionIds.push(userData.id);
-            }
 
             // Fetch all likes and clicks for all connections at once
             const [allLikesResult, allClicksResult] = await Promise.all([
