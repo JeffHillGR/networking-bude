@@ -229,19 +229,37 @@ function Messages({ onBackToDashboard }) {
     setMessageInput('');
 
     try {
-      const { error } = await supabase
+      console.log('Attempting to send message with data:', {
+        conversation_id: selectedConversation.id,
+        sender_id: user.id,
+        recipient_id: selectedConversation.otherUserId,
+        content: messageContent
+      });
+
+      const { data, error } = await supabase
         .from('messages')
         .insert({
           conversation_id: selectedConversation.id,
           sender_id: user.id,
           recipient_id: selectedConversation.otherUserId,
           content: messageContent
-        });
+        })
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error details:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        throw error;
+      }
+
+      console.log('Message sent successfully:', data);
     } catch (error) {
       console.error('Error sending message:', error);
-      alert('Failed to send message. Please try again.');
+      alert(`Failed to send message: ${error.message || 'Please try again.'}`);
       setMessageInput(messageContent); // Restore message on error
     } finally {
       setSending(false);
