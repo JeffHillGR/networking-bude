@@ -1,8 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
-import { Bell } from 'lucide-react';
+import { Bell, X } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
-function NotificationBell() {
+function NotificationBell({ onNavigate }) {
+  const { user } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
 
   // Close dropdown when clicking outside
@@ -17,6 +23,238 @@ function NotificationBell() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Load notifications from database
+  useEffect(() => {
+    if (!user) return;
+
+    const loadNotifications = async () => {
+      try {
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', user.email)
+          .single();
+
+        if (userError) {
+          console.error('Error finding user:', userError);
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from('notifications')
+          .select('*')
+          .eq('user_id', userData.id)
+          .order('created_at', { ascending: false })
+          .limit(20);
+
+        if (error) throw error;
+
+        setNotifications(data || []);
+        setUnreadCount(data?.filter(n => !n.is_read).length || 0);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error loading notifications:', error);
+        setLoading(false);
+      }
+    };
+
+    loadNotifications();
+
+    // Subscribe to new notifications
+    const getUserIdAndSubscribe = async () => {
+      const { data: userData } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', user.email)
+        .single();
+
+      if (!userData) return;
+
+      const channel = supabase
+        .channel('notifications-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${userData.id}`
+          },
+          () => {
+            loadNotifications();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    };
+
+    getUserIdAndSubscribe();
+  }, [user]);
+
+  // Mark notification as read
+  const markAsRead = async (notificationId) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('id', notificationId);
+
+      if (error) throw error;
+
+      // Update local state
+      setNotifications(prev =>
+        prev.map(n =>
+          n.id === notificationId ? { ...n, is_read: true } : n
+        )
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
+
+      // Delete notification after 3 seconds
+      setTimeout(async () => {
+        try {
+          const { error: deleteError } = await supabase
+            .from('notifications')
+            .delete()
+            .eq('id', notificationId);
+
+          if (deleteError) throw deleteError;
+
+          // Remove from local state
+          setNotifications(prev => prev.filter(n => n.id !== notificationId));
+        } catch (err) {
+          console.error('Error deleting notification:', err);
+        }
+      }, 3000);
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
+  // Mark all notifications as read
+  const markAllAsRead = async () => {
+    try {
+      const { data: userData } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', user.email)
+        .single();
+
+      if (!userData) return;
+
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('user_id', userData.id)
+        .eq('is_read', false);
+
+      if (error) throw error;
+
+      // Update local state
+      setNotifications(prev =>
+        prev.map(n => ({ ...n, is_read: true }))
+      );
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Error marking all as read:', error);
+    }
+  };
+
+  // Delete notification
+  const deleteNotification = async (notificationId, event) => {
+    event.stopPropagation();
+
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('id', notificationId);
+
+      if (error) throw error;
+
+      // Update local state
+      const notification = notifications.find(n => n.id === notificationId);
+      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+      if (notification && !notification.is_read) {
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+    }
+  };
+
+  // Handle notification click
+  const handleNotificationClick = (notification) => {
+    // Mark as read
+    if (!notification.is_read) {
+      markAsRead(notification.id);
+    }
+
+    // Close dropdown
+    setShowDropdown(false);
+
+    // Navigate based on notification type, link, or title content
+    if (onNavigate) {
+      // Check notification type first
+      if (notification.type === 'new_message') {
+        onNavigate('messages', null);
+      } else if (notification.type === 'new_match' || notification.type === 'mutual_connection') {
+        // Extract user ID from link if present (format: /connections?user=UUID)
+        let userId = null;
+        if (notification.link && notification.link.includes('?user=')) {
+          userId = notification.link.split('?user=')[1];
+        }
+        onNavigate('connections', userId);
+      } else if (notification.link) {
+        // Fallback to link if provided
+        if (notification.link.includes('/messages')) {
+          onNavigate('messages', null);
+        } else if (notification.link.includes('/connections')) {
+          // Extract user ID if present
+          let userId = null;
+          if (notification.link.includes('?user=')) {
+            userId = notification.link.split('?user=')[1];
+          }
+          onNavigate('connections', userId);
+        }
+      } else if (notification.title) {
+        // Fallback: check title content for keywords
+        const titleLower = notification.title.toLowerCase();
+        if (titleLower.includes('message')) {
+          onNavigate('messages', null);
+        } else if (titleLower.includes('connection') || titleLower.includes('connect')) {
+          onNavigate('connections', null);
+        }
+      }
+    }
+  };
+
+  // Format timestamp
+  const formatTimestamp = (timestamp) => {
+    if (!timestamp) return '';
+
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+
+    return date.toLocaleDateString();
+  };
+
+  // Get notification icon based on type (all use bell icon)
+  const getNotificationIcon = (type) => {
+    return '🔔';
+  };
+
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Bell Icon Button */}
@@ -26,21 +264,86 @@ function NotificationBell() {
         aria-label="Notifications"
       >
         <Bell className="w-6 h-6" />
+        {unreadCount > 0 && (
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </span>
+        )}
       </button>
 
       {/* Dropdown */}
       {showDropdown && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-2xl border border-gray-200 z-50">
+        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[600px] overflow-hidden flex flex-col">
           {/* Header */}
-          <div className="p-4 border-b border-gray-200 bg-gray-50">
+          <div className="p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between flex-shrink-0">
             <h3 className="font-bold text-gray-900 text-lg">Notifications</h3>
+            {unreadCount > 0 && (
+              <button
+                onClick={markAllAsRead}
+                className="text-xs text-[#009900] hover:text-[#007700] font-medium"
+              >
+                Mark all as read
+              </button>
+            )}
           </div>
 
-          {/* No Notifications Message */}
-          <div className="p-8 text-center text-gray-500">
-            <Bell className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-            <p className="text-sm font-medium">No notifications</p>
-            <p className="text-xs text-gray-400 mt-1">Coming soon!</p>
+          {/* Notifications List */}
+          <div className="overflow-y-auto flex-1">
+            {loading ? (
+              <div className="p-8 text-center text-gray-500">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                <p className="text-sm mt-2">Loading notifications...</p>
+              </div>
+            ) : notifications.length === 0 ? (
+              <div className="p-8 text-center text-gray-500">
+                <Bell className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                <p className="text-sm font-medium">No notifications yet</p>
+                <p className="text-xs text-gray-400 mt-1">We'll notify you when something happens!</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-100">
+                {notifications.map((notification) => (
+                  <div
+                    key={notification.id}
+                    onClick={() => handleNotificationClick(notification)}
+                    className={`p-4 hover:bg-gray-50 transition-colors cursor-pointer relative group ${
+                      !notification.is_read ? 'bg-blue-50' : ''
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl flex-shrink-0">
+                        {getNotificationIcon(notification.type)}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <h4 className={`text-sm font-semibold text-gray-900 ${!notification.is_read ? 'font-bold' : ''}`}>
+                              {notification.title}
+                            </h4>
+                            <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                              {notification.message}
+                            </p>
+                            <p className="text-xs text-gray-400 mt-2">
+                              {formatTimestamp(notification.created_at)}
+                            </p>
+                          </div>
+                          <button
+                            onClick={(e) => deleteNotification(notification.id, e)}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-200 rounded flex-shrink-0"
+                            aria-label="Delete notification"
+                          >
+                            <X className="w-4 h-4 text-gray-500" />
+                          </button>
+                        </div>
+                        {!notification.is_read && (
+                          <div className="absolute left-2 top-1/2 -translate-y-1/2 w-2 h-2 bg-blue-500 rounded-full"></div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
