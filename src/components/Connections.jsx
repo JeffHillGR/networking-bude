@@ -73,7 +73,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, selectedConnecti
 
         // Reset stale pending connections (10+ days old)
         await supabase
-          .from('matches')
+          .from('connections')
           .update({
             status: 'recommended',
             pending_since: null
@@ -84,7 +84,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, selectedConnecti
 
         // Reset "perhaps" connections after 1 week (7 days)
         await supabase
-          .from('matches')
+          .from('connections')
           .update({
             status: 'recommended',
             perhaps_since: null
@@ -95,13 +95,13 @@ function Connections({ onBackToDashboard, onNavigateToSettings, selectedConnecti
 
         // Fetch all matches with different statuses
         const { data: allMatchesData, error: matchesError } = await supabase
-          .from('matches')
+          .from('connections')
           .select(`
             matched_user_id,
             compatibility_score,
             status,
             updated_at,
-            matched_user:users!matches_matched_user_id_fkey (
+            matched_user:users!connections_matched_user_id_fkey (
               first_name,
               last_name,
               name,
@@ -417,7 +417,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, selectedConnecti
     try {
       // Update match status to 'perhaps' with timestamp (hidden for 1 week)
       const { error } = await supabase
-        .from('matches')
+        .from('connections')
         .update({
           status: 'perhaps',
           perhaps_since: new Date().toISOString(), // Track when marked as perhaps
@@ -456,7 +456,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, selectedConnecti
     try {
       // Update match status to 'passed' in database
       const { error } = await supabase
-        .from('matches')
+        .from('connections')
         .update({
           status: 'passed',
           updated_at: new Date().toISOString()
@@ -1033,7 +1033,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, selectedConnecti
                                     onClick={async (e) => {
                                       e.stopPropagation();
                                       await supabase
-                                        .from('matches')
+                                        .from('connections')
                                         .update({ status: 'recommended' })
                                         .eq('user_id', currentUserId)
                                         .eq('matched_user_id', person.id);
@@ -1122,7 +1122,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, selectedConnecti
                                   onClick={async () => {
                                     // Remove from saved (update database)
                                     await supabase
-                                      .from('matches')
+                                      .from('connections')
                                       .update({ status: 'recommended' })
                                       .eq('user_id', currentUserId)
                                       .eq('matched_user_id', person.id);
@@ -1282,7 +1282,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, selectedConnecti
                   <button
                     onClick={async () => {
                       await supabase
-                        .from('matches')
+                        .from('connections')
                         .update({ status: 'recommended' })
                         .eq('user_id', currentUserId)
                         .eq('matched_user_id', selectedConnection.id);
@@ -1513,8 +1513,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings, selectedConnecti
                   try {
                     // Soft delete: Update match status to 'removed' and add hidden_by_user_id
                     await supabase
-                      .from('matches')
-                      .update({ 
+                      .from('connections')
+                      .update({
                         status: 'removed',
                         hidden_by_user_id: currentUserId,
                         updated_at: new Date().toISOString()

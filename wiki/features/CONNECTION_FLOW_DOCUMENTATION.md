@@ -133,7 +133,7 @@ matches (
 1. Open Supabase SQL Editor
 2. Copy and paste the contents of `supabase_migration_connections.sql`
 3. Run the migration
-4. Verify columns were added: Check matches table schema
+4. Verify columns were added: Check connections table schema
 5. Test the reset function: `SELECT reset_stale_pending_connections();`
 6. Deploy updated code to production
 7. Monitor emails via Resend dashboard

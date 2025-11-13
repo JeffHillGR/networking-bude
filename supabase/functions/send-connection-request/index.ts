@@ -139,7 +139,7 @@ serve(async (req) => {
 
     // Get the match record to get compatibility score
     const { data: matchRecord, error: matchError } = await supabaseClient
-      .from("matches")
+      .from("connections")
       .select("compatibility_score")
       .eq("user_id", currentUserId)
       .eq("matched_user_id", targetUserId)
@@ -156,7 +156,7 @@ serve(async (req) => {
 
     // STEP 1: Update the match status to 'pending' FIRST
     const { error: updateError } = await supabaseClient
-      .from("matches")
+      .from("connections")
       .update({
         status: "pending",
         pending_since: new Date().toISOString(),
@@ -178,7 +178,7 @@ serve(async (req) => {
     // STEP 2: Check if the other person already sent a request (mutual connection)
     const { data: reciprocalMatch, error: reciprocalError } =
       await supabaseClient
-        .from("matches")
+        .from("connections")
         .select("status")
         .eq("user_id", targetUserId)
         .eq("matched_user_id", currentUserId)
@@ -190,13 +190,13 @@ serve(async (req) => {
     if (reciprocalMatch && reciprocalMatch.status === "pending") {
       // Update both matches to 'connected'
       await supabaseClient
-        .from("matches")
+        .from("connections")
         .update({ status: "connected" })
         .eq("user_id", currentUserId)
         .eq("matched_user_id", targetUserId);
 
       await supabaseClient
-        .from("matches")
+        .from("connections")
         .update({ status: "connected" })
         .eq("user_id", targetUserId)
         .eq("matched_user_id", currentUserId);

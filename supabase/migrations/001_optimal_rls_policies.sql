@@ -38,16 +38,16 @@ CREATE POLICY "users_select_own"
   USING (auth.uid() = id);
 
 -- Policy 3: Users can view profiles of their matches (recommended, saved, connected)
-CREATE POLICY "users_select_matches"
+CREATE POLICY "users_select_connections"
   ON public.users
   FOR SELECT
   TO authenticated
   USING (
     EXISTS (
-      SELECT 1 FROM public.matches
-      WHERE matches.user_id = auth.uid()
-        AND matches.matched_user_id = users.id
-        AND matches.status IN ('recommended', 'saved', 'connected')
+      SELECT 1 FROM public.connections
+      WHERE connections.user_id = auth.uid()
+        AND connections.matched_user_id = users.id
+        AND connections.status IN ('recommended', 'saved', 'connected')
     )
   );
 
@@ -58,10 +58,10 @@ CREATE POLICY "users_select_matched_by"
   TO authenticated
   USING (
     EXISTS (
-      SELECT 1 FROM public.matches
-      WHERE matches.matched_user_id = auth.uid()
-        AND matches.user_id = users.id
-        AND matches.status IN ('recommended', 'saved', 'connected')
+      SELECT 1 FROM public.connections
+      WHERE connections.matched_user_id = auth.uid()
+        AND connections.user_id = users.id
+        AND connections.status IN ('recommended', 'saved', 'connected')
     )
   );
 
@@ -89,29 +89,29 @@ CREATE POLICY "users_service_role_all"
   WITH CHECK (true);
 
 -- =====================================================
--- 2. MATCHES TABLE - Secure Matching System
+-- 2. CONNECTIONS TABLE - Secure Matching System
 -- =====================================================
 
 -- Drop existing policies
-DROP POLICY IF EXISTS "Users can read their own matches" ON public.matches;
-DROP POLICY IF EXISTS "Users can update their own matches" ON public.matches;
-DROP POLICY IF EXISTS "Service role can insert matches" ON public.matches;
-DROP POLICY IF EXISTS "Users can insert own matches" ON public.matches;
-DROP POLICY IF EXISTS "Users can delete their own matches" ON public.matches;
+DROP POLICY IF EXISTS "Users can read their own matches" ON public.connections;
+DROP POLICY IF EXISTS "Users can update their own matches" ON public.connections;
+DROP POLICY IF EXISTS "Service role can insert matches" ON public.connections;
+DROP POLICY IF EXISTS "Users can insert own matches" ON public.connections;
+DROP POLICY IF EXISTS "Users can delete their own matches" ON public.connections;
 
 -- Ensure RLS is enabled
-ALTER TABLE public.matches ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.connections ENABLE ROW LEVEL SECURITY;
 
--- Policy 1: Users can view their own matches
-CREATE POLICY "matches_select_own"
-  ON public.matches
+-- Policy 1: Users can view their own connections
+CREATE POLICY "connections_select_own"
+  ON public.connections
   FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
 
--- Policy 2: Users can update status of their own matches
-CREATE POLICY "matches_update_own_status"
-  ON public.matches
+-- Policy 2: Users can update status of their own connections
+CREATE POLICY "connections_update_own_status"
+  ON public.connections
   FOR UPDATE
   TO authenticated
   USING (auth.uid() = user_id)
@@ -121,23 +121,23 @@ CREATE POLICY "matches_update_own_status"
     AND matched_user_id = matched_user_id  -- Prevent changing matched_user_id
   );
 
--- Policy 3: Users can delete their own matches
-CREATE POLICY "matches_delete_own"
-  ON public.matches
+-- Policy 3: Users can delete their own connections
+CREATE POLICY "connections_delete_own"
+  ON public.connections
   FOR DELETE
   TO authenticated
   USING (auth.uid() = user_id);
 
--- Policy 4: ONLY service role can insert matches (matching algorithm runs backend-only)
-CREATE POLICY "matches_insert_service_role"
-  ON public.matches
+-- Policy 4: ONLY service role can insert connections (matching algorithm runs backend-only)
+CREATE POLICY "connections_insert_service_role"
+  ON public.connections
   FOR INSERT
   TO service_role
   WITH CHECK (true);
 
 -- Policy 5: Service role can do anything
-CREATE POLICY "matches_service_role_all"
-  ON public.matches
+CREATE POLICY "connections_service_role_all"
+  ON public.connections
   FOR ALL
   TO service_role
   USING (true)
@@ -458,8 +458,8 @@ GRANT USAGE ON SCHEMA public TO anon;
 GRANT ALL ON public.users TO authenticated;
 GRANT ALL ON public.users TO service_role;
 
-GRANT ALL ON public.matches TO authenticated;
-GRANT ALL ON public.matches TO service_role;
+GRANT ALL ON public.connections TO authenticated;
+GRANT ALL ON public.connections TO service_role;
 
 GRANT ALL ON public.notifications TO authenticated;
 GRANT ALL ON public.notifications TO service_role;
@@ -496,7 +496,7 @@ END $$;
 
 -- Comments for documentation
 COMMENT ON TABLE public.users IS 'Users table: Users can view own profile + matched profiles';
-COMMENT ON TABLE public.matches IS 'Matches table: Only service role can insert, users can update status';
+COMMENT ON TABLE public.connections IS 'Connections table: Only service role can insert, users can update status';
 COMMENT ON TABLE public.notifications IS 'Notifications table: Users see only their own';
 COMMENT ON TABLE public.events IS 'Events table: Public read, service role write';
 COMMENT ON TABLE public.event_likes IS 'Event likes: Public read, authenticated write own';

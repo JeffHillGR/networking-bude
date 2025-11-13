@@ -10,7 +10,7 @@
 The `notifications` table in Supabase is still being populated when users attempt to connect with each other. Investigation reveals that:
 
 1. **No frontend code** currently inserts records into the `notifications` table
-2. **Database trigger** likely exists in Supabase that auto-creates notification records when matches table status changes to 'pending'
+2. **Database trigger** likely exists in Supabase that auto-creates notification records when connections table status changes to 'pending'
 3. **Current connection flow** uses mailto links (temporary solution) after Resend API failed with 403 errors
 4. **NotificationBell component** exists but only displays UI - does NOT fetch from notifications table
 
@@ -24,7 +24,7 @@ The `notifications` table in Supabase is still being populated when users attemp
 
 **What happens when user clicks "Connect":**
 
-1. **Updates matches table** (Lines 234-241):
+1. **Updates connections table** (Lines 234-241):
    ```javascript
    await supabase
      .from('matches')
@@ -122,13 +122,13 @@ When reviewing the code:
 - ✅ Timestamps match connection attempts by real users
 
 **Likely source:**
-- **Supabase database trigger** on `matches` table
+- **Supabase database trigger** on `connections` table
 - Fires when `status` column changes to 'pending'
 - Automatically creates notification record for recipient
 
 ### To verify, run this SQL in Supabase:
 ```sql
--- Check for triggers on matches table
+-- Check for triggers on connections table
 SELECT
   trigger_name,
   event_manipulation,
@@ -142,7 +142,7 @@ WHERE event_object_table = 'matches'
 ### To check for webhook:
 1. Go to Supabase Dashboard
 2. Navigate to Database → Webhooks
-3. Look for webhook on `matches` table INSERT/UPDATE
+3. Look for webhook on `connections` table INSERT/UPDATE
 
 ---
 
@@ -271,7 +271,7 @@ CREATE TABLE notifications (
 );
 ```
 
-### matches table (relevant columns):
+### connections table (relevant columns):
 ```sql
 CREATE TABLE matches (
   id BIGSERIAL PRIMARY KEY,
@@ -300,7 +300,7 @@ CREATE TABLE matches (
 - `api/submitConnectionRequest.js` (Google Sheets logger - deprecated)
 
 ### Database:
-- `supabase_migration_connections.sql` (Schema migration for matches table)
+- `supabase_migration_connections.sql` (Schema migration for connections table)
 - `check-triggers.sql` (SQL to check for database triggers)
 
 ---

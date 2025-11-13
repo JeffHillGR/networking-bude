@@ -259,12 +259,12 @@ serve(async (req) => {
       }
 
       // Delete existing matches for this user
-      await supabaseClient.from("matches").delete().eq("user_id", dbUser.id);
+      await supabaseClient.from("connections").delete().eq("user_id", dbUser.id);
 
       // Insert new matches
       if (userMatches.length > 0) {
         const { error: insertError } = await supabaseClient
-          .from("matches")
+          .from("connections")
           .insert(userMatches);
 
         if (insertError) {

@@ -159,7 +159,7 @@ CRON_SECRET=
 | Table | Purpose | RLS Enabled |
 |-------|---------|-------------|
 | `users` | User profiles | ✅ Yes |
-| `matches` | Connection recommendations | ✅ Yes |
+| `connections` | Connection recommendations | ✅ Yes |
 | `notifications` | In-app notifications | ✅ Yes |
 | `notification_preferences` | User notification settings | ✅ Yes |
 | `events` | Event listings | ✅ Yes |

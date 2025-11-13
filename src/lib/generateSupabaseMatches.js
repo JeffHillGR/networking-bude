@@ -164,7 +164,7 @@ async function insertMatchesToSupabase(allMatches) {
 
   // First, clear existing matches
   const { error: deleteError } = await supabase
-    .from('matches')
+    .from('connections')
     .delete()
     .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
 
@@ -201,7 +201,7 @@ async function insertMatchesToSupabase(allMatches) {
   for (let i = 0; i < matchRecords.length; i += batchSize) {
     const batch = matchRecords.slice(i, i + batchSize);
     const { error: insertError } = await supabase
-      .from('matches')
+      .from('connections')
       .insert(batch);
 
     if (insertError) {

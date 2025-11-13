@@ -8,7 +8,7 @@ This document outlines the complete connection flow between two users (User A an
 ## Initial State
 - **Algorithm Match**: Users A and B are matched by the compatibility algorithm
 - **Display**: Both users see each other's full profile cards in their "Recommended" connections
-- **Status in Database**: `matches` table has two rows:
+- **Status in Database**: `connections` table has two rows:
   - Row 1: `user_id: A, matched_user_id: B, status: 'recommended'`
   - Row 2: `user_id: B, matched_user_id: A, status: 'recommended'`
 
@@ -22,7 +22,7 @@ This document outlines the complete connection flow between two users (User A an
 1. **User A's View:**
    - Connection moves from "Recommended" tab to "Pending" tab
    - Card still visible but marked as "Waiting for response"
-   - Database: `matches` row for A→B changes to `status: 'pending'`
+   - Database: `connections` row for A→B changes to `status: 'pending'`
 
 2. **User B's Notification:**
    - Bell icon lights up with red badge showing "1"
@@ -50,7 +50,7 @@ This document outlines the complete connection flow between two users (User A an
 
    **Option 1: User B clicks "Connect"**
    - ✅ **MUTUAL CONNECTION ACHIEVED**
-   - Both users' `matches` rows update to `status: 'connected'`
+   - Both users' `connections` rows update to `status: 'connected'`
    - Both users moved to "Saved" (Connected) tab
    - Notification marked as `read: true`
    - **Success Popup** appears for BOTH users:
@@ -129,7 +129,7 @@ This document outlines the complete connection flow between two users (User A an
 
 ## Database Schema Requirements
 
-### `matches` Table
+### `connections` Table
 ```sql
 CREATE TABLE matches (
   id UUID PRIMARY KEY,
@@ -211,7 +211,7 @@ Use email to reach out to your new connection:
 - [ ] Update tab counts (Recommended/Saved/Pending)
 
 ### Backend (Supabase)
-- [ ] Update `matches` table schema (add `reappear_date` field)
+- [ ] Update `connections` table schema (add `reappear_date` field)
 - [ ] Create `notifications` table
 - [ ] Write database trigger: Connect action → create notification
 - [ ] Write database trigger: Mutual connect → update both statuses
@@ -223,7 +223,7 @@ Use email to reach out to your new connection:
 
 ### Real-time Updates (Supabase Subscriptions)
 - [ ] Subscribe to notifications table changes
-- [ ] Subscribe to matches table changes
+- [ ] Subscribe to connections table changes
 - [ ] Update bell badge count in real-time
 - [ ] Show success popup immediately when mutual connection occurs
 

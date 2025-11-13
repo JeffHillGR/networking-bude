@@ -159,7 +159,7 @@ module.exports = async (req, res) => {
 
       // Delete existing matches for this user
       const { error: deleteError } = await supabase
-        .from('matches')
+        .from('connections')
         .delete()
         .eq('user_id', dbUser.id);
 
@@ -176,7 +176,7 @@ module.exports = async (req, res) => {
       // Insert new matches
       if (userMatches.length > 0) {
         const { error: insertError } = await supabase
-          .from('matches')
+          .from('connections')
           .insert(userMatches);
 
         if (insertError) {

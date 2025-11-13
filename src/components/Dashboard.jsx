@@ -377,11 +377,11 @@ const getGreeting = () => {
 
         // Fetch top 3 matches
         const { data: matchesData, error: matchesError } = await supabase
-          .from('matches')
+          .from('connections')
           .select(`
             matched_user_id,
             compatibility_score,
-            matched_user:users!matches_matched_user_id_fkey (
+            matched_user:users!connections_matched_user_id_fkey (
               first_name,
               last_name,
               name,

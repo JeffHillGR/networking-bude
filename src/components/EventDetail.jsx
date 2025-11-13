@@ -127,7 +127,7 @@ function EventDetail() {
           if (user) {
             // Get user's connection IDs
             const { data: matchesData } = await supabase
-              .from('matches')
+              .from('connections')
               .select('matched_user_id')
               .eq('user_id', user.id);
 

@@ -158,14 +158,14 @@ export async function runMatchingAlgorithm() {
 async function createMatch(userId, matchedUserId, score, reasons = []) {
   // Check if match already exists
   const { data: existing } = await supabase
-    .from('matches')
+    .from('connections')
     .select('id')
     .eq('user_id', userId)
     .eq('matched_user_id', matchedUserId)
     .single();
 
   const { error } = await supabase
-    .from('matches')
+    .from('connections')
     .upsert({
       user_id: userId,
       matched_user_id: matchedUserId,

@@ -658,7 +658,7 @@ $$ LANGUAGE plpgsql;
 ### Immediate (Within 24 hours) ⚠️
 1. Fix RLS policy for users table to allow match viewing
 2. Add authentication to all API endpoints
-3. Fix matches table INSERT policy
+3. Fix connections table INSERT policy
 4. Implement CORS restrictions
 
 ### Short-term (Within 1 week) 🔴
