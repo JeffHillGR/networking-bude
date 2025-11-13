@@ -357,19 +357,20 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
     const person = selectedConnection || currentCard;
 
     try {
-      // First, check the current status of THIS match row (only one row exists per pair)
-      const { data: currentMatch, error: fetchError } = await supabase
+      // First, check the current status - need to check BOTH directions since only one row exists
+      const { data: matches, error: fetchError } = await supabase
         .from('matches')
-        .select('status')
-        .eq('user_id', currentUserId)
-        .eq('matched_user_id', person.id)
-        .single();
+        .select('status, user_id, matched_user_id')
+        .or(`and(user_id.eq.${currentUserId},matched_user_id.eq.${person.id}),and(user_id.eq.${person.id},matched_user_id.eq.${currentUserId})`);
 
       if (fetchError) throw fetchError;
+
+      const currentMatch = matches && matches.length > 0 ? matches[0] : null;
 
       console.log('Current match status:', {
         currentUserId,
         personId: person.id,
+        currentMatch,
         currentStatus: currentMatch?.status
       });
 
@@ -382,11 +383,11 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
         await supabase
           .from('matches')
           .update({ status: 'connected' })
-          .eq('user_id', currentUserId)
-          .eq('matched_user_id', person.id);
+          .eq('user_id', currentMatch.user_id)
+          .eq('matched_user_id', currentMatch.matched_user_id);
 
         connectionResult = 'connected';
-      } else {
+      } else if (currentMatch) {
         // Status is 'recommended' or something else, so this is the first request
         console.log('First connection request, setting to pending...');
         await supabase
@@ -395,8 +396,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
             status: 'pending',
             pending_since: new Date().toISOString()
           })
-          .eq('user_id', currentUserId)
-          .eq('matched_user_id', person.id);
+          .eq('user_id', currentMatch.user_id)
+          .eq('matched_user_id', currentMatch.matched_user_id);
 
         connectionResult = 'pending';
       }
