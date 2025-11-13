@@ -357,44 +357,48 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
     const person = selectedConnection || currentCard;
 
     try {
-      // Update the match status to 'pending' with timestamp
-      const { error: updateError } = await supabase
-        .from('matches')
-        .update({
-          status: 'pending',
-          pending_since: new Date().toISOString()
-        })
-        .eq('user_id', currentUserId)
-        .eq('matched_user_id', person.id);
-
-      if (updateError) throw updateError;
-
-      // Check if the other person already sent a request (mutual connection)
-      const { data: reciprocalMatch, error: reciprocalError } = await supabase
+      // First, check the current status of THIS match row (only one row exists per pair)
+      const { data: currentMatch, error: fetchError } = await supabase
         .from('matches')
         .select('status')
-        .eq('user_id', person.id)
-        .eq('matched_user_id', currentUserId)
+        .eq('user_id', currentUserId)
+        .eq('matched_user_id', person.id)
         .single();
+
+      if (fetchError) throw fetchError;
+
+      console.log('Current match status:', {
+        currentUserId,
+        personId: person.id,
+        currentStatus: currentMatch?.status
+      });
 
       let connectionResult = 'pending';
 
-      // If they already requested, create mutual connection
-      if (reciprocalMatch && reciprocalMatch.status === 'pending') {
-        // Update both matches to 'connected'
+      // If already pending, that means the other person clicked Connect first
+      // So this click makes it mutual → change to 'connected'
+      if (currentMatch && currentMatch.status === 'pending') {
+        console.log('Other person already requested! Making it mutual connection...');
         await supabase
           .from('matches')
           .update({ status: 'connected' })
           .eq('user_id', currentUserId)
           .eq('matched_user_id', person.id);
 
+        connectionResult = 'connected';
+      } else {
+        // Status is 'recommended' or something else, so this is the first request
+        console.log('First connection request, setting to pending...');
         await supabase
           .from('matches')
-          .update({ status: 'connected' })
-          .eq('user_id', person.id)
-          .eq('matched_user_id', currentUserId);
+          .update({
+            status: 'pending',
+            pending_since: new Date().toISOString()
+          })
+          .eq('user_id', currentUserId)
+          .eq('matched_user_id', person.id);
 
-        connectionResult = 'connected';
+        connectionResult = 'pending';
       }
 
       // Get current user's profile info
