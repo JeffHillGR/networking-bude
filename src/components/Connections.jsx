@@ -132,6 +132,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
           const connectionData = {
             id: match.matched_user_id,
+            userId: match.matched_user_id, // Add userId for liked events query
             name: fullName,
             email: matchedUser.email || '',
             title: matchedUser.title || '',
