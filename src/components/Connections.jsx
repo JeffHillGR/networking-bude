@@ -362,25 +362,28 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
       // First, check the current status - need to check BOTH directions since only one row exists
       const { data: matches, error: fetchError } = await supabase
         .from('matches')
-        .select('status, user_id, matched_user_id')
+        .select('status, user_id, matched_user_id, initiated_by_user_id')
         .or(`and(user_id.eq.${currentUserId},matched_user_id.eq.${person.id}),and(user_id.eq.${person.id},matched_user_id.eq.${currentUserId})`);
 
       if (fetchError) throw fetchError;
 
+      // Check if someone already initiated (initiated_by_user_id exists)
+      const alreadyInitiated = matches && matches.some(m => m.initiated_by_user_id);
       const currentMatch = matches && matches.length > 0 ? matches[0] : null;
 
       console.log('Current match status:', {
         currentUserId,
         personId: person.id,
-        currentMatch,
+        matches,
+        alreadyInitiated,
         currentStatus: currentMatch?.status
       });
 
       let connectionResult = 'pending';
 
-      // If already pending, that means the other person clicked Connect first
-      // So this click makes it mutual → change to 'connected'
-      if (currentMatch && currentMatch.status === 'pending') {
+      // If someone already initiated, receiver is accepting → make it mutual
+      // Update both rows to 'connected' (initiated_by_user_id stays for record-keeping)
+      if (alreadyInitiated) {
         console.log('Other person already requested! Making it mutual connection...');
 
         // Update BOTH rows to 'connected' (one for each user)
