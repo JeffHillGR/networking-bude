@@ -98,6 +98,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
             compatibility_score,
             status,
             updated_at,
+            initiated_by_user_id,
             matched_user:users!matches_matched_user_id_fkey (
               first_name,
               last_name,
@@ -153,7 +154,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
             networkingGoals: matchedUser.networking_goals || '',
             initials: initials,
             isOnline: false,
-            isMutual: match.status === 'connected'
+            isMutual: match.status === 'connected',
+            initiatedByUserId: match.initiated_by_user_id
           };
 
           // Separate by status
@@ -402,27 +404,30 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
         console.log('First connection request, setting to pending...');
 
         // Update BOTH rows to 'pending' (both users should see it in Pending tab)
+        // Store who initiated the connection request
         // Row 1: Current user's row
         await supabase
           .from('matches')
           .update({
             status: 'pending',
-            pending_since: new Date().toISOString()
+            pending_since: new Date().toISOString(),
+            initiated_by_user_id: currentUserId
           })
           .eq('user_id', currentUserId)
           .eq('matched_user_id', person.id);
 
-        // Row 2: Other person's row
+        // Row 2: Other person's row (same initiator)
         await supabase
           .from('matches')
           .update({
             status: 'pending',
-            pending_since: new Date().toISOString()
+            pending_since: new Date().toISOString(),
+            initiated_by_user_id: currentUserId
           })
           .eq('user_id', person.id)
           .eq('matched_user_id', currentUserId);
 
-        console.log('Both rows updated to pending');
+        console.log('Both rows updated to pending, initiated by:', currentUserId);
 
         connectionResult = 'pending';
       }
@@ -1128,10 +1133,23 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
                         {activeTab === 'pending' && (
                           <div className="mt-3">
-                            <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded text-sm">
-                              <Clock className="w-4 h-4" />
-                              Request Sent
-                            </span>
+                            {person.initiatedByUserId === currentUserId ? (
+                              <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded text-sm">
+                                <Clock className="w-4 h-4" />
+                                Request Sent
+                              </span>
+                            ) : (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedConnection(person);
+                                  setShowConnectModal(true);
+                                }}
+                                className="px-4 py-2 bg-[#009900] border-2 border-[#D0ED00] text-white rounded-lg hover:bg-[#007700] transition-colors font-medium text-sm"
+                              >
+                                Accept Connection
+                              </button>
+                            )}
                           </div>
                         )}
                       </div>
@@ -1351,10 +1369,20 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
               {activeTab === 'pending' && (
                 <div className="text-center">
-                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded text-sm">
-                    <Clock className="w-4 h-4" />
-                    Request Sent
-                  </span>
+                  {selectedConnection.initiatedByUserId === currentUserId ? (
+                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded text-sm">
+                      <Clock className="w-4 h-4" />
+                      Request Sent
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => setShowConnectModal(true)}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#009900] border-2 border-[#D0ED00] text-white rounded-lg hover:bg-[#007700] transition-colors font-medium"
+                    >
+                      <User className="w-4 h-4" />
+                      Accept Connection
+                    </button>
+                  )}
                 </div>
               )}
             </div>
