@@ -90,7 +90,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
           .eq('status', 'perhaps')
           .lt('perhaps_since', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
 
-        // Fetch all matches with different statuses
+        // Fetch all matches where current user is user_id (their recommendations)
         const { data: allMatchesData, error: matchesError } = await supabase
           .from('matches')
           .select(`
@@ -390,14 +390,22 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
       } else if (currentMatch) {
         // Status is 'recommended' or something else, so this is the first request
         console.log('First connection request, setting to pending...');
-        await supabase
+        const { data: updateData, error: updateError } = await supabase
           .from('matches')
           .update({
             status: 'pending',
             pending_since: new Date().toISOString()
           })
           .eq('user_id', currentMatch.user_id)
-          .eq('matched_user_id', currentMatch.matched_user_id);
+          .eq('matched_user_id', currentMatch.matched_user_id)
+          .select();
+
+        console.log('Update result:', { updateData, updateError });
+
+        if (updateError) {
+          console.error('Failed to update to pending:', updateError);
+          throw updateError;
+        }
 
         connectionResult = 'pending';
       }
