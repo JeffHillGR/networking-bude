@@ -405,27 +405,31 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
         .single();
 
       const senderName = currentUserData?.name || user?.user_metadata?.full_name || user?.email;
-      const senderTitle = currentUserData?.title || '';
-      const senderCompany = currentUserData?.company || '';
 
-      // Create mailto link to open user's email client
-      const subject = `${senderName} wants to connect with you on Networking BudE`;
-      const body = `Hi ${person.name},
-
-I found your profile on Networking BudE and would love to connect! We have a ${person.connectionScore}% compatibility match.
-
-${senderTitle && senderCompany ? `About me: ${senderTitle} at ${senderCompany}` : ''}
-
-${connectionMessage ? `Personal message:\n"${connectionMessage}"\n\n` : ''}Log in to Networking BudE to view my full profile and connect: https://www.networkingbude.com/dashboard
-
-Looking forward to connecting!
-
-Best,
-${senderName}`;
-
-      // Open mailto link
-      const mailtoLink = `mailto:${person.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      window.location.href = mailtoLink;
+      // Create in-app notification instead of email
+      if (connectionResult === 'connected') {
+        // Mutual connection - both users get notified
+        await supabase
+          .from('notifications')
+          .insert({
+            user_id: person.id,
+            type: 'mutual_connection',
+            title: `You're now connected with ${senderName}!`,
+            message: connectionMessage || 'You can now message each other.',
+            action_url: `/connections?userId=${currentUserId}`
+          });
+      } else {
+        // Pending connection - only recipient gets notified
+        await supabase
+          .from('notifications')
+          .insert({
+            user_id: person.id,
+            type: 'connection_request',
+            title: `${senderName} wants to connect!`,
+            message: connectionMessage || `${senderName} sent you a connection request.`,
+            action_url: `/connections?userId=${currentUserId}`
+          });
+      }
 
       // Check if connection became mutual
       if (connectionResult === 'connected') {

@@ -200,11 +200,14 @@ function NotificationBell({ onNavigate }) {
       // Check notification type first
       if (notification.type === 'new_message') {
         onNavigate('messages', null);
-      } else if (notification.type === 'new_match' || notification.type === 'mutual_connection') {
-        // Extract user ID from link if present (format: /connections?user=UUID)
+      } else if (notification.type === 'new_match' || notification.type === 'mutual_connection' || notification.type === 'connection_request') {
+        // Extract user ID from action_url if present (format: /connections?userId=UUID)
         let userId = null;
-        if (notification.link && notification.link.includes('?user=')) {
-          userId = notification.link.split('?user=')[1];
+        const urlToCheck = notification.action_url || notification.link;
+        if (urlToCheck && urlToCheck.includes('?userId=')) {
+          userId = urlToCheck.split('?userId=')[1];
+        } else if (urlToCheck && urlToCheck.includes('?user=')) {
+          userId = urlToCheck.split('?user=')[1];
         }
         onNavigate('connections', userId);
       } else if (notification.link) {
