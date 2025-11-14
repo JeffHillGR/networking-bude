@@ -836,15 +836,18 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
+      // Get public URL with cache-busting timestamp
       const { data: { publicUrl } } = supabase.storage
         .from('Hero-Banners-Geotagged')
         .getPublicUrl(filePath);
 
+      // Add cache-busting query parameter to force browser to fetch new image
+      const cacheBustedUrl = `${publicUrl}?t=${Date.now()}`;
+
       // Update state
       setHeroBanners({
         ...heroBanners,
-        [slotKey]: { ...heroBanners[slotKey], image_url: publicUrl }
+        [slotKey]: { ...heroBanners[slotKey], image_url: cacheBustedUrl }
       });
 
       alert('Image uploaded successfully!');
