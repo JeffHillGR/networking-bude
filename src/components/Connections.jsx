@@ -275,12 +275,20 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
   // Auto-open modal for selected connection from notification
   useEffect(() => {
-    if (selectedConnectionId && (savedConnections.length > 0 || connections.length > 0)) {
+    if (selectedConnectionId && (savedConnections.length > 0 || connections.length > 0 || pendingConnections.length > 0)) {
       // Find the connection in saved connections first
       const savedConn = savedConnections.find(conn => conn.id === selectedConnectionId);
       if (savedConn) {
         setActiveTab('saved');
         setSelectedConnection(savedConn);
+        return;
+      }
+
+      // Check in pending connections
+      const pendingConn = pendingConnections.find(conn => conn.id === selectedConnectionId);
+      if (pendingConn) {
+        setActiveTab('pending');
+        setSelectedConnection(pendingConn);
         return;
       }
 
@@ -292,7 +300,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
         // The connection will be at the front of the list due to the prioritization logic
       }
     }
-  }, [selectedConnectionId, savedConnections, connections]);
+  }, [selectedConnectionId, savedConnections, connections, pendingConnections]);
 
   // Check if today is Monday and show banner
   useEffect(() => {
@@ -469,22 +477,10 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
       const senderName = currentUserData?.name || user?.user_metadata?.full_name || user?.email;
 
-      // TEMPORARILY DISABLED - Testing if notifications are causing the failure
-      // Create in-app notification instead of email
-      console.log('⚠️ NOTIFICATIONS TEMPORARILY DISABLED FOR TESTING');
-      /*
-      if (connectionResult === 'connected') {
-        // Mutual connection - both users get notified
-        await supabase
-          .from('notifications')
-          .insert({
-            user_id: person.id,
-            type: 'mutual_connection',
-            title: `You're now connected with ${senderName}!`,
-            message: connectionMessage || 'You can now message each other.',
-            action_url: `/connections?userId=${currentUserId}`
-          });
-      } else {
+      // Note: Notifications are now created automatically via database trigger
+      // The trigger 'notify_mutual_connection' handles this when status changes to 'connected'
+      // Connection request notifications are handled here in the code
+      if (connectionResult === 'pending') {
         // Pending connection - only recipient gets notified
         await supabase
           .from('notifications')
@@ -496,7 +492,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
             action_url: `/connections?userId=${currentUserId}`
           });
       }
-      */
+      // Note: 'connected' status notifications are handled by database trigger
 
       // Check if connection became mutual
       if (connectionResult === 'connected') {
@@ -1165,17 +1161,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
                         {activeTab === 'pending' && (
                           <div className="mt-3">
-                            {(() => {
-                              console.log('🔍 PENDING TAB DEBUG:', {
-                                personName: person.name,
-                                personInitiatedByUserId: person.initiatedByUserId,
-                                currentUserId: currentUserId,
-                                isMatch: person.initiatedByUserId === currentUserId,
-                                typeOfPersonInitiatedBy: typeof person.initiatedByUserId,
-                                typeOfCurrentUserId: typeof currentUserId
-                              });
-                              return person.initiatedByUserId === currentUserId;
-                            })() ? (
+                            {person.initiatedByUserId === currentUserId ? (
                               <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded text-sm">
                                 <Clock className="w-4 h-4" />
                                 Request Sent
