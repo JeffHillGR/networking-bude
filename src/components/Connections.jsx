@@ -1165,7 +1165,17 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
                         {activeTab === 'pending' && (
                           <div className="mt-3">
-                            {person.initiatedByUserId === currentUserId ? (
+                            {(() => {
+                              console.log('🔍 PENDING TAB DEBUG:', {
+                                personName: person.name,
+                                personInitiatedByUserId: person.initiatedByUserId,
+                                currentUserId: currentUserId,
+                                isMatch: person.initiatedByUserId === currentUserId,
+                                typeOfPersonInitiatedBy: typeof person.initiatedByUserId,
+                                typeOfCurrentUserId: typeof currentUserId
+                              });
+                              return person.initiatedByUserId === currentUserId;
+                            })() ? (
                               <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded text-sm">
                                 <Clock className="w-4 h-4" />
                                 Request Sent
