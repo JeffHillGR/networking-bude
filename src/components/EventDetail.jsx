@@ -956,7 +956,7 @@ function EventDetail() {
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1 overflow-hidden">
                   <p className="text-sm text-gray-500 mb-1">Event Link:</p>
-                  <p className="text-sm font-mono text-gray-900 truncate">{window.location.href}</p>
+                  <p className="text-sm font-mono text-gray-900 truncate">{`https://www.networkingbude.com/api/share/${eventId}`}</p>
                 </div>
                 <button
                   onClick={() => {
