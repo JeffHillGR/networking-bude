@@ -35,32 +35,48 @@ function HeroBannerCarousel() {
     fetchBanners();
   }, []);
 
-  if (loading || !currentBanner) {
-    return null; // Don't show anything while loading or if no banners
+  if (loading) {
+    return null; // Don't show anything while loading
+  }
+
+  // If no active banners, show fallback static banner
+  if (!currentBanner) {
+    return (
+      <div className="relative h-48 rounded-lg overflow-hidden shadow-lg bg-gradient-to-r from-green-600 to-lime-400">
+        <img
+          src="/Tech-Week-rooftop.jpg"
+          alt="Networking Event at Sunset"
+          className="w-full h-full object-cover"
+          loading="eager"
+          fetchpriority="high"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-4 text-white">
+          <h2 className="text-xl md:text-2xl font-bold tracking-tight">Connect. Discover. Grow.</h2>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="relative w-full bg-gray-100 overflow-hidden">
+    <div className="relative h-48 rounded-lg overflow-hidden shadow-lg bg-gradient-to-r from-green-600 to-lime-400">
       {currentBanner.click_url ? (
         <a
           href={currentBanner.click_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="block w-full"
+          className="block w-full h-full"
         >
           <img
             src={currentBanner.image_url}
             alt={currentBanner.alt_text || 'Hero Banner'}
-            className="w-full h-auto object-cover"
-            style={{ maxHeight: '300px' }}
+            className="w-full h-full object-cover"
           />
         </a>
       ) : (
         <img
           src={currentBanner.image_url}
           alt={currentBanner.alt_text || 'Hero Banner'}
-          className="w-full h-auto object-cover"
-          style={{ maxHeight: '300px' }}
+          className="w-full h-full object-cover"
         />
       )}
     </div>
