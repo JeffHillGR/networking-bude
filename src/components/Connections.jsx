@@ -1451,14 +1451,16 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                         const userId2 = currentUserId < selectedConnection.id ? selectedConnection.id : currentUserId;
 
                         // Check if conversation already exists
-                        const { data: existingConv, error: findError } = await supabase
+                        const { data: existingConvs, error: findError } = await supabase
                           .from('conversations')
                           .select('id')
                           .eq('user1_id', userId1)
                           .eq('user2_id', userId2)
-                          .maybeSingle();
+                          .limit(1);
 
                         if (findError) throw findError;
+
+                        const existingConv = existingConvs && existingConvs.length > 0 ? existingConvs[0] : null;
 
                         let conversationId;
 
