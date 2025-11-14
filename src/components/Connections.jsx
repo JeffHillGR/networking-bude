@@ -1485,7 +1485,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#009900] text-white rounded-lg hover:bg-[#007700] transition-colors font-medium"
               >
                 <Send className="w-4 h-4" />
-                Send Request
+                Send
               </button>
             </div>
           </div>
