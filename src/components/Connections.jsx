@@ -387,28 +387,33 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
         console.log('🎉 Other person already requested! Making it mutual connection...');
         console.log('Updating BOTH rows to connected status...');
 
-        // Update ALL rows between these two users to 'connected' in one query
-        // This ensures both directions get updated
-        const { data: updateData, error: updateError } = await supabase
+        // Update Row 1: Current user's row
+        const { error: error1 } = await supabase
           .from('matches')
           .update({ status: 'connected' })
-          .or(`and(user_id.eq.${currentUserId},matched_user_id.eq.${person.id}),and(user_id.eq.${person.id},matched_user_id.eq.${currentUserId})`)
-          .select();
+          .eq('user_id', currentUserId)
+          .eq('matched_user_id', person.id);
 
-        if (updateError) {
-          console.error('❌ ERROR updating rows to connected:', updateError);
-          throw updateError;
+        if (error1) {
+          console.error('❌ ERROR updating current user row to connected:', error1);
+          throw error1;
         }
+        console.log('✅ Updated current user row to connected');
 
-        console.log('✅ SUCCESS! Updated rows:', updateData);
-        console.log('✅ Number of rows updated:', updateData?.length || 0);
+        // Update Row 2: Other person's row
+        const { error: error2 } = await supabase
+          .from('matches')
+          .update({ status: 'connected' })
+          .eq('user_id', person.id)
+          .eq('matched_user_id', currentUserId);
 
-        // Verify both rows were updated
-        if (!updateData || updateData.length !== 2) {
-          console.error('⚠️ WARNING: Expected 2 rows to update, but got:', updateData?.length);
-        } else {
-          console.log('🎊 BOTH ROWS SUCCESSFULLY UPDATED TO CONNECTED!');
+        if (error2) {
+          console.error('❌ ERROR updating other user row to connected:', error2);
+          throw error2;
         }
+        console.log('✅ Updated other user row to connected');
+
+        console.log('🎊 BOTH ROWS SUCCESSFULLY UPDATED TO CONNECTED!');
 
         connectionResult = 'connected';
       } else if (currentMatch) {
