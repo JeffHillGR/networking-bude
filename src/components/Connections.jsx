@@ -384,22 +384,31 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
       // If someone already initiated, receiver is accepting → make it mutual
       // Update both rows to 'connected' (initiated_by_user_id stays for record-keeping)
       if (alreadyInitiated) {
-        console.log('Other person already requested! Making it mutual connection...');
+        console.log('🎉 Other person already requested! Making it mutual connection...');
+        console.log('Updating BOTH rows to connected status...');
 
-        // Update BOTH rows to 'connected' (one for each user)
-        // Row 1: Other person's row (the one we found with 'pending')
-        await supabase
+        // Update ALL rows between these two users to 'connected' in one query
+        // This ensures both directions get updated
+        const { data: updateData, error: updateError } = await supabase
           .from('matches')
           .update({ status: 'connected' })
-          .eq('user_id', currentMatch.user_id)
-          .eq('matched_user_id', currentMatch.matched_user_id);
+          .or(`and(user_id.eq.${currentUserId},matched_user_id.eq.${person.id}),and(user_id.eq.${person.id},matched_user_id.eq.${currentUserId})`)
+          .select();
 
-        // Row 2: Current user's row
-        await supabase
-          .from('matches')
-          .update({ status: 'connected' })
-          .eq('user_id', currentUserId)
-          .eq('matched_user_id', person.id);
+        if (updateError) {
+          console.error('❌ ERROR updating rows to connected:', updateError);
+          throw updateError;
+        }
+
+        console.log('✅ SUCCESS! Updated rows:', updateData);
+        console.log('✅ Number of rows updated:', updateData?.length || 0);
+
+        // Verify both rows were updated
+        if (!updateData || updateData.length !== 2) {
+          console.error('⚠️ WARNING: Expected 2 rows to update, but got:', updateData?.length);
+        } else {
+          console.log('🎊 BOTH ROWS SUCCESSFULLY UPDATED TO CONNECTED!');
+        }
 
         connectionResult = 'connected';
       } else if (currentMatch) {
@@ -407,9 +416,10 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
         console.log('First connection request, setting to pending...');
 
         // Update BOTH rows to 'pending' (both users should see it in Pending tab)
-        // Store who initiated the connection request
-        // Row 1: Current user's row
-        await supabase
+        // But ONLY set initiated_by_user_id in the INITIATOR'S row
+
+        // Row 1: Current user's row (INITIATOR - gets the initiated_by_user_id)
+        const { error: error1 } = await supabase
           .from('matches')
           .update({
             status: 'pending',
@@ -419,18 +429,28 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
           .eq('user_id', currentUserId)
           .eq('matched_user_id', person.id);
 
-        // Row 2: Other person's row (same initiator)
-        await supabase
+        if (error1) {
+          console.error('❌ Error updating initiator row to pending:', error1);
+          throw error1;
+        }
+
+        // Row 2: Other person's row (RECEIVER - NO initiated_by_user_id, just pending status)
+        const { error: error2 } = await supabase
           .from('matches')
           .update({
             status: 'pending',
-            pending_since: new Date().toISOString(),
-            initiated_by_user_id: currentUserId
+            pending_since: new Date().toISOString()
+            // NOTE: initiated_by_user_id stays NULL for receiver
           })
           .eq('user_id', person.id)
           .eq('matched_user_id', currentUserId);
 
-        console.log('Both rows updated to pending, initiated by:', currentUserId);
+        if (error2) {
+          console.error('❌ Error updating receiver row to pending:', error2);
+          throw error2;
+        }
+
+        console.log('✅ Both rows updated to pending! Initiator row has initiated_by_user_id:', currentUserId);
 
         connectionResult = 'pending';
       }
