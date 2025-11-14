@@ -961,18 +961,20 @@ function EventDetail() {
                 <button
                   onClick={() => {
                     try {
+                      const shareUrl = `https://www.networkingbude.com/api/share/${eventId}`;
                       if (navigator.clipboard && navigator.clipboard.writeText) {
-                        navigator.clipboard.writeText(window.location.href).then(() => {
+                        navigator.clipboard.writeText(shareUrl).then(() => {
                           setLinkCopied(true);
                           setTimeout(() => setLinkCopied(false), 2000);
                         }).catch(() => {
-                          prompt('Copy this link:', window.location.href);
+                          prompt('Copy this link:', shareUrl);
                         });
                       } else {
-                        prompt('Copy this link:', window.location.href);
+                        prompt('Copy this link:', shareUrl);
                       }
                     } catch (err) {
-                      prompt('Copy this link:', window.location.href);
+                      const shareUrl = `https://www.networkingbude.com/api/share/${eventId}`;
+                      prompt('Copy this link:', shareUrl);
                     }
                   }}
                   className="flex-shrink-0 bg-[#009900] text-white px-4 py-2 rounded-lg hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] flex items-center gap-2"
@@ -1001,7 +1003,7 @@ function EventDetail() {
               <p className="text-sm font-medium text-gray-700 mb-2">Share to:</p>
               <div className="grid grid-cols-2 gap-2">
                 <a
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`}
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://www.networkingbude.com/api/share/${eventId}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-[#0077B5] text-white rounded-lg hover:bg-[#006399] transition-colors text-sm"
@@ -1009,7 +1011,7 @@ function EventDetail() {
                   LinkedIn
                 </a>
                 <a
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://www.networkingbude.com/api/share/${eventId}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#145dbf] transition-colors text-sm"
@@ -1017,7 +1019,7 @@ function EventDetail() {
                   Facebook
                 </a>
                 <a
-                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent('Check out this event: ' + event.title)}`}
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`https://www.networkingbude.com/api/share/${eventId}`)}&text=${encodeURIComponent('Check out this event: ' + event.title)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm"
@@ -1025,7 +1027,7 @@ function EventDetail() {
                   X
                 </a>
                 <a
-                  href={`mailto:?subject=${encodeURIComponent('Check out this event: ' + event.title)}&body=${encodeURIComponent('I thought you might be interested in this event:\n\n' + event.title + '\n\n' + window.location.href)}`}
+                  href={`mailto:?subject=${encodeURIComponent('Check out this event: ' + event.title)}&body=${encodeURIComponent('I thought you might be interested in this event:\n\n' + event.title + '\n\n' + `https://www.networkingbude.com/api/share/${eventId}`)}`}
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
                 >
                   Email
