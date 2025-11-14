@@ -7,9 +7,11 @@ function AdminPanel() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
   const [ads, setAds] = useState({
     eventsSidebar1: JSON.parse(localStorage.getItem('ad_eventsSidebar1') || 'null'),
     eventsSidebar2: JSON.parse(localStorage.getItem('ad_eventsSidebar2') || 'null'),
@@ -18,14 +20,41 @@ function AdminPanel() {
     dashboardBottom: JSON.parse(localStorage.getItem('ad_dashboardBottom') || 'null')
   });
 
-  // Check if admin is already signed in
+  // Check if user is authenticated AND has admin role
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        setIsAuthenticated(true);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (session) {
+          setIsAuthenticated(true);
+
+          // Check if user has admin role
+          const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('is_admin, email')
+            .eq('id', session.user.id)
+            .single();
+
+          if (userError) {
+            console.error('Error checking admin status:', userError);
+            setErrorMessage('Error verifying admin permissions');
+            setLoading(false);
+            return;
+          }
+
+          if (userData && userData.is_admin === true) {
+            setIsAdmin(true);
+          } else {
+            setErrorMessage(`Access Denied: ${userData?.email || 'Your account'} does not have admin permissions. Please contact the site administrator.`);
+          }
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+        setErrorMessage('Error checking authentication');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     checkAuth();
   }, []);
@@ -33,6 +62,7 @@ function AdminPanel() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMessage('');
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -42,11 +72,31 @@ function AdminPanel() {
 
       if (error) throw error;
 
-      setIsAuthenticated(true);
-      alert('Admin login successful!');
+      // Check if user has admin role
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('is_admin, email')
+        .eq('id', data.user.id)
+        .single();
+
+      if (userError) {
+        console.error('Error checking admin status:', userError);
+        setErrorMessage('Error verifying admin permissions');
+        await supabase.auth.signOut();
+        return;
+      }
+
+      if (userData && userData.is_admin === true) {
+        setIsAuthenticated(true);
+        setIsAdmin(true);
+        alert('Admin login successful!');
+      } else {
+        setErrorMessage(`Access Denied: ${userData?.email || email} does not have admin permissions. Please contact the site administrator.`);
+        await supabase.auth.signOut();
+      }
     } catch (error) {
       console.error('Login error:', error);
-      alert('Login failed: ' + error.message);
+      setErrorMessage('Login failed: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -55,6 +105,8 @@ function AdminPanel() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setIsAuthenticated(false);
+    setIsAdmin(false);
+    setErrorMessage('');
   };
 
   const handleImageUpload = (slot, file) => {
@@ -94,11 +146,20 @@ function AdminPanel() {
     );
   }
 
-  if (!isAuthenticated) {
+  // Show login screen if not authenticated OR not an admin
+  if (!isAuthenticated || !isAdmin) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 max-w-md w-full">
           <h1 className="text-2xl font-bold mb-6">Admin Login</h1>
+
+          {/* Error Message Display */}
+          {errorMessage && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700 text-sm">{errorMessage}</p>
+            </div>
+          )}
+
           <form onSubmit={handleLogin}>
             <div className="mb-4">
               <input
@@ -115,7 +176,7 @@ function AdminPanel() {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Admin password"
+                placeholder="Password"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg pr-10"
                 required
               />
@@ -135,6 +196,12 @@ function AdminPanel() {
               {loading ? 'Logging in...' : 'Login'}
             </button>
           </form>
+
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <p className="text-xs text-gray-500 text-center">
+              Only users with admin permissions can access this panel.
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -689,52 +756,412 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
     }
   };
 
+  // Hero Banner State for 3 slots
+  const [heroBanners, setHeroBanners] = useState({
+    slot1: { image_url: '', click_url: '', alt_text: '', target_zip: '', target_radius: '50', is_active: true },
+    slot2: { image_url: '', click_url: '', alt_text: '', target_zip: '', target_radius: '50', is_active: true },
+    slot3: { image_url: '', click_url: '', alt_text: '', target_zip: '', target_radius: '50', is_active: true }
+  });
+
+  const [uploadingBanner, setUploadingBanner] = useState(null);
+
+  // Load existing hero banners from Supabase
+  useEffect(() => {
+    const loadHeroBanners = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('hero_banners')
+          .select('*')
+          .order('slot_number');
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error loading hero banners:', error);
+          return;
+        }
+
+        if (data && data.length > 0) {
+          const bannersState = {
+            slot1: data.find(b => b.slot_number === 1) || heroBanners.slot1,
+            slot2: data.find(b => b.slot_number === 2) || heroBanners.slot2,
+            slot3: data.find(b => b.slot_number === 3) || heroBanners.slot3
+          };
+          setHeroBanners(bannersState);
+        }
+      } catch (err) {
+        console.error('Error loading hero banners:', err);
+      }
+    };
+
+    loadHeroBanners();
+  }, []);
+
+  // Handle hero banner image upload to Supabase Storage
+  const handleHeroBannerUpload = async (slotNumber, file) => {
+    if (!file) return;
+
+    setUploadingBanner(slotNumber);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `hero-banner-${slotNumber}-${Date.now()}.${fileExt}`;
+      const filePath = `hero-banners/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('Hero-Banners-Geotagged')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('Hero-Banners-Geotagged')
+        .getPublicUrl(filePath);
+
+      // Update state
+      const slotKey = `slot${slotNumber}`;
+      setHeroBanners({
+        ...heroBanners,
+        [slotKey]: { ...heroBanners[slotKey], image_url: publicUrl }
+      });
+
+      alert('Image uploaded successfully!');
+    } catch (error) {
+      console.error('Error uploading hero banner:', error);
+      alert('Failed to upload image: ' + error.message);
+    } finally {
+      setUploadingBanner(null);
+    }
+  };
+
+  // Handle hero banner field changes
+  const handleHeroBannerChange = (slotNumber, field, value) => {
+    const slotKey = `slot${slotNumber}`;
+    setHeroBanners({
+      ...heroBanners,
+      [slotKey]: { ...heroBanners[slotKey], [field]: value }
+    });
+  };
+
+  // Save hero banner to Supabase
+  const saveHeroBanner = async (slotNumber) => {
+    const slotKey = `slot${slotNumber}`;
+    const banner = heroBanners[slotKey];
+
+    if (!banner.image_url) {
+      alert('Please upload an image first');
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('hero_banners')
+        .upsert({
+          slot_number: slotNumber,
+          image_url: banner.image_url,
+          click_url: banner.click_url || null,
+          alt_text: banner.alt_text || null,
+          target_zip: banner.target_zip || null,
+          target_radius: banner.target_radius || '50',
+          is_active: banner.is_active !== false
+        }, {
+          onConflict: 'slot_number'
+        });
+
+      if (error) throw error;
+
+      alert(`Hero Banner ${slotNumber} saved successfully!`);
+    } catch (error) {
+      console.error('Error saving hero banner:', error);
+      alert('Failed to save: ' + error.message);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold mb-6">Dashboard Layout Setup</h2>
       
-      {/* Top Banner Section */}
+      {/* Hero Banner Carousel - 3 Rotating Slots */}
       <div className="bg-white rounded-lg p-6 border border-gray-200">
-        <h3 className="text-xl font-semibold mb-4">Top Banner (Geotagged)</h3>
-        <p className="text-gray-600 mb-4">
-          Upload a banner image that will display at the top of user dashboards. You can geotag this to show location-specific content.
+        <h3 className="text-xl font-semibold mb-4">Hero Banner Carousel (Geotagged)</h3>
+        <p className="text-gray-600 mb-6">
+          Upload up to 3 banner images that will rotate on each dashboard page refresh. Optionally add geotagging to show location-specific banners.
         </p>
-        <div>
-  <div className="mb-4">
-    <label className="block text-sm font-medium mb-2">Banner Image</label>
-    <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 bg-gray-50">
-      <Upload className="w-12 h-12 text-gray-400 mb-2" />
-      <span className="text-sm text-gray-600">Click to upload banner</span>
-      <span className="text-xs text-gray-500 mt-1">Recommended size: 1200x300px</span>
-      <input type="file" accept="image/*" className="hidden" />
-    </label>
-  </div>
 
-  <div className="mb-4">
-    <label className="block text-sm font-medium mb-2">Click-through URL</label>
-    <div className="flex gap-2">
-      <Link2 className="w-5 h-5 text-gray-400 mt-2 flex-shrink-0" />
-      <input type="url" placeholder="https://example.com" className="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-lg" />
-    </div>
-  </div>
+        {/* Hero Banner Slot 1 */}
+        <div className="mb-6 p-4 border-2 border-blue-300 rounded-lg bg-blue-50">
+          <h4 className="font-bold text-gray-900 mb-3">Hero Banner Slot 1</h4>
+          <div className="space-y-3 bg-white p-3 rounded">
+            <div>
+              <label className="block text-sm font-medium mb-2">Banner Image</label>
+              {uploadingBanner === 1 ? (
+                <div className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-blue-300 rounded-lg bg-blue-50">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-2"></div>
+                  <span className="text-sm text-blue-600 font-medium">Uploading...</span>
+                </div>
+              ) : heroBanners.slot1.image_url ? (
+                <div className="relative">
+                  <img src={heroBanners.slot1.image_url} alt="Banner 1" className="w-full h-48 object-cover rounded-lg" />
+                  <button
+                    onClick={() => handleHeroBannerChange(1, 'image_url', '')}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 bg-gray-50">
+                  <Upload className="w-12 h-12 text-gray-400 mb-2" />
+                  <span className="text-sm text-gray-600">Click to upload banner</span>
+                  <span className="text-xs text-gray-500 mt-1">Recommended size: 1200x300px</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handleHeroBannerUpload(1, e.target.files[0])}
+                  />
+                </label>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Alt Text (for accessibility)</label>
+              <input
+                type="text"
+                value={heroBanners.slot1.alt_text}
+                onChange={(e) => handleHeroBannerChange(1, 'alt_text', e.target.value)}
+                placeholder="Description of banner"
+                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Click-through URL (optional)</label>
+              <div className="flex gap-2">
+                <Link2 className="w-5 h-5 text-gray-400 mt-2 flex-shrink-0" />
+                <input
+                  type="url"
+                  value={heroBanners.slot1.click_url}
+                  onChange={(e) => handleHeroBannerChange(1, 'click_url', e.target.value)}
+                  placeholder="https://example.com"
+                  className="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-lg"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Organization Zip Code (for targeting, optional)</label>
+              <input
+                type="text"
+                value={heroBanners.slot1.target_zip}
+                onChange={(e) => handleHeroBannerChange(1, 'target_zip', e.target.value)}
+                placeholder="49503"
+                maxLength="5"
+                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Target Radius</label>
+              <select
+                value={heroBanners.slot1.target_radius}
+                onChange={(e) => handleHeroBannerChange(1, 'target_radius', e.target.value)}
+                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg"
+              >
+                <option value="25">25 miles</option>
+                <option value="50">50 miles (recommended)</option>
+                <option value="100">100 miles</option>
+                <option value="statewide">Statewide</option>
+                <option value="national">National (entire country)</option>
+              </select>
+            </div>
+            <button
+              onClick={() => saveHeroBanner(1)}
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 font-medium"
+            >
+              Save Banner 1
+            </button>
+          </div>
+        </div>
 
-  <div className="mb-4">
-    <label className="block text-sm font-medium mb-2">Organization Zip Code (for targeting)</label>
-    <input type="text" placeholder="49503" maxLength="5" className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg" />
-  </div>
+        {/* Hero Banner Slot 2 */}
+        <div className="mb-6 p-4 border-2 border-green-300 rounded-lg bg-green-50">
+          <h4 className="font-bold text-gray-900 mb-3">Hero Banner Slot 2</h4>
+          <div className="space-y-3 bg-white p-3 rounded">
+            <div>
+              <label className="block text-sm font-medium mb-2">Banner Image</label>
+              {uploadingBanner === 2 ? (
+                <div className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-green-300 rounded-lg bg-green-50">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-2"></div>
+                  <span className="text-sm text-green-600 font-medium">Uploading...</span>
+                </div>
+              ) : heroBanners.slot2.image_url ? (
+                <div className="relative">
+                  <img src={heroBanners.slot2.image_url} alt="Banner 2" className="w-full h-48 object-cover rounded-lg" />
+                  <button
+                    onClick={() => handleHeroBannerChange(2, 'image_url', '')}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 bg-gray-50">
+                  <Upload className="w-12 h-12 text-gray-400 mb-2" />
+                  <span className="text-sm text-gray-600">Click to upload banner</span>
+                  <span className="text-xs text-gray-500 mt-1">Recommended size: 1200x300px</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handleHeroBannerUpload(2, e.target.files[0])}
+                  />
+                </label>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Alt Text (for accessibility)</label>
+              <input
+                type="text"
+                value={heroBanners.slot2.alt_text}
+                onChange={(e) => handleHeroBannerChange(2, 'alt_text', e.target.value)}
+                placeholder="Description of banner"
+                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Click-through URL (optional)</label>
+              <div className="flex gap-2">
+                <Link2 className="w-5 h-5 text-gray-400 mt-2 flex-shrink-0" />
+                <input
+                  type="url"
+                  value={heroBanners.slot2.click_url}
+                  onChange={(e) => handleHeroBannerChange(2, 'click_url', e.target.value)}
+                  placeholder="https://example.com"
+                  className="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-lg"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Organization Zip Code (for targeting, optional)</label>
+              <input
+                type="text"
+                value={heroBanners.slot2.target_zip}
+                onChange={(e) => handleHeroBannerChange(2, 'target_zip', e.target.value)}
+                placeholder="49503"
+                maxLength="5"
+                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Target Radius</label>
+              <select
+                value={heroBanners.slot2.target_radius}
+                onChange={(e) => handleHeroBannerChange(2, 'target_radius', e.target.value)}
+                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg"
+              >
+                <option value="25">25 miles</option>
+                <option value="50">50 miles (recommended)</option>
+                <option value="100">100 miles</option>
+                <option value="statewide">Statewide</option>
+                <option value="national">National (entire country)</option>
+              </select>
+            </div>
+            <button
+              onClick={() => saveHeroBanner(2)}
+              className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 font-medium"
+            >
+              Save Banner 2
+            </button>
+          </div>
+        </div>
 
-  <div className="mb-4">
-    <label className="block text-sm font-medium mb-2">Target Radius</label>
-    <select defaultValue="50" className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg">
-      <option value="25">25 miles</option>
-      <option value="50">50 miles (recommended)</option>
-      <option value="100">100 miles</option>
-      <option value="statewide">Statewide</option>
-      <option value="national">National (entire country)</option>
-    </select>
-  </div>
-</div>
-
+        {/* Hero Banner Slot 3 */}
+        <div className="mb-6 p-4 border-2 border-purple-300 rounded-lg bg-purple-50">
+          <h4 className="font-bold text-gray-900 mb-3">Hero Banner Slot 3</h4>
+          <div className="space-y-3 bg-white p-3 rounded">
+            <div>
+              <label className="block text-sm font-medium mb-2">Banner Image</label>
+              {uploadingBanner === 3 ? (
+                <div className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-purple-300 rounded-lg bg-purple-50">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mb-2"></div>
+                  <span className="text-sm text-purple-600 font-medium">Uploading...</span>
+                </div>
+              ) : heroBanners.slot3.image_url ? (
+                <div className="relative">
+                  <img src={heroBanners.slot3.image_url} alt="Banner 3" className="w-full h-48 object-cover rounded-lg" />
+                  <button
+                    onClick={() => handleHeroBannerChange(3, 'image_url', '')}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 bg-gray-50">
+                  <Upload className="w-12 h-12 text-gray-400 mb-2" />
+                  <span className="text-sm text-gray-600">Click to upload banner</span>
+                  <span className="text-xs text-gray-500 mt-1">Recommended size: 1200x300px</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handleHeroBannerUpload(3, e.target.files[0])}
+                  />
+                </label>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Alt Text (for accessibility)</label>
+              <input
+                type="text"
+                value={heroBanners.slot3.alt_text}
+                onChange={(e) => handleHeroBannerChange(3, 'alt_text', e.target.value)}
+                placeholder="Description of banner"
+                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Click-through URL (optional)</label>
+              <div className="flex gap-2">
+                <Link2 className="w-5 h-5 text-gray-400 mt-2 flex-shrink-0" />
+                <input
+                  type="url"
+                  value={heroBanners.slot3.click_url}
+                  onChange={(e) => handleHeroBannerChange(3, 'click_url', e.target.value)}
+                  placeholder="https://example.com"
+                  className="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-lg"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Organization Zip Code (for targeting, optional)</label>
+              <input
+                type="text"
+                value={heroBanners.slot3.target_zip}
+                onChange={(e) => handleHeroBannerChange(3, 'target_zip', e.target.value)}
+                placeholder="49503"
+                maxLength="5"
+                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Target Radius</label>
+              <select
+                value={heroBanners.slot3.target_radius}
+                onChange={(e) => handleHeroBannerChange(3, 'target_radius', e.target.value)}
+                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg"
+              >
+                <option value="25">25 miles</option>
+                <option value="50">50 miles (recommended)</option>
+                <option value="100">100 miles</option>
+                <option value="statewide">Statewide</option>
+                <option value="national">National (entire country)</option>
+              </select>
+            </div>
+            <button
+              onClick={() => saveHeroBanner(3)}
+              className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 font-medium"
+            >
+              Save Banner 3
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Featured Content Section */}

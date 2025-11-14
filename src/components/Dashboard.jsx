@@ -13,6 +13,7 @@ import PrivacyPage from './PrivacyPage';
 import ArchivePage from './ArchivePage';
 import FeedbackWidget from './FeedbackWidget';
 import NotificationBell from './NotificationBell.jsx';
+import HeroBannerCarousel from './HeroBannerCarousel.jsx';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -624,6 +625,9 @@ const getGreeting = () => {
                 <h2 className="text-xl md:text-2xl font-bold tracking-tight">Connect. Discover. Grow.</h2>
               </div>
             </div>
+
+            {/* Hero Banner Carousel - Rotating promotional banners */}
+            <HeroBannerCarousel />
 
             {/* Desktop greeting with notification bell - show below hero banner on desktop only */}
             <div className="hidden md:flex items-center justify-between">
