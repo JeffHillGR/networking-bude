@@ -902,7 +902,35 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold mb-6">Dashboard Layout Setup</h2>
-      
+
+      {/* Banner Status Display */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h3 className="font-bold text-blue-900 mb-3">🔍 Current Banner Status</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[1, 2, 3].map(slot => {
+            const slotKey = `slot${slot}`;
+            const banner = heroBanners[slotKey];
+            const hasImage = banner?.image_url && banner.image_url !== '';
+            return (
+              <div key={slot} className="bg-white p-3 rounded border border-gray-200">
+                <p className="font-semibold mb-1">Banner Slot {slot}</p>
+                <p className="text-sm">
+                  Status: {hasImage ? '✅ Image Uploaded' : '⚠️ No Image'}
+                </p>
+                {hasImage && (
+                  <p className="text-xs text-gray-500 truncate mt-1">
+                    {banner.image_url.split('/').pop()}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <p className="text-xs text-gray-600 mt-3">
+          💡 Tip: After uploading an image, click "Save Banner X" to activate it on the site. Then refresh your dashboard to see it rotating.
+        </p>
+      </div>
+
       {/* Hero Banner Carousel - 3 Rotating Slots */}
       <div className="bg-white rounded-lg p-6 border border-gray-200">
         <h3 className="text-xl font-semibold mb-4">Hero Banner Carousel (Geotagged)</h3>
