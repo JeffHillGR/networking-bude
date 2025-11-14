@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/share/:eventId",
+      "destination": "/api/share/[eventId]"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "/api/$1"
     },
