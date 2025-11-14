@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, Calendar, MapPin, Heart, ExternalLink, Share2, User, Home, TrendingUp, Users, X } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Heart, ExternalLink, Share2, User, Home, TrendingUp, Users, X, Check } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
@@ -22,6 +22,10 @@ function EventDetail() {
   const [showSignupPrompt, setShowSignupPrompt] = useState(false);
   const [interestedCount, setInterestedCount] = useState(0);
   const [connectionsInterestedCount, setConnectionsInterestedCount] = useState(0);
+  const [isGoing, setIsGoing] = useState(false);
+  const [goingCount, setGoingCount] = useState(0);
+  const [goingAttendees, setGoingAttendees] = useState([]);
+  const [showGoingList, setShowGoingList] = useState(false);
 
   // Track user engagement when viewing event details
   useEffect(() => {
@@ -106,6 +110,16 @@ function EventDetail() {
               .maybeSingle();
 
             setIsFavorited(!!likeData);
+
+            // Check if user is marked as "going"
+            const { data: attendeeData } = await supabase
+              .from('event_attendees')
+              .select('id')
+              .eq('event_id', eventId)
+              .eq('user_id', user.id)
+              .maybeSingle();
+
+            setIsGoing(!!attendeeData);
           }
 
           // Fetch interested count (likes + registration clicks)
@@ -122,6 +136,56 @@ function EventDetail() {
 
           const totalInterested = (likesResult.data?.length || 0) + (clicksResult.data?.length || 0);
           setInterestedCount(totalInterested);
+
+          // Fetch "going" count and attendees
+          const { data: attendeesData } = await supabase
+            .from('event_attendees')
+            .select(`
+              user_id,
+              users!event_attendees_user_id_fkey (
+                id,
+                first_name,
+                last_name,
+                name,
+                photo
+              )
+            `)
+            .eq('event_id', eventId)
+            .eq('status', 'going');
+
+          setGoingCount(attendeesData?.length || 0);
+
+          // Transform attendees data
+          const attendeesList = attendeesData?.map(a => ({
+            id: a.users.id,
+            name: a.users.name || `${a.users.first_name} ${a.users.last_name}`,
+            photo: a.users.photo,
+            isConnection: false // Will update this below
+          })) || [];
+
+          // If user is logged in, mark which attendees are connections
+          if (user && attendeesList.length > 0) {
+            const { data: connectionsData } = await supabase
+              .from('connection_flow')
+              .select('matched_user_id')
+              .eq('user_id', user.id)
+              .eq('status', 'connected');
+
+            const connectionIds = new Set(connectionsData?.map(c => c.matched_user_id) || []);
+
+            attendeesList.forEach(attendee => {
+              attendee.isConnection = connectionIds.has(attendee.id);
+            });
+
+            // Sort: connections first, then others
+            attendeesList.sort((a, b) => {
+              if (a.isConnection && !b.isConnection) return -1;
+              if (!a.isConnection && b.isConnection) return 1;
+              return 0;
+            });
+          }
+
+          setGoingAttendees(attendeesList);
 
           // Fetch user's connections who are interested in this event
           if (user) {
@@ -203,6 +267,65 @@ function EventDetail() {
     } catch (error) {
       console.error('Error toggling like:', error);
       alert('Failed to update like status');
+    }
+  };
+
+  // Handle going/not going
+  const handleToggleGoing = async () => {
+    if (!user) {
+      alert('Please sign in to mark yourself as going');
+      return;
+    }
+
+    try {
+      if (isGoing) {
+        // Remove from attendees
+        const { error } = await supabase
+          .from('event_attendees')
+          .delete()
+          .eq('event_id', eventId)
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+        setIsGoing(false);
+        setGoingCount(prev => Math.max(0, prev - 1));
+
+        // Remove from attendees list
+        setGoingAttendees(prev => prev.filter(a => a.id !== user.id));
+      } else {
+        // Add to attendees
+        const { error } = await supabase
+          .from('event_attendees')
+          .insert({
+            event_id: eventId,
+            user_id: user.id,
+            status: 'going'
+          });
+
+        if (error) throw error;
+        setIsGoing(true);
+        setGoingCount(prev => prev + 1);
+
+        // Add to attendees list (fetch user data to display)
+        const { data: userData } = await supabase
+          .from('users')
+          .select('id, first_name, last_name, name, photo')
+          .eq('id', user.id)
+          .single();
+
+        if (userData) {
+          const newAttendee = {
+            id: userData.id,
+            name: userData.name || `${userData.first_name} ${userData.last_name}`,
+            photo: userData.photo,
+            isConnection: false // Current user
+          };
+          setGoingAttendees(prev => [newAttendee, ...prev]);
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling going status:', error);
+      alert('Failed to update going status');
     }
   };
 
@@ -527,6 +650,17 @@ function EventDetail() {
                       <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
                     </button>
                     <button
+                      onClick={handleToggleGoing}
+                      className={`p-2 rounded-full border transition-colors ${
+                        isGoing
+                          ? 'bg-green-50 border-[#009900] text-[#009900]'
+                          : 'border-gray-300 text-gray-600 hover:border-gray-400'
+                      }`}
+                      title={isGoing ? 'Not going' : "I'm going"}
+                    >
+                      <Check className={`w-5 h-5 ${isGoing ? 'stroke-2' : ''}`} />
+                    </button>
+                    <button
                       onClick={() => setShowShareModal(true)}
                       className="p-2 rounded-full border border-gray-300 text-gray-600 hover:border-gray-400"
                     >
@@ -617,6 +751,51 @@ function EventDetail() {
                       </a>
                     </div>
                   </div>
+
+                  {goingCount > 0 && (
+                    <div className="flex gap-3">
+                      <Check className="w-5 h-5 text-[#009900] flex-shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <button
+                          onClick={() => setShowGoingList(!showGoingList)}
+                          className="font-semibold text-gray-900 hover:text-[#009900] transition-colors text-left flex items-center gap-2"
+                        >
+                          {goingCount === 1 ? '1 person is going' : `${goingCount} people are going`}
+                          <span className="text-xs text-gray-500">▼</span>
+                        </button>
+                        {showGoingList && goingAttendees.length > 0 && (
+                          <div className="mt-3 space-y-2 max-h-64 overflow-y-auto">
+                            {goingAttendees.slice(0, 10).map((attendee, idx) => (
+                              <div key={idx} className="flex items-center gap-2 text-sm">
+                                {attendee.photo ? (
+                                  <img
+                                    src={attendee.photo}
+                                    alt={attendee.name}
+                                    className="w-8 h-8 rounded-full object-cover border border-gray-200"
+                                  />
+                                ) : (
+                                  <div className="w-8 h-8 rounded-full bg-[#009900] flex items-center justify-center text-white text-xs font-bold">
+                                    {attendee.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                  </div>
+                                )}
+                                <span className="text-gray-900">
+                                  {attendee.name}
+                                  {attendee.isConnection && (
+                                    <span className="ml-2 text-xs text-[#009900]">(Your connection)</span>
+                                  )}
+                                </span>
+                              </div>
+                            ))}
+                            {goingAttendees.length > 10 && (
+                              <div className="text-sm text-gray-500 italic">
+                                + {goingAttendees.length - 10} more
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   {interestedCount > 0 && (
                     <div className="flex gap-3">

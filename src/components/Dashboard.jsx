@@ -24,6 +24,7 @@ function Dashboard() {
   const [connections, setConnections] = useState([]);
   const [loadingConnections, setLoadingConnections] = useState(true);
   const [connectionLikedEvents, setConnectionLikedEvents] = useState({});
+  const [connectionGoingEvents, setConnectionGoingEvents] = useState({});
   const [userFirstName, setUserFirstName] = useState('there');
   const [selectedConnectionId, setSelectedConnectionId] = useState(null);
   const [events, setEvents] = useState([]);
@@ -483,6 +484,59 @@ const getGreeting = () => {
         }
 
         setConnectionLikedEvents(likedEventsMap);
+
+        // Fetch "going" events for all connections in bulk
+        const goingEventsMap = {};
+        if (transformedConnections.length > 0) {
+          try {
+            const connectionIds = transformedConnections.map(c => c.userId);
+
+            // Fetch all attendees for all connections at once
+            const { data: attendeesData } = await supabase
+              .from('event_attendees')
+              .select(`
+                event_id,
+                user_id,
+                created_at,
+                events!event_attendees_event_id_fkey (
+                  id,
+                  title,
+                  image_url,
+                  date
+                )
+              `)
+              .in('user_id', connectionIds)
+              .eq('status', 'going');
+
+            // Group events by user
+            const userGoingEvents = {};
+            (attendeesData || []).forEach(attendee => {
+              if (!userGoingEvents[attendee.user_id]) {
+                userGoingEvents[attendee.user_id] = [];
+              }
+              if (attendee.events) {
+                userGoingEvents[attendee.user_id].push({
+                  id: attendee.events.id,
+                  title: attendee.events.title,
+                  image_url: attendee.events.image_url,
+                  date: attendee.events.date,
+                  created_at: attendee.created_at
+                });
+              }
+            });
+
+            // Sort by created_at and limit to 2 upcoming events per user
+            Object.keys(userGoingEvents).forEach(userId => {
+              goingEventsMap[userId] = userGoingEvents[userId]
+                .sort((a, b) => new Date(a.date) - new Date(b.date)) // Sort by event date
+                .slice(0, 2); // Show max 2 upcoming events
+            });
+          } catch (error) {
+            console.error('Error loading going events:', error);
+          }
+        }
+
+        setConnectionGoingEvents(goingEventsMap);
 
         // Only set connections if we got data, otherwise keep empty array
         if (transformedConnections.length > 0) {

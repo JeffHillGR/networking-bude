@@ -17,6 +17,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
   const [currentUserId, setCurrentUserId] = useState(null);
   const [showMondayBanner, setShowMondayBanner] = useState(false);
   const [connectionLikedEvents, setConnectionLikedEvents] = useState({});
+  const [connectionGoingEvents, setConnectionGoingEvents] = useState({});
 
   // localStorage state for tracking actions
   const [passedConnections, setPassedConnections] = useState(() => {
@@ -257,6 +258,58 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
         setConnectionLikedEvents(likedEventsMap);
         console.log('Loaded liked events for connections:', likedEventsMap);
+
+        // Fetch "going" events for all connections in bulk
+        const goingEventsMap = {};
+        if (allConnections.length > 0) {
+          try {
+            const connectionUserIds = allConnections.map(c => c.userId);
+            const { data: attendeesData } = await supabase
+              .from('event_attendees')
+              .select(`
+                event_id,
+                user_id,
+                created_at,
+                events!event_attendees_event_id_fkey (
+                  id,
+                  title,
+                  image_url,
+                  date
+                )
+              `)
+              .in('user_id', connectionUserIds)
+              .eq('status', 'going');
+
+            // Group events by user
+            const userGoingEvents = {};
+            (attendeesData || []).forEach(attendee => {
+              if (!userGoingEvents[attendee.user_id]) {
+                userGoingEvents[attendee.user_id] = [];
+              }
+              if (attendee.events) {
+                userGoingEvents[attendee.user_id].push({
+                  id: attendee.events.id,
+                  title: attendee.events.title,
+                  image_url: attendee.events.image_url,
+                  date: attendee.events.date,
+                  created_at: attendee.created_at
+                });
+              }
+            });
+
+            // Sort by date and limit to 2 upcoming events per user
+            Object.keys(userGoingEvents).forEach(userId => {
+              goingEventsMap[userId] = userGoingEvents[userId]
+                .sort((a, b) => new Date(a.date) - new Date(b.date))
+                .slice(0, 2);
+            });
+          } catch (error) {
+            console.error('Error loading going events:', error);
+          }
+        }
+
+        setConnectionGoingEvents(goingEventsMap);
+        console.log('Loaded going events for connections:', goingEventsMap);
 
         // Only show recommended (perhaps are hidden for 1 week)
         setConnections(recommended);
@@ -940,6 +993,30 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                       </div>
                     </div>
                   )}
+
+                  {/* Going Events */}
+                  {connectionGoingEvents[currentCard.userId]?.length > 0 && (
+                    <div className="pt-4 border-t border-gray-200">
+                      <p className="text-sm font-semibold text-gray-700 mb-2">📅 Going to:</p>
+                      <div className="space-y-2">
+                        {connectionGoingEvents[currentCard.userId].map((event, idx) => (
+                          <div key={idx} className="flex items-center gap-3 p-2 bg-gray-50 rounded">
+                            {event.image_url && (
+                              <img
+                                src={event.image_url}
+                                alt={event.title}
+                                className="w-12 h-12 rounded object-cover flex-shrink-0"
+                              />
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900 truncate">{event.title}</p>
+                              <p className="text-xs text-gray-500">{event.date}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Action Buttons - Reading left to right: Connect is primary action */}
@@ -1300,6 +1377,30 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                   <div>
                     <p className="text-sm font-semibold text-gray-700 mb-1">Networking Goals:</p>
                     <p className="text-gray-600 text-sm">{selectedConnection.networkingGoals}</p>
+                  </div>
+                )}
+
+                {/* Going Events */}
+                {connectionGoingEvents[selectedConnection.userId]?.length > 0 && (
+                  <div className="pt-4 border-t border-gray-200">
+                    <p className="text-sm font-semibold text-gray-700 mb-2">📅 Going to:</p>
+                    <div className="space-y-2">
+                      {connectionGoingEvents[selectedConnection.userId].map((event, idx) => (
+                        <div key={idx} className="flex items-center gap-3 p-2 bg-gray-50 rounded">
+                          {event.image_url && (
+                            <img
+                              src={event.image_url}
+                              alt={event.title}
+                              className="w-12 h-12 rounded object-cover flex-shrink-0"
+                            />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 truncate">{event.title}</p>
+                            <p className="text-xs text-gray-500">{event.date}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
