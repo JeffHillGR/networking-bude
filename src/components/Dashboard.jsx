@@ -13,6 +13,7 @@ import PrivacyPage from './PrivacyPage';
 import ArchivePage from './ArchivePage';
 import FeedbackWidget from './FeedbackWidget';
 import NotificationBell from './NotificationBell.jsx';
+import ShareButton from './ShareButton.jsx';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -499,7 +500,7 @@ const getGreeting = () => {
     }
 
     fetchConnections();
-  }, [user]);
+  }, [user, activeTab]); // Refetch when returning to dashboard tab
 
   // Load events from Supabase
   useEffect(() => {
