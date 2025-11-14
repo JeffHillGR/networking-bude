@@ -752,6 +752,14 @@ function EventDetail() {
                     </div>
                   </div>
 
+                  {/* Trending Badge */}
+                  {(interestedCount >= 5 || goingCount >= 5) && (
+                    <div className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg">
+                      <TrendingUp className="w-5 h-5 text-orange-500" />
+                      <span className="text-sm font-semibold text-orange-700">Trending Event</span>
+                    </div>
+                  )}
+
                   {goingCount > 0 && (
                     <div className="flex gap-3">
                       <Check className="w-5 h-5 text-[#009900] flex-shrink-0 mt-0.5" />
