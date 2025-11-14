@@ -469,7 +469,10 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
       const senderName = currentUserData?.name || user?.user_metadata?.full_name || user?.email;
 
+      // TEMPORARILY DISABLED - Testing if notifications are causing the failure
       // Create in-app notification instead of email
+      console.log('⚠️ NOTIFICATIONS TEMPORARILY DISABLED FOR TESTING');
+      /*
       if (connectionResult === 'connected') {
         // Mutual connection - both users get notified
         await supabase
@@ -493,6 +496,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
             action_url: `/connections?userId=${currentUserId}`
           });
       }
+      */
 
       // Check if connection became mutual
       if (connectionResult === 'connected') {
