@@ -1,14 +1,23 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL,
-  process.env.VITE_SUPABASE_ANON_KEY
-);
-
 export default async function handler(req, res) {
   const { eventId } = req.query;
 
   try {
+    // Check for environment variables
+    if (!process.env.VITE_SUPABASE_URL || !process.env.VITE_SUPABASE_ANON_KEY) {
+      console.error('Missing environment variables:', {
+        hasUrl: !!process.env.VITE_SUPABASE_URL,
+        hasKey: !!process.env.VITE_SUPABASE_ANON_KEY
+      });
+      return res.status(500).send('Server configuration error - missing environment variables');
+    }
+
+    const supabase = createClient(
+      process.env.VITE_SUPABASE_URL,
+      process.env.VITE_SUPABASE_ANON_KEY
+    );
+
     // Fetch event from Supabase
     const { data: event, error } = await supabase
       .from('events')
@@ -17,6 +26,7 @@ export default async function handler(req, res) {
       .single();
 
     if (error || !event) {
+      console.error('Event not found:', { eventId, error });
       return res.status(404).send('Event not found');
     }
 
@@ -149,6 +159,6 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Error generating share page:', error);
-    res.status(500).send('Error generating share page');
+    res.status(500).send(`Error generating share page: ${error.message}`);
   }
 }
