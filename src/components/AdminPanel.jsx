@@ -885,14 +885,14 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
           alt_text: banner.alt_text || null,
           target_zip: banner.target_zip || null,
           target_radius: banner.target_radius || '50',
-          is_active: banner.is_active !== false
+          is_active: true  // Always activate banner when saving
         }, {
           onConflict: 'slot_number'
         });
 
       if (error) throw error;
 
-      alert(`Hero Banner ${slotNumber} saved successfully!`);
+      alert(`Hero Banner ${slotNumber} saved successfully! Refresh your dashboard to see it.`);
     } catch (error) {
       console.error('Error saving hero banner:', error);
       alert('Failed to save: ' + error.message);
