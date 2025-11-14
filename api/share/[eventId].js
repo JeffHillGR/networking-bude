@@ -58,21 +58,29 @@ export default async function handler(req, res) {
   <meta property="og:type" content="website">
   <meta property="og:url" content="${shareUrl}">
   <meta property="og:title" content="${event.title}">
-  <meta property="og:description" content="${event.description?.substring(0, 200) || 'Join us for this networking event'}">
+  <meta property="og:description" content="${event.short_description?.substring(0, 200) || event.description?.substring(0, 200) || 'Join us for this networking event'}">
   <meta property="og:image" content="${imageUrl}">
+  <meta property="og:image:secure_url" content="${imageUrl}">
+  <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="${event.title}">
   <meta property="og:site_name" content="Networking BudE">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Facebook Specific -->
+  <meta property="fb:app_id" content="your_app_id" />
+  <meta property="article:author" content="Networking BudE">
 
   <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="${shareUrl}">
-  <meta property="twitter:title" content="${event.title}">
-  <meta property="twitter:description" content="${event.description?.substring(0, 200) || 'Join us for this networking event'}">
-  <meta property="twitter:image" content="${imageUrl}">
-
-  <!-- LinkedIn Specific -->
-  <meta property="og:image:secure_url" content="${imageUrl}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@NetworkingBudE">
+  <meta name="twitter:creator" content="@NetworkingBudE">
+  <meta name="twitter:url" content="${shareUrl}">
+  <meta name="twitter:title" content="${event.title}">
+  <meta name="twitter:description" content="${event.short_description?.substring(0, 200) || event.description?.substring(0, 200) || 'Join us for this networking event'}">
+  <meta name="twitter:image" content="${imageUrl}">
+  <meta name="twitter:image:alt" content="${event.title}">
 
   <!-- Auto-redirect for real users (not bots) -->
   <meta http-equiv="refresh" content="0;url=${eventUrl}">
