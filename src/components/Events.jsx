@@ -869,11 +869,11 @@ function Events({ onBackToDashboard }) {
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1 overflow-hidden">
                   <p className="text-sm text-gray-500 mb-1">Event Link:</p>
-                  <p className="text-sm font-mono text-gray-900 truncate">{`${window.location.origin}/events/${shareEvent.id}`}</p>
+                  <p className="text-sm font-mono text-gray-900 truncate">{`${window.location.origin}/api/share/${shareEvent.id}`}</p>
                 </div>
                 <button
                   onClick={() => {
-                    const eventLink = `${window.location.origin}/events/${shareEvent.id}`;
+                    const eventLink = `${window.location.origin}/api/share/${shareEvent.id}`;
                     try {
                       if (navigator.clipboard && navigator.clipboard.writeText) {
                         navigator.clipboard.writeText(eventLink).then(() => {
@@ -915,15 +915,7 @@ function Events({ onBackToDashboard }) {
               <p className="text-sm font-medium text-gray-700 mb-2">Share to:</p>
               <div className="grid grid-cols-2 gap-2">
                 <a
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.origin + '/events/' + shareEvent.id)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#145dbf] transition-colors text-sm"
-                >
-                  Facebook
-                </a>
-                <a
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin + '/events/' + shareEvent.id)}`}
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin + '/api/share/' + shareEvent.id)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-[#0077B5] text-white rounded-lg hover:bg-[#006399] transition-colors text-sm"
@@ -931,7 +923,15 @@ function Events({ onBackToDashboard }) {
                   LinkedIn
                 </a>
                 <a
-                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.origin + '/events/' + shareEvent.id)}&text=${encodeURIComponent('Check out this event: ' + shareEvent.title)}`}
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.origin + '/api/share/' + shareEvent.id)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#145dbf] transition-colors text-sm"
+                >
+                  Facebook
+                </a>
+                <a
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.origin + '/api/share/' + shareEvent.id)}&text=${encodeURIComponent('Check out this event: ' + shareEvent.title)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm"
@@ -939,7 +939,7 @@ function Events({ onBackToDashboard }) {
                   X
                 </a>
                 <a
-                  href={`mailto:?subject=${encodeURIComponent('Check out this event: ' + shareEvent.title)}&body=${encodeURIComponent('I thought you might be interested in this event:\n\n' + shareEvent.title + '\n\n' + window.location.origin + '/events/' + shareEvent.id)}`}
+                  href={`mailto:?subject=${encodeURIComponent('Check out this event: ' + shareEvent.title)}&body=${encodeURIComponent('I thought you might be interested in this event:\n\n' + shareEvent.title + '\n\n' + window.location.origin + '/api/share/' + shareEvent.id)}`}
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
                 >
                   Email
