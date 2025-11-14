@@ -496,7 +496,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
       // Check if connection became mutual
       if (connectionResult === 'connected') {
-        // Mutual connection! Add to saved connections
+        // Mutual connection! Remove from pending and add to saved
+        setPendingConnections(prev => prev.filter(c => c.id !== person.id));
         setSavedConnections(prev => [...prev, {
           id: person.id,
           email: person.email,
@@ -520,7 +521,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
           photo: person.photo,
           initials: person.initials,
           connectionScore: person.connectionScore,
-          professionalInterests: person.professionalInterests
+          professionalInterests: person.professionalInterests,
+          initiatedByUserId: currentUserId  // Track who initiated for correct UI display
         }]);
       }
 
