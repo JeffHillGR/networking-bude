@@ -569,15 +569,7 @@ function EventDetail() {
       {/* Top banner matching site header - spans full width */}
       <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
         <span className="font-medium">
-          Welcome to Networking BudE • <button
-          onClick={() => {
-            localStorage.removeItem('onboardingCompleted');
-            window.location.href = '/';
-          }}
-          className="underline hover:no-underline font-medium"
-        >
-          Reset to Onboarding
-        </button>
+          Welcome to Networking BudE
         </span>
       </div>
 
