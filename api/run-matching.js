@@ -105,14 +105,14 @@ module.exports = async (req, res) => {
 
       // Delete existing matches for this user
       await supabase
-        .from('matches')
+        .from('connection_flow')
         .delete()
         .eq('user_id', dbUser.id);
 
       // Insert new matches
       if (userMatches.length > 0) {
         const { error: insertError } = await supabase
-          .from('matches')
+          .from('connection_flow')
           .insert(userMatches);
 
         if (!insertError) {

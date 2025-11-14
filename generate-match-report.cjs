@@ -20,7 +20,7 @@ async function generateMatchReport() {
   try {
     // Get all matches with user details
     const { data: matches, error } = await supabase
-      .from('matches')
+      .from('connection_flow')
       .select(`
         *,
         user:users!matches_user_id_fkey(first_name, last_name),

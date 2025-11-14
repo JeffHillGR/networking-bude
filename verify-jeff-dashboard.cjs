@@ -18,7 +18,7 @@ async function verify() {
 
   // Check matches with status 'recommended'
   const { data: matches, error } = await supabase
-    .from('matches')
+    .from('connection_flow')
     .select(`
       matched_user_id,
       compatibility_score,

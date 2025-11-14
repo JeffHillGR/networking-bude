@@ -19,7 +19,7 @@ async function checkMatches() {
   }
 
   const { data: matches, count } = await supabase
-    .from('matches')
+    .from('connection_flow')
     .select('*', { count: 'exact' })
     .eq('user_id', user.id)
     .eq('status', 'recommended');

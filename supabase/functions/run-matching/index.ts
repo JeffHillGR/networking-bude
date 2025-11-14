@@ -207,14 +207,14 @@ serve(async (req) => {
 
       // Delete existing matches for this user
       await supabaseClient
-        .from('matches')
+        .from('connection_flow')
         .delete()
         .eq('user_id', dbUser.id)
 
       // Insert new matches
       if (userMatches.length > 0) {
         const { error: insertError } = await supabaseClient
-          .from('matches')
+          .from('connection_flow')
           .insert(userMatches)
 
         if (insertError) {

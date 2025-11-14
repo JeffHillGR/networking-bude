@@ -70,7 +70,7 @@ async function runMatchingAlgorithm() {
 
     // Delete existing matches
     const { error: deleteError } = await supabase
-      .from('matches')
+      .from('connection_flow')
       .delete()
       .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
 
@@ -134,7 +134,7 @@ async function runMatchingAlgorithm() {
       } else if (userMatches.length > 0) {
         // Insert matches for this user
         const { error: insertError } = await supabase
-          .from('matches')
+          .from('connection_flow')
           .insert(userMatches);
 
         if (insertError) {

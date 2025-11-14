@@ -21,7 +21,7 @@ async function showMatches(email) {
 
   // Get matches
   const { data: matches } = await supabase
-    .from('matches')
+    .from('connection_flow')
     .select(`
       compatibility_score,
       matched_user:users!matches_matched_user_id_fkey(

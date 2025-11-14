@@ -70,7 +70,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
         // Reset stale pending connections (10+ days old)
         await supabase
-          .from('matches')
+          .from('connection_flow')
           .update({
             status: 'recommended',
             pending_since: null
@@ -81,7 +81,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
         // Reset "perhaps" connections after 1 week (7 days)
         await supabase
-          .from('matches')
+          .from('connection_flow')
           .update({
             status: 'recommended',
             perhaps_since: null
@@ -92,14 +92,14 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
         // Fetch all matches where current user is user_id (their recommendations)
         const { data: allMatchesData, error: matchesError } = await supabase
-          .from('matches')
+          .from('connection_flow')
           .select(`
             matched_user_id,
             compatibility_score,
             status,
             updated_at,
             initiated_by_user_id,
-            matched_user:users!matches_matched_user_id_fkey (
+            matched_user:users!connection_flow_matched_user_id_fkey (
               first_name,
               last_name,
               name,
@@ -369,7 +369,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
     try {
       // First, check the current status - need to check BOTH directions since only one row exists
       const { data: matches, error: fetchError } = await supabase
-        .from('matches')
+        .from('connection_flow')
         .select('status, user_id, matched_user_id, initiated_by_user_id')
         .or(`and(user_id.eq.${currentUserId},matched_user_id.eq.${person.id}),and(user_id.eq.${person.id},matched_user_id.eq.${currentUserId})`);
 
@@ -397,7 +397,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
         // Update Row 1: Current user's row
         const { error: error1 } = await supabase
-          .from('matches')
+          .from('connection_flow')
           .update({ status: 'connected' })
           .eq('user_id', currentUserId)
           .eq('matched_user_id', person.id);
@@ -410,7 +410,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
         // Update Row 2: Other person's row
         const { error: error2 } = await supabase
-          .from('matches')
+          .from('connection_flow')
           .update({ status: 'connected' })
           .eq('user_id', person.id)
           .eq('matched_user_id', currentUserId);
@@ -433,7 +433,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
         // Row 1: Current user's row (INITIATOR - gets the initiated_by_user_id)
         const { error: error1 } = await supabase
-          .from('matches')
+          .from('connection_flow')
           .update({
             status: 'pending',
             pending_since: new Date().toISOString(),
@@ -449,7 +449,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
         // Row 2: Other person's row (RECEIVER - NO initiated_by_user_id, just pending status)
         const { error: error2 } = await supabase
-          .from('matches')
+          .from('connection_flow')
           .update({
             status: 'pending',
             pending_since: new Date().toISOString()
@@ -561,7 +561,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
     try {
       // Update match status to 'perhaps' with timestamp (hidden for 1 week)
       const { error } = await supabase
-        .from('matches')
+        .from('connection_flow')
         .update({
           status: 'perhaps',
           perhaps_since: new Date().toISOString(), // Track when marked as perhaps
@@ -600,7 +600,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
     try {
       // Update match status to 'passed' in database
       const { error } = await supabase
-        .from('matches')
+        .from('connection_flow')
         .update({
           status: 'passed',
           updated_at: new Date().toISOString()
@@ -1137,7 +1137,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                                   onClick={async () => {
                                     // Remove from saved (update database)
                                     await supabase
-                                      .from('matches')
+                                      .from('connection_flow')
                                       .update({ status: 'recommended' })
                                       .eq('user_id', currentUserId)
                                       .eq('matched_user_id', person.id);
@@ -1310,7 +1310,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                   <button
                     onClick={async () => {
                       await supabase
-                        .from('matches')
+                        .from('connection_flow')
                         .update({ status: 'recommended' })
                         .eq('user_id', currentUserId)
                         .eq('matched_user_id', selectedConnection.id);

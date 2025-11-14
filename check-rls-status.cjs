@@ -31,7 +31,7 @@ async function checkRLS() {
   };
 
   const { data, error } = await supabase
-    .from('matches')
+    .from('connection_flow')
     .insert(testMatch)
     .select();
 
@@ -45,7 +45,7 @@ async function checkRLS() {
 
     // Clean up test record
     await supabase
-      .from('matches')
+      .from('connection_flow')
       .delete()
       .eq('user_id', testMatch.user_id);
 

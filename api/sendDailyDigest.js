@@ -47,7 +47,7 @@ export default async function handler(req, res) {
 
     // Fetch new matches created in last 24 hours
     const { data: newMatches, error: matchesError } = await supabase
-      .from('matches')
+      .from('connection_flow')
       .select('created_at')
       .gte('created_at', yesterdayISO);
 
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
 
     // Fetch connection requests sent in last 24 hours (pending status created recently)
     const { data: connectionRequests, error: connectionsError } = await supabase
-      .from('matches')
+      .from('connection_flow')
       .select('user_id, matched_user_id, created_at, status')
       .eq('status', 'pending')
       .gte('updated_at', yesterdayISO);
@@ -64,7 +64,7 @@ export default async function handler(req, res) {
 
     // Fetch mutual connections made in last 24 hours
     const { data: mutualConnections, error: mutualError } = await supabase
-      .from('matches')
+      .from('connection_flow')
       .select('user_id, matched_user_id, updated_at, status')
       .eq('status', 'connected')
       .gte('updated_at', yesterdayISO);
@@ -78,7 +78,7 @@ export default async function handler(req, res) {
 
     // Get total matches count
     const { count: totalMatches } = await supabase
-      .from('matches')
+      .from('connection_flow')
       .select('*', { count: 'exact', head: true });
 
     // Build email HTML
