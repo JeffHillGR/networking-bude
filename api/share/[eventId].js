@@ -36,12 +36,26 @@ export default async function handler(req, res) {
     const imageUrl = event.image_url || event.image || 'https://www.networkingbude.com/BudE-Color-Logo-Rev.png';
 
     // Format date nicely
-    const eventDate = new Date(event.date).toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    let eventDate;
+    try {
+      eventDate = new Date(event.date).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (e) {
+      eventDate = event.date || 'Date TBD';
+    }
+
+    // Sanitize strings to prevent HTML breaking
+    const sanitize = (str) => {
+      if (!str) return '';
+      return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    };
+
+    const safeTitle = sanitize(event.title);
+    const safeDescription = sanitize(event.short_description || event.description);
 
     const html = `<!DOCTYPE html>
 <html lang="en">
@@ -50,21 +64,21 @@ export default async function handler(req, res) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Primary Meta Tags -->
-  <title>${event.title} | Networking BudE</title>
-  <meta name="title" content="${event.title}">
-  <meta name="description" content="${event.description?.substring(0, 200) || 'Join us for this networking event'}">
+  <title>${safeTitle} | Networking BudE</title>
+  <meta name="title" content="${safeTitle}">
+  <meta name="description" content="${safeDescription.substring(0, 200) || 'Join us for this networking event'}">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="${shareUrl}">
-  <meta property="og:title" content="${event.title}">
-  <meta property="og:description" content="${event.short_description?.substring(0, 200) || event.description?.substring(0, 200) || 'Join us for this networking event'}">
+  <meta property="og:title" content="${safeTitle}">
+  <meta property="og:description" content="${safeDescription.substring(0, 200) || 'Join us for this networking event'}">
   <meta property="og:image" content="${imageUrl}">
   <meta property="og:image:secure_url" content="${imageUrl}">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="${event.title}">
+  <meta property="og:image:alt" content="${safeTitle}">
   <meta property="og:site_name" content="Networking BudE">
   <meta property="og:locale" content="en_US">
 
@@ -77,10 +91,10 @@ export default async function handler(req, res) {
   <meta name="twitter:site" content="@NetworkingBudE">
   <meta name="twitter:creator" content="@NetworkingBudE">
   <meta name="twitter:url" content="${shareUrl}">
-  <meta name="twitter:title" content="${event.title}">
-  <meta name="twitter:description" content="${event.short_description?.substring(0, 200) || event.description?.substring(0, 200) || 'Join us for this networking event'}">
+  <meta name="twitter:title" content="${safeTitle}">
+  <meta name="twitter:description" content="${safeDescription.substring(0, 200) || 'Join us for this networking event'}">
   <meta name="twitter:image" content="${imageUrl}">
-  <meta name="twitter:image:alt" content="${event.title}">
+  <meta name="twitter:image:alt" content="${safeTitle}">
 
   <style>
     body {
@@ -139,24 +153,21 @@ export default async function handler(req, res) {
 
   <!-- JavaScript redirect for real users only -->
   <script>
-    // Comprehensive bot detection - don't redirect social media crawlers
-    var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    var isBot = /(bot|crawler|spider|crawling|facebookexternalhit|WhatsApp|LinkedInBot|Slackbot|Twitterbot|ia_archiver)/i.test(userAgent);
-
-    if (!isBot) {
-      // Real user - redirect after a brief delay to ensure meta tags are read
+    // Redirect real users immediately (social crawlers don't execute JavaScript)
+    // Only redirect if the page is actually visible (not being crawled)
+    if (document.visibilityState !== 'prerender') {
       setTimeout(function() {
         window.location.replace('${eventUrl}');
-      }, 100);
+      }, 50);
     }
   </script>
 </head>
 <body>
   <div class="container">
-    <img src="${imageUrl}" alt="${event.title}">
-    <h1>${event.title}</h1>
+    <img src="${imageUrl}" alt="${safeTitle}">
+    <h1>${safeTitle}</h1>
     <p class="date">${eventDate}</p>
-    <p>${event.description?.substring(0, 200) || 'Join us for this networking event'}${event.description?.length > 200 ? '...' : ''}</p>
+    <p>${safeDescription.substring(0, 200)}${safeDescription.length > 200 ? '...' : ''}</p>
     <a href="${eventUrl}">View Full Event Details</a>
     <p class="redirect-message">Redirecting you to the event page...</p>
   </div>
