@@ -801,14 +801,38 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
     setUploadingBanner(slotNumber);
     try {
+      const slotKey = `slot${slotNumber}`;
+      const existingImageUrl = heroBanners[slotKey]?.image_url;
+
+      // Delete old image if it exists
+      if (existingImageUrl && existingImageUrl.includes('Hero-Banners-Geotagged')) {
+        try {
+          // Extract file path from URL
+          const urlParts = existingImageUrl.split('/storage/v1/object/public/Hero-Banners-Geotagged/');
+          if (urlParts.length > 1) {
+            const oldFilePath = decodeURIComponent(urlParts[1]);
+            await supabase.storage
+              .from('Hero-Banners-Geotagged')
+              .remove([oldFilePath]);
+            console.log('Deleted old banner:', oldFilePath);
+          }
+        } catch (deleteError) {
+          console.warn('Could not delete old banner:', deleteError);
+          // Continue with upload even if delete fails
+        }
+      }
+
+      // Upload new image
       const fileExt = file.name.split('.').pop();
-      const fileName = `hero-banner-${slotNumber}-${Date.now()}.${fileExt}`;
+      const fileName = `hero-banner-slot-${slotNumber}.${fileExt}`;
       const filePath = `hero-banners/${fileName}`;
 
-      // Upload to Supabase Storage
+      // Use upsert to overwrite if file exists
       const { error: uploadError } = await supabase.storage
         .from('Hero-Banners-Geotagged')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          upsert: true // Overwrite if exists
+        });
 
       if (uploadError) throw uploadError;
 
@@ -818,7 +842,6 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
         .getPublicUrl(filePath);
 
       // Update state
-      const slotKey = `slot${slotNumber}`;
       setHeroBanners({
         ...heroBanners,
         [slotKey]: { ...heroBanners[slotKey], image_url: publicUrl }
