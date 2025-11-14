@@ -82,9 +82,6 @@ export default async function handler(req, res) {
   <meta name="twitter:image" content="${imageUrl}">
   <meta name="twitter:image:alt" content="${event.title}">
 
-  <!-- Auto-redirect for real users (not bots) -->
-  <meta http-equiv="refresh" content="0;url=${eventUrl}">
-
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -140,11 +137,17 @@ export default async function handler(req, res) {
     }
   </style>
 
-  <!-- JavaScript redirect as backup -->
+  <!-- JavaScript redirect for real users only -->
   <script>
-    // Only redirect if not a bot
-    if (!/bot|crawler|spider|crawling/i.test(navigator.userAgent)) {
-      window.location.replace('${eventUrl}');
+    // Comprehensive bot detection - don't redirect social media crawlers
+    var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    var isBot = /(bot|crawler|spider|crawling|facebookexternalhit|WhatsApp|LinkedInBot|Slackbot|Twitterbot|ia_archiver)/i.test(userAgent);
+
+    if (!isBot) {
+      // Real user - redirect after a brief delay to ensure meta tags are read
+      setTimeout(function() {
+        window.location.replace('${eventUrl}');
+      }, 100);
     }
   </script>
 </head>
