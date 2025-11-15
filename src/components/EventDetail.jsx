@@ -26,6 +26,7 @@ function EventDetail() {
   const [goingCount, setGoingCount] = useState(0);
   const [goingAttendees, setGoingAttendees] = useState([]);
   const [showGoingList, setShowGoingList] = useState(false);
+  const [showGoingDisclaimer, setShowGoingDisclaimer] = useState(false);
 
   // Track user engagement when viewing event details
   useEffect(() => {
@@ -305,6 +306,10 @@ function EventDetail() {
         if (error) throw error;
         setIsGoing(true);
         setGoingCount(prev => prev + 1);
+
+        // Show disclaimer
+        setShowGoingDisclaimer(true);
+        setTimeout(() => setShowGoingDisclaimer(false), 5000);
 
         // Add to attendees list (fetch user data to display)
         const { data: userData } = await supabase
@@ -665,6 +670,15 @@ function EventDetail() {
                   </div>
                 </div>
 
+                {/* Going Disclaimer */}
+                {showGoingDisclaimer && (
+                  <div className="mb-4 p-3 bg-gray-100 rounded-lg border border-gray-300">
+                    <p className="text-sm text-gray-600 text-center">
+                      This does not register you for the event. Please use the organizer's REGISTER button for registration details.
+                    </p>
+                  </div>
+                )}
+
                 {/* Professional Interest Tags */}
                 <div className="flex flex-wrap gap-2 mb-6">
                   {event.tags.map((tag, index) => (
@@ -756,6 +770,20 @@ function EventDetail() {
                     </div>
                   )}
 
+                  {interestedCount > 0 && (
+                    <div className="flex gap-3">
+                      <Heart className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <div className="font-semibold text-gray-900">{interestedCount} Interested</div>
+                        {connectionsInterestedCount > 0 && (
+                          <div className="text-sm text-gray-600">
+                            {connectionsInterestedCount} Of Your Connections Showed Interest
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {goingCount > 0 && (
                     <div className="flex gap-3">
                       <Check className="w-5 h-5 text-[#009900] flex-shrink-0 mt-0.5" />
@@ -795,20 +823,6 @@ function EventDetail() {
                                 + {goingAttendees.length - 10} more
                               </div>
                             )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {interestedCount > 0 && (
-                    <div className="flex gap-3">
-                      <Heart className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <div className="font-semibold text-gray-900">{interestedCount} Interested</div>
-                        {connectionsInterestedCount > 0 && (
-                          <div className="text-sm text-gray-600">
-                            {connectionsInterestedCount} Of Your Connections Showed Interest
                           </div>
                         )}
                       </div>

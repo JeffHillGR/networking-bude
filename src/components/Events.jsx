@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, MapPin, Calendar, Users, ExternalLink, X, TrendingUp, ArrowLeft, Share2, Heart } from 'lucide-react';
+import { Search, MapPin, Calendar, Users, ExternalLink, X, TrendingUp, ArrowLeft, Share2, Heart, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
 
 function Events({ onBackToDashboard }) {
@@ -24,6 +24,7 @@ function Events({ onBackToDashboard }) {
   const [allEvents, setAllEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
   const [eventInterestCounts, setEventInterestCounts] = useState({});
+  const [eventGoingCounts, setEventGoingCounts] = useState({});
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareEvent, setShareEvent] = useState(null);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -76,12 +77,13 @@ function Events({ onBackToDashboard }) {
 
         if (error) throw error;
 
-        // Load interested counts for all events (likes + registration clicks)
+        // Load interested counts and going counts for all events
         const eventIds = data.map(e => e.id);
         let counts = {};
+        let goingCounts = {};
 
         if (eventIds.length > 0) {
-          const [likesResult, clicksResult] = await Promise.all([
+          const [likesResult, clicksResult, attendeesResult] = await Promise.all([
             supabase
               .from('event_likes')
               .select('event_id')
@@ -89,20 +91,27 @@ function Events({ onBackToDashboard }) {
             supabase
               .from('event_registration_clicks')
               .select('event_id')
+              .in('event_id', eventIds),
+            supabase
+              .from('event_attendees')
+              .select('event_id')
               .in('event_id', eventIds)
+              .eq('status', 'going')
           ]);
 
           // Count unique users interested in each event
           eventIds.forEach(id => {
             const likes = likesResult.data?.filter(l => l.event_id === id).length || 0;
             const clicks = clicksResult.data?.filter(c => c.event_id === id).length || 0;
-            // Note: This counts users who both liked AND clicked as 2
-            // If you want unique users, you'd need to track user_ids
             counts[id] = likes + clicks;
+
+            // Count users going to each event
+            goingCounts[id] = attendeesResult.data?.filter(a => a.event_id === id).length || 0;
           });
         }
 
         setEventInterestCounts(counts);
+        setEventGoingCounts(goingCounts);
 
         // Transform data to match the expected format
         // Mark as trending if interested count > 5
@@ -314,14 +323,24 @@ function Events({ onBackToDashboard }) {
                           <MapPin className="h-4 w-4" />
                           <span>{event.location}</span>
                         </div>
-                        {eventInterestCounts[event.id] > 0 && (
-                          <div className="flex items-center gap-2">
-                            <Heart className="h-4 w-4 text-red-500" />
-                            <span className="text-gray-700 font-medium">
-                              {eventInterestCounts[event.id]} Interested
-                            </span>
-                          </div>
-                        )}
+                        <div className="flex items-center gap-4">
+                          {eventInterestCounts[event.id] > 0 && (
+                            <div className="flex items-center gap-2">
+                              <Heart className="h-4 w-4 text-red-500" />
+                              <span className="text-gray-700 font-medium">
+                                {eventInterestCounts[event.id]} Interested
+                              </span>
+                            </div>
+                          )}
+                          {eventGoingCounts[event.id] > 0 && (
+                            <div className="flex items-center gap-2">
+                              <Check className="h-4 w-4 text-[#009900]" />
+                              <span className="text-[#009900] font-medium">
+                                {eventGoingCounts[event.id]} Going
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <div className="flex justify-between items-center">
                         <button
@@ -404,6 +423,14 @@ function Events({ onBackToDashboard }) {
                               <Heart className="h-4 w-4 flex-shrink-0 text-red-500" />
                               <span className="truncate text-gray-700 font-medium">
                                 {eventInterestCounts[event.id]} Interested
+                              </span>
+                            </div>
+                          )}
+                          {eventGoingCounts[event.id] > 0 && (
+                            <div className="flex items-center gap-2">
+                              <Check className="h-4 w-4 flex-shrink-0 text-[#009900]" />
+                              <span className="truncate text-[#009900] font-medium">
+                                {eventGoingCounts[event.id]} Going
                               </span>
                             </div>
                           )}
