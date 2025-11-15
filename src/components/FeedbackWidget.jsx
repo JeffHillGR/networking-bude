@@ -12,23 +12,23 @@ function FeedbackWidget({ onOpenFeedback }) {
         <Lightbulb className="w-5 h-5" />
       </button>
 
-      {/* Desktop: Tab on right edge - much smaller */}
+      {/* Desktop: Tab on right edge */}
       <div className="hidden md:block fixed right-0 bottom-6 z-40">
         <button
           onClick={onOpenFeedback}
           className="bg-[#D0ED00] text-gray-900 shadow-md hover:shadow-lg transition-all duration-200 border-2 border-[#D0ED00] border-r-0 flex items-center justify-center group hover:-translate-x-1"
           style={{
-            borderTopLeftRadius: '6px',
-            borderBottomLeftRadius: '6px',
+            borderTopLeftRadius: '8px',
+            borderBottomLeftRadius: '8px',
             writingMode: 'vertical-rl',
             textOrientation: 'mixed',
-            padding: '8px 6px'
+            padding: '12px 8px'
           }}
           aria-label="Give Feedback"
         >
-          <div className="flex flex-col items-center gap-1">
-            <Lightbulb className="w-3 h-3" style={{ transform: 'rotate(90deg)' }} />
-            <span className="font-semibold text-[10px] tracking-wide">
+          <div className="flex flex-col items-center gap-2">
+            <Lightbulb className="w-4 h-4" style={{ transform: 'rotate(90deg)' }} />
+            <span className="font-semibold text-xs tracking-wide">
               FEEDBACK
             </span>
           </div>
