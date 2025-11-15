@@ -929,7 +929,6 @@ function EventDetail() {
                   }}
                 />
                 <div className="text-center relative z-10">
-                  <p className="text-gray-700 font-bold text-lg">Banner Ad Spot: Click to Inquire</p>
                 </div>
               </div>
             </div>

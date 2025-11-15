@@ -858,8 +858,6 @@ const getGreeting = () => {
                       }}
                     />
                     <div className="text-center relative z-10">
-                      <p className="text-gray-700 font-bold text-base">Banner Ad Spot: Click to Inquire</p>
-                      <p className="text-gray-600 text-sm mt-1">Recommended: 1200×180px</p>
                     </div>
                   </div>
                 );
