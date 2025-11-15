@@ -14,6 +14,9 @@ function Messages({ onBackToDashboard }) {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [showMobileChat, setShowMobileChat] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [reportSubmitting, setReportSubmitting] = useState(false);
   const messagesEndRef = useRef(null);
 
   // Scroll to bottom of messages
@@ -266,6 +269,34 @@ function Messages({ onBackToDashboard }) {
     }
   };
 
+  // Handle report user submission
+  const handleReportUser = async () => {
+    if (!reportReason.trim() || !selectedConversation || !user || reportSubmitting) return;
+
+    setReportSubmitting(true);
+
+    try {
+      const { error } = await supabase
+        .from('user_reports')
+        .insert({
+          reporter_id: user.id,
+          reported_user_id: selectedConversation.otherUserId,
+          reason: reportReason.trim()
+        });
+
+      if (error) throw error;
+
+      alert('Report submitted successfully. Thank you for helping keep our community safe.');
+      setShowReportModal(false);
+      setReportReason('');
+    } catch (error) {
+      console.error('Error submitting report:', error);
+      alert(`Failed to submit report: ${error.message || 'Please try again.'}`);
+    } finally {
+      setReportSubmitting(false);
+    }
+  };
+
   // Format timestamp
   const formatTimestamp = (timestamp) => {
     if (!timestamp) return '';
@@ -480,7 +511,7 @@ function Messages({ onBackToDashboard }) {
                       <div className="border-t border-gray-200 my-1"></div>
                       <button
                         onClick={() => {
-                          console.log('Report user');
+                          setShowReportModal(true);
                           setShowOptionsMenu(false);
                         }}
                         className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors"
@@ -572,6 +603,47 @@ function Messages({ onBackToDashboard }) {
           </div>
         )}
       </div>
+
+      {/* Report User Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowReportModal(false)}>
+          <div className="bg-white rounded-lg p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-900">Report User</h2>
+              <button onClick={() => setShowReportModal(false)} className="text-gray-400 hover:text-gray-600">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <p className="text-sm text-gray-600 mb-4">
+              Please describe why you're reporting {selectedConversation?.name}. This helps us maintain a safe community.
+            </p>
+            <textarea
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+              rows={4}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
+              placeholder="Describe the issue..."
+            />
+            <div className="flex gap-3 mt-4">
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReportUser}
+                disabled={!reportReason.trim() || reportSubmitting}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {reportSubmitting ? 'Submitting...' : 'Submit Report'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

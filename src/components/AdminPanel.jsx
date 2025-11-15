@@ -12,6 +12,7 @@ function AdminPanel() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [unreviewedReportsCount, setUnreviewedReportsCount] = useState(0);
   const [ads, setAds] = useState({
     eventsSidebar1: JSON.parse(localStorage.getItem('ad_eventsSidebar1') || 'null'),
     eventsSidebar2: JSON.parse(localStorage.getItem('ad_eventsSidebar2') || 'null'),
@@ -58,6 +59,31 @@ function AdminPanel() {
     };
     checkAuth();
   }, []);
+
+  // Fetch unreviewed reports count
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const fetchUnreviewedCount = async () => {
+      try {
+        const { count, error } = await supabase
+          .from('user_reports')
+          .select('*', { count: 'exact', head: true })
+          .eq('reviewed', false);
+
+        if (error) throw error;
+        setUnreviewedReportsCount(count || 0);
+      } catch (error) {
+        console.error('Error fetching unreviewed reports count:', error);
+      }
+    };
+
+    fetchUnreviewedCount();
+
+    // Refresh count every 30 seconds
+    const interval = setInterval(fetchUnreviewedCount, 30000);
+    return () => clearInterval(interval);
+  }, [isAdmin]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -268,13 +294,18 @@ function AdminPanel() {
             </button>
             <button
               onClick={() => setActiveTab('moderation')}
-              className={`px-4 py-4 font-semibold border-b-2 transition-colors ${
+              className={`px-4 py-4 font-semibold border-b-2 transition-colors relative ${
                 activeTab === 'moderation'
                   ? 'border-green-600 text-green-600'
                   : 'border-transparent text-gray-600 hover:text-gray-900'
               }`}
             >
               Moderation
+              {unreviewedReportsCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {unreviewedReportsCount > 9 ? '9+' : unreviewedReportsCount}
+                </span>
+              )}
             </button>
           </div>
         </div>
@@ -299,7 +330,7 @@ function AdminPanel() {
           />
         )}
         {activeTab === 'resources' && <ResourcesInsightsTab />}
-        {activeTab === 'moderation' && <ModerationTab />}
+        {activeTab === 'moderation' && <ModerationTab onReportReviewed={() => setUnreviewedReportsCount(prev => Math.max(0, prev - 1))} />}
       </div>
     </div>
   );
@@ -2221,39 +2252,156 @@ function ContentSlotEditor({ content, onUpdate }) {
   );
 }
 
-function ModerationTab() {
+function ModerationTab({ onReportReviewed }) {
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showReviewed, setShowReviewed] = useState(false);
+  const [reviewingId, setReviewingId] = useState(null);
+
+  // Fetch reports
+  useEffect(() => {
+    fetchReports();
+  }, [showReviewed]);
+
+  const fetchReports = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('user_reports')
+        .select(`
+          *,
+          reporter:reporter_id (name, email),
+          reported_user:reported_user_id (name, email)
+        `)
+        .eq('reviewed', showReviewed)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setReports(data || []);
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMarkAsReviewed = async (reportId) => {
+    setReviewingId(reportId);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const adminUserId = sessionData?.session?.user?.id;
+
+      const { error } = await supabase
+        .from('user_reports')
+        .update({
+          reviewed: true,
+          reviewed_at: new Date().toISOString(),
+          reviewed_by: adminUserId
+        })
+        .eq('id', reportId);
+
+      if (error) throw error;
+
+      // Remove from list
+      setReports(prev => prev.filter(r => r.id !== reportId));
+
+      // Notify parent to update count
+      if (onReportReviewed) onReportReviewed();
+
+      alert('Report marked as reviewed');
+    } catch (error) {
+      console.error('Error marking report as reviewed:', error);
+      alert('Failed to mark as reviewed');
+    } finally {
+      setReviewingId(null);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold mb-6">Moderation & Messages</h2>
-      
-      {/* Reported Content Section */}
-      <div className="bg-white rounded-lg p-6 border border-gray-200">
-        <h3 className="text-xl font-semibold mb-4">Reported Content</h3>
-        <p className="text-gray-600 mb-4">Review and moderate reported users, messages, or content</p>
-        <div className="bg-gray-100 p-8 rounded text-center text-gray-500">
-          <p>No reports at this time</p>
-          <p className="text-sm mt-2">Reported content will appear here for review</p>
-        </div>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold">User Reports</h2>
+        <button
+          onClick={() => setShowReviewed(!showReviewed)}
+          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+        >
+          {showReviewed ? 'Show Unreviewed' : 'Show Reviewed'}
+        </button>
       </div>
 
-      {/* Messages Section */}
+      {/* Reported Users Section */}
       <div className="bg-white rounded-lg p-6 border border-gray-200">
-        <h3 className="text-xl font-semibold mb-4">User Messages</h3>
-        <p className="text-gray-600 mb-4">View and monitor user-to-user messages if needed</p>
-        <div className="bg-gray-100 p-8 rounded text-center text-gray-500">
-          <p>Message monitoring interface</p>
-          <p className="text-sm mt-2">Access to user messages for moderation purposes</p>
-        </div>
-      </div>
+        <h3 className="text-xl font-semibold mb-4">
+          {showReviewed ? 'Reviewed Reports' : 'Unreviewed Reports'}
+        </h3>
 
-      {/* User Management */}
-      <div className="bg-white rounded-lg p-6 border border-gray-200">
-        <h3 className="text-xl font-semibold mb-4">User Management</h3>
-        <p className="text-gray-600 mb-4">Search and manage user accounts</p>
-        <div className="bg-gray-100 p-8 rounded text-center text-gray-500">
-          <p>User search and management tools</p>
-          <p className="text-sm mt-2">Ban, suspend, or manage user accounts</p>
-        </div>
+        {loading ? (
+          <div className="bg-gray-100 p-8 rounded text-center text-gray-500">
+            <p>Loading reports...</p>
+          </div>
+        ) : reports.length === 0 ? (
+          <div className="bg-gray-100 p-8 rounded text-center text-gray-500">
+            <p>No {showReviewed ? 'reviewed' : 'unreviewed'} reports</p>
+            <p className="text-sm mt-2">
+              {showReviewed
+                ? 'All reviewed reports will appear here'
+                : 'User reports will appear here for review'}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {reports.map((report) => (
+              <div key={report.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-semibold text-gray-900">
+                        {report.reporter?.name || 'Unknown User'}
+                      </span>
+                      <span className="text-gray-500">reported</span>
+                      <span className="font-semibold text-red-600">
+                        {report.reported_user?.name || 'Unknown User'}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">
+                      <span className="font-medium">Reason:</span> {report.reason}
+                    </p>
+                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                      <span>Reporter: {report.reporter?.email}</span>
+                      <span>Reported: {report.reported_user?.email}</span>
+                      <span>{formatDate(report.created_at)}</span>
+                    </div>
+                    {report.reviewed && report.reviewed_at && (
+                      <p className="text-xs text-green-600 mt-2">
+                        ✓ Reviewed on {formatDate(report.reviewed_at)}
+                      </p>
+                    )}
+                  </div>
+                  {!showReviewed && (
+                    <button
+                      onClick={() => handleMarkAsReviewed(report.id)}
+                      disabled={reviewingId === report.id}
+                      className="ml-4 px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {reviewingId === report.id ? 'Reviewing...' : 'Mark as Reviewed'}
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
