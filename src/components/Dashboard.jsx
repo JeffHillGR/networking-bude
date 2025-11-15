@@ -1324,98 +1324,98 @@ default:
       {/* Beta Feedback Form Modal */}
       {showFeedbackModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => !feedbackSubmitted && setShowFeedbackModal(false)}>
-          <div className="bg-white rounded-lg p-4 md:p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg p-4 md:p-5 max-w-lg w-full max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             {feedbackSubmitted ? (
-              <div className="text-center py-12">
-                <div className="mb-6">
-                  <svg className="w-20 h-20 mx-auto text-[#009900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="text-center py-8">
+                <div className="mb-4">
+                  <svg className="w-16 h-16 mx-auto text-[#009900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">Thank You!</h2>
-                <p className="text-lg text-gray-600 mb-2">Your feedback has been submitted successfully.</p>
-                <p className="text-gray-500">This helps us make BudE better for everyone!</p>
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">Thank You!</h2>
+                <p className="text-base text-gray-600 mb-2">Your feedback has been submitted successfully.</p>
+                <p className="text-sm text-gray-500">This helps us make BudE better for everyone!</p>
               </div>
             ) : (
               <>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-2xl font-bold text-gray-900">Share Feedback</h2>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-xl font-bold text-gray-900">Share Feedback</h2>
                   <button onClick={() => setShowFeedbackModal(false)} className="text-gray-400 hover:text-gray-600">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
-                <p className="text-gray-600 mb-6">We'd love to hear from you! Share your thoughts below.</p>
-                <form onSubmit={handleSubmitFeedback} className="space-y-5">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <p className="text-sm text-gray-600 mb-4">We'd love to hear from you! Share your thoughts below.</p>
+                <form onSubmit={handleSubmitFeedback} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Name (optional)</label>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Name (optional)</label>
                       <input
                         type="text"
                         value={feedbackData.name}
                         onChange={(e) => setFeedbackData({...feedbackData, name: e.target.value})}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                         placeholder="Your name"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email (optional)</label>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Email (optional)</label>
                       <input
                         type="email"
                         value={feedbackData.email}
                         onChange={(e) => setFeedbackData({...feedbackData, email: e.target.value})}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                         placeholder="your@email.com"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                      <span className="text-xl">👍</span>
+                    <label className="flex items-center gap-2 text-xs font-medium text-gray-700 mb-1">
+                      <span className="text-base">👍</span>
                       I love these features
                     </label>
                     <textarea
                       value={feedbackData.loveFeatures}
                       onChange={(e) => setFeedbackData({...feedbackData, loveFeatures: e.target.value})}
-                      rows={3}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
+                      rows={2}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
                       placeholder="Tell us what you love about BudE..."
                     />
                   </div>
 
                   <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                      <span className="text-xl">💡</span>
+                    <label className="flex items-center gap-2 text-xs font-medium text-gray-700 mb-1">
+                      <span className="text-base">💡</span>
                       These features could use some work
                     </label>
                     <textarea
                       value={feedbackData.improveFeatures}
                       onChange={(e) => setFeedbackData({...feedbackData, improveFeatures: e.target.value})}
-                      rows={3}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
+                      rows={2}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
                       placeholder="What could we improve?"
                     />
                   </div>
 
                   <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                      <span className="text-xl">❤️</span>
+                    <label className="flex items-center gap-2 text-xs font-medium text-gray-700 mb-1">
+                      <span className="text-base">❤️</span>
                       I'd love to see this feature
                     </label>
                     <textarea
                       value={feedbackData.newFeatures}
                       onChange={(e) => setFeedbackData({...feedbackData, newFeatures: e.target.value})}
-                      rows={3}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
+                      rows={2}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
                       placeholder="What new features would you like?"
                     />
                   </div>
 
-                  <div className="flex gap-3 pt-4">
-                    <button type="button" onClick={() => setShowFeedbackModal(false)} className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">Cancel</button>
-                    <button type="submit" className="flex-1 px-4 py-3 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00]">Submit Feedback</button>
+                  <div className="flex gap-2 pt-2">
+                    <button type="button" onClick={() => setShowFeedbackModal(false)} className="flex-1 px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">Cancel</button>
+                    <button type="submit" className="flex-1 px-3 py-2 text-sm bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]">Submit Feedback</button>
                   </div>
                 </form>
               </>

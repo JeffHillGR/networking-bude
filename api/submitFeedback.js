@@ -1,6 +1,4 @@
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { google } from 'googleapis';
 
 export default async function handler(req, res) {
   // Only allow POST requests
@@ -11,40 +9,74 @@ export default async function handler(req, res) {
   try {
     const { name, email, loveFeatures, improveFeatures, newFeatures } = req.body;
 
-    // Build email content
-    const emailHtml = `
-      <h2>New Feedback from Networking BudE</h2>
+    // Check if Google API credentials are configured
+    if (!process.env.GOOGLE_CLIENT_EMAIL || !process.env.GOOGLE_PRIVATE_KEY || !process.env.GOOGLE_SHEET_ID) {
+      console.error('Google Sheets API not configured');
+      return res.status(500).json({
+        success: false,
+        message: 'Feedback service not configured'
+      });
+    }
 
-      <p><strong>From:</strong> ${name || 'Anonymous'} ${email ? `(${email})` : ''}</p>
+    // Set up Google Sheets API
+    const auth = new google.auth.GoogleAuth({
+      credentials: {
+        client_email: process.env.GOOGLE_CLIENT_EMAIL,
+        private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      },
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
 
-      <hr/>
+    const sheets = google.sheets({ version: 'v4', auth });
+    const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 
-      ${loveFeatures ? `
-        <h3>👍 I love these features:</h3>
-        <p>${loveFeatures}</p>
-      ` : ''}
+    // Find the next empty column by checking row 1
+    const checkRange = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: 'Beta_Feedback!1:1', // Get all values in row 1
+    });
 
-      ${improveFeatures ? `
-        <h3>💡 These features could use some work:</h3>
-        <p>${improveFeatures}</p>
-      ` : ''}
+    // Find the next empty column (B is index 1, C is index 2, etc.)
+    const existingColumns = checkRange.data.values?.[0] || [];
+    const nextColumnIndex = existingColumns.length > 0 ? existingColumns.length : 1; // Start at B (index 1) if empty
+    const nextColumnLetter = String.fromCharCode(65 + nextColumnIndex); // Convert index to letter (B, C, D, etc.)
 
-      ${newFeatures ? `
-        <h3>❤️ I'd love to see this feature:</h3>
-        <p>${newFeatures}</p>
-      ` : ''}
+    // Format timestamp
+    const timestamp = new Date().toLocaleString('en-US', {
+      timeZone: 'America/Detroit',
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    });
 
-      <hr/>
-      <p><em>Submitted: ${new Date().toLocaleString('en-US', { timeZone: 'America/Detroit' })}</em></p>
-    `;
+    // Prepare column data - simplified 3-field feedback form
+    const columnData = [
+      [name || 'Anonymous'],                          // Row 1 - Name
+      [email || ''],                                  // Row 2 - Email
+      [timestamp],                                    // Row 3 - Timestamp
+      [''],                                           // Row 4 - empty
+      ['👍 I love these features:'],                 // Row 5 - Section header
+      [loveFeatures || ''],                          // Row 6 - Answer
+      [''],                                           // Row 7 - empty
+      ['💡 These features could use some work:'],    // Row 8 - Section header
+      [improveFeatures || ''],                       // Row 9 - Answer
+      [''],                                           // Row 10 - empty
+      ['❤️ I\'d love to see this feature:'],        // Row 11 - Section header
+      [newFeatures || ''],                           // Row 12 - Answer
+    ];
 
-    // Send email via Resend
-    await resend.emails.send({
-      from: 'Networking BudE Feedback <noreply@networkingbude.com>',
-      to: 'grjeff@gmail.com',
-      subject: `Feedback from ${name || 'Anonymous User'}`,
-      html: emailHtml,
-      replyTo: email || undefined,
+    // Write to the next available column starting from row 1
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `Beta_Feedback!${nextColumnLetter}1:${nextColumnLetter}12`,
+      valueInputOption: 'RAW',
+      resource: {
+        values: columnData,
+      },
     });
 
     return res.status(200).json({
