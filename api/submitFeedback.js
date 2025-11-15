@@ -33,7 +33,7 @@ export default async function handler(req, res) {
     // Find the next empty column by checking row 1
     const checkRange = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'Beta_Feedback!1:1', // Get all values in row 1
+      range: 'Feedback_Form!1:1', // Get all values in row 1
     });
 
     // Find the next empty column (B is index 1, C is index 2, etc.)
@@ -53,26 +53,20 @@ export default async function handler(req, res) {
       hour12: true
     });
 
-    // Prepare column data - simplified 3-field feedback form
+    // Prepare column data - each new record goes in next column (B, C, D, etc.)
     const columnData = [
-      [name || 'Anonymous'],                          // Row 1 - Name
-      [email || ''],                                  // Row 2 - Email
-      [timestamp],                                    // Row 3 - Timestamp
-      [''],                                           // Row 4 - empty
-      ['👍 I love these features:'],                 // Row 5 - Section header
-      [loveFeatures || ''],                          // Row 6 - Answer
-      [''],                                           // Row 7 - empty
-      ['💡 These features could use some work:'],    // Row 8 - Section header
-      [improveFeatures || ''],                       // Row 9 - Answer
-      [''],                                           // Row 10 - empty
-      ['❤️ I\'d love to see this feature:'],        // Row 11 - Section header
-      [newFeatures || ''],                           // Row 12 - Answer
+      [name || 'Anonymous'],                // A1 - Name
+      [email || ''],                        // A2 - Email
+      [timestamp],                          // A3 - Timestamp
+      [loveFeatures || ''],                // A4 - I love these features
+      [improveFeatures || ''],             // A5 - These features could use work
+      [newFeatures || ''],                 // A6 - I'd love to see these features
     ];
 
     // Write to the next available column starting from row 1
     await sheets.spreadsheets.values.update({
       spreadsheetId,
-      range: `Beta_Feedback!${nextColumnLetter}1:${nextColumnLetter}12`,
+      range: `Feedback_Form!${nextColumnLetter}1:${nextColumnLetter}6`,
       valueInputOption: 'RAW',
       resource: {
         values: columnData,
