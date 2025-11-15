@@ -643,14 +643,18 @@ function EventDetail() {
                     </button>
                     <button
                       onClick={handleToggleGoing}
-                      className={`p-2 rounded-full border transition-colors ${
+                      className={`p-2 rounded-full border transition-all group relative ${
                         isGoing
                           ? 'bg-green-50 border-[#009900] text-[#009900]'
-                          : 'border-gray-300 text-gray-600 hover:border-gray-400'
+                          : 'border-gray-300 text-gray-600 hover:border-[#009900] hover:bg-green-50 hover:text-[#009900] hover:scale-110'
                       }`}
                       title={isGoing ? 'Not going' : "I'm going"}
                     >
                       <Check className={`w-5 h-5 ${isGoing ? 'stroke-2' : ''}`} />
+                      {/* Custom tooltip */}
+                      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-[#009900] text-white text-base font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                        {isGoing ? 'Not going' : "I'm going"}
+                      </span>
                     </button>
                     <button
                       onClick={() => setShowShareModal(true)}
@@ -758,7 +762,7 @@ function EventDetail() {
                       <div className="flex-1">
                         <button
                           onClick={() => setShowGoingList(!showGoingList)}
-                          className="font-semibold text-gray-900 hover:text-[#009900] transition-colors text-left flex items-center gap-2"
+                          className="font-semibold text-[#009900] hover:text-[#007700] transition-colors text-left flex items-center gap-2"
                         >
                           {goingCount === 1 ? '1 person is going' : `${goingCount} people are going`}
                           <span className="text-xs text-gray-500">▼</span>
