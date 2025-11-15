@@ -53,23 +53,9 @@ const [contactData, setContactData] = useState({
 const [feedbackData, setFeedbackData] = useState({
   name: '',
   email: '',
-  signUpSmoothness: '',
-  navigationEase: '',
-  confusingSteps: '',
-  visualAppeal: '',
-  brandClarity: '',
-  performance: '',
-  crashesOrBugs: '',
-  usefulFeatures: '',
-  missingFeatures: '',
-  corePurposeUnderstood: '',
-  valueProposition: '',
-  solvesRealProblem: '',
-  wouldUseOrRecommend: '',
-  reasonToComeBack: '',
-  overallSatisfaction: '',
-  overallRating: '',
-  netPromoterScore: ''
+  loveFeatures: '',
+  improveFeatures: '',
+  newFeatures: ''
 });
 
 // Format phone number as user types: (XXX) XXX-XXXX
@@ -107,35 +93,21 @@ const handleSubmitFeedback = async (e) => {
       throw new Error(errorData.message || 'Failed to submit feedback');
     }
 
-    // Show success message in modal
+    // Show success message
     setFeedbackSubmitted(true);
 
-    // Reset form after 3 seconds and close modal
+    // Reset form after 2 seconds and close modal
     setTimeout(() => {
       setFeedbackSubmitted(false);
       setShowFeedbackModal(false);
       setFeedbackData({
         name: '',
         email: '',
-        signUpSmoothness: '',
-        navigationEase: '',
-        confusingSteps: '',
-        visualAppeal: '',
-        brandClarity: '',
-        performance: '',
-        crashesOrBugs: '',
-        usefulFeatures: '',
-        missingFeatures: '',
-        corePurposeUnderstood: '',
-        valueProposition: '',
-        solvesRealProblem: '',
-        wouldUseOrRecommend: '',
-        reasonToComeBack: '',
-        overallSatisfaction: '',
-        overallRating: '',
-        netPromoterScore: ''
+        loveFeatures: '',
+        improveFeatures: '',
+        newFeatures: ''
       });
-    }, 3000);
+    }, 2000);
   } catch (error) {
     console.error('Error submitting feedback:', error);
 
@@ -1374,121 +1346,73 @@ default:
                     </svg>
                   </button>
                 </div>
-                <p className="text-gray-600 mb-4">Your feedback is invaluable in helping us create the best networking platform.</p>
-                <form onSubmit={handleSubmitFeedback} className="space-y-4">
+                <p className="text-gray-600 mb-6">We'd love to hear from you! Share your thoughts below.</p>
+                <form onSubmit={handleSubmitFeedback} className="space-y-5">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-                      <input type="text" required value={feedbackData.name} onChange={(e) => setFeedbackData({...feedbackData, name: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Name (optional)</label>
+                      <input
+                        type="text"
+                        value={feedbackData.name}
+                        onChange={(e) => setFeedbackData({...feedbackData, name: e.target.value})}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                        placeholder="Your name"
+                      />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                      <input type="email" required value={feedbackData.email} onChange={(e) => setFeedbackData({...feedbackData, email: e.target.value})} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent" />
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email (optional)</label>
+                      <input
+                        type="email"
+                        value={feedbackData.email}
+                        onChange={(e) => setFeedbackData({...feedbackData, email: e.target.value})}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                        placeholder="your@email.com"
+                      />
                     </div>
                   </div>
+
                   <div>
-                    <h3 className="font-bold text-lg mb-2">Onboarding & First Impressions</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">How smooth was the sign-up or login process?</label>
-                        <textarea value={feedbackData.signUpSmoothness} onChange={(e) => setFeedbackData({...feedbackData, signUpSmoothness: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                    </div>
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                      <span className="text-xl">👍</span>
+                      I love these features
+                    </label>
+                    <textarea
+                      value={feedbackData.loveFeatures}
+                      onChange={(e) => setFeedbackData({...feedbackData, loveFeatures: e.target.value})}
+                      rows={3}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
+                      placeholder="Tell us what you love about BudE..."
+                    />
                   </div>
+
                   <div>
-                    <h3 className="font-bold text-lg mb-2">User Experience (UX)</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">How easy or intuitive is it to navigate the app?</label>
-                        <textarea value={feedbackData.navigationEase} onChange={(e) => setFeedbackData({...feedbackData, navigationEase: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Any steps that felt confusing or frustrating?</label>
-                        <textarea value={feedbackData.confusingSteps} onChange={(e) => setFeedbackData({...feedbackData, confusingSteps: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                    </div>
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                      <span className="text-xl">💡</span>
+                      These features could use some work
+                    </label>
+                    <textarea
+                      value={feedbackData.improveFeatures}
+                      onChange={(e) => setFeedbackData({...feedbackData, improveFeatures: e.target.value})}
+                      rows={3}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
+                      placeholder="What could we improve?"
+                    />
                   </div>
+
                   <div>
-                    <h3 className="font-bold text-lg mb-2">Design & Branding</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Visual appeal of the app (colors, fonts, imagery)</label>
-                        <textarea value={feedbackData.visualAppeal} onChange={(e) => setFeedbackData({...feedbackData, visualAppeal: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Does the brand feel clear, memorable, and consistent?</label>
-                        <textarea value={feedbackData.brandClarity} onChange={(e) => setFeedbackData({...feedbackData, brandClarity: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                    </div>
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                      <span className="text-xl">❤️</span>
+                      I'd love to see this feature
+                    </label>
+                    <textarea
+                      value={feedbackData.newFeatures}
+                      onChange={(e) => setFeedbackData({...feedbackData, newFeatures: e.target.value})}
+                      rows={3}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
+                      placeholder="What new features would you like?"
+                    />
                   </div>
-                  <div>
-                    <h3 className="font-bold text-lg mb-2">Performance & Speed</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Loading times, responsiveness, lag</label>
-                        <textarea value={feedbackData.performance} onChange={(e) => setFeedbackData({...feedbackData, performance: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Any crashes, bugs, or slowdowns?</label>
-                        <textarea value={feedbackData.crashesOrBugs} onChange={(e) => setFeedbackData({...feedbackData, crashesOrBugs: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg mb-2">Features & Functionality</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Which features were most useful or enjoyable?</label>
-                        <textarea value={feedbackData.usefulFeatures} onChange={(e) => setFeedbackData({...feedbackData, usefulFeatures: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Anything missing or not working as expected?</label>
-                        <textarea value={feedbackData.missingFeatures} onChange={(e) => setFeedbackData({...feedbackData, missingFeatures: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg mb-2">Value Proposition & Relevance</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Did you understand the core purpose of the app right away?</label>
-                        <textarea value={feedbackData.corePurposeUnderstood} onChange={(e) => setFeedbackData({...feedbackData, corePurposeUnderstood: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Does the app solve a real problem for you?</label>
-                        <textarea value={feedbackData.solvesRealProblem} onChange={(e) => setFeedbackData({...feedbackData, solvesRealProblem: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Would you realistically use it or recommend it?</label>
-                        <textarea value={feedbackData.wouldUseOrRecommend} onChange={(e) => setFeedbackData({...feedbackData, wouldUseOrRecommend: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Does the app give you a reason to come back?</label>
-                        <textarea value={feedbackData.reasonToComeBack} onChange={(e) => setFeedbackData({...feedbackData, reasonToComeBack: e.target.value})} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent text-sm" />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-lg mb-2">Overall Rating</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">Overall rating (1–10)</label>
-                        <div className="flex flex-wrap gap-2">
-                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
-                            <button key={rating} type="button" onClick={() => setFeedbackData({...feedbackData, overallRating: rating.toString()})} className={`w-12 h-12 rounded-lg font-bold text-lg transition-all ${feedbackData.overallRating === rating.toString() ? 'bg-[#009900] text-white border-2 border-[#D0ED00] shadow-md scale-105' : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-[#009900] hover:bg-gray-50'}`}>{rating}</button>
-                          ))}
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">Would you recommend this app to a friend or colleague? (1-10 scale)</label>
-                        <div className="flex flex-wrap gap-2">
-                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((score) => (
-                            <button key={score} type="button" onClick={() => setFeedbackData({...feedbackData, netPromoterScore: score.toString()})} className={`w-12 h-12 rounded-lg font-bold text-lg transition-all ${feedbackData.netPromoterScore === score.toString() ? 'bg-[#009900] text-white border-2 border-[#D0ED00] shadow-md scale-105' : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-[#009900] hover:bg-gray-50'}`}>{score}</button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+
                   <div className="flex gap-3 pt-4">
                     <button type="button" onClick={() => setShowFeedbackModal(false)} className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">Cancel</button>
                     <button type="submit" className="flex-1 px-4 py-3 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00]">Submit Feedback</button>

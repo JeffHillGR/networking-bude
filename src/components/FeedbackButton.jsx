@@ -6,8 +6,9 @@ export default function FeedbackButton() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    feedback: '',
-    category: 'general'
+    loveFeatures: '',
+    improveFeatures: '',
+    newFeatures: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -17,7 +18,7 @@ export default function FeedbackButton() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/submitQuickFeedback', {
+      const response = await fetch('/api/submitFeedback', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,7 +32,7 @@ export default function FeedbackButton() {
 
       // Show success message
       setShowSuccess(true);
-      setFormData({ name: '', email: '', feedback: '', category: 'general' });
+      setFormData({ name: '', email: '', loveFeatures: '', improveFeatures: '', newFeatures: '' });
 
       // Close modal after 2 seconds
       setTimeout(() => {
@@ -87,65 +88,72 @@ export default function FeedbackButton() {
               ) : (
                 <>
                   <p className="text-gray-600 mb-6">
-                    We'd love to hear your thoughts, ideas, or any issues you're experiencing.
+                    We'd love to hear from you! Share your thoughts below.
                   </p>
 
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Category
-                      </label>
-                      <select
-                        value={formData.category}
-                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                      >
-                        <option value="general">General Feedback</option>
-                        <option value="bug">Bug Report</option>
-                        <option value="feature">Feature Request</option>
-                        <option value="question">Question</option>
-                      </select>
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Name (optional)</label>
+                        <input
+                          type="text"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                          placeholder="Your name"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Email (optional)</label>
+                        <input
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                          placeholder="your@email.com"
+                        />
+                      </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Your Name
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="John Doe"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Your Email
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="john@example.com"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Your Feedback
+                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                        <span className="text-xl">👍</span>
+                        I love these features
                       </label>
                       <textarea
-                        required
-                        value={formData.feedback}
-                        onChange={(e) => setFormData({ ...formData, feedback: e.target.value })}
-                        rows={5}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
-                        placeholder="Tell us what's on your mind..."
+                        value={formData.loveFeatures}
+                        onChange={(e) => setFormData({ ...formData, loveFeatures: e.target.value })}
+                        rows={3}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
+                        placeholder="Tell us what you love about BudE..."
+                      />
+                    </div>
+
+                    <div>
+                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                        <span className="text-xl">💡</span>
+                        These features could use some work
+                      </label>
+                      <textarea
+                        value={formData.improveFeatures}
+                        onChange={(e) => setFormData({ ...formData, improveFeatures: e.target.value })}
+                        rows={3}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
+                        placeholder="What could we improve?"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                        <span className="text-xl">❤️</span>
+                        I'd love to see this feature
+                      </label>
+                      <textarea
+                        value={formData.newFeatures}
+                        onChange={(e) => setFormData({ ...formData, newFeatures: e.target.value })}
+                        rows={3}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
+                        placeholder="What new features would you like?"
                       />
                     </div>
 
