@@ -18,6 +18,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
   const [showMondayBanner, setShowMondayBanner] = useState(false);
   const [connectionLikedEvents, setConnectionLikedEvents] = useState({});
   const [connectionGoingEvents, setConnectionGoingEvents] = useState({});
+  const [sessionDecisionCount, setSessionDecisionCount] = useState(0); // Track decisions THIS session (max 10)
+  const [hasAnyMatchesInDB, setHasAnyMatchesInDB] = useState(true); // Did DB return ANY rows at all?
 
   // localStorage state for tracking actions
   const [passedConnections, setPassedConnections] = useState(() => {
@@ -121,6 +123,9 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
           .order('compatibility_score', { ascending: false });
 
         if (matchesError) throw matchesError;
+
+        // Check if user has ANY matches in DB at all (key for profile overlay)
+        setHasAnyMatchesInDB(allMatchesData && allMatchesData.length > 0);
 
         // Transform Supabase data to component format and separate by status
         const recommended = [];
@@ -312,7 +317,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
         console.log('Loaded going events for connections:', goingEventsMap);
 
         // Only show recommended (perhaps are hidden for 1 week)
-        setConnections(recommended);
+        // Cap recommendations at 10 per session
+        setConnections(recommended.slice(0, 10));
         setPendingConnections(pending);
         setSavedConnections(saved);
         setLoading(false);
@@ -584,7 +590,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
       setConnectionMessage('');
       setSelectedConnection(null);
 
-      // Move to next card
+      // Track session decision and move to next card
+      setSessionDecisionCount(prev => prev + 1); // Track session decisions (max 10)
       nextCard();
 
     } catch (error) {
@@ -631,7 +638,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
       // Remove from local connections array
       setConnections(prev => prev.filter(conn => conn.id !== currentCard.id));
 
-      // Move to next card (person is now hidden for 1 week)
+      // Track session decision and move to next card
+      setSessionDecisionCount(prev => prev + 1); // Track session decisions (max 10)
       nextCard();
     } catch (error) {
       console.error('Error marking as perhaps:', error);
@@ -668,6 +676,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
       // Add to passed connections
       setPassedConnections(prev => [...prev, currentCard.id]);
+      setSessionDecisionCount(prev => prev + 1); // Track session decisions (max 10)
       nextCard();
     } catch (error) {
       console.error('Error passing connection:', error);
@@ -786,8 +795,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                 </div>
               </div>
 
-              {currentCard?.isPlaceholder ? (
-                /* Blurred Placeholder Card */
+              {currentCard?.isPlaceholder || (filteredConnections.length === 0 && hasAnyMatchesInDB) ? (
+                /* Show overlay when no recommendations available OR placeholder card */
                 <div className="relative bg-white rounded-lg shadow-lg overflow-hidden">
                   {/* Blurred Mock Card Content */}
                   <div className="filter blur-sm pointer-events-none">
@@ -820,10 +829,10 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                     </div>
                   </div>
 
-                  {/* Overlay Message - Different message for zero vs few connections */}
+                  {/* Overlay Message - Different message based on match history */}
                   <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-                    {connections.length === 0 ? (
-                      /* Zero connections - encourage profile completion */
+                    {!hasAnyMatchesInDB ? (
+                      /* Never been matched - encourage profile completion */
                       <div className="bg-white rounded-xl p-8 shadow-2xl border-2 border-[#D0ED00] max-w-md mx-4 text-center">
                         <h3 className="text-2xl font-bold text-gray-900 mb-4">
                           Help Us Find Your Compatible Connections
@@ -842,13 +851,16 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                         </button>
                       </div>
                     ) : (
-                      /* Has some connections, just showing placeholders */
+                      /* Has been matched but reviewed all suggestions - polite end message */
                       <div className="bg-white rounded-xl p-8 shadow-2xl border-2 border-[#D0ED00] max-w-md mx-4 text-center">
                         <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                          We're building more connections for you
+                          You've Reviewed Your Suggestions!
                         </h3>
-                        <p className="text-gray-600 text-lg">
-                          Stay tuned!
+                        <p className="text-gray-600 text-base mb-4">
+                          Great job! You've gone through your current batch of recommendations.
+                        </p>
+                        <p className="text-gray-700 text-sm">
+                          Check back later for new connection opportunities, or explore your Pending and Saved connections.
                         </p>
                       </div>
                     )}
