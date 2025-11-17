@@ -8,6 +8,7 @@ export default function BudEOnboarding() {
   const navigate = useNavigate();
   const { signUp, signIn, resetPassword, user } = useAuth();
   const [step, setStep] = useState(0);
+  const [showLandingHero, setShowLandingHero] = useState(true); // NEW: Show full-screen hero first
   const [justSignedUp, setJustSignedUp] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
@@ -19,6 +20,25 @@ export default function BudEOnboarding() {
   const [resetEmail, setResetEmail] = useState('');
   const [resetSuccess, setResetSuccess] = useState(false);
   const [resetError, setResetError] = useState('');
+
+  // Random hero image selection (changes on each page load)
+  // Pick a random index to use for both mobile and desktop
+  const [heroImageIndex] = useState(() => Math.floor(Math.random() * 3));
+
+  const mobileImages = [
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-1.png',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-2.png',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-3.png'
+  ];
+
+  const desktopImages = [
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Landscape-1.png',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Landscape-2-Rev.png',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Landscape-3.png'
+  ];
+
+  const heroImage = mobileImages[heroImageIndex];
+  const heroImageDesktop = desktopImages[heroImageIndex];
 
   // TODO: Re-enable after adding login functionality
   // Redirect already logged-in users to dashboard (but not during signup process)
@@ -298,60 +318,95 @@ export default function BudEOnboarding() {
 />
   );
 
+  // NEW: Full-screen landing page with hero images
+  const renderLandingPage = () => (
+    <div className="relative h-screen w-full flex flex-col bg-white">
+      {/* Top bar - Lime-Green-Lime gradient with "Already a member?" */}
+      <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] px-4 py-1 text-center flex-shrink-0">
+        <button
+          onClick={() => setShowLoginModal(true)}
+          className="text-white font-medium text-sm md:text-base hover:text-gray-100 transition-colors"
+        >
+          Already a Member?
+        </button>
+      </div>
 
- const renderWelcome = () => (
-  <div className="h-full md:min-h-screen flex flex-col md:flex-row">
-    {/* Left side - Images - Hidden on mobile */}
-    <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-green-100 via-yellow-50 to-green-50 px-12 pb-12 items-start justify-end">
-      <div className="relative pt-8">
-        {/* Large phone image */}
-        <div className="flex flex-col items-center">
-          <div className="w-[500px] h-[620px] rounded-3xl overflow-hidden shadow-2xl relative">
-            <img
-              src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Large_crowd_networking_2.jpg"
-              alt="Networking crowd"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <p className="text-sm text-gray-600 mt-4">Networking BudE by The BudE System™</p>
+      {/* Hero image - portrait for mobile, landscape for desktop */}
+      <div className="flex-1 flex items-center justify-center overflow-hidden px-4 py-2">
+        {/* Mobile: Portrait image */}
+        <img
+          src={heroImage}
+          alt="Networking BudE"
+          className="md:hidden max-h-full max-w-full object-contain"
+        />
+        {/* Desktop: Landscape image */}
+        <img
+          src={heroImageDesktop}
+          alt="Networking BudE"
+          className="hidden md:block max-h-full max-w-full object-contain"
+        />
+      </div>
+
+      {/* Bottom bar - White with "Join Now" */}
+      <div className="bg-white px-4 py-2 flex-shrink-0">
+        <div className="flex justify-center">
+          <button
+            onClick={() => setShowLandingHero(false)}
+            className="bg-gray-200 text-[#009900] font-bold text-lg px-10 py-3 rounded-full hover:bg-gray-300 transition-colors"
+          >
+            Join Now
+          </button>
         </div>
       </div>
     </div>
+  );
 
-    {/* Right side - Form - Full width on mobile, half on desktop */}
-    <div className="w-full md:w-1/2 p-4 md:p-8 flex items-center justify-center bg-white overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch', minHeight: '100dvh' }}>
-      <div className="max-w-lg w-full pb-16">
-        <div className="flex justify-center mb-3">
-          <BudELogo />
-        </div>
-        <h1 className="text-2xl md:text-3xl font-bold text-center mb-3">
-          Traditional networking not working<br />for you? Let us help.
-        </h1>
 
-        <h3 className="text-sm md:text-base font-semibold text-center mb-2">Let's set up your profile and find some meaningful connections.</h3>
+ const renderWelcome = () => (
+  <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="max-w-md w-full">
+      {/* BudE Logo */}
+      <div className="flex justify-center mb-6">
+        <img
+          src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png"
+          alt="BudE Logo"
+          className="h-20 w-auto"
+        />
+      </div>
 
-        <div className="w-full h-2 bg-gray-200 rounded-full mb-3">
-          <div className="w-1/3 h-full bg-black rounded-full"></div>
-        </div>
+      {/* Main heading */}
+      <h1 className="text-2xl md:text-3xl font-bold text-center mb-2 text-gray-900">
+        Let's set up your profile
+      </h1>
+      <p className="text-center text-gray-600 mb-6">
+        Find meaningful connections in your community
+      </p>
 
-        <div className="space-y-1.5">
-          <div className="grid grid-cols-2 gap-2">
+      {/* Progress bar */}
+      <div className="w-full h-2 bg-gray-200 rounded-full mb-6">
+        <div className="w-1/3 h-full bg-[#009900] rounded-full"></div>
+      </div>
+
+      {/* Form Card */}
+      <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold mb-0.5">First Name <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-semibold mb-1 text-gray-900">First Name <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 required
-                className="w-full px-2.5 py-1.5 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                 value={formData.firstName}
                 onChange={(e) => handleChange('firstName', e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold mb-0.5">Last Name <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-semibold mb-1 text-gray-900">Last Name <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 required
-                className="w-full px-2.5 py-1.5 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                 value={formData.lastName}
                 onChange={(e) => handleChange('lastName', e.target.value)}
               />
@@ -359,35 +414,35 @@ export default function BudEOnboarding() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-0.5">Preferred Username</label>
+            <label className="block text-sm font-semibold mb-1 text-gray-900">Preferred Username</label>
             <input
               type="text"
-              className="w-full px-2.5 py-1.5 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009900] focus:border-transparent"
               value={formData.username}
               onChange={(e) => handleChange('username', e.target.value)}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-0.5">Email <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-semibold mb-1 text-gray-900">Email <span className="text-red-500">*</span></label>
             <input
               type="email"
               required
-              className="w-full px-2.5 py-1.5 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009900] focus:border-transparent"
               value={formData.email}
               onChange={(e) => handleChange('email', e.target.value)}
             />
           </div>
 
           <div>
-            <div className="flex items-center justify-between mb-0.5">
-              <label className="block text-xs font-semibold">Password <span className="text-red-500">*</span></label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-semibold text-gray-900">Password <span className="text-red-500">*</span></label>
               <button
                 type="button"
                 onClick={() => setShowPasswordRequirements(!showPasswordRequirements)}
-                className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700"
+                className="flex items-center gap-1 text-xs text-[#009900] hover:text-[#007700] font-medium"
               >
-                <span>Password requirements</span>
+                <span>Requirements</span>
                 {showPasswordRequirements ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
               </button>
             </div>
@@ -395,71 +450,64 @@ export default function BudEOnboarding() {
               <input
                 type={showPassword ? "text" : "password"}
                 required
-                className="w-full px-2.5 py-1.5 pr-9 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                className="w-full px-3 py-2.5 pr-10 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                 value={formData.password}
                 onChange={(e) => handleChange('password', e.target.value)}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
-                {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
             {showPasswordRequirements && (
-              <div className="mt-1.5 p-2.5 bg-blue-50 border border-blue-200 rounded-lg text-xs">
-                <p className="font-semibold text-gray-900 mb-1.5">Create a strong password</p>
-                <p className="text-gray-700 mb-1">Your password must be at least 12 characters and include:</p>
-                <ul className="list-disc list-inside space-y-0.5 text-gray-700 ml-2">
-                  <li>One uppercase letter (A–Z)</li>
-                  <li>One lowercase letter (a–z)</li>
-                  <li>One number (0–9)</li>
-                  <li>One special character (!, @, #, etc.)</li>
+              <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs">
+                <p className="font-semibold text-gray-900 mb-1">Create a strong password</p>
+                <p className="text-gray-700 mb-1">At least 12 characters with:</p>
+                <ul className="list-disc list-inside space-y-0.5 text-gray-700 ml-1">
+                  <li>Uppercase letter (A–Z)</li>
+                  <li>Lowercase letter (a–z)</li>
+                  <li>Number (0–9)</li>
+                  <li>Special character (!, @, #, etc.)</li>
                 </ul>
               </div>
             )}
           </div>
         </div>
 
-        <div className="flex justify-end mt-3">
-          <button
-            onClick={() => {
-              if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
-                alert('Please fill in all required fields (First Name, Last Name, Email, and Password)');
-              } else if (!isValidEmail(formData.email)) {
-                alert('Please enter a valid email address');
-              } else {
-                setStep(1);
-              }
-            }}
-            disabled={!formData.firstName || !formData.lastName || !formData.email || !formData.password || !isValidEmail(formData.email)}
-            className="bg-black text-white px-8 py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Continue
-          </button>
-        </div>
-
-        {/* Login Link */}
-        <div className="text-center mt-4">
-          <div className="inline-block bg-white border-2 border-[#009900] rounded-lg px-4 py-2.5 shadow-sm">
-            <p className="text-xs text-gray-900 mb-1.5 font-medium">
-              Already have an account?
-            </p>
-            <button
-              onClick={() => setShowLoginModal(true)}
-              className="w-full px-5 py-2 bg-[#009900] text-white rounded-lg font-bold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00] text-sm"
-            >
-              Login Here
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Branding - Only visible on mobile */}
-        <p className="md:hidden text-center text-xs text-gray-600 mt-6 pb-4">
-          Networking BudE by The BudE System™
-        </p>
+        <button
+          onClick={() => {
+            if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
+              alert('Please fill in all required fields (First Name, Last Name, Email, and Password)');
+            } else if (!isValidEmail(formData.email)) {
+              alert('Please enter a valid email address');
+            } else {
+              setStep(1);
+            }
+          }}
+          disabled={!formData.firstName || !formData.lastName || !formData.email || !formData.password || !isValidEmail(formData.email)}
+          className="w-full mt-6 bg-[#009900] text-white px-6 py-3 rounded-lg font-bold hover:bg-[#007700] transition-colors disabled:opacity-50 disabled:cursor-not-allowed border-2 border-[#D0ED00]"
+        >
+          Continue
+        </button>
       </div>
+
+      {/* Already have account link */}
+      <div className="text-center mt-6">
+        <button
+          onClick={() => setShowLoginModal(true)}
+          className="text-[#009900] hover:text-[#007700] font-semibold"
+        >
+          Already have an account? Login
+        </button>
+      </div>
+
+      {/* Branding */}
+      <p className="text-center text-xs text-gray-500 mt-8">
+        Networking BudE by The BudE System™
+      </p>
     </div>
   </div>
 );
@@ -979,7 +1027,7 @@ const renderStep2 = () => (
 
   return (
     <>
-      {steps[step]()}
+      {showLandingHero ? renderLandingPage() : steps[step]()}
 
       {/* Success Popup */}
       {showSuccessPopup && (
