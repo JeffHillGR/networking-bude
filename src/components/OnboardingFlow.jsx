@@ -432,7 +432,7 @@ export default function BudEOnboarding() {
                 key={`mobile-${index}`}
                 src={img}
                 alt={`Networking BudE ${index + 1}`}
-                className={`md:hidden absolute max-h-full max-w-full object-contain transition-opacity duration-300 ${
+                className={`md:hidden absolute max-h-full max-w-full object-contain transition-opacity duration-700 ease-in-out ${
                   index === heroImageIndex ? 'opacity-100' : 'opacity-0'
                 }`}
               />
@@ -443,7 +443,7 @@ export default function BudEOnboarding() {
                 key={`desktop-${index}`}
                 src={img}
                 alt={`Networking BudE ${index + 1}`}
-                className={`hidden md:block absolute max-h-full max-w-full object-contain transition-opacity duration-300 ${
+                className={`hidden md:block absolute max-h-full max-w-full object-contain transition-opacity duration-700 ease-in-out ${
                   index === heroImageIndex ? 'opacity-100' : 'opacity-0'
                 }`}
               />
