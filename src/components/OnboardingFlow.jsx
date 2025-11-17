@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { User, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
@@ -28,21 +28,35 @@ export default function BudEOnboarding() {
   const [contactSuccess, setContactSuccess] = useState(false);
   const [contactError, setContactError] = useState('');
 
-  // Random hero image selection (changes on each page load)
-  // Pick a random index to use for both mobile and desktop
-  const [heroImageIndex] = useState(() => Math.floor(Math.random() * 3));
+  // Carousel state for hero images
+  const [heroImageIndex, setHeroImageIndex] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
+  const carouselRef = useRef(null);
 
   const mobileImages = [
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-1.png',
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-2.png',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-3.png'
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-3.png',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-4.png'
   ];
 
   const desktopImages = [
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Landscape-1.png',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Landscape-2-Rev.png',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Landscape-3.png'
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Landscape-2.png',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Landscape-3.png',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Landscape-4.png'
   ];
+
+  // Auto-rotate carousel every 5 seconds (pause on hover)
+  useEffect(() => {
+    if (!showLandingHero || isHovering) return;
+
+    const timer = setInterval(() => {
+      setHeroImageIndex(prev => (prev + 1) % 4); // Cycle 0 -> 1 -> 2 -> 3 -> 0
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [showLandingHero, isHovering]);
 
   const heroImage = mobileImages[heroImageIndex];
   const heroImageDesktop = desktopImages[heroImageIndex];
@@ -384,20 +398,52 @@ export default function BudEOnboarding() {
 
       {/* Hero section - takes up viewport minus top bar */}
       <div className="h-[calc(100vh-80px)] flex flex-col">
-        {/* Hero image - portrait for mobile, landscape for desktop */}
-        <div className="flex-1 flex items-center justify-center overflow-hidden px-4 py-2">
-          {/* Mobile: Portrait image */}
-          <img
-            src={heroImage}
-            alt="Networking BudE"
-            className="md:hidden max-h-full max-w-full object-contain"
-          />
-          {/* Desktop: Landscape image */}
-          <img
-            src={heroImageDesktop}
-            alt="Networking BudE"
-            className="hidden md:block max-h-full max-w-full object-contain"
-          />
+        {/* Hero image carousel with fade transitions */}
+        <div
+          ref={carouselRef}
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
+          className="flex-1 flex flex-col items-center justify-center overflow-hidden px-4 py-2 relative"
+        >
+          {/* Image container with stacked images for fade effect */}
+          <div className="relative flex-1 w-full flex items-center justify-center">
+            {/* Mobile: Portrait images */}
+            {mobileImages.map((img, index) => (
+              <img
+                key={`mobile-${index}`}
+                src={img}
+                alt={`Networking BudE ${index + 1}`}
+                className={`md:hidden absolute max-h-full max-w-full object-contain transition-opacity duration-1000 ${
+                  index === heroImageIndex ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
+            ))}
+            {/* Desktop: Landscape images */}
+            {desktopImages.map((img, index) => (
+              <img
+                key={`desktop-${index}`}
+                src={img}
+                alt={`Networking BudE ${index + 1}`}
+                className={`hidden md:block absolute max-h-full max-w-full object-contain transition-opacity duration-1000 ${
+                  index === heroImageIndex ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Dot indicators */}
+          <div className="flex gap-2 mt-4">
+            {[0, 1, 2, 3].map((index) => (
+              <button
+                key={index}
+                onClick={() => setHeroImageIndex(index)}
+                className={`w-3 h-3 rounded-full transition-colors ${
+                  index === heroImageIndex ? 'bg-[#009900]' : 'bg-gray-300 hover:bg-gray-400'
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Bottom bar - White with "Join Now" */}
@@ -416,11 +462,9 @@ export default function BudEOnboarding() {
       {/* About Section */}
       <div className="bg-gray-50 px-6 py-12" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
         <div className="max-w-3xl mx-auto">
-          {/* About Title Block - matches app style */}
+          {/* About Title */}
           <div className="text-center mb-8">
-            <div className="inline-block bg-white px-6 py-3 rounded-lg border-2 border-black">
-              <h2 className="text-xl font-bold text-black">About</h2>
-            </div>
+            <h2 className="text-2xl font-bold text-black">About</h2>
           </div>
 
           <div className="text-gray-700 space-y-6 leading-relaxed">
@@ -472,11 +516,9 @@ export default function BudEOnboarding() {
       {/* How It Works Section */}
       <div className="bg-white px-6 py-12" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
         <div className="max-w-3xl mx-auto">
-          {/* How It Works Title Block */}
+          {/* How It Works Title */}
           <div className="text-center mb-8">
-            <div className="inline-block bg-white px-6 py-3 rounded-lg border-2 border-black">
-              <h2 className="text-xl font-bold text-black">How It Works</h2>
-            </div>
+            <h2 className="text-2xl font-bold text-black">How It Works</h2>
           </div>
 
           <div className="text-gray-700 space-y-6 leading-relaxed">
