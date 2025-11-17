@@ -513,6 +513,15 @@ export default function BudEOnboarding() {
         </div>
       </div>
 
+      {/* Tech Event Image */}
+      <div className="bg-gray-50 flex justify-center pb-8">
+        <img
+          src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Tech-Event.jpg"
+          alt="Tech Event"
+          className="max-w-[820px] w-full px-6"
+        />
+      </div>
+
       {/* How It Works Section */}
       <div className="bg-white px-6 py-12" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
         <div className="max-w-3xl mx-auto">
@@ -557,6 +566,15 @@ export default function BudEOnboarding() {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Athena Image */}
+      <div className="bg-white flex justify-center pb-8">
+        <img
+          src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Athena-2.jpg"
+          alt="Athena"
+          className="max-w-[820px] w-full px-6"
+        />
       </div>
 
       {/* Copyright Footer */}
