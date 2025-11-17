@@ -215,6 +215,55 @@ function Subscription({ onSelectPlan }) {
           })}
         </div>
 
+        {/* Payment Method Section */}
+        <div className="mt-16 max-w-2xl mx-auto">
+          <div className="bg-white rounded-lg shadow-sm p-8 relative">
+            {/* Coming Soon Overlay */}
+            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-lg flex items-center justify-center z-10">
+              <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 max-w-md mx-4 text-center shadow-2xl border-4 border-[#D0ED00]">
+                <p className="text-green-800 font-bold text-xl mb-2">
+                  Coming Soon
+                </p>
+                <p className="text-green-700 font-medium text-base">
+                  Payment processing will be available soon!
+                </p>
+              </div>
+            </div>
+
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Payment Method</h3>
+            <p className="text-gray-600 mb-6">Add or update your payment information</p>
+            <button
+              disabled
+              className="px-6 py-3 bg-gray-200 text-gray-500 rounded-lg font-medium cursor-not-allowed"
+            >
+              Add Payment Method
+            </button>
+          </div>
+        </div>
+
+        {/* Payment History Section */}
+        <div className="mt-8 max-w-2xl mx-auto">
+          <div className="bg-white rounded-lg shadow-sm p-8 relative">
+            {/* Coming Soon Overlay */}
+            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-lg flex items-center justify-center z-10">
+              <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 max-w-md mx-4 text-center shadow-2xl border-4 border-[#D0ED00]">
+                <p className="text-green-800 font-bold text-xl mb-2">
+                  Coming Soon
+                </p>
+                <p className="text-green-700 font-medium text-base">
+                  Billing history will appear here!
+                </p>
+              </div>
+            </div>
+
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Payment History</h3>
+            <p className="text-gray-600 mb-6">View your past invoices and payments</p>
+            <div className="text-center py-8 text-gray-500">
+              No payment history yet
+            </div>
+          </div>
+        </div>
+
         {/* FAQ or Additional Info */}
         <div className="mt-16 text-center">
           <p className="text-gray-600 mb-4">
