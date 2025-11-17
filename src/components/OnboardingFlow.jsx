@@ -20,6 +20,13 @@ export default function BudEOnboarding() {
   const [resetEmail, setResetEmail] = useState('');
   const [resetSuccess, setResetSuccess] = useState(false);
   const [resetError, setResetError] = useState('');
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [contactName, setContactName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactMessage, setContactMessage] = useState('');
+  const [contactSubmitting, setContactSubmitting] = useState(false);
+  const [contactSuccess, setContactSuccess] = useState(false);
+  const [contactError, setContactError] = useState('');
 
   // Random hero image selection (changes on each page load)
   // Pick a random index to use for both mobile and desktop
@@ -208,6 +215,50 @@ export default function BudEOnboarding() {
     }
 
     setResetSuccess(true);
+  };
+
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    setContactError('');
+    setContactSubmitting(true);
+
+    if (!contactName || !contactEmail || !contactMessage) {
+      setContactError('Please fill in all fields');
+      setContactSubmitting(false);
+      return;
+    }
+
+    if (!isValidEmail(contactEmail)) {
+      setContactError('Please enter a valid email address');
+      setContactSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/submitContact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: contactName,
+          email: contactEmail,
+          message: contactMessage
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit');
+      }
+
+      setContactSuccess(true);
+      setContactName('');
+      setContactEmail('');
+      setContactMessage('');
+    } catch (error) {
+      console.error('Contact form error:', error);
+      setContactError('Failed to send message. Please try again.');
+    } finally {
+      setContactSubmitting(false);
+    }
   };
 
   const handleJobTitleChange = (value) => {
@@ -468,14 +519,12 @@ export default function BudEOnboarding() {
 
       {/* Copyright Footer */}
       <div className="bg-gray-100 px-6 py-6 text-center" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
-        <a
-          href="https://docs.google.com/spreadsheets/d/1Tawx4M2HQBEHfnVxgisX3N6FVRdha6WBSPSkPcioHqk/edit?gid=1876475143#gid=1876475143"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={() => setShowContactModal(true)}
           className="text-[#009900] hover:text-[#007700] font-medium text-sm underline"
         >
           Contact Us
-        </a>
+        </button>
         <p className="text-gray-600 text-sm mt-2">
           Copyright The BudE System™
         </p>
@@ -1383,6 +1432,100 @@ const renderStep2 = () => (
                   className="w-full px-6 py-3 bg-[#009900] text-white rounded-lg font-semibold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
                 >
                   Back to Login
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Contact Us Modal */}
+      {showContactModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full">
+            <h2 className="text-2xl font-bold text-center mb-6">Contact Us</h2>
+
+            {!contactSuccess ? (
+              <form onSubmit={handleContactSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Name</label>
+                  <input
+                    type="text"
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
+                    className="w-full px-4 py-3 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="Your name"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Email</label>
+                  <input
+                    type="email"
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
+                    className="w-full px-4 py-3 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="your@email.com"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Message</label>
+                  <textarea
+                    value={contactMessage}
+                    onChange={(e) => setContactMessage(e.target.value)}
+                    className="w-full px-4 py-3 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-[120px] resize-y"
+                    placeholder="How can we help?"
+                    required
+                  />
+                </div>
+
+                {contactError && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <p className="text-sm text-red-600">{contactError}</p>
+                  </div>
+                )}
+
+                <div className="flex gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowContactModal(false);
+                      setContactName('');
+                      setContactEmail('');
+                      setContactMessage('');
+                      setContactError('');
+                    }}
+                    className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={contactSubmitting}
+                    className="flex-1 px-6 py-3 bg-[#009900] text-white rounded-lg font-semibold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00] disabled:opacity-50"
+                  >
+                    {contactSubmitting ? 'Sending...' : 'Send'}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="text-center">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                  <p className="text-sm text-green-700">
+                    ✓ Message sent! We'll get back to you soon.
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowContactModal(false);
+                    setContactSuccess(false);
+                  }}
+                  className="w-full px-6 py-3 bg-[#009900] text-white rounded-lg font-semibold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
+                >
+                  Close
                 </button>
               </div>
             )}
