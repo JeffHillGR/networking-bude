@@ -162,6 +162,11 @@ function Subscription({ onSelectPlan }) {
                             Save ${savings.toFixed(2)} per year
                           </div>
                         )}
+                        {plan.id === 'bude' && (
+                          <div className="text-sm text-[#009900] font-semibold mt-2">
+                            What You're Seeing Now For Free
+                          </div>
+                        )}
                       </>
                     )}
                   </div>

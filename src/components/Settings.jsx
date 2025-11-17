@@ -18,24 +18,17 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
   const [feedbackData, setFeedbackData] = useState({
     name: '',
     email: '',
-    signUpSmoothness: '',
-    navigationEase: '',
-    confusingSteps: '',
-    visualAppeal: '',
-    brandClarity: '',
-    performance: '',
-    crashesOrBugs: '',
-    usefulFeatures: '',
-    missingFeatures: '',
-    corePurposeUnderstood: '',
-    valueProposition: '',
-    solvesRealProblem: '',
-    wouldUseOrRecommend: '',
-    reasonToComeBack: '',
-    overallSatisfaction: '',
-    overallRating: '',
-    netPromoterScore: ''
+    loveFeatures: '',
+    improveFeatures: '',
+    newFeatures: ''
   });
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [contactName, setContactName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactMessage, setContactMessage] = useState('');
+  const [contactSubmitting, setContactSubmitting] = useState(false);
+  const [contactSuccess, setContactSuccess] = useState(false);
+  const [contactError, setContactError] = useState('');
 
   // Load profile data from localStorage on mount
   const loadProfileFromStorage = () => {
@@ -761,29 +754,62 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
         setFeedbackData({
           name: '',
           email: '',
-          signUpSmoothness: '',
-          navigationEase: '',
-          confusingSteps: '',
-          visualAppeal: '',
-          brandClarity: '',
-          performance: '',
-          crashesOrBugs: '',
-          usefulFeatures: '',
-          missingFeatures: '',
-          corePurposeUnderstood: '',
-          valueProposition: '',
-          solvesRealProblem: '',
-          wouldUseOrRecommend: '',
-          reasonToComeBack: '',
-          overallSatisfaction: '',
-          overallRating: '',
-          netPromoterScore: ''
+          loveFeatures: '',
+          improveFeatures: '',
+          newFeatures: ''
         });
       }, 3000);
     } catch (error) {
       console.error('Error submitting feedback:', error);
       alert('There was an error submitting your feedback. Please try again.');
     }
+  };
+
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    setContactError('');
+    setContactSubmitting(true);
+
+    if (!contactName || !contactEmail || !contactMessage) {
+      setContactError('Please fill in all fields');
+      setContactSubmitting(false);
+      return;
+    }
+
+    if (!isValidEmail(contactEmail)) {
+      setContactError('Please enter a valid email address');
+      setContactSubmitting(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/submitContact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: contactName,
+          email: contactEmail,
+          message: contactMessage
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+
+      setContactSuccess(true);
+      setContactName('');
+      setContactEmail('');
+      setContactMessage('');
+    } catch (error) {
+      console.error('Contact form error:', error);
+      setContactError('Failed to send message. Please try again.');
+    }
+    setContactSubmitting(false);
   };
 
   return (
@@ -1306,12 +1332,6 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
         {activeTab === 'privacy' && (
           <div className="space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-8 relative">
-              <div className="flex items-center gap-2 mb-2">
-                <Lock className="w-5 h-5" />
-                <h2 className="text-xl font-bold text-gray-900">Privacy Settings</h2>
-              </div>
-              <p className="text-gray-600 mb-6">Control who can see your information and contact you</p>
-
               {/* Privacy Coming Soon Overlay */}
               <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-lg flex items-center justify-center z-10">
                 <div className="bg-gradient-to-r from-green-100 to-lime-50 rounded-2xl p-6 max-w-md mx-4 text-center shadow-2xl border-4 border-[#D0ED00]">
@@ -1324,10 +1344,16 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
                     Coming Soon
                   </p>
                   <p className="text-green-700 font-medium text-base">
-                    Privacy settings are coming soon. Your profile data is currently stored securely in our database.
+                    Advanced privacy controls are on the way!
                   </p>
                 </div>
               </div>
+
+              <div className="flex items-center gap-2 mb-2">
+                <Lock className="w-5 h-5" />
+                <h2 className="text-xl font-bold text-gray-900">Privacy Settings</h2>
+              </div>
+              <p className="text-gray-600 mb-6">Control who can see your information and contact you</p>
 
               <div className="space-y-1">
                 <ToggleSetting
@@ -1399,6 +1425,33 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                   </svg>
                   Give Feedback
+                </button>
+              </div>
+            </div>
+
+            {/* Contact Us */}
+            <div className="bg-white rounded-lg shadow-sm p-8 border-2 border-gray-200">
+              <div className="flex items-center gap-2 mb-2 text-gray-700">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <h2 className="text-xl font-bold">Contact Us</h2>
+              </div>
+              <p className="text-gray-600 mb-6">Have a question or need help? We'd love to hear from you!</p>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-medium text-gray-900">Send Us a Message</h3>
+                  <p className="text-sm text-gray-600 mt-1">Get in touch with the BudE team</p>
+                </div>
+                <button
+                  onClick={() => setShowContactModal(true)}
+                  className="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 font-medium flex items-center gap-2 whitespace-nowrap"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  Contact Us
                 </button>
               </div>
             </div>
@@ -1491,7 +1544,7 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
       {/* Feedback Modal */}
       {showFeedbackModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => !feedbackSubmitted && setShowFeedbackModal(false)}>
-          <div className="bg-white rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             {feedbackSubmitted ? (
               // Success Message
               <div className="text-center py-12">
@@ -1520,261 +1573,170 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
                   Thank you for testing BudE! Your feedback is invaluable in helping us create the best networking platform.
                 </p>
 
-                <form onSubmit={handleSubmitFeedback} className="space-y-6">
-              {/* Contact Info */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form onSubmit={handleSubmitFeedback} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                      <input
+                        type="text"
+                        required
+                        value={feedbackData.name}
+                        onChange={(e) => setFeedbackData({...feedbackData, name: e.target.value})}
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                      <input
+                        type="email"
+                        required
+                        value={feedbackData.email}
+                        onChange={(e) => setFeedbackData({...feedbackData, email: e.target.value})}
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">What features do you love?</label>
+                    <textarea
+                      value={feedbackData.loveFeatures}
+                      onChange={(e) => setFeedbackData({...feedbackData, loveFeatures: e.target.value})}
+                      rows={3}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
+                      placeholder="Tell us what you enjoy most..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">What features need improvement?</label>
+                    <textarea
+                      value={feedbackData.improveFeatures}
+                      onChange={(e) => setFeedbackData({...feedbackData, improveFeatures: e.target.value})}
+                      rows={3}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
+                      placeholder="What could we do better..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">What new features would you like to see?</label>
+                    <textarea
+                      value={feedbackData.newFeatures}
+                      onChange={(e) => setFeedbackData({...feedbackData, newFeatures: e.target.value})}
+                      rows={3}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
+                      placeholder="Share your ideas..."
+                    />
+                  </div>
+
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowFeedbackModal(false)}
+                      className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 px-4 py-3 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00]"
+                    >
+                      Submit Feedback
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Contact Us Modal */}
+      {showContactModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => !contactSubmitting && setShowContactModal(false)}>
+          <div className="bg-white rounded-lg p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-2xl font-bold text-center mb-6">Contact Us</h2>
+
+            {!contactSuccess ? (
+              <form onSubmit={handleContactSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
                   <input
                     type="text"
-                    required
-                    value={feedbackData.name}
-                    onChange={(e) => setFeedbackData({...feedbackData, name: e.target.value})}
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                    required
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
                   <input
                     type="email"
-                    required
-                    value={feedbackData.email}
-                    onChange={(e) => setFeedbackData({...feedbackData, email: e.target.value})}
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                    required
                   />
                 </div>
-              </div>
-
-              {/* Onboarding & First Impressions */}
-              <div>
-                <h3 className="font-bold text-lg mb-3">Onboarding & First Impressions</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">How smooth was the sign-up or login process?</label>
-                    <textarea
-                      value={feedbackData.signUpSmoothness}
-                      onChange={(e) => setFeedbackData({...feedbackData, signUpSmoothness: e.target.value})}
-                      rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Message *</label>
+                  <textarea
+                    value={contactMessage}
+                    onChange={(e) => setContactMessage(e.target.value)}
+                    rows={4}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent resize-none"
+                    required
+                  />
                 </div>
-              </div>
-
-              {/* User Experience */}
-              <div>
-                <h3 className="font-bold text-lg mb-3">User Experience (UX)</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">How easy or intuitive is it to navigate the app?</label>
-                    <textarea
-                      value={feedbackData.navigationEase}
-                      onChange={(e) => setFeedbackData({...feedbackData, navigationEase: e.target.value})}
-                      rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
+                {contactError && (
+                  <div className="bg-red-50 p-3 rounded-lg">
+                    <p className="text-sm text-red-600">{contactError}</p>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Any steps that felt confusing or frustrating?</label>
-                    <textarea
-                      value={feedbackData.confusingSteps}
-                      onChange={(e) => setFeedbackData({...feedbackData, confusingSteps: e.target.value})}
-                      rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
-                  </div>
+                )}
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowContactModal(false);
+                      setContactName('');
+                      setContactEmail('');
+                      setContactMessage('');
+                      setContactError('');
+                    }}
+                    className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={contactSubmitting}
+                    className="flex-1 px-4 py-3 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] disabled:opacity-50"
+                  >
+                    {contactSubmitting ? 'Sending...' : 'Send'}
+                  </button>
                 </div>
-              </div>
-
-              {/* Design & Branding */}
-              <div>
-                <h3 className="font-bold text-lg mb-3">Design & Branding</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Visual appeal of the app (colors, fonts, imagery)</label>
-                    <textarea
-                      value={feedbackData.visualAppeal}
-                      onChange={(e) => setFeedbackData({...feedbackData, visualAppeal: e.target.value})}
-                      rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Does the brand feel clear, memorable, and consistent?</label>
-                    <textarea
-                      value={feedbackData.brandClarity}
-                      onChange={(e) => setFeedbackData({...feedbackData, brandClarity: e.target.value})}
-                      rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
-                  </div>
+              </form>
+            ) : (
+              <div className="text-center py-8">
+                <div className="mb-4">
+                  <svg className="w-16 h-16 mx-auto text-[#009900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                 </div>
-              </div>
-
-              {/* Performance & Speed */}
-              <div>
-                <h3 className="font-bold text-lg mb-3">Performance & Speed</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Loading times, responsiveness, lag</label>
-                    <textarea
-                      value={feedbackData.performance}
-                      onChange={(e) => setFeedbackData({...feedbackData, performance: e.target.value})}
-                      rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Any crashes, bugs, or slowdowns?</label>
-                    <textarea
-                      value={feedbackData.crashesOrBugs}
-                      onChange={(e) => setFeedbackData({...feedbackData, crashesOrBugs: e.target.value})}
-                      rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Features & Functionality */}
-              <div>
-                <h3 className="font-bold text-lg mb-3">Features & Functionality</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Which features were most useful or enjoyable?</label>
-                    <textarea
-                      value={feedbackData.usefulFeatures}
-                      onChange={(e) => setFeedbackData({...feedbackData, usefulFeatures: e.target.value})}
-                      rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Anything missing or not working as expected?</label>
-                    <textarea
-                      value={feedbackData.missingFeatures}
-                      onChange={(e) => setFeedbackData({...feedbackData, missingFeatures: e.target.value})}
-                      rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Core Purpose */}
-              <div>
-                <h3 className="font-bold text-lg mb-3">Value Proposition & Relevance</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Did you understand the core purpose of the app right away?</label>
-                    <textarea
-                      value={feedbackData.corePurposeUnderstood}
-                      onChange={(e) => setFeedbackData({...feedbackData, corePurposeUnderstood: e.target.value})}
-                      rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Does the app solve a real problem for you?</label>
-                    <textarea
-                      value={feedbackData.solvesRealProblem}
-                      onChange={(e) => setFeedbackData({...feedbackData, solvesRealProblem: e.target.value})}
-                      rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Would you realistically use it or recommend it?</label>
-                    <textarea
-                      value={feedbackData.wouldUseOrRecommend}
-                      onChange={(e) => setFeedbackData({...feedbackData, wouldUseOrRecommend: e.target.value})}
-                      rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Does the app give you a reason to come back?</label>
-                    <textarea
-                      value={feedbackData.reasonToComeBack}
-                      onChange={(e) => setFeedbackData({...feedbackData, reasonToComeBack: e.target.value})}
-                      rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Overall Ratings */}
-              <div>
-                <h3 className="font-bold text-lg mb-3">Overall Satisfaction & Likelihood to Recommend</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Overall satisfaction</label>
-                    <textarea
-                      value={feedbackData.overallSatisfaction}
-                      onChange={(e) => setFeedbackData({...feedbackData, overallSatisfaction: e.target.value})}
-                      rows={2}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">Overall rating (1–10)</label>
-                    <div className="flex flex-wrap gap-2">
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
-                        <button
-                          key={rating}
-                          type="button"
-                          onClick={() => setFeedbackData({...feedbackData, overallRating: rating.toString()})}
-                          className={`w-12 h-12 rounded-lg font-bold text-lg transition-all ${
-                            feedbackData.overallRating === rating.toString()
-                              ? 'bg-[#009900] text-white border-2 border-[#D0ED00] shadow-md scale-105'
-                              : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-[#009900] hover:bg-gray-50'
-                          }`}
-                        >
-                          {rating}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">"Would you recommend this app to a friend or colleague?" (0-10 scale)</label>
-                    <div className="flex flex-wrap gap-2">
-                      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((score) => (
-                        <button
-                          key={score}
-                          type="button"
-                          onClick={() => setFeedbackData({...feedbackData, netPromoterScore: score.toString()})}
-                          className={`w-12 h-12 rounded-lg font-bold text-lg transition-all ${
-                            feedbackData.netPromoterScore === score.toString()
-                              ? 'bg-[#009900] text-white border-2 border-[#D0ED00] shadow-md scale-105'
-                              : 'bg-white border-2 border-gray-300 text-gray-700 hover:border-[#009900] hover:bg-gray-50'
-                          }`}
-                        >
-                          {score}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-3 pt-4">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Message Sent!</h3>
+                <p className="text-gray-600 mb-6">Thank you for reaching out. We'll get back to you soon!</p>
                 <button
-                  type="button"
-                  onClick={() => setShowFeedbackModal(false)}
-                  className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                  onClick={() => {
+                    setShowContactModal(false);
+                    setContactSuccess(false);
+                  }}
+                  className="px-6 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 px-4 py-3 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00]"
-                >
-                  Submit Feedback
+                  Close
                 </button>
               </div>
-            </form>
-              </>
             )}
           </div>
         </div>
