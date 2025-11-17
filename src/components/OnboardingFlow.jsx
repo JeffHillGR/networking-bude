@@ -699,31 +699,40 @@ export default function BudEOnboarding() {
 
  const renderWelcome = () => (
   <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-    <div className="max-w-md w-full">
-      {/* BudE Logo */}
-      <div className="flex justify-center mb-6">
-        <img
-          src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png"
-          alt="BudE Logo"
-          className="h-20 w-auto"
-        />
+    <div className="max-w-4xl w-full flex flex-col md:flex-row items-center gap-6 md:gap-8">
+      {/* Hook Statement - Left Side */}
+      <div className="hidden md:flex md:w-1/2 items-center justify-end pr-4">
+        <p className="text-4xl lg:text-5xl font-bold text-black leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+          A networking wingperson for every event.
+        </p>
       </div>
 
-      {/* Main heading */}
-      <h1 className="text-2xl md:text-3xl font-bold text-center mb-2 text-gray-900">
-        Let's set up your profile
-      </h1>
-      <p className="text-center text-gray-600 mb-6">
-        Find meaningful connections in your community
-      </p>
+      {/* Form Section - Right Side */}
+      <div className="w-full md:w-1/2 max-w-md">
+        {/* BudE Logo */}
+        <div className="flex justify-center mb-6">
+          <img
+            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png"
+            alt="BudE Logo"
+            className="h-20 w-auto"
+          />
+        </div>
 
-      {/* Progress bar */}
-      <div className="w-full h-2 bg-gray-200 rounded-full mb-6">
-        <div className="w-1/3 h-full bg-[#009900] rounded-full"></div>
-      </div>
+        {/* Main heading */}
+        <h1 className="text-2xl md:text-3xl font-bold text-center mb-2 text-gray-900">
+          Let's set up your profile
+        </h1>
+        <p className="text-center text-gray-600 mb-6">
+          Find meaningful connections in your community
+        </p>
 
-      {/* Form Card */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
+        {/* Progress bar */}
+        <div className="w-full h-2 bg-gray-200 rounded-full mb-6">
+          <div className="w-1/3 h-full bg-[#009900] rounded-full"></div>
+        </div>
+
+        {/* Form Card */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -829,20 +838,21 @@ export default function BudEOnboarding() {
         </button>
       </div>
 
-      {/* Already have account link */}
-      <div className="text-center mt-6">
-        <button
-          onClick={() => setShowLoginModal(true)}
-          className="text-[#009900] hover:text-[#007700] font-semibold"
-        >
-          Already have an account? Login
-        </button>
-      </div>
+        {/* Already have account link */}
+        <div className="text-center mt-6">
+          <button
+            onClick={() => setShowLoginModal(true)}
+            className="text-[#009900] hover:text-[#007700] font-semibold"
+          >
+            Already have an account? Login
+          </button>
+        </div>
 
-      {/* Branding */}
-      <p className="text-center text-xs text-gray-500 mt-8">
-        Networking BudE by The BudE System™
-      </p>
+        {/* Branding */}
+        <p className="text-center text-xs text-gray-500 mt-8">
+          Networking BudE by The BudE System™
+        </p>
+      </div>
     </div>
   </div>
 );
@@ -877,7 +887,9 @@ export default function BudEOnboarding() {
             <img src="/BudE-Logo-Final.png" alt="BudE Logo" className="w-full h-auto mb-4" />
             <div className="space-y-4 flex flex-col items-center">
               <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-1.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
-              <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People%20networking%202.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
+              <p className="text-xl font-bold text-black leading-tight px-2 text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                Stop networking alone. Start networking smarter.
+              </p>
               <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-3.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
             </div>
           </div>
@@ -1216,7 +1228,9 @@ const renderStep2 = () => (
           <img src="/BudE-Logo-Final.png" alt="BudE Logo" className="w-full h-auto mb-4" />
           <div className="space-y-4 flex flex-col items-center">
             <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-1.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
-            <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People%20networking%202.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
+            <p className="text-xl font-bold text-black leading-tight px-2 text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+              You support their goals; they support yours.
+            </p>
             <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-3.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
           </div>
         </div>
