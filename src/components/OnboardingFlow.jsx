@@ -486,8 +486,8 @@ export default function BudEOnboarding() {
             <h2 className="text-4xl font-bold text-black">About</h2>
           </div>
 
-          <div className="text-gray-700 space-y-6 leading-relaxed">
-            <p className="font-semibold text-lg">
+          <div className="text-gray-700 space-y-6 leading-relaxed text-lg">
+            <p className="font-semibold">
               Welcome to Networking BudE by The BudE System™
             </p>
 
@@ -556,16 +556,16 @@ export default function BudEOnboarding() {
             <h2 className="text-4xl font-bold text-black">How It Works</h2>
           </div>
 
-          <div className="text-gray-700 space-y-6 leading-relaxed">
+          <div className="text-gray-700 space-y-6 leading-relaxed text-lg">
             <div>
-              <p className="font-bold text-lg mb-2">You create your profile</p>
+              <p className="font-bold mb-2">You create your profile</p>
               <p>
                 Tell us your professional interests, the organizations you're part of (or want to explore), your hobbies, and—most importantly—your networking goals.
               </p>
             </div>
 
             <div>
-              <p className="font-bold text-lg mb-2">We take the wheel</p>
+              <p className="font-bold mb-2">We take the wheel</p>
               <ul className="space-y-2">
                 <li>We suggest compatible connections.</li>
                 <li>We show you weekly events worth checking out (and yes, you'll be surprised how much more effective they are with a BudE).</li>
@@ -575,8 +575,8 @@ export default function BudEOnboarding() {
             </div>
 
             <div>
-              <p className="font-bold text-lg mb-2">All in one app.</p>
-              <p className="text-lg">
+              <p className="font-bold mb-2">All in one app.</p>
+              <p>
                 That's The BudE System.
               </p>
             </div>
@@ -601,7 +601,7 @@ export default function BudEOnboarding() {
             <h2 className="text-4xl font-bold text-black">How We Are Different</h2>
           </div>
 
-          <div className="text-gray-700 space-y-6 leading-relaxed">
+          <div className="text-gray-700 space-y-6 leading-relaxed text-lg">
             <p>
               We suggest connections based on your goals and interests. Not on "who you know." What other social networking apps ask you that?
             </p>
