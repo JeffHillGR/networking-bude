@@ -450,18 +450,43 @@ export default function BudEOnboarding() {
             ))}
           </div>
 
-          {/* Dot indicators */}
-          <div className="flex gap-2 mt-4">
-            {[0, 1, 2, 3].map((index) => (
-              <button
-                key={index}
-                onClick={() => setHeroImageIndex(index)}
-                className={`w-3 h-3 rounded-full transition-colors ${
-                  index === heroImageIndex ? 'bg-[#009900]' : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
+          {/* Navigation arrows and dot indicators */}
+          <div className="flex items-center gap-4 mt-4">
+            {/* Left arrow */}
+            <button
+              onClick={() => setHeroImageIndex((prev) => (prev === 0 ? 3 : prev - 1))}
+              className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition-all"
+              aria-label="Previous slide"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+
+            {/* Dot indicators */}
+            <div className="flex gap-2">
+              {[0, 1, 2, 3].map((index) => (
+                <button
+                  key={index}
+                  onClick={() => setHeroImageIndex(index)}
+                  className={`w-3 h-3 rounded-full transition-colors ${
+                    index === heroImageIndex ? 'bg-[#009900]' : 'bg-gray-300 hover:bg-gray-400'
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+
+            {/* Right arrow */}
+            <button
+              onClick={() => setHeroImageIndex((prev) => (prev === 3 ? 0 : prev + 1))}
+              className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition-all"
+              aria-label="Next slide"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -499,13 +524,22 @@ export default function BudEOnboarding() {
               I've been doing professional networking for 25+ years — building community, growing my business, switching jobs, learning new things. But post-Covid, the old way felt even more awkward. Lots of small talk, not much substance.
             </p>
 
-            <p className="font-semibold">
-              Everything shifted when I stopped going alone.
-            </p>
+            <div className="flex flex-col md:flex-row gap-8 items-center my-8">
+              <div className="md:w-1/2 text-left">
+                <p className="text-4xl md:text-5xl font-bold text-[#009900] leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                  A networking wingperson for every event.
+                </p>
+              </div>
+              <div className="md:w-1/2">
+                <p className="font-semibold">
+                  Everything shifted when I stopped going alone.
+                </p>
 
-            <p>
-              When I started inviting friends and colleagues to events, the whole experience changed. Suddenly networking became strategic and fun. We introduced each other to collaborators and clients. We worked the room together. We made real connections — the kind that turned into coffees, lunches, and new opportunities. My networking buddies had the same results.
-            </p>
+                <p className="mt-6">
+                  When I started inviting friends and colleagues to events, the whole experience changed. Suddenly networking became strategic and fun. We introduced each other to collaborators and clients. We worked the room together. We made real connections — the kind that turned into coffees, lunches, and new opportunities. My networking buddies had the same results.
+                </p>
+              </div>
+            </div>
 
             <p>
               Now I have a small crew of 6–7 great people I go to events with — not thousands of passive connections, but a handful of intentional, community-focused pros who help each other grow. It's been game-changing.
@@ -564,14 +598,21 @@ export default function BudEOnboarding() {
               </p>
             </div>
 
-            <div>
-              <p className="font-bold mb-2">We take the wheel</p>
-              <ul className="space-y-2">
-                <li>We suggest compatible connections.</li>
-                <li>We show you weekly events worth checking out (and yes, you'll be surprised how much more effective they are with a BudE).</li>
-                <li>We tell you who in your selected network is interested in each event and who's actually going!</li>
-                <li>We give you Resources and Insights to elevate your networking game and support your professional growth.</li>
-              </ul>
+            <div className="flex flex-col md:flex-row gap-8 items-center my-8">
+              <div className="md:w-1/2">
+                <p className="font-bold mb-2">We take the wheel</p>
+                <ul className="space-y-2">
+                  <li>We suggest compatible connections.</li>
+                  <li>We show you weekly events worth checking out (and yes, you'll be surprised how much more effective they are with a BudE).</li>
+                  <li>We tell you who in your selected network is interested in each event and who's actually going!</li>
+                  <li>We give you Resources and Insights to elevate your networking game and support your professional growth.</li>
+                </ul>
+              </div>
+              <div className="md:w-1/2 text-right">
+                <p className="text-4xl md:text-5xl font-bold text-[#009900] leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                  Stop networking alone. Start networking smarter.
+                </p>
+              </div>
             </div>
 
             <div>
@@ -602,18 +643,27 @@ export default function BudEOnboarding() {
           </div>
 
           <div className="text-gray-700 space-y-6 leading-relaxed text-lg">
-            <p>
-              We suggest connections based on your goals and interests. Not on "who you know." What other social networking apps ask you that?
-            </p>
-            <p>
-              This isn't a numbers game. Strive for a great group of 5 - 7 connections.
-            </p>
-            <p>
-              We show you events and who in your group is going.
-            </p>
-            <p>
-              We make this a place where you can feel comfortable reaching out to build community.
-            </p>
+            <div className="flex flex-col md:flex-row gap-8 items-center my-8">
+              <div className="md:w-1/2 text-left">
+                <p className="text-4xl md:text-5xl font-bold text-[#009900] leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                  You support their goals; they support yours.
+                </p>
+              </div>
+              <div className="md:w-1/2">
+                <p>
+                  We suggest connections based on your goals and interests. Not on "who you know." What other social networking apps ask you that?
+                </p>
+                <p className="mt-4">
+                  This isn't a numbers game. Strive for a great group of 5 - 7 connections.
+                </p>
+                <p className="mt-4">
+                  We show you events and who in your group is going.
+                </p>
+                <p className="mt-4">
+                  We make this a place where you can feel comfortable reaching out to build community.
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Join Now Button */}
