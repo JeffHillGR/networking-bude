@@ -581,6 +581,40 @@ export default function BudEOnboarding() {
               </p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Athena Image */}
+      <div className="bg-white flex justify-center pb-8">
+        <img
+          src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Athena-2.jpg"
+          alt="Athena"
+          className="max-w-3xl w-full px-6"
+        />
+      </div>
+
+      {/* How We Are Different Section */}
+      <div className="bg-gray-50 px-6 py-12" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+        <div className="max-w-3xl mx-auto">
+          {/* How We Are Different Title */}
+          <div className="text-center mb-8">
+            <h2 className="text-4xl font-bold text-black">How We Are Different</h2>
+          </div>
+
+          <div className="text-gray-700 space-y-6 leading-relaxed">
+            <p>
+              We suggest connections based on your goals and interests. Not on "who you know." What other social networking apps ask you that?
+            </p>
+            <p>
+              This isn't a numbers game. Strive for a great group of 5 - 7 connections.
+            </p>
+            <p>
+              We show you events and who in your group is going.
+            </p>
+            <p>
+              We make this a place where you can feel comfortable reaching out to build community.
+            </p>
+          </div>
 
           {/* Join Now Button */}
           <div className="mt-10 flex justify-center">
