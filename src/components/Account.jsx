@@ -1,12 +1,9 @@
 import { useState } from 'react';
-import { ArrowLeft, CreditCard, Calendar, Shield, CheckCircle, Crown, Star, Users, X, Tag } from 'lucide-react';
+import { ArrowLeft, CreditCard, Shield, CheckCircle, X } from 'lucide-react';
 
 function Account({ onBackToDashboard }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [isYearly, setIsYearly] = useState(false);
-  const [promoCode, setPromoCode] = useState('');
-  const [appliedPromo, setAppliedPromo] = useState(null);
-  const [selectedPlan, setSelectedPlan] = useState(null);
   const [showCancelChangeModal, setShowCancelChangeModal] = useState(false);
   const [showConfirmCancelModal, setShowConfirmCancelModal] = useState(false);
 
@@ -66,22 +63,6 @@ function Account({ onBackToDashboard }) {
     { id: 3, date: '2024-11-15', amount: 9.99, description: 'BudE Plan - Monthly', status: 'paid' }
   ];
 
-  const handleApplyPromo = () => {
-    if (promoCode.toUpperCase() === 'WELCOME20') {
-      setAppliedPromo({ code: 'WELCOME20', discount: 20, type: 'percentage' });
-    } else {
-      alert('Invalid promo code');
-    }
-  };
-
-  const calculatePrice = (basePrice) => {
-    if (!appliedPromo) return basePrice;
-    if (appliedPromo.type === 'percentage') {
-      return basePrice * (1 - appliedPromo.discount / 100);
-    }
-    return basePrice - appliedPromo.discount;
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -122,64 +103,56 @@ function Account({ onBackToDashboard }) {
 
         {/* Overview Tab */}
         {activeTab === 'overview' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold">Current Subscription</h2>
-                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                  Active
-                </span>
-              </div>
-
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-1">{currentSubscription.plan} Plan</h3>
-                <p className="text-gray-600">Perfect for getting started with networking</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-6 mb-6">
-                <div>
-                  <p className="text-sm text-gray-600">Next billing date</p>
-                  <p className="font-medium">{currentSubscription.nextBilling}</p>
+          <div className="relative">
+            <div className="space-y-6 opacity-30 pointer-events-none">
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold">Current Subscription</h2>
+                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                    Active
+                  </span>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">Amount</p>
-                  <p className="font-medium">${currentSubscription.amount}/month</p>
-                </div>
-              </div>
 
-              <div className="flex gap-3">
-                <button
-                  disabled
-                  className="px-6 py-2 bg-gray-100 text-gray-500 rounded-lg cursor-not-allowed"
-                >
-                  Coming Soon
-                </button>
-                <button
-                  onClick={() => setShowCancelChangeModal(true)}
-                  className="px-6 py-2 bg-white text-gray-700 rounded-lg border-2 border-gray-300 hover:bg-gray-50 transition-colors"
-                >
-                  Cancel or Change Plan
-                </button>
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-1">{currentSubscription.plan} Plan</h3>
+                  <p className="text-gray-600">Perfect for getting started with networking</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <p className="text-sm text-gray-600">Next billing date</p>
+                    <p className="font-medium">{currentSubscription.nextBilling}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Amount</p>
+                    <p className="font-medium">${currentSubscription.amount}/month</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    disabled
+                    className="px-6 py-2 bg-gray-100 text-gray-500 rounded-lg cursor-not-allowed"
+                  >
+                    Coming Soon
+                  </button>
+                  <button
+                    onClick={() => setShowCancelChangeModal(true)}
+                    className="px-6 py-2 bg-white text-gray-700 rounded-lg border-2 border-gray-300 hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel or Change Plan
+                  </button>
+                </div>
               </div>
             </div>
-
-            {/* Quick Stats */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <Users className="w-8 h-8 text-blue-600 mb-2" />
-                <p className="text-2xl font-bold">147</p>
-                <p className="text-sm text-gray-600">Total Connections</p>
-              </div>
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <Calendar className="w-8 h-8 text-green-600 mb-2" />
-                <p className="text-2xl font-bold">23</p>
-                <p className="text-sm text-gray-600">Events Attended</p>
-              </div>
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <CheckCircle className="w-8 h-8 text-purple-600 mb-2" />
-                <p className="text-2xl font-bold">94%</p>
-                <p className="text-sm text-gray-600">Profile Strength</p>
-              </div>
+            {/* Coming Soon Overlay */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <img
+                src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/BudE-favicon.png"
+                alt="BudE"
+                className="w-24 h-24 mb-4"
+              />
+              <p className="text-2xl font-bold text-gray-700">Coming Soon</p>
             </div>
           </div>
         )}
@@ -277,6 +250,11 @@ function Account({ onBackToDashboard }) {
                   >
                     {plan.id === 'free' ? 'Current Plan' : 'Coming Soon'}
                   </button>
+                  {plan.id === 'bude' && (
+                    <p className="text-xs text-center text-gray-600 mt-3">
+                      You currently have free access to all BudE Plan features during our preview period.
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
@@ -285,178 +263,120 @@ function Account({ onBackToDashboard }) {
 
         {/* Payment Tab */}
         {activeTab === 'payment' && (
-          <div className="space-y-6">
-            {selectedPlan ? (
-              <>
-                {/* Order Summary */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h2 className="text-xl font-bold mb-4">Order Summary</h2>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span>{selectedPlan.name} ({isYearly ? 'Yearly' : 'Monthly'})</span>
-                      <span>${isYearly ? selectedPlan.yearlyPrice : selectedPlan.price}</span>
-                    </div>
-                    {appliedPromo && (
-                      <div className="flex justify-between text-green-600">
-                        <span>Discount ({appliedPromo.code})</span>
-                        <span>-{appliedPromo.discount}%</span>
-                      </div>
-                    )}
-                    <div className="border-t pt-3 flex justify-between font-bold text-lg">
-                      <span>Total</span>
-                      <span>${calculatePrice(isYearly ? selectedPlan.yearlyPrice : selectedPlan.price).toFixed(2)}</span>
-                    </div>
+          <div className="relative">
+            <div className="space-y-6 opacity-30 pointer-events-none">
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                  <CreditCard className="w-5 h-5" />
+                  Payment Method
+                </h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Card Number
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="1234 5678 9012 3456"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      disabled
+                    />
                   </div>
-                </div>
-
-                {/* Promo Code */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                    <Tag className="w-5 h-5" />
-                    Promo Code
-                  </h2>
-                  {!appliedPromo ? (
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={promoCode}
-                        onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                        placeholder="Enter promo code"
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                      />
-                      <button
-                        onClick={handleApplyPromo}
-                        className="px-6 py-2 bg-[#009900] text-white rounded-lg border-[3px] border-[#D0ED00] hover:bg-[#007700] transition-colors"
-                      >
-                        Apply
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-between bg-green-50 p-4 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-green-600" />
-                        <div>
-                          <p className="font-medium text-green-900">{appliedPromo.code} Applied</p>
-                          <p className="text-sm text-green-700">{appliedPromo.discount}% discount</p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setAppliedPromo(null);
-                          setPromoCode('');
-                        }}
-                        className="text-green-600 hover:text-green-700"
-                      >
-                        <X className="w-5 h-5" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Payment Form */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                    <CreditCard className="w-5 h-5" />
-                    Payment Information
-                  </h2>
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Card Number
+                        Month
                       </label>
                       <input
                         type="text"
-                        placeholder="1234 5678 9012 3456"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                        placeholder="MM"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                        disabled
                       />
-                    </div>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Month
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="MM"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Year
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="YYYY"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          CVV
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="123"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                        />
-                      </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Cardholder Name
+                        Year
                       </label>
                       <input
                         type="text"
-                        placeholder="John Doe"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                        placeholder="YYYY"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                        disabled
                       />
                     </div>
-
-                    <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg">
-                      <Shield className="w-4 h-4 text-gray-600" />
-                      <span className="text-sm text-gray-600">Your payment information is encrypted and secure</span>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        CVV
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="123"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                        disabled
+                      />
                     </div>
-
-                    <button className="w-full py-3 bg-[#009900] text-white rounded-lg border-[3px] border-[#D0ED00] font-medium hover:bg-[#007700] transition-colors">
-                      Complete Payment
-                    </button>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Cardholder Name
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="John Doe"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      disabled
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg">
+                    <Shield className="w-4 h-4 text-gray-600" />
+                    <span className="text-sm text-gray-600">Your payment information is encrypted and secure</span>
                   </div>
                 </div>
-              </>
-            ) : (
-              <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                <p className="text-gray-600 mb-4">Please select a plan to continue with payment.</p>
-                <button
-                  onClick={() => setActiveTab('plans')}
-                  className="px-6 py-2 bg-[#009900] text-white rounded-lg border-[3px] border-[#D0ED00] hover:bg-[#007700] transition-colors"
-                >
-                  View Plans
-                </button>
               </div>
-            )}
+            </div>
+            {/* Coming Soon Overlay */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <img
+                src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/BudE-favicon.png"
+                alt="BudE"
+                className="w-24 h-24 mb-4"
+              />
+              <p className="text-2xl font-bold text-gray-700">Coming Soon</p>
+            </div>
           </div>
         )}
 
         {/* History Tab */}
         {activeTab === 'history' && (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-bold mb-4">Billing History</h2>
-            <div className="space-y-3">
-              {billingHistory.map((item) => (
-                <div key={item.id} className="flex items-center justify-between px-6 py-4 bg-white rounded-lg border-2 border-[#D0ED00]">
-                  <div>
-                    <p className="font-medium text-gray-900">{item.description}</p>
-                    <p className="text-sm text-gray-600">{item.date}</p>
+          <div className="relative">
+            <div className="bg-white rounded-lg shadow-sm p-6 opacity-30 pointer-events-none">
+              <h2 className="text-xl font-bold mb-4">Billing History</h2>
+              <div className="space-y-3">
+                {billingHistory.map((item) => (
+                  <div key={item.id} className="flex items-center justify-between px-6 py-4 bg-white rounded-lg border-2 border-[#D0ED00]">
+                    <div>
+                      <p className="font-medium text-gray-900">{item.description}</p>
+                      <p className="text-sm text-gray-600">{item.date}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-gray-900">${item.amount}</p>
+                      <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">
+                        {item.status}
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-gray-900">${item.amount}</p>
-                    <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">
-                      {item.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
+            </div>
+            {/* Coming Soon Overlay */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <img
+                src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/BudE-favicon.png"
+                alt="BudE"
+                className="w-24 h-24 mb-4"
+              />
+              <p className="text-2xl font-bold text-gray-700">Coming Soon</p>
             </div>
           </div>
         )}

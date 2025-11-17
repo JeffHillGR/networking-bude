@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, Shield, Bell, Lock, Upload, X, ArrowLeft } from 'lucide-react';
+import { User, Shield, Bell, Lock, Upload, X, ArrowLeft, Calendar, CheckCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { runMatchingAlgorithm } from '../lib/runMatching';
@@ -29,6 +29,7 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
   const [contactSubmitting, setContactSubmitting] = useState(false);
   const [contactSuccess, setContactSuccess] = useState(false);
   const [contactError, setContactError] = useState('');
+  const [eventsAttendedCount, setEventsAttendedCount] = useState(0);
 
   // Load profile data from localStorage on mount
   const loadProfileFromStorage = () => {
@@ -154,6 +155,81 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
       setProfile(prev => ({ ...prev, email: user.email }));
     }
   }, [user?.email]);
+
+  // Load events attended count
+  useEffect(() => {
+    async function loadEventsAttended() {
+      if (!user) return;
+
+      try {
+        const { count, error } = await supabase
+          .from('event_attendees')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('status', 'going');
+
+        if (!error && count !== null) {
+          setEventsAttendedCount(count);
+        }
+      } catch (err) {
+        console.error('Error loading events attended:', err);
+      }
+    }
+
+    loadEventsAttended();
+  }, [user]);
+
+  // Calculate profile strength (generous calculation)
+  const getProfileFields = () => [
+    { name: 'Full Name', value: profile.fullName, weight: 10 },
+    { name: 'Email', value: profile.email, weight: 8 },
+    { name: 'Job Title', value: profile.jobTitle, weight: 8 },
+    { name: 'Company', value: profile.company, weight: 8 },
+    { name: 'Zip Code', value: profile.zipCode, weight: 4 },
+    { name: 'Industry', value: profile.industry, weight: 8 },
+    { name: 'Profile Photo', value: photoUrl, weight: 12 },
+    { name: 'Personal Interests', value: profile.personalInterests?.length > 0, weight: 10 },
+    { name: 'Networking Goals', value: profile.networkingGoals?.length > 0, weight: 10 },
+    { name: 'Organizations (Attending)', value: profile.organizationsAttending?.length >= 3, weight: 8 },
+    { name: 'Organizations (Member)', value: profile.organizationsMember?.length >= 3, weight: 6 },
+    { name: 'Same Industry Preference', value: profile.sameIndustry, weight: 4 },
+    { name: 'Gender', value: profile.gender, weight: 2 },
+    { name: 'Gender Preference', value: profile.genderPreference, weight: 2 }
+  ];
+
+  const calculateProfileStrength = () => {
+    const fields = getProfileFields();
+    let score = 0;
+
+    fields.forEach(field => {
+      if (field.value && field.value !== '' && field.value !== false) {
+        score += field.weight;
+      }
+    });
+
+    // Add bonus points for having events attended (generous!)
+    if (eventsAttendedCount > 0) score = Math.min(100, score + 8);
+    if (eventsAttendedCount >= 3) score = Math.min(100, score + 4);
+
+    return Math.min(100, score);
+  };
+
+  const getMissingFields = () => {
+    const fields = getProfileFields();
+    const missing = [];
+
+    fields.forEach(field => {
+      if (!field.value || field.value === '' || field.value === false) {
+        missing.push(field.name);
+      }
+    });
+
+    // Only show main profile fields (not preferences)
+    const mainFields = ['Profile Photo', 'Full Name', 'Job Title', 'Company', 'Industry', 'Networking Goals', 'Personal Interests', 'Organizations (Attending)'];
+    const prioritized = missing.filter(m => mainFields.includes(m)).slice(0, 3);
+
+    return prioritized;
+  };
 
   // Load notification preferences from Supabase
   useEffect(() => {
@@ -1179,6 +1255,32 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
               >
                 Save Changes
               </button>
+            </div>
+
+            {/* Profile Stats */}
+            <div className="border-t border-gray-200 pt-6 mt-8">
+              <h3 className="font-bold text-gray-900 mb-4">Profile Stats</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <Calendar className="w-8 h-8 text-green-600 mb-2" />
+                  <p className="text-2xl font-bold">{eventsAttendedCount}</p>
+                  <p className="text-sm text-gray-600">Events Attending</p>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <CheckCircle className="w-8 h-8 text-purple-600 mb-2" />
+                  <p className="text-2xl font-bold">{calculateProfileStrength()}%</p>
+                  <p className="text-sm text-gray-600">Profile Strength</p>
+                  {calculateProfileStrength() >= 90 ? (
+                    <p className="text-xs text-green-600 mt-2 font-medium">
+                      Great job on your profile!
+                    </p>
+                  ) : getMissingFields().length > 0 && (
+                    <p className="text-xs text-gray-500 mt-2">
+                      Boost by adding: {getMissingFields().join(', ')}
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         )}

@@ -6,7 +6,6 @@ import Events from './Events';
 import Connections from './Connections';
 import Messages from './Messages';
 import Settings from './Settings';
-import Subscription from './Subscription';
 import Account from './Account';
 import TermsPage from './TermsPage';
 import PrivacyPage from './PrivacyPage';
@@ -30,7 +29,6 @@ function Dashboard() {
   const [selectedConnectionId, setSelectedConnectionId] = useState(null);
   const [events, setEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
-const [selectedPlan, setSelectedPlan] = useState(null);
 const [loadedFeaturedContent, setLoadedFeaturedContent] = useState([null, null, null]);
 const [showSponsorModal, setShowSponsorModal] = useState(false);
 const [showSharePrompt, setShowSharePrompt] = useState(false);
@@ -888,12 +886,6 @@ const getGreeting = () => {
 
   case 'settings':
   return <Settings onBackToDashboard={() => setActiveTab('dashboard')} />;
-
-  case 'subscription':
-  return <Subscription onSelectPlan={(planId, isYearly) => {
-    setSelectedPlan({ planId, isYearly });
-      setActiveTab('payment');
-  }} />;
 
   case 'payment':
   return <Account onBackToDashboard={() => {
