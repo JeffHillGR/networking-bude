@@ -33,33 +33,47 @@ export default function BudEOnboarding() {
   const [isHovering, setIsHovering] = useState(false);
   const carouselRef = useRef(null);
 
-  const mobileImages = [
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-1.png',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-2.png',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-3.png',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-4.png'
+  const bannerImages = [
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-1.png',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-2.png',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-3.png',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-4.png'
   ];
 
-  const desktopImages = [
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Landscape-1.png',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Landscape-2.png',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Landscape-3.png',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Landscape-4.png'
-  ];
+  // Preload banner images
+  useEffect(() => {
+    bannerImages.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
 
-  // Auto-rotate carousel every 5 seconds (pause on hover)
+  // Auto-rotate carousel every 3 seconds (pause on hover)
   useEffect(() => {
     if (!showLandingHero || isHovering) return;
 
     const timer = setInterval(() => {
       setHeroImageIndex(prev => (prev + 1) % 4); // Cycle 0 -> 1 -> 2 -> 3 -> 0
-    }, 5000);
+    }, 3000);
 
     return () => clearInterval(timer);
   }, [showLandingHero, isHovering]);
 
-  const heroImage = mobileImages[heroImageIndex];
-  const heroImageDesktop = desktopImages[heroImageIndex];
+  // Change to image 2 when user starts scrolling
+  useEffect(() => {
+    if (!showLandingHero) return;
+
+    const handleScroll = () => {
+      if (heroImageIndex === 0 && window.scrollY > 10) {
+        setHeroImageIndex(1);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [showLandingHero, heroImageIndex]);
+
+  const currentBanner = bannerImages[heroImageIndex];
 
   // TODO: Re-enable after adding login functionality
   // Redirect already logged-in users to dashboard (but not during signup process)
@@ -407,24 +421,12 @@ export default function BudEOnboarding() {
         >
           {/* Image container with stacked images for fade effect */}
           <div className="relative flex-1 w-full flex items-center justify-center">
-            {/* Mobile: Portrait images */}
-            {mobileImages.map((img, index) => (
+            {bannerImages.map((img, index) => (
               <img
-                key={`mobile-${index}`}
+                key={`banner-${index}`}
                 src={img}
                 alt={`Networking BudE ${index + 1}`}
-                className={`md:hidden absolute max-h-full max-w-full object-contain transition-opacity duration-1000 ${
-                  index === heroImageIndex ? 'opacity-100' : 'opacity-0'
-                }`}
-              />
-            ))}
-            {/* Desktop: Landscape images */}
-            {desktopImages.map((img, index) => (
-              <img
-                key={`desktop-${index}`}
-                src={img}
-                alt={`Networking BudE ${index + 1}`}
-                className={`hidden md:block absolute max-h-full max-w-full object-contain transition-opacity duration-1000 ${
+                className={`absolute max-h-full max-w-full object-contain transition-opacity duration-300 ${
                   index === heroImageIndex ? 'opacity-100' : 'opacity-0'
                 }`}
               />
@@ -464,7 +466,7 @@ export default function BudEOnboarding() {
         <div className="max-w-3xl mx-auto">
           {/* About Title */}
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-black">About</h2>
+            <h2 className="text-4xl font-bold text-black">About</h2>
           </div>
 
           <div className="text-gray-700 space-y-6 leading-relaxed">
@@ -513,13 +515,20 @@ export default function BudEOnboarding() {
         </div>
       </div>
 
-      {/* Tech Event Image */}
-      <div className="bg-gray-50 flex justify-center pb-8">
-        <img
-          src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Tech-Event.jpg"
-          alt="Tech Event"
-          className="max-w-[820px] w-full px-6"
-        />
+      {/* People Networking Images - Side by Side */}
+      <div className="bg-gray-50 flex justify-center pb-8 px-6">
+        <div className="flex gap-12 max-w-[820px] w-full items-center">
+          <img
+            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-1.png"
+            alt="People Networking"
+            className="w-1/2 object-contain"
+          />
+          <img
+            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-3.png"
+            alt="People Networking"
+            className="w-[45%] object-contain"
+          />
+        </div>
       </div>
 
       {/* How It Works Section */}
@@ -527,7 +536,7 @@ export default function BudEOnboarding() {
         <div className="max-w-3xl mx-auto">
           {/* How It Works Title */}
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-black">How It Works</h2>
+            <h2 className="text-4xl font-bold text-black">How It Works</h2>
           </div>
 
           <div className="text-gray-700 space-y-6 leading-relaxed">
@@ -566,15 +575,6 @@ export default function BudEOnboarding() {
             </button>
           </div>
         </div>
-      </div>
-
-      {/* Athena Image */}
-      <div className="bg-white flex justify-center pb-8">
-        <img
-          src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Athena-2.jpg"
-          alt="Athena"
-          className="max-w-[820px] w-full px-6"
-        />
       </div>
 
       {/* Copyright Footer */}
