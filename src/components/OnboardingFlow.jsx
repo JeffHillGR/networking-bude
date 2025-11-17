@@ -33,28 +33,35 @@ export default function BudEOnboarding() {
   const [isHovering, setIsHovering] = useState(false);
   const carouselRef = useRef(null);
 
-  const bannerImages = [
+  const desktopBanners = [
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-1.png',
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-2.png',
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-3.png',
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-4.png'
   ];
 
+  const mobileBanners = [
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-1.png',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-2.png',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-3.png',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-4.png'
+  ];
+
   // Preload banner images
   useEffect(() => {
-    bannerImages.forEach(src => {
+    [...desktopBanners, ...mobileBanners].forEach(src => {
       const img = new Image();
       img.src = src;
     });
   }, []);
 
-  // Auto-rotate carousel every 3 seconds (pause on hover)
+  // Auto-rotate carousel every 5 seconds (pause on hover)
   useEffect(() => {
     if (!showLandingHero || isHovering) return;
 
     const timer = setInterval(() => {
       setHeroImageIndex(prev => (prev + 1) % 4); // Cycle 0 -> 1 -> 2 -> 3 -> 0
-    }, 3000);
+    }, 5000);
 
     return () => clearInterval(timer);
   }, [showLandingHero, isHovering]);
@@ -72,8 +79,6 @@ export default function BudEOnboarding() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [showLandingHero, heroImageIndex]);
-
-  const currentBanner = bannerImages[heroImageIndex];
 
   // TODO: Re-enable after adding login functionality
   // Redirect already logged-in users to dashboard (but not during signup process)
@@ -421,12 +426,24 @@ export default function BudEOnboarding() {
         >
           {/* Image container with stacked images for fade effect */}
           <div className="relative flex-1 w-full flex items-center justify-center">
-            {bannerImages.map((img, index) => (
+            {/* Mobile banners */}
+            {mobileBanners.map((img, index) => (
               <img
-                key={`banner-${index}`}
+                key={`mobile-${index}`}
                 src={img}
                 alt={`Networking BudE ${index + 1}`}
-                className={`absolute max-h-full max-w-full object-contain transition-opacity duration-300 ${
+                className={`md:hidden absolute max-h-full max-w-full object-contain transition-opacity duration-300 ${
+                  index === heroImageIndex ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
+            ))}
+            {/* Desktop banners */}
+            {desktopBanners.map((img, index) => (
+              <img
+                key={`desktop-${index}`}
+                src={img}
+                alt={`Networking BudE ${index + 1}`}
+                className={`hidden md:block absolute max-h-full max-w-full object-contain transition-opacity duration-300 ${
                   index === heroImageIndex ? 'opacity-100' : 'opacity-0'
                 }`}
               />
@@ -516,8 +533,8 @@ export default function BudEOnboarding() {
       </div>
 
       {/* People Networking Images - Side by Side */}
-      <div className="bg-gray-50 flex justify-center pb-8 px-6">
-        <div className="flex gap-12 max-w-[820px] w-full items-center">
+      <div className="bg-gray-50 flex justify-center pb-8 px-4 md:px-6">
+        <div className="flex gap-4 md:gap-12 max-w-[820px] w-full items-center">
           <img
             src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-1.png"
             alt="People Networking"
