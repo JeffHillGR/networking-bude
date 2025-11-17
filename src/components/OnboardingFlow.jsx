@@ -320,43 +320,168 @@ export default function BudEOnboarding() {
 
   // NEW: Full-screen landing page with hero images
   const renderLandingPage = () => (
-    <div className="relative h-screen w-full flex flex-col bg-white">
+    <div className="min-h-screen w-full bg-white overflow-y-auto">
       {/* Top bar - Lime-Green-Lime gradient with "Already a member?" */}
-      <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] px-4 py-1 text-center flex-shrink-0">
+      <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] px-4 py-2 text-center sticky top-0 z-10">
         <button
           onClick={() => setShowLoginModal(true)}
-          className="text-white font-medium text-sm md:text-base hover:text-gray-100 transition-colors"
+          className="bg-[#009900] text-white font-medium text-sm md:text-base px-6 py-1.5 rounded-full border-2 border-white hover:bg-[#007700] transition-colors"
         >
           Already a Member?
         </button>
       </div>
 
-      {/* Hero image - portrait for mobile, landscape for desktop */}
-      <div className="flex-1 flex items-center justify-center overflow-hidden px-4 py-2">
-        {/* Mobile: Portrait image */}
-        <img
-          src={heroImage}
-          alt="Networking BudE"
-          className="md:hidden max-h-full max-w-full object-contain"
-        />
-        {/* Desktop: Landscape image */}
-        <img
-          src={heroImageDesktop}
-          alt="Networking BudE"
-          className="hidden md:block max-h-full max-w-full object-contain"
-        />
+      {/* Hero section - takes up viewport minus top bar */}
+      <div className="h-[calc(100vh-80px)] flex flex-col">
+        {/* Hero image - portrait for mobile, landscape for desktop */}
+        <div className="flex-1 flex items-center justify-center overflow-hidden px-4 py-2">
+          {/* Mobile: Portrait image */}
+          <img
+            src={heroImage}
+            alt="Networking BudE"
+            className="md:hidden max-h-full max-w-full object-contain"
+          />
+          {/* Desktop: Landscape image */}
+          <img
+            src={heroImageDesktop}
+            alt="Networking BudE"
+            className="hidden md:block max-h-full max-w-full object-contain"
+          />
+        </div>
+
+        {/* Bottom bar - White with "Join Now" */}
+        <div className="bg-white px-4 py-2 flex-shrink-0">
+          <div className="flex justify-center">
+            <button
+              onClick={() => setShowLandingHero(false)}
+              className="bg-gray-200 text-[#009900] font-bold text-lg px-10 py-3 rounded-full hover:bg-gray-300 transition-colors border-2 border-[#D0ED00]"
+            >
+              Join Now
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Bottom bar - White with "Join Now" */}
-      <div className="bg-white px-4 py-2 flex-shrink-0">
-        <div className="flex justify-center">
-          <button
-            onClick={() => setShowLandingHero(false)}
-            className="bg-gray-200 text-[#009900] font-bold text-lg px-10 py-3 rounded-full hover:bg-gray-300 transition-colors"
-          >
-            Join Now
-          </button>
+      {/* About Section */}
+      <div className="bg-gray-50 px-6 py-12" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+        <div className="max-w-3xl mx-auto">
+          {/* About Title Block - matches app style */}
+          <div className="text-center mb-8">
+            <div className="inline-block bg-white px-6 py-3 rounded-lg border-2 border-black">
+              <h2 className="text-xl font-bold text-black">About</h2>
+            </div>
+          </div>
+
+          <div className="text-gray-700 space-y-6 leading-relaxed">
+            <p className="font-semibold text-lg">
+              Welcome to Networking BudE by The BudE System™
+            </p>
+
+            <p>
+              For years I kept hearing, "traditional networking isn't working." Honestly, I felt that too — especially walking into those giant 800-person breakfasts in downtown Grand Rapids. I'd show up in my rarely-used dress clothes, already anxious, already wondering who to interrupt, who to avoid, and whether I'd make even one meaningful connection. Usually the answer was… nope. Just another business card in the drawer.
+            </p>
+
+            <p>
+              I've been doing professional networking for 25+ years — building community, growing my business, switching jobs, learning new things. But post-Covid, the old way felt even more awkward. Lots of small talk, not much substance.
+            </p>
+
+            <p className="font-semibold">
+              Everything shifted when I stopped going alone.
+            </p>
+
+            <p>
+              When I started inviting friends and colleagues to events, the whole experience changed. Suddenly networking became strategic and fun. We introduced each other to collaborators and clients. We worked the room together. We made real connections — the kind that turned into coffees, lunches, and new opportunities. My networking buddies had the same results.
+            </p>
+
+            <p>
+              Now I have a small crew of 6–7 great people I go to events with — not thousands of passive connections, but a handful of intentional, community-focused pros who help each other grow. It's been game-changing.
+            </p>
+
+            <p>
+              Maybe you already have this. Maybe you don't. That's why I created The BudE System — to help you build the same kind of meaningful, wingperson-powered networking I've been lucky enough to experience.
+            </p>
+
+            <p>
+              I hope you find real connections here. Check out the events and insights, and make the most of them.
+            </p>
+
+            <p className="font-semibold">
+              Have a meaningful week.
+            </p>
+
+            <div className="mt-8 text-gray-900">
+              <p className="font-semibold">— Jeff Hill</p>
+              <p>Founder, The BudE System™</p>
+              <p>Grand Rapids, Michigan</p>
+            </div>
+          </div>
         </div>
+      </div>
+
+      {/* How It Works Section */}
+      <div className="bg-white px-6 py-12" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+        <div className="max-w-3xl mx-auto">
+          {/* How It Works Title Block */}
+          <div className="text-center mb-8">
+            <div className="inline-block bg-white px-6 py-3 rounded-lg border-2 border-black">
+              <h2 className="text-xl font-bold text-black">How It Works</h2>
+            </div>
+          </div>
+
+          <div className="text-gray-700 space-y-6 leading-relaxed">
+            <div>
+              <p className="font-bold text-lg mb-2">You create your profile</p>
+              <p>
+                Tell us your professional interests, the organizations you're part of (or want to explore), your hobbies, and—most importantly—your networking goals.
+              </p>
+            </div>
+
+            <div>
+              <p className="font-bold text-lg mb-2">We take the wheel</p>
+              <ul className="space-y-2">
+                <li>We suggest compatible connections.</li>
+                <li>We show you weekly events worth checking out (and yes, you'll be surprised how much more effective they are with a BudE).</li>
+                <li>We tell you who in your selected network is interested in each event and who's actually going!</li>
+                <li>We give you Resources and Insights to elevate your networking game and support your professional growth.</li>
+              </ul>
+            </div>
+
+            <div>
+              <p className="font-bold text-lg mb-2">All in one app.</p>
+              <p className="text-lg">
+                That's The BudE System.
+              </p>
+            </div>
+          </div>
+
+          {/* Join Now Button */}
+          <div className="mt-10 flex justify-center">
+            <button
+              onClick={() => setShowLandingHero(false)}
+              className="bg-[#D0ED00] text-[#009900] font-bold text-lg px-10 py-3 rounded-full hover:bg-[#c4e000] transition-colors"
+            >
+              Join Now
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Copyright Footer */}
+      <div className="bg-gray-100 px-6 py-6 text-center" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+        <a
+          href="https://docs.google.com/spreadsheets/d/1Tawx4M2HQBEHfnVxgisX3N6FVRdha6WBSPSkPcioHqk/edit?gid=1876475143#gid=1876475143"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#009900] hover:text-[#007700] font-medium text-sm underline"
+        >
+          Contact Us
+        </a>
+        <p className="text-gray-600 text-sm mt-2">
+          Copyright The BudE System™
+        </p>
+        <p className="text-gray-600 text-sm">
+          Grand Rapids, Michigan
+        </p>
       </div>
     </div>
   );
