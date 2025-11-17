@@ -262,7 +262,6 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
         }
 
         setConnectionLikedEvents(likedEventsMap);
-        console.log('Loaded liked events for connections:', likedEventsMap);
 
         // Fetch "going" events for all connections in bulk
         const goingEventsMap = {};
@@ -314,7 +313,6 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
         }
 
         setConnectionGoingEvents(goingEventsMap);
-        console.log('Loaded going events for connections:', goingEventsMap);
 
         // Only show recommended (perhaps are hidden for 1 week)
         // Cap recommendations at 10 per session
@@ -438,22 +436,11 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
       const alreadyInitiated = matches && matches.some(m => m.initiated_by_user_id);
       const currentMatch = matches && matches.length > 0 ? matches[0] : null;
 
-      console.log('Current match status:', {
-        currentUserId,
-        personId: person.id,
-        matches,
-        alreadyInitiated,
-        currentStatus: currentMatch?.status
-      });
-
       let connectionResult = 'pending';
 
       // If someone already initiated, receiver is accepting → make it mutual
       // Update both rows to 'connected' (initiated_by_user_id stays for record-keeping)
       if (alreadyInitiated) {
-        console.log('🎉 Other person already requested! Making it mutual connection...');
-        console.log('Updating BOTH rows to connected status...');
-
         // Update Row 1: Current user's row
         const { error: error1 } = await supabase
           .from('connection_flow')
@@ -462,10 +449,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
           .eq('matched_user_id', person.id);
 
         if (error1) {
-          console.error('❌ ERROR updating current user row to connected:', error1);
           throw error1;
         }
-        console.log('✅ Updated current user row to connected');
 
         // Update Row 2: Other person's row
         const { error: error2 } = await supabase
@@ -475,17 +460,12 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
           .eq('matched_user_id', currentUserId);
 
         if (error2) {
-          console.error('❌ ERROR updating other user row to connected:', error2);
           throw error2;
         }
-        console.log('✅ Updated other user row to connected');
-
-        console.log('🎊 BOTH ROWS SUCCESSFULLY UPDATED TO CONNECTED!');
 
         connectionResult = 'connected';
       } else if (currentMatch) {
         // Status is 'recommended' or something else, so this is the first request
-        console.log('First connection request, setting to pending...');
 
         // Update BOTH rows to 'pending' (both users should see it in Pending tab)
         // But ONLY set initiated_by_user_id in the INITIATOR'S row
@@ -502,7 +482,6 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
           .eq('matched_user_id', person.id);
 
         if (error1) {
-          console.error('❌ Error updating initiator row to pending:', error1);
           throw error1;
         }
 
@@ -518,11 +497,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
           .eq('matched_user_id', currentUserId);
 
         if (error2) {
-          console.error('❌ Error updating receiver row to pending:', error2);
           throw error2;
         }
-
-        console.log('✅ Both rows updated to pending! Initiator row has initiated_by_user_id:', currentUserId);
 
         connectionResult = 'pending';
       }
@@ -540,7 +516,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
       // The trigger 'notify_mutual_connection' handles this when status changes to 'connected'
       // Connection request notifications are handled here in the code
       if (connectionResult === 'pending') {
-        // Pending connection - only recipient gets notified
+        // Pending connection - only recipient gets notified (in-app)
         await supabase
           .from('notifications')
           .insert({
@@ -550,6 +526,27 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
             message: connectionMessage || `${senderName} sent you a connection request.`,
             action_url: `/connections?userId=${currentUserId}`
           });
+
+        // Also send email notification
+        try {
+          await fetch('/api/sendConnectionEmail', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              recipientEmail: person.email,
+              recipientName: person.name,
+              senderName: senderName,
+              senderEmail: user.email,
+              senderId: currentUserId,
+              senderTitle: currentUserData?.title || '',
+              senderCompany: currentUserData?.company || '',
+              message: connectionMessage || '',
+              connectionScore: person.connectionScore || 85
+            })
+          });
+        } catch (emailError) {
+          // Don't fail the connection request if email fails
+        }
       }
       // Note: 'connected' status notifications are handled by database trigger
 

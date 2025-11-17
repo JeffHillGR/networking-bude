@@ -616,7 +616,7 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
       showSuccess('Photo uploaded successfully!');
     } catch (error) {
       console.error('Error uploading photo:', error);
-      alert(`Error uploading photo: ${error.message}`);
+      alert('Failed to upload photo. Please try again with a smaller image.');
     } finally {
       setUploadingPhoto(false);
     }

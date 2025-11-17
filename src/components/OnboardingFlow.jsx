@@ -387,8 +387,8 @@ export default function BudEOnboarding() {
         navigate('/dashboard');
       }, 4000);
     } catch (error) {
-      console.error('❌ Error creating user:', error);
-      alert(`Failed to create account: ${error.message}`);
+      console.error('Error creating user:', error);
+      alert('Failed to create account. Please check your information and try again.');
     } finally {
       setIsSubmitting(false);
     }

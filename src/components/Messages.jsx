@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Search, MoreVertical, Smile, Send, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import EmojiPicker from 'emoji-picker-react';
 
 function Messages({ onBackToDashboard }) {
   const { user } = useAuth();
@@ -9,6 +10,7 @@ function Messages({ onBackToDashboard }) {
   const [messageInput, setMessageInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [conversations, setConversations] = useState([]);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -259,10 +261,9 @@ function Messages({ onBackToDashboard }) {
         throw error;
       }
 
-      console.log('Message sent successfully:', data);
     } catch (error) {
       console.error('Error sending message:', error);
-      alert(`Failed to send message: ${error.message || 'Please try again.'}`);
+      alert('Failed to send message. Please try again.');
       setMessageInput(messageContent); // Restore message on error
     } finally {
       setSending(false);
@@ -291,7 +292,7 @@ function Messages({ onBackToDashboard }) {
       setReportReason('');
     } catch (error) {
       console.error('Error submitting report:', error);
-      alert(`Failed to submit report: ${error.message || 'Please try again.'}`);
+      alert('Failed to submit report. Please try again.');
     } finally {
       setReportSubmitting(false);
     }
@@ -498,19 +499,6 @@ function Messages({ onBackToDashboard }) {
                     <div className="absolute right-0 top-12 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-20">
                       <button
                         onClick={() => {
-                          if (confirm('Are you sure you want to delete this conversation? This cannot be undone.')) {
-                            // TODO: Implement delete conversation
-                            console.log('Delete conversation');
-                            setShowOptionsMenu(false);
-                          }
-                        }}
-                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                      >
-                        🗑️ Delete Conversation
-                      </button>
-                      <div className="border-t border-gray-200 my-1"></div>
-                      <button
-                        onClick={() => {
                           setShowReportModal(true);
                           setShowOptionsMenu(false);
                         }}
@@ -580,9 +568,28 @@ function Messages({ onBackToDashboard }) {
                     className="flex-1 bg-transparent border-none outline-none resize-none text-gray-900 placeholder-gray-500"
                     disabled={sending}
                   />
-                  <button className="p-1 hover:bg-gray-200 rounded-full transition-colors flex-shrink-0">
-                    <Smile className="w-5 h-5 text-gray-600" />
-                  </button>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                      className="p-1 hover:bg-gray-200 rounded-full transition-colors flex-shrink-0"
+                      title="Add emoji"
+                    >
+                      <Smile className="w-5 h-5 text-gray-600" />
+                    </button>
+                    {showEmojiPicker && (
+                      <div className="absolute bottom-10 right-0 z-50">
+                        <EmojiPicker
+                          onEmojiClick={(emojiData) => {
+                            setMessageInput(prev => prev + emojiData.emoji);
+                            setShowEmojiPicker(false);
+                          }}
+                          width={300}
+                          height={400}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <button
                   onClick={handleSendMessage}

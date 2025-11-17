@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, Calendar, MapPin, Heart, ExternalLink, Share2, User, Home, TrendingUp, Users, X, Check } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Heart, ExternalLink, Share2, User, Home, TrendingUp, X, Check } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
@@ -539,9 +539,6 @@ function EventDetail() {
     );
   }
 
-  // Suggested connections - currently disabled (will show real connections in future)
-  const suggestedConnections = [];
-
   return (
     <>
       {/* Dynamic Meta Tags for Social Sharing */}
@@ -830,48 +827,6 @@ function EventDetail() {
                   )}
                 </div>
               </div>
-
-              {/* Suggested Connections - Hidden for now, will add when event attendance tracking is live */}
-              {suggestedConnections.length > 0 && (
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">Connect Before the Event</h3>
-                  <p className="text-gray-600 text-sm mb-4">These people share your interests, take a look</p>
-                  <div className="space-y-3">
-                    {suggestedConnections.map((person, index) => (
-                      <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                        <img
-                          src={person.image}
-                          alt={person.name}
-                          className="w-12 h-12 rounded-full object-cover flex-shrink-0"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-bold text-gray-900 text-sm">{person.name}</h4>
-                          <p className="text-xs text-gray-600 line-clamp-1">{person.title}</p>
-                          <div className="flex flex-wrap items-center gap-2 mt-1 mb-2">
-                            <span className="text-xs text-green-600 flex items-center gap-1">
-                              <TrendingUp className="w-3 h-3" />{person.compatibility}
-                            </span>
-                            <span className="text-xs text-blue-500 flex items-center gap-1">
-                              <Users className="w-3 h-3" />{person.mutualConnections}
-                            </span>
-                            {person.attending && (
-                              <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
-                                Attending
-                              </span>
-                            )}
-                          </div>
-                          <button
-                            onClick={() => setShowScientistModal(true)}
-                            className="w-full px-3 py-1.5 bg-[#009900] text-white rounded-lg text-xs font-medium hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
-                          >
-                            Connect
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>

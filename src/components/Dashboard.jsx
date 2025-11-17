@@ -110,23 +110,11 @@ const handleSubmitFeedback = async (e) => {
     }, 2000);
   } catch (error) {
     console.error('Error submitting feedback:', error);
-
-    // Check if we're on localhost
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      alert('API endpoints are not available on localhost. Please test feedback submission on the Vercel deployment at your live URL.\n\nFor local testing, the form validation and UI work correctly - only the actual Google Sheets submission requires the production environment.');
-    } else {
-      alert('There was an error submitting your feedback. Please try again or contact support if the problem persists.');
-    }
+    alert('There was an error submitting your feedback. Please try again.');
   }
 };
 
 // Handle contact form submission
-// Removed returning user banner - data is now saved to Supabase
-const handleDismissReturningUserBanner = () => {
-  // Deprecated - keeping for backwards compatibility
-  setShowReturningUserBanner(false);
-};
-
 const handleSubmitContact = async (e) => {
   e.preventDefault();
   setIsSubmittingContact(true);
@@ -163,13 +151,7 @@ const handleSubmitContact = async (e) => {
     }, 3000);
   } catch (error) {
     console.error('Error submitting contact form:', error);
-
-    // Check if we're on localhost
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      alert('API endpoints are not available on localhost. Please test on the Vercel deployment.\n\nFor now, please email grjeff@gmail.com directly.');
-    } else {
-      alert('There was an error submitting your message. Please email grjeff@gmail.com directly.');
-    }
+    alert('There was an error submitting your message. Please email grjeff@gmail.com directly.');
   } finally {
     setIsSubmittingContact(false);
   }
@@ -578,9 +560,6 @@ const getGreeting = () => {
   ];
 
   const renderContent = () => {
-
-  console.log('Current activeTab:', activeTab);
-
     switch(activeTab) {
       case 'dashboard':
         return (
@@ -1085,7 +1064,6 @@ default:
                   const formData = new FormData(e.target);
 
                   try {
-                    console.log('📤 Submitting ad inquiry...');
                     const payload = {
                       name: formData.get('name'),
                       email: formData.get('email'),
@@ -1094,7 +1072,6 @@ default:
                       adType: formData.get('adType'),
                       message: formData.get('message')
                     };
-                    console.log('Payload:', payload);
 
                     const response = await fetch('/api/submitAdInquiry', {
                       method: 'POST',
@@ -1104,17 +1081,12 @@ default:
                       body: JSON.stringify(payload)
                     });
 
-                    console.log('Response status:', response.status);
-
                     if (!response.ok) {
-                      const errorData = await response.json().catch(() => ({ message: 'Unknown server error' }));
-                      console.error('❌ Server error response:', errorData);
-                      alert(`Server Error: ${errorData.message || 'Failed to submit inquiry'}\n\nPlease email grjeff@gmail.com directly.`);
+                      alert('Unable to submit inquiry. Please email grjeff@gmail.com directly.');
                       return;
                     }
 
                     const result = await response.json();
-                    console.log('✅ Success:', result);
 
                     // Show success message in modal
                     setAdInquirySubmitted(true);
@@ -1127,8 +1099,8 @@ default:
                       setShowAdInquiryModal(false);
                     }, 3000);
                   } catch (error) {
-                    console.error('❌ Error submitting ad inquiry:', error);
-                    alert(`Error: ${error.message}\n\nPlease email grjeff@gmail.com directly.`);
+                    console.error('Error submitting ad inquiry:', error);
+                    alert('Unable to submit inquiry. Please email grjeff@gmail.com directly.');
                   } finally {
                     setIsSubmittingAd(false);
                   }
