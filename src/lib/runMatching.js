@@ -34,22 +34,16 @@ function convertUserToAlgorithmFormat(user) {
 
 /**
  * Trigger the matching algorithm for all users
- * This can be called after:
+ * This is called after:
  * - New user signup
  * - Profile updates
  *
- * Uses the Supabase Edge Function if available,
- * or falls back to direct database function call
+ * Calculates compatibility between all users and creates
+ * matches in the connection_flow table for scores >= 70%
  */
 export async function runMatchingAlgorithm() {
   try {
-    console.log('🔄 Triggering matching algorithm...');
-
-    // NOTE: The old 'run-matching' Edge Function has been deprecated
-    // It contained an outdated algorithm that was caught in a merge
-    // We now run the matching logic inline using the CURRENT algorithm
-
-    console.log('ℹ️ Running matching algorithm inline using CURRENT algorithm...');
+    console.log('🔄 Running matching algorithm...');
 
     // Get all users
     const { data: users, error: usersError } = await supabase
