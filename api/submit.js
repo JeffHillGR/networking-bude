@@ -40,7 +40,7 @@ export default async function handler(req, res) {
     const formData = req.body;
 
     // Validate required fields
-    const requiredFields = ['firstName', 'lastName', 'email', 'username'];
+    const requiredFields = ['firstName', 'lastName', 'email'];
     const missingFields = requiredFields.filter(field => !formData[field]);
 
     if (missingFields.length > 0) {
@@ -91,8 +91,7 @@ export default async function handler(req, res) {
       timestamp, // A: Timestamp
       formData.firstName || '', // B: First Name
       formData.lastName || '', // C: Last Name
-      formData.username || '', // D: Username
-      formData.email || '', // E: Email
+      formData.email || '', // D: Email
       formData.jobTitle || '', // F: Job Title
       formData.company || '', // G: Company
       formData.industry || '', // H: Industry

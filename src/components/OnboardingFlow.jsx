@@ -117,7 +117,6 @@ export default function BudEOnboarding() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    username: '',
     email: '',
     password: '',
     jobTitle: '',
@@ -344,7 +343,6 @@ export default function BudEOnboarding() {
         first_name: formData.firstName,
         last_name: formData.lastName,
         name: `${formData.firstName} ${formData.lastName}`,
-        username: formData.username,
         title: formData.jobTitle,
         company: formData.company,
         industry: formData.industry,
@@ -755,16 +753,6 @@ export default function BudEOnboarding() {
                 onChange={(e) => handleChange('lastName', e.target.value)}
               />
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold mb-1 text-gray-900">Preferred Username</label>
-            <input
-              type="text"
-              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-              value={formData.username}
-              onChange={(e) => handleChange('username', e.target.value)}
-            />
           </div>
 
           <div>

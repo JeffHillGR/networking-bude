@@ -18,7 +18,6 @@ const FORM_CONFIG = {
   fields: {
     firstName: 'entry.10554968',
     lastName: 'entry.199267993',
-    username: 'entry.1811478425',
     email: 'entry.733882310',
     jobTitle: 'entry.1139174022',
     company: 'entry.1241113291',
