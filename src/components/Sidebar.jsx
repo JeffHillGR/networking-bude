@@ -63,14 +63,13 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
 
   return (
     <aside className="hidden md:block w-64 bg-white border-r border-gray-200 flex-shrink-0 relative overflow-hidden">
-      {/* Background Image with Blur */}
+      {/* Background Image */}
       <div
         className="fixed left-0 w-64 h-screen bg-cover opacity-30 pointer-events-none"
         style={{
           backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
           backgroundPosition: 'center 15%',
           backgroundSize: 'cover',
-          filter: 'blur(3px)',
           transform: 'scale(1.1)',
           top: '90px'
         }}
