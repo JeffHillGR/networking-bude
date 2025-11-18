@@ -524,7 +524,7 @@ export default function BudEOnboarding() {
 
             <div className="flex flex-col md:flex-row gap-8 items-center my-8">
               <div className="md:w-1/2 text-left">
-                <p className="text-4xl md:text-5xl font-bold text-[#009900] leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                <p className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
                   A networking wingperson for every event.
                 </p>
               </div>
@@ -607,7 +607,7 @@ export default function BudEOnboarding() {
                 </ul>
               </div>
               <div className="md:w-1/2 text-right">
-                <p className="text-4xl md:text-5xl font-bold text-[#009900] leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                <p className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
                   Stop networking alone. Start networking smarter.
                 </p>
               </div>
@@ -643,7 +643,7 @@ export default function BudEOnboarding() {
           <div className="text-gray-700 space-y-6 leading-relaxed text-lg">
             <div className="flex flex-col md:flex-row gap-8 items-center my-8">
               <div className="md:w-1/2 text-left">
-                <p className="text-4xl md:text-5xl font-bold text-[#009900] leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                <p className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
                   You support their goals; they support yours.
                 </p>
               </div>
