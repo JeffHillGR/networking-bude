@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // Create Supabase client with SERVICE ROLE key (bypasses RLS)
 const supabaseAdmin = createClient(
