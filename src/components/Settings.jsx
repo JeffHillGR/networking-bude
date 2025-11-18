@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { User, Shield, Bell, Lock, Upload, X, ArrowLeft, Calendar, CheckCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { runMatchingAlgorithm } from '../lib/runMatching';
+import { runMatchingAlgorithm } from '../lib/matchingAlgorithm';
 
 function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
   const { user } = useAuth();

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { User, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
-import { runMatchingAlgorithm } from '../lib/runMatching.js';
+import { runMatchingAlgorithm } from '../lib/matchingAlgorithm.js';
 
 export default function BudEOnboarding() {
   const navigate = useNavigate();
