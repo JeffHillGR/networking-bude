@@ -553,21 +553,22 @@ Deno.serve(async (req) => {
     // Convert users to algorithm format
     const algorithmUsers = users.map(convertUserToAlgorithmFormat);
 
-    // First, delete ALL existing matches to start fresh
-    console.log('🗑️ Clearing existing matches...');
+    // Delete ONLY 'recommended' matches to start fresh
+    // Preserve: saved, pending, accepted, rejected (user actions)
+    console.log('🗑️ Clearing old recommended matches...');
     const { error: deleteError } = await supabaseAdmin
       .from('connection_flow')
       .delete()
-      .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all records
+      .eq('status', 'recommended'); // Only delete recommendations
 
     if (deleteError) {
-      console.error('Error clearing matches:', deleteError);
+      console.error('Error clearing recommended matches:', deleteError);
     }
 
     // Calculate compatibility between all users
     let matchesCreated = 0;
     let totalPairsEvaluated = 0;
-    const matchThreshold = 70; // Only create matches above 70%
+    const matchThreshold = 65; // Only create matches above 65%
 
     console.log(`📊 Evaluating ${users.length} users for matches...`);
 

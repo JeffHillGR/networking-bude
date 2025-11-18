@@ -81,7 +81,7 @@ async function runMatchingAlgorithm() {
     }
 
     let totalMatches = 0;
-    const matchThreshold = 70; // 70% threshold (matches production)
+    const matchThreshold = 65; // 65% threshold (matches production)
     let scoreDistribution = { '0-20': 0, '20-40': 0, '40-60': 0, '60-80': 0, '80-100': 0 };
 
     // For each user, find their matches
