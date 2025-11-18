@@ -5,16 +5,25 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 // Matching algorithm logic (converted from matchingAlgorithm.js)
+// Updated to match the current scoring system:
+// - Networking Goals: 35 points
+// - Organizations: 40 points (20 complementary + 20 same-field)
+// - Professional Interests: 15 points
+// - Industry: 5 points
+// - Gender Preference: 5 points
+// - Age Preference: 5 points
+// - Personal Interests: 5 points
+// Total: 110 points possible, capped at 100
 function calculateCompatibility(user1: any, user2: any) {
   let totalScore = 0;
   const matches: any = {
-    organizations: { weight: 20, score: 0, details: [] },
-    professionalInterests: { weight: 25, score: 0, details: [] },
-    personalInterests: { weight: 15, score: 0, details: [] },
-    industry: { weight: 15, score: 0, details: [] },
-    networkingGoals: { weight: 15, score: 0, details: [] },
-    genderMatch: { weight: 5, score: 0, details: [] },
-    ageMatch: { weight: 5, score: 0, details: [] }
+    networkingGoals: { score: 0, details: [] },
+    organizations: { score: 0, details: [] },
+    professionalInterests: { score: 0, details: [] },
+    industry: { score: 0, details: [] },
+    gender: { score: 0, details: [] },
+    age: { score: 0, details: [] },
+    personalInterests: { score: 0, details: [] }
   };
 
   // Helper function to get array from string or array
@@ -24,23 +33,44 @@ function calculateCompatibility(user1: any, user2: any) {
     return [];
   };
 
-  // Organizations matching
-  const orgs1 = toArray(user1.orgsAttend);
-  const orgs2Want = toArray(user2.orgsWantToCheckOut);
-  const orgs2 = toArray(user2.orgsAttend);
-  const orgs1Want = toArray(user1.orgsWantToCheckOut);
+  // Organizations matching (40 points max)
+  // BUCKET 1 (20 points): Complementary Match - My attend ↔ Your check out
+  // BUCKET 2 (20 points): Same-Field Match - Both attend same OR both check out same
+  const u1Attend = toArray(user1.orgsAttend);
+  const u1CheckOut = toArray(user1.orgsWantToCheckOut);
+  const u2Attend = toArray(user2.orgsAttend);
+  const u2CheckOut = toArray(user2.orgsWantToCheckOut);
 
-  const commonOrgs = orgs1.filter(org => orgs2.includes(org));
-  const wantToCheckOut = orgs1.filter(org => orgs2Want.includes(org)) || orgs2.filter(org => orgs1Want.includes(org));
+  // BUCKET 1: Complementary Match
+  const complementary1 = u1Attend.filter(org => u2CheckOut.includes(org));
+  const complementary2 = u1CheckOut.filter(org => u2Attend.includes(org));
+  const allComplementary = [...complementary1, ...complementary2];
 
-  if (commonOrgs.length > 0) {
-    matches.organizations.score = Math.min(100, commonOrgs.length * 50);
-    commonOrgs.forEach(org => matches.organizations.details.push(`Both in ${org}`));
+  if (allComplementary.length > 0) {
+    matches.organizations.score += 20;
+    if (complementary1.length > 0) {
+      complementary1.forEach(org => matches.organizations.details.push(`Introduction opportunity: ${org}`));
+    }
+    if (complementary2.length > 0) {
+      complementary2.forEach(org => matches.organizations.details.push(`Introduction opportunity: ${org}`));
+    }
   }
-  if (wantToCheckOut.length > 0) {
-    matches.organizations.score += Math.min(50, wantToCheckOut.length * 25);
-    wantToCheckOut.forEach(org => matches.organizations.details.push(`Shared interest in ${org}`));
+
+  // BUCKET 2: Same-Field Match
+  const sharedAttend = u1Attend.filter(org => u2Attend.includes(org));
+  const sharedCheckOut = u1CheckOut.filter(org => u2CheckOut.includes(org));
+
+  if (sharedAttend.length > 0 || sharedCheckOut.length > 0) {
+    matches.organizations.score += 20;
+    if (sharedAttend.length > 0) {
+      sharedAttend.forEach(org => matches.organizations.details.push(`Both attend: ${org}`));
+    }
+    if (sharedCheckOut.length > 0) {
+      sharedCheckOut.forEach(org => matches.organizations.details.push(`Both interested in: ${org}`));
+    }
   }
+
+  matches.organizations.score = Math.min(matches.organizations.score, 40);
 
   // Professional interests
   const profInt1 = toArray(user1.professionalInterests);

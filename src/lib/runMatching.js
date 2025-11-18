@@ -66,9 +66,20 @@ export async function runMatchingAlgorithm() {
     // Convert users to algorithm format
     const algorithmUsers = users.map(convertUserToAlgorithmFormat);
 
+    // First, delete ALL existing matches to start fresh
+    console.log('🗑️ Clearing existing matches...');
+    const { error: deleteError } = await supabase
+      .from('connection_flow')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all records
+
+    if (deleteError) {
+      console.error('Error clearing matches:', deleteError);
+      // Continue anyway - we can still create new matches
+    }
+
     // Calculate compatibility between all users
     let matchesCreated = 0;
-    let matchesUpdated = 0;
     let totalPairsEvaluated = 0;
     const matchThreshold = 70; // Only create matches above 70%
 
@@ -103,20 +114,16 @@ export async function runMatchingAlgorithm() {
           const resultA = await createMatch(dbUserA.id, dbUserB.id, result.score, reasons);
           const resultB = await createMatch(dbUserB.id, dbUserA.id, result.score, reasons);
 
-          if (resultA.created || resultB.created) {
-            matchesCreated += 2;
-          } else {
-            matchesUpdated += 2;
-          }
+          if (resultA.created) matchesCreated++;
+          if (resultB.created) matchesCreated++;
         }
       }
     }
 
     console.log(`✅ Matching completed:`);
     console.log(`   - Pairs evaluated: ${totalPairsEvaluated}`);
-    console.log(`   - New matches created: ${matchesCreated}`);
-    console.log(`   - Existing matches updated: ${matchesUpdated}`);
-    return { success: true, matchesCreated, matchesUpdated, totalPairsEvaluated };
+    console.log(`   - Total matches created: ${matchesCreated}`);
+    return { success: true, matchesCreated, totalPairsEvaluated };
 
   } catch (error) {
     console.error('❌ Error running matching algorithm:', error);
@@ -125,35 +132,25 @@ export async function runMatchingAlgorithm() {
 }
 
 /**
- * Create or update a match in the database
+ * Create a match in the database
  */
 async function createMatch(userId, matchedUserId, score, reasons = []) {
-  // Check if match already exists
-  const { data: existing } = await supabase
-    .from('connection_flow')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('matched_user_id', matchedUserId)
-    .single();
-
   const { error } = await supabase
     .from('connection_flow')
-    .upsert({
+    .insert({
       user_id: userId,
       matched_user_id: matchedUserId,
       compatibility_score: score,
       match_reasons: reasons,
       status: 'recommended',
-      created_at: existing ? undefined : new Date().toISOString(), // Keep original created_at if exists
+      created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
-    }, {
-      onConflict: 'user_id,matched_user_id'
     });
 
-  if (error && error.code !== '23505') { // Ignore duplicate key errors
+  if (error) {
     console.error('Error creating match:', error);
     return { created: false };
   }
 
-  return { created: !existing }; // Return true if it was newly created
+  return { created: true };
 }
