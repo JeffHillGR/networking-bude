@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { User, Shield, Bell, Lock, Upload, X, ArrowLeft, Calendar, CheckCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { runMatchingAlgorithm } from '../lib/matchingAlgorithm';
+// Matching algorithm now runs server-side via Edge Function
 
 function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
   const { user } = useAuth();
@@ -553,7 +553,16 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
       }
 
       // Trigger matching algorithm after profile update (don't wait for it)
-      runMatchingAlgorithm().catch(err => {
+      // Call server-side Edge Function which has permission to create matches
+      fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/run-matching-algorithm`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }).then(res => res.json()).then(data => {
+        console.log('✅ Matching algorithm completed:', data);
+      }).catch(err => {
         console.error('⚠️ Matching algorithm failed (non-critical):', err);
       });
     } catch (error) {
