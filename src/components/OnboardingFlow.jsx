@@ -55,13 +55,13 @@ export default function BudEOnboarding() {
     });
   }, []);
 
-  // Auto-rotate carousel every 5 seconds (pause on hover)
+  // Auto-rotate carousel every 8 seconds (pause on hover)
   useEffect(() => {
     if (!showLandingHero || isHovering) return;
 
     const timer = setInterval(() => {
       setHeroImageIndex(prev => (prev + 1) % 4); // Cycle 0 -> 1 -> 2 -> 3 -> 0
-    }, 5000);
+    }, 8000);
 
     return () => clearInterval(timer);
   }, [showLandingHero, isHovering]);
@@ -423,23 +423,23 @@ export default function BudEOnboarding() {
       </div>
 
       {/* Hero section - takes up viewport minus top bar */}
-      <div className="h-[calc(100vh-80px)] flex flex-col">
+      <div className="min-h-[105vh] flex flex-col">
         {/* Hero image carousel with fade transitions */}
         <div
           ref={carouselRef}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
-          className="flex-1 flex flex-col items-center justify-center overflow-hidden px-4 py-2 relative"
+          className="flex-1 flex flex-col items-center justify-center px-4 pt-6 pb-8 relative"
         >
           {/* Image container with stacked images for fade effect */}
-          <div className="relative flex-1 w-full flex items-center justify-center">
+          <div className="relative w-full h-full flex items-center justify-center">
             {/* Mobile banners */}
             {mobileBanners.map((img, index) => (
               <img
                 key={`mobile-${index}`}
                 src={img}
                 alt={`Networking BudE ${index + 1}`}
-                className={`md:hidden absolute max-h-full max-w-full object-contain transition-opacity duration-700 ease-in-out ${
+                className={`md:hidden absolute max-w-[98vw] max-h-[88vh] object-contain transition-opacity duration-700 ease-in-out ${
                   index === heroImageIndex ? 'opacity-100' : 'opacity-0'
                 }`}
               />
@@ -450,55 +450,18 @@ export default function BudEOnboarding() {
                 key={`desktop-${index}`}
                 src={img}
                 alt={`Networking BudE ${index + 1}`}
-                className={`hidden md:block absolute max-h-full max-w-full object-contain transition-opacity duration-700 ease-in-out ${
+                className={`hidden md:block absolute max-w-[98vw] max-h-[88vh] object-contain transition-opacity duration-700 ease-in-out ${
                   index === heroImageIndex ? 'opacity-100' : 'opacity-0'
                 }`}
               />
             ))}
-          </div>
 
-          {/* Navigation arrows and dot indicators */}
-          <div className="flex items-center gap-4 mt-4">
-            {/* Left arrow */}
-            <button
-              onClick={() => setHeroImageIndex((prev) => (prev === 0 ? 3 : prev - 1))}
-              className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition-all"
-              aria-label="Previous slide"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-
-            {/* Dot indicators */}
-            <div className="flex gap-2">
-              {[0, 1, 2, 3].map((index) => (
-                <button
-                  key={index}
-                  onClick={() => setHeroImageIndex(index)}
-                  className={`w-3 h-3 rounded-full transition-colors ${
-                    index === heroImageIndex ? 'bg-[#009900]' : 'bg-gray-300 hover:bg-gray-400'
-                  }`}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
-            </div>
-
-            {/* Right arrow */}
-            <button
-              onClick={() => setHeroImageIndex((prev) => (prev === 3 ? 0 : prev + 1))}
-              className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 transition-all"
-              aria-label="Next slide"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+            {/* Arrows temporarily removed */}
           </div>
         </div>
 
         {/* Bottom bar - White with "Join Now" */}
-        <div className="bg-white px-4 py-2 flex-shrink-0">
+        <div className="bg-white px-4 py-4 flex-shrink-0">
           <div className="flex justify-center">
             <button
               onClick={() => setShowLandingHero(false)}
