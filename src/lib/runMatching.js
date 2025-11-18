@@ -45,39 +45,11 @@ export async function runMatchingAlgorithm() {
   try {
     console.log('🔄 Triggering matching algorithm...');
 
-    // Option 1: Try to call the Edge Function (if deployed)
-    try {
-      const { data, error } = await supabase.functions.invoke('run-matching', {
-        body: {}
-      });
+    // NOTE: The old 'run-matching' Edge Function has been deprecated
+    // It contained an outdated algorithm that was caught in a merge
+    // We now run the matching logic inline using the CURRENT algorithm
 
-      if (!error) {
-        console.log('✅ Matching algorithm completed via Edge Function:', data);
-        return { success: true, data };
-      }
-
-      console.log('⚠️ Edge Function not available, trying direct database call...');
-    } catch (edgeFunctionError) {
-      console.log('⚠️ Edge Function error:', edgeFunctionError);
-    }
-
-    // Option 2: Call database function directly via RPC
-    try {
-      const { data, error } = await supabase.rpc('trigger_matching_algorithm');
-
-      if (error) {
-        console.error('❌ Database RPC error:', error);
-        throw error;
-      }
-
-      console.log('✅ Matching algorithm completed via database RPC');
-      return { success: true, data };
-    } catch (rpcError) {
-      console.log('⚠️ Database RPC not available:', rpcError);
-    }
-
-    // Option 3: Run the matching logic inline (fallback)
-    console.log('ℹ️ Running matching algorithm inline using REAL algorithm...');
+    console.log('ℹ️ Running matching algorithm inline using CURRENT algorithm...');
 
     // Get all users
     const { data: users, error: usersError } = await supabase
@@ -98,7 +70,7 @@ export async function runMatchingAlgorithm() {
     let matchesCreated = 0;
     let matchesUpdated = 0;
     let totalPairsEvaluated = 0;
-    const matchThreshold = 65; // Only create matches above 65%
+    const matchThreshold = 70; // Only create matches above 70%
 
     console.log(`📊 Evaluating ${users.length} users for matches...`);
 

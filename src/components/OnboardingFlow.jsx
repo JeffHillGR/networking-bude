@@ -524,7 +524,7 @@ export default function BudEOnboarding() {
 
             <div className="flex flex-col md:flex-row gap-8 items-center my-8">
               <div className="md:w-1/2 text-left">
-                <p className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                <p className="text-4xl md:text-5xl font-bold text-gray-600 leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
                   A networking wingperson for every event.
                 </p>
               </div>
@@ -596,6 +596,13 @@ export default function BudEOnboarding() {
               </p>
             </div>
 
+            {/* Mobile: Hook appears first */}
+            <div className="md:hidden mb-8">
+              <p className="text-4xl font-bold text-gray-600 leading-tight text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                Stop networking alone. Start networking smarter.
+              </p>
+            </div>
+
             <div className="flex flex-col md:flex-row gap-8 items-center my-8">
               <div className="md:w-1/2">
                 <p className="font-bold mb-2">We take the wheel</p>
@@ -606,8 +613,9 @@ export default function BudEOnboarding() {
                   <li>We give you Resources and Insights to elevate your networking game and support your professional growth.</li>
                 </ul>
               </div>
-              <div className="md:w-1/2 text-right">
-                <p className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+              {/* Desktop: Hook on right */}
+              <div className="hidden md:block md:w-1/2 text-right">
+                <p className="text-4xl md:text-5xl font-bold text-gray-600 leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
                   Stop networking alone. Start networking smarter.
                 </p>
               </div>
@@ -642,8 +650,9 @@ export default function BudEOnboarding() {
 
           <div className="text-gray-700 space-y-6 leading-relaxed text-lg">
             <div className="flex flex-col md:flex-row gap-8 items-center my-8">
-              <div className="md:w-1/2 text-left">
-                <p className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+              {/* Desktop: Hook on left */}
+              <div className="hidden md:block md:w-1/2 text-left">
+                <p className="text-4xl md:text-5xl font-bold text-gray-600 leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
                   You support their goals; they support yours.
                 </p>
               </div>
@@ -662,6 +671,13 @@ export default function BudEOnboarding() {
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Mobile: Hook appears at bottom */}
+          <div className="md:hidden mt-8 mb-6">
+            <p className="text-4xl font-bold text-gray-600 leading-tight text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+              You support their goals; they support yours.
+            </p>
           </div>
 
           {/* Join Now Button */}

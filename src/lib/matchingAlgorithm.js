@@ -2,15 +2,17 @@
  * BudE Matching Algorithm
  *
  * Calculates compatibility scores between users based on:
- * - Networking Goals (25%)
- * - Organizations (50%) - split into:
- *   - Complementary match (25%): My attend ↔ Your check out
- *   - Same-field match (25%): Both attend same OR both check out same
- * - Professional Interests (15%)
- * - Industry (5%)
- * - Gender Preference (2.5%)
- * - Age Preference (2.5%)
+ * - Networking Goals (35 points)
+ * - Organizations (40 points) - split into:
+ *   - Complementary match (20 points): My attend ↔ Your check out
+ *   - Same-field match (20 points): Both attend same OR both check out same
+ * - Professional Interests (15 points)
+ * - Industry (5 points)
+ * - Gender Preference (5 points)
+ * - Age Preference (5 points)
+ * - Personal Interests (5 points)
  *
+ * Total: 110 points possible, capped at 100
  * Minimum threshold: 70/100 to be shown as a potential connection
  */
 
@@ -93,10 +95,10 @@ export function calculateCompatibility(user1, user2) {
 }
 
 /**
- * Score Networking Goals (25 points max)
+ * Score Networking Goals (35 points max)
  */
 function scoreNetworkingGoals(goals1, goals2) {
-  const maxScore = 25;
+  const maxScore = 35;
   let score = 0;
   const matches = [];
 
@@ -160,7 +162,8 @@ function scoreNetworkingGoals(goals1, goals2) {
   const budePhilosophyKeywords = [
     'purpose', 'relationship', 'connecting', 'collaboration', 'shared', 'share',
     'uplifting', 'community', 'partnership', 'partnerships', 'real', 'genuine',
-    'authentic', 'meaningful', 'serve', 'support', 'uplift'
+    'authentic', 'meaningful', 'serve', 'support', 'uplift', 'disingenuous',
+    'organic', 'conversations', 'conversation'
   ];
   const sharedPhilosophy = budePhilosophyKeywords.filter(kw =>
     text1.includes(kw) && text2.includes(kw)
@@ -177,13 +180,13 @@ function scoreNetworkingGoals(goals1, goals2) {
 }
 
 /**
- * Score Organizations (50 points max)
+ * Score Organizations (40 points max)
  *
- * BUCKET 1 (25 points): Complementary Match
+ * BUCKET 1 (20 points): Complementary Match
  *   - My "Orgs I attend" ↔ Your "Orgs I want to check out"
  *   - OR Your "Orgs I attend" ↔ My "Orgs I want to check out"
  *
- * BUCKET 2 (25 points): Same-Field Match
+ * BUCKET 2 (20 points): Same-Field Match
  *   - Both attend same orgs
  *   - OR both want to check out same orgs
  */
@@ -201,14 +204,14 @@ function scoreOrganizations(user1Attend, user1WantToCheckOut, user2Attend, user2
   const u2Attend = parseList(user2Attend);
   const u2CheckOut = parseList(user2WantToCheckOut);
 
-  // BUCKET 1: Complementary Match (25 points max)
+  // BUCKET 1: Complementary Match (20 points max)
   // User1 attends, User2 wants to check out (or vice versa)
   const complementary1 = findSharedItems(u1Attend, u2CheckOut);
   const complementary2 = findSharedItems(u1CheckOut, u2Attend);
   const allComplementary = [...complementary1, ...complementary2];
 
   if (allComplementary.length > 0) {
-    score += 25;
+    score += 20;
     if (complementary1.length > 0) {
       matches.push(`Introduction opportunity: ${complementary1.join(', ')}`);
     }
@@ -217,13 +220,13 @@ function scoreOrganizations(user1Attend, user1WantToCheckOut, user2Attend, user2
     }
   }
 
-  // BUCKET 2: Same-Field Match (25 points max)
+  // BUCKET 2: Same-Field Match (20 points max)
   // Both attend same OR both want to check out same
   const sharedAttend = findSharedItems(u1Attend, u2Attend);
   const sharedCheckOut = findSharedItems(u1CheckOut, u2CheckOut);
 
   if (sharedAttend.length > 0 || sharedCheckOut.length > 0) {
-    score += 25;
+    score += 20;
     if (sharedAttend.length > 0) {
       matches.push(`Both attend: ${sharedAttend.join(', ')}`);
     }
@@ -233,7 +236,7 @@ function scoreOrganizations(user1Attend, user1WantToCheckOut, user2Attend, user2
   }
 
   return {
-    score: Math.min(score, 50),
+    score: Math.min(score, 40),
     matches
   };
 }

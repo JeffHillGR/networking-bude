@@ -67,7 +67,7 @@ module.exports = async (req, res) => {
     console.log(`📊 Found ${users.length} users`);
 
     const algorithmUsers = users.map(convertUserToAlgorithmFormat);
-    const matchThreshold = 60;
+    const matchThreshold = 70; // Updated to match current threshold
     let totalMatches = 0;
 
     // For each user, calculate matches
