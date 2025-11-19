@@ -459,11 +459,11 @@ export default function BudEOnboarding() {
             {/* Text Overlay for Banner 1 */}
             {heroImageIndex === 0 && (
               <div className="absolute inset-0 flex items-start pt-48 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
-                <div className="text-left bg-white/60 backdrop-blur-sm px-6 py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
-                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                <div className="text-left bg-white/60 backdrop-blur-sm px-4 py-3 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+                  <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Traditional Networking Scene
                   </h1>
-                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                  <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Not Working For You?
                   </h1>
                 </div>
@@ -473,11 +473,11 @@ export default function BudEOnboarding() {
             {/* Text Overlay for Banner 2 */}
             {heroImageIndex === 1 && (
               <div className="absolute inset-0 flex items-start pt-48 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
-                <div className="text-left bg-white/60 backdrop-blur-sm px-6 py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
-                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                <div className="text-left bg-white/60 backdrop-blur-sm px-4 py-3 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+                  <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Resulting in a Drawer
                   </h1>
-                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                  <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Full of Lonely Business Cards?
                   </h1>
                 </div>
@@ -488,11 +488,11 @@ export default function BudEOnboarding() {
             {heroImageIndex === 2 && (
               <>
                 <div className="absolute inset-0 flex items-start pt-48 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
-                  <div className="text-left bg-white/60 backdrop-blur-sm px-6 py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
-                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                  <div className="text-left bg-white/60 backdrop-blur-sm px-4 py-3 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                       Make Connections BEFORE the Event
                     </h1>
-                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                       Work On Your Goals Together
                     </h1>
                   </div>
@@ -500,7 +500,7 @@ export default function BudEOnboarding() {
                 <img
                   src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-2.png"
                   alt="People Networking"
-                  className="absolute bottom-4 left-8 md:left-16 lg:left-24 h-[240px] w-auto object-contain rounded-xl border-4 border-gray-300"
+                  className="absolute bottom-4 left-8 md:left-16 lg:left-24 h-[160px] md:h-[240px] w-auto object-contain rounded-xl border-4 border-gray-300"
                 />
               </>
             )}
@@ -509,11 +509,11 @@ export default function BudEOnboarding() {
             {heroImageIndex === 3 && (
               <>
                 <div className="absolute inset-0 flex items-start pt-48 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
-                  <div className="text-left bg-white/60 backdrop-blur-sm px-6 py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
-                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                  <div className="text-left bg-white/60 backdrop-blur-sm px-4 py-3 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                       You'll Show Up More Confidently
                     </h1>
-                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                       Because You're Not Doing it Alone
                     </h1>
                   </div>
@@ -521,7 +521,7 @@ export default function BudEOnboarding() {
                 <img
                   src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-5.png"
                   alt="People Networking"
-                  className="absolute bottom-4 left-8 md:left-16 lg:left-24 h-[240px] w-auto object-contain rounded-xl border-4 border-gray-300"
+                  className="absolute bottom-4 left-8 md:left-16 lg:left-24 h-[160px] md:h-[240px] w-auto object-contain rounded-xl border-4 border-gray-300"
                 />
               </>
             )}
