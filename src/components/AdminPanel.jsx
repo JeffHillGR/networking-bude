@@ -806,18 +806,38 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
   });
   const [uploadingBottomBanner, setUploadingBottomBanner] = useState(null);
 
-  // Load existing bottom banners from localStorage
+  // Load existing bottom banners from Supabase
   useEffect(() => {
-    const loadBottomBanners = () => {
-      const slot1 = JSON.parse(localStorage.getItem('ad_dashboardBottom1') || 'null');
-      const slot2 = JSON.parse(localStorage.getItem('ad_dashboardBottom2') || 'null');
-      const slot3 = JSON.parse(localStorage.getItem('ad_dashboardBottom3') || 'null');
+    const loadBottomBanners = async () => {
+      try {
+        const { data: banners, error } = await supabase
+          .from('dashboard_bottom_banners')
+          .select('*')
+          .order('slot_number');
 
-      setBottomBanners({
-        slot1: slot1 || { image: '', url: '' },
-        slot2: slot2 || { image: '', url: '' },
-        slot3: slot3 || { image: '', url: '' }
-      });
+        if (error) {
+          console.error('Error loading bottom banners:', error);
+          return;
+        }
+
+        const loadedBanners = {
+          slot1: { image: '', url: '' },
+          slot2: { image: '', url: '' },
+          slot3: { image: '', url: '' }
+        };
+
+        (banners || []).forEach(banner => {
+          const slotKey = `slot${banner.slot_number}`;
+          loadedBanners[slotKey] = {
+            image: banner.image_url,
+            url: banner.click_url
+          };
+        });
+
+        setBottomBanners(loadedBanners);
+      } catch (error) {
+        console.error('Error loading bottom banners:', error);
+      }
     };
 
     loadBottomBanners();
@@ -912,8 +932,8 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
     });
   };
 
-  // Save bottom banner to localStorage
-  const saveBottomBanner = (slotNumber) => {
+  // Save bottom banner to Supabase
+  const saveBottomBanner = async (slotNumber) => {
     console.log('Save button clicked for slot:', slotNumber);
     const slotKey = `slot${slotNumber}`;
     const banner = bottomBanners[slotKey];
@@ -927,15 +947,29 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
       return;
     }
 
-    localStorage.setItem(`ad_dashboardBottom${slotNumber}`, JSON.stringify(banner));
+    try {
+      const { error } = await supabase
+        .from('dashboard_bottom_banners')
+        .upsert({
+          slot_number: slotNumber,
+          image_url: banner.image,
+          click_url: banner.url,
+          is_active: true
+        }, {
+          onConflict: 'slot_number'
+        });
 
-    // Update the ads state to reflect the change
-    setAds({
-      ...ads,
-      [`dashboardBottom${slotNumber}`]: banner
-    });
+      if (error) {
+        console.error('Error saving banner:', error);
+        alert('Failed to save banner. Please try again.');
+        return;
+      }
 
-    alert(`Bottom Banner ${slotNumber} saved successfully!`);
+      alert(`Bottom Banner ${slotNumber} saved successfully!`);
+    } catch (error) {
+      console.error('Error saving banner:', error);
+      alert('Failed to save banner. Please try again.');
+    }
   };
 
   // Remove bottom banner
@@ -955,18 +989,24 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
       }
     }
 
-    // Remove from localStorage
-    localStorage.removeItem(`ad_dashboardBottom${slotNumber}`);
+    // Remove from Supabase database
+    try {
+      const { error } = await supabase
+        .from('dashboard_bottom_banners')
+        .delete()
+        .eq('slot_number', slotNumber);
+
+      if (error) {
+        console.error('Error removing banner from database:', error);
+      }
+    } catch (error) {
+      console.error('Error removing banner:', error);
+    }
 
     // Update state
     setBottomBanners({
       ...bottomBanners,
       [slotKey]: { image: '', url: '' }
-    });
-
-    setAds({
-      ...ads,
-      [`dashboardBottom${slotNumber}`]: null
     });
   };
 

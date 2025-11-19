@@ -159,23 +159,35 @@ const handleSubmitContact = async (e) => {
   }
 };
 
-// Load bottom banner ads from localStorage
+// Load bottom banner ads from Supabase
 useEffect(() => {
-  const loadBottomBannerAds = () => {
-    const bottomAd1 = JSON.parse(localStorage.getItem('ad_dashboardBottom1') || 'null');
-    const bottomAd2 = JSON.parse(localStorage.getItem('ad_dashboardBottom2') || 'null');
-    const bottomAd3 = JSON.parse(localStorage.getItem('ad_dashboardBottom3') || 'null');
+  const loadBottomBannerAds = async () => {
+    try {
+      const { data: banners, error } = await supabase
+        .from('dashboard_bottom_banners')
+        .select('*')
+        .eq('is_active', true)
+        .order('slot_number');
 
-    // Filter to only ads that have both image and URL
-    const availableAds = [bottomAd1, bottomAd2, bottomAd3].filter(
-      ad => ad?.image && ad?.url
-    );
+      if (error) {
+        console.error('Error loading bottom banner ads:', error);
+        return;
+      }
 
-    setAvailableBottomBannerAds(availableAds);
+      // Transform to expected format
+      const availableAds = (banners || []).map(banner => ({
+        image: banner.image_url,
+        url: banner.click_url
+      }));
 
-    // Set random initial index if we have ads
-    if (availableAds.length > 0) {
-      setCurrentBottomAdIndex(Math.floor(Math.random() * availableAds.length));
+      setAvailableBottomBannerAds(availableAds);
+
+      // Set random initial index if we have ads
+      if (availableAds.length > 0) {
+        setCurrentBottomAdIndex(Math.floor(Math.random() * availableAds.length));
+      }
+    } catch (error) {
+      console.error('Error loading bottom banner ads:', error);
     }
   };
 
