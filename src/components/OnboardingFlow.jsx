@@ -458,7 +458,7 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 1 */}
             {heroImageIndex === 0 && (
-              <div className="absolute inset-0 flex items-start pt-48 md:pt-56 lg:pt-64 px-8 md:px-16 lg:px-24">
+              <div className="absolute inset-0 flex items-start pt-48 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
                 <div className="text-left bg-white/60 backdrop-blur-sm px-6 py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Traditional Networking Scene
@@ -472,7 +472,7 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 2 */}
             {heroImageIndex === 1 && (
-              <div className="absolute inset-0 flex items-start pt-48 md:pt-56 lg:pt-64 px-8 md:px-16 lg:px-24">
+              <div className="absolute inset-0 flex items-start pt-48 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
                 <div className="text-left bg-white/60 backdrop-blur-sm px-6 py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Resulting in a Drawer
@@ -487,7 +487,7 @@ export default function BudEOnboarding() {
             {/* Text Overlay for Banner 3 */}
             {heroImageIndex === 2 && (
               <>
-                <div className="absolute inset-0 flex items-start pt-48 md:pt-56 lg:pt-64 px-8 md:px-16 lg:px-24">
+                <div className="absolute inset-0 flex items-start pt-48 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
                   <div className="text-left bg-white/60 backdrop-blur-sm px-6 py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                     <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                       Make Connections BEFORE the Event
@@ -508,7 +508,7 @@ export default function BudEOnboarding() {
             {/* Text Overlay for Banner 4 */}
             {heroImageIndex === 3 && (
               <>
-                <div className="absolute inset-0 flex items-start pt-48 md:pt-56 lg:pt-64 px-8 md:px-16 lg:px-24">
+                <div className="absolute inset-0 flex items-start pt-48 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
                   <div className="text-left bg-white/60 backdrop-blur-sm px-6 py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                     <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                       You'll Show Up More Confidently
