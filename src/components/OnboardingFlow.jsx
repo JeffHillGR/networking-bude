@@ -422,24 +422,24 @@ export default function BudEOnboarding() {
         </button>
       </div>
 
-      {/* Hero section - takes up viewport minus top bar */}
-      <div className="min-h-[105vh] flex flex-col">
+      {/* Hero section - takes up full viewport */}
+      <div className="h-screen flex flex-col">
         {/* Hero image carousel with fade transitions */}
         <div
           ref={carouselRef}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
-          className="flex-1 flex flex-col items-center justify-center px-4 pt-6 pb-8 relative"
+          className="flex-1 relative overflow-hidden"
         >
           {/* Image container with stacked images for fade effect */}
-          <div className="relative w-full h-full flex items-center justify-center">
+          <div className="absolute inset-0 w-full h-full">
             {/* Mobile banners */}
             {mobileBanners.map((img, index) => (
               <img
                 key={`mobile-${index}`}
                 src={img}
                 alt={`Networking BudE ${index + 1}`}
-                className={`md:hidden absolute max-w-[98vw] max-h-[88vh] object-contain transition-opacity duration-700 ease-in-out ${
+                className={`md:hidden absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out ${
                   index === heroImageIndex ? 'opacity-100' : 'opacity-0'
                 }`}
               />
@@ -450,16 +450,86 @@ export default function BudEOnboarding() {
                 key={`desktop-${index}`}
                 src={img}
                 alt={`Networking BudE ${index + 1}`}
-                className={`hidden md:block absolute max-w-[98vw] max-h-[88vh] object-contain transition-opacity duration-700 ease-in-out ${
+                className={`hidden md:block absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out ${
                   index === heroImageIndex ? 'opacity-100' : 'opacity-0'
                 }`}
               />
             ))}
 
+            {/* Text Overlay for Banner 1 */}
+            {heroImageIndex === 0 && (
+              <div className="absolute inset-0 flex items-start pt-32 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
+                <div className="text-left bg-white/60 backdrop-blur-sm px-6 py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                    Traditional Networking Scene
+                  </h1>
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                    Not Working For You?
+                  </h1>
+                </div>
+              </div>
+            )}
+
+            {/* Text Overlay for Banner 2 */}
+            {heroImageIndex === 1 && (
+              <div className="absolute inset-0 flex items-start pt-32 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
+                <div className="text-left bg-white/60 backdrop-blur-sm px-6 py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                    Resulting in a Drawer
+                  </h1>
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                    Full of Lonely Business Cards?
+                  </h1>
+                </div>
+              </div>
+            )}
+
+            {/* Text Overlay for Banner 3 */}
+            {heroImageIndex === 2 && (
+              <>
+                <div className="absolute inset-0 flex items-start pt-32 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
+                  <div className="text-left bg-white/60 backdrop-blur-sm px-6 py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                      Make Connections BEFORE the Event
+                    </h1>
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                      Work On Your Goals Together
+                    </h1>
+                  </div>
+                </div>
+                <img
+                  src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-2.png"
+                  alt="People Networking"
+                  className="absolute bottom-8 left-8 md:left-16 lg:left-24 h-[240px] w-auto object-contain rounded-xl border-4 border-gray-300"
+                />
+              </>
+            )}
+
+            {/* Text Overlay for Banner 4 */}
+            {heroImageIndex === 3 && (
+              <>
+                <div className="absolute inset-0 flex items-start pt-32 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
+                  <div className="text-left bg-white/60 backdrop-blur-sm px-6 py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                      You'll Show Up More Confidently
+                    </h1>
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                      Because You're Not Doing it Alone
+                    </h1>
+                  </div>
+                </div>
+                <img
+                  src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-5.png"
+                  alt="People Networking"
+                  className="absolute bottom-8 left-8 md:left-16 lg:left-24 h-[240px] w-auto object-contain rounded-xl border-4 border-gray-300"
+                />
+              </>
+            )}
+
             {/* Navigation arrows - bottom corners */}
             <button
               onClick={() => setHeroImageIndex((prev) => (prev === 0 ? 3 : prev - 1))}
-              className="absolute bottom-[18%] left-[8%] z-10 p-4 rounded-full bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 group"
+              className="absolute bottom-[18%] left-[2%] z-10 p-4 rounded-full bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 group"
               aria-label="Previous slide"
             >
               <svg className="w-6 h-6 text-gray-600 group-hover:text-gray-800 group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -469,7 +539,7 @@ export default function BudEOnboarding() {
 
             <button
               onClick={() => setHeroImageIndex((prev) => (prev === 3 ? 0 : prev + 1))}
-              className="absolute bottom-[18%] right-[8%] z-10 p-4 rounded-full bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 group"
+              className="absolute bottom-[18%] right-[2%] z-10 p-4 rounded-full bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 group"
               aria-label="Next slide"
             >
               <svg className="w-6 h-6 text-gray-600 group-hover:text-gray-800 group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
