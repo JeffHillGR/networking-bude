@@ -423,7 +423,7 @@ export default function BudEOnboarding() {
       </div>
 
       {/* Hero section - takes up full viewport */}
-      <div className="h-screen flex flex-col">
+      <div className="h-[100dvh] md:h-screen flex flex-col">
         {/* Hero image carousel with fade transitions */}
         <div
           ref={carouselRef}

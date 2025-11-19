@@ -847,7 +847,7 @@ const getGreeting = () => {
             </div>
 
             {/* Bottom Banner Ad - Rotating */}
-            <div className="mt-8">
+            <div className="mt-6 mb-4">
               {availableBottomBannerAds.length === 0 ? (
                 // No ads available - show inquiry prompt
                 <div
