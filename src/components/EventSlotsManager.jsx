@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Upload, Trash2, ChevronDown, ChevronUp, ArrowDown } from 'lucide-react';
+import { Upload, Trash2, ChevronDown, ChevronUp, ArrowDown, ArrowUp } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
 
 function EventSlotsManager() {
@@ -232,6 +232,118 @@ function EventSlotsManager() {
       alert('Failed to delete event: ' + error.message);
     } finally {
       setSaving(prev => ({ ...prev, [slotNumber]: false }));
+    }
+  };
+
+  const handleMoveUp = async (slotNumber) => {
+    if (slotNumber <= 1) return; // Can't move up from slot 1
+
+    const currentEvent = events[slotNumber];
+    const prevEvent = events[slotNumber - 1];
+
+    if (!currentEvent) {
+      alert('Cannot move an empty slot');
+      return;
+    }
+
+    setSaving(prev => ({ ...prev, [slotNumber]: true, [slotNumber - 1]: true }));
+
+    try {
+      console.log('Moving up from slot', slotNumber);
+
+      if (prevEvent) {
+        // Both slots have events - swap them by deleting and reinserting
+        console.log('Swapping two events');
+
+        // Step 1: Fetch both complete event records
+        const { data: currentData, error: fetchError1 } = await supabase
+          .from('events')
+          .select('*')
+          .eq('slot_number', slotNumber)
+          .single();
+
+        if (fetchError1) throw fetchError1;
+
+        const { data: prevData, error: fetchError2 } = await supabase
+          .from('events')
+          .select('*')
+          .eq('slot_number', slotNumber - 1)
+          .single();
+
+        if (fetchError2) throw fetchError2;
+
+        console.log('Fetched both events, now deleting...');
+
+        // Step 2: Delete both events
+        const { error: deleteError } = await supabase
+          .from('events')
+          .delete()
+          .in('slot_number', [slotNumber, slotNumber - 1]);
+
+        if (deleteError) {
+          console.error('Error deleting events:', deleteError);
+          throw deleteError;
+        }
+
+        console.log('Deleted both events, now reinserting with swapped slot numbers...');
+
+        // Step 3: Reinsert with swapped slot numbers (remove id and timestamps)
+        const { id: currentId, created_at: currentCreated, updated_at: currentUpdated, ...currentEventData } = currentData;
+        const { id: prevId, created_at: prevCreated, updated_at: prevUpdated, ...prevEventData } = prevData;
+
+        const { error: insertError } = await supabase
+          .from('events')
+          .insert([
+            { ...currentEventData, slot_number: slotNumber - 1 },
+            { ...prevEventData, slot_number: slotNumber }
+          ]);
+
+        if (insertError) {
+          console.error('Error reinserting events:', insertError);
+          throw insertError;
+        }
+
+        console.log('Successfully swapped events');
+      } else {
+        // Only current slot has event - just move it up
+        console.log(`Moving slot ${slotNumber} to ${slotNumber - 1}`);
+
+        // Fetch the complete event
+        const { data: eventData, error: fetchError } = await supabase
+          .from('events')
+          .select('*')
+          .eq('slot_number', slotNumber)
+          .single();
+
+        if (fetchError) throw fetchError;
+
+        // Delete the old one
+        const { error: deleteError } = await supabase
+          .from('events')
+          .delete()
+          .eq('slot_number', slotNumber);
+
+        if (deleteError) throw deleteError;
+
+        // Reinsert with new slot number (remove id and timestamps)
+        const { id, created_at, updated_at, ...cleanEventData } = eventData;
+        const { error: insertError } = await supabase
+          .from('events')
+          .insert({ ...cleanEventData, slot_number: slotNumber - 1 });
+
+        if (insertError) throw insertError;
+      }
+
+      // Reload events to reflect changes
+      await loadEvents();
+      alert(`Event moved from Slot ${slotNumber} to Slot ${slotNumber - 1}`);
+    } catch (error) {
+      console.error('Error moving event:', error);
+      alert('Failed to move event: ' + error.message);
+      // Reload to ensure UI is in sync with database
+      await loadEvents();
+    } finally {
+      setSaving(prev => ({ ...prev, [slotNumber]: false, [slotNumber - 1]: false }));
     }
   };
 
@@ -519,6 +631,28 @@ function EventSlotsManager() {
               )}
             </div>
           </div>
+
+          {/* Move Up/Down Buttons */}
+          {hasEvent && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleMoveUp(slotNumber)}
+                disabled={slotNumber === 1 || saving[slotNumber] || saving[slotNumber - 1]}
+                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                title="Move Up"
+              >
+                <ArrowUp className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handleMoveDown(slotNumber)}
+                disabled={slotNumber === 7 || saving[slotNumber] || saving[slotNumber + 1]}
+                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                title="Move Down"
+              >
+                <ArrowDown className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Expanded Form */}

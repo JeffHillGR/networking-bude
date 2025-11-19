@@ -15,7 +15,6 @@ export default function BudEOnboarding() {
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [showLoginPassword, setShowLoginPassword] = useState(false);
-  const [rememberMeLogin, setRememberMeLogin] = useState(false);
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetSuccess, setResetSuccess] = useState(false);
@@ -216,7 +215,7 @@ export default function BudEOnboarding() {
       return;
     }
 
-    const { data, error } = await signIn(loginEmail, loginPassword, rememberMeLogin);
+    const { data, error } = await signIn(loginEmail, loginPassword);
 
     if (error) {
       setLoginError(error.message || 'Invalid email or password');
@@ -1544,19 +1543,6 @@ const renderStep2 = () => (
                     {showLoginPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
-              </div>
-
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="rememberMe"
-                  checked={rememberMeLogin}
-                  onChange={(e) => setRememberMeLogin(e.target.checked)}
-                  className="w-4 h-4 text-[#009900] border-gray-300 rounded focus:ring-[#009900] focus:ring-2"
-                />
-                <label htmlFor="rememberMe" className="ml-2 text-sm text-gray-700">
-                  Remember me (skip 24-hour timeout)
-                </label>
               </div>
 
               {loginError && (
