@@ -56,6 +56,10 @@ const [feedbackData, setFeedbackData] = useState({
   newFeatures: ''
 });
 
+// Bottom banner ads rotation state
+const [availableBottomBannerAds, setAvailableBottomBannerAds] = useState([]);
+const [currentBottomAdIndex, setCurrentBottomAdIndex] = useState(0);
+
 // Format phone number as user types: (XXX) XXX-XXXX
 const formatPhoneNumber = (value) => {
   const cleaned = value.replace(/\D/g, '');
@@ -154,6 +158,47 @@ const handleSubmitContact = async (e) => {
     setIsSubmittingContact(false);
   }
 };
+
+// Load bottom banner ads from localStorage
+useEffect(() => {
+  const loadBottomBannerAds = () => {
+    const bottomAd1 = JSON.parse(localStorage.getItem('ad_dashboardBottom1') || 'null');
+    const bottomAd2 = JSON.parse(localStorage.getItem('ad_dashboardBottom2') || 'null');
+    const bottomAd3 = JSON.parse(localStorage.getItem('ad_dashboardBottom3') || 'null');
+
+    // Filter to only ads that have both image and URL
+    const availableAds = [bottomAd1, bottomAd2, bottomAd3].filter(
+      ad => ad?.image && ad?.url
+    );
+
+    setAvailableBottomBannerAds(availableAds);
+
+    // Set random initial index if we have ads
+    if (availableAds.length > 0) {
+      setCurrentBottomAdIndex(Math.floor(Math.random() * availableAds.length));
+    }
+  };
+
+  loadBottomBannerAds();
+
+  // Reload ads when returning to dashboard tab
+  if (activeTab === 'dashboard') {
+    loadBottomBannerAds();
+  }
+}, [activeTab]);
+
+// Rotate bottom banner ads every 8 seconds
+useEffect(() => {
+  if (availableBottomBannerAds.length <= 1) {
+    return; // No need to rotate if 0 or 1 ads
+  }
+
+  const interval = setInterval(() => {
+    setCurrentBottomAdIndex(prev => (prev + 1) % availableBottomBannerAds.length);
+  }, 8000); // Rotate every 8 seconds
+
+  return () => clearInterval(interval);
+}, [availableBottomBannerAds.length]);
 
 // Check if user should see share prompt based on engagement or time
 useEffect(() => {
@@ -801,42 +846,41 @@ const getGreeting = () => {
               </div>
             </div>
 
-            {/* Bottom Banner Ad */}
+            {/* Bottom Banner Ad - Rotating */}
             <div className="mt-8">
-              {(() => {
-                const dashboardAd = JSON.parse(localStorage.getItem('ad_dashboardBottom') || 'null');
-                return dashboardAd?.image && dashboardAd?.url ? (<a
-
-                    href={dashboardAd.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block"
-                  >
-                    <img
-                      src={dashboardAd.image}
-                      alt="Advertisement"
-                      className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow object-cover"
-                      style={{ maxHeight: '180px' }}
-                    />
-                  </a>
-                ) : (
+              {availableBottomBannerAds.length === 0 ? (
+                // No ads available - show inquiry prompt
+                <div
+                  onClick={() => setShowAdInquiryModal(true)}
+                  className="rounded-lg p-8 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
+                  style={{ height: '180px' }}
+                >
                   <div
-                    onClick={() => setShowAdInquiryModal(true)}
-                    className="rounded-lg p-8 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
-                    style={{ height: '180px' }}
-                  >
-                    <div
-                      className="absolute inset-0 bg-cover opacity-30"
-                      style={{
-                        backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
-                        backgroundPosition: 'center 90%'
-                      }}
-                    />
-                    <div className="text-center relative z-10">
-                    </div>
+                    className="absolute inset-0 bg-cover opacity-30"
+                    style={{
+                      backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
+                      backgroundPosition: 'center 90%'
+                    }}
+                  />
+                  <div className="text-center relative z-10">
                   </div>
-                );
-              })()}
+                </div>
+              ) : (
+                // Display current ad with rotation
+                <a
+                  href={availableBottomBannerAds[currentBottomAdIndex].url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  <img
+                    src={availableBottomBannerAds[currentBottomAdIndex].image}
+                    alt="Advertisement"
+                    className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow object-cover"
+                    style={{ maxHeight: '180px' }}
+                  />
+                </a>
+              )}
             </div>
 
             {/* Feedback Form Button */}

@@ -18,7 +18,9 @@ function AdminPanel() {
     eventsSidebar2: JSON.parse(localStorage.getItem('ad_eventsSidebar2') || 'null'),
     eventsBottom: JSON.parse(localStorage.getItem('ad_eventsBottom') || 'null'),
     eventDetailBanner: JSON.parse(localStorage.getItem('ad_eventDetailBanner') || 'null'),
-    dashboardBottom: JSON.parse(localStorage.getItem('ad_dashboardBottom') || 'null')
+    dashboardBottom1: JSON.parse(localStorage.getItem('ad_dashboardBottom1') || 'null'),
+    dashboardBottom2: JSON.parse(localStorage.getItem('ad_dashboardBottom2') || 'null'),
+    dashboardBottom3: JSON.parse(localStorage.getItem('ad_dashboardBottom3') || 'null')
   });
 
   // Check if user is authenticated AND has admin role
@@ -795,6 +797,178 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
   });
 
   const [uploadingBanner, setUploadingBanner] = useState(null);
+
+  // Bottom Banner Ads state (localStorage-based)
+  const [bottomBanners, setBottomBanners] = useState({
+    slot1: { image: '', url: '' },
+    slot2: { image: '', url: '' },
+    slot3: { image: '', url: '' }
+  });
+  const [uploadingBottomBanner, setUploadingBottomBanner] = useState(null);
+
+  // Load existing bottom banners from localStorage
+  useEffect(() => {
+    const loadBottomBanners = () => {
+      const slot1 = JSON.parse(localStorage.getItem('ad_dashboardBottom1') || 'null');
+      const slot2 = JSON.parse(localStorage.getItem('ad_dashboardBottom2') || 'null');
+      const slot3 = JSON.parse(localStorage.getItem('ad_dashboardBottom3') || 'null');
+
+      setBottomBanners({
+        slot1: slot1 || { image: '', url: '' },
+        slot2: slot2 || { image: '', url: '' },
+        slot3: slot3 || { image: '', url: '' }
+      });
+    };
+
+    loadBottomBanners();
+  }, []);
+
+  // Handle bottom banner image upload to Supabase Storage
+  const handleBottomBannerUpload = async (slotNumber, file) => {
+    if (!file) return;
+
+    setUploadingBottomBanner(slotNumber);
+    try {
+      const slotKey = `slot${slotNumber}`;
+      const existingImageUrl = bottomBanners[slotKey]?.image;
+
+      // Delete old image if it exists
+      if (existingImageUrl && existingImageUrl.includes('Dashboard-bottom-banner-ads')) {
+        try {
+          const oldPath = existingImageUrl.split('/Dashboard-bottom-banner-ads/')[1]?.split('?')[0];
+          if (oldPath) {
+            await supabase.storage.from('Dashboard-bottom-banner-ads').remove([oldPath]);
+          }
+        } catch (error) {
+          console.error('Error removing old image:', error);
+        }
+      }
+
+      // Upload new image
+      const timestamp = Date.now();
+      const fileExt = file.name.split('.').pop()?.toLowerCase();
+      const fileName = `bottom-banner-${slotNumber}-${timestamp}.${fileExt}`;
+
+      console.log('Uploading file:', {
+        fileName,
+        fileSize: file.size,
+        fileType: file.type,
+        bucket: 'Dashboard-bottom-banner-ads'
+      });
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('Dashboard-bottom-banner-ads')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) {
+        console.error('Upload error details:', {
+          error: uploadError,
+          message: uploadError.message,
+          statusCode: uploadError.statusCode,
+          fileName: fileName
+        });
+        alert(`Failed to upload image: ${uploadError.message || 'Please try again.'}`);
+        setUploadingBottomBanner(null);
+        return;
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('Dashboard-bottom-banner-ads')
+        .getPublicUrl(fileName);
+
+      // Add cache-busting parameter
+      const cacheBustedUrl = `${urlData.publicUrl}?v=${timestamp}`;
+
+      console.log('Upload successful! URL:', cacheBustedUrl);
+
+      setBottomBanners(prev => {
+        const updated = {
+          ...prev,
+          [slotKey]: { ...prev[slotKey], image: cacheBustedUrl }
+        };
+        console.log('Updated bottomBanners state:', updated);
+        return updated;
+      });
+
+      setUploadingBottomBanner(null);
+      alert('Image uploaded successfully! Now add a URL and click Save.');
+    } catch (error) {
+      console.error('Error uploading banner:', error);
+      alert('Failed to upload image. Please try again.');
+      setUploadingBottomBanner(null);
+    }
+  };
+
+  // Handle bottom banner URL change
+  const handleBottomBannerChange = (slotNumber, field, value) => {
+    const slotKey = `slot${slotNumber}`;
+    setBottomBanners({
+      ...bottomBanners,
+      [slotKey]: { ...bottomBanners[slotKey], [field]: value }
+    });
+  };
+
+  // Save bottom banner to localStorage
+  const saveBottomBanner = (slotNumber) => {
+    console.log('Save button clicked for slot:', slotNumber);
+    const slotKey = `slot${slotNumber}`;
+    const banner = bottomBanners[slotKey];
+
+    console.log('Banner data:', banner);
+    console.log('Has image:', !!banner.image);
+    console.log('Has URL:', !!banner.url);
+
+    if (!banner.image || !banner.url) {
+      alert('Please add both an image and URL before saving.');
+      return;
+    }
+
+    localStorage.setItem(`ad_dashboardBottom${slotNumber}`, JSON.stringify(banner));
+
+    // Update the ads state to reflect the change
+    setAds({
+      ...ads,
+      [`dashboardBottom${slotNumber}`]: banner
+    });
+
+    alert(`Bottom Banner ${slotNumber} saved successfully!`);
+  };
+
+  // Remove bottom banner
+  const removeBottomBanner = async (slotNumber) => {
+    const slotKey = `slot${slotNumber}`;
+    const existingImageUrl = bottomBanners[slotKey]?.image;
+
+    // Delete image from Supabase storage if it exists
+    if (existingImageUrl && existingImageUrl.includes('Dashboard-bottom-banner-ads')) {
+      try {
+        const oldPath = existingImageUrl.split('/Dashboard-bottom-banner-ads/')[1]?.split('?')[0];
+        if (oldPath) {
+          await supabase.storage.from('Dashboard-bottom-banner-ads').remove([oldPath]);
+        }
+      } catch (error) {
+        console.error('Error removing image from storage:', error);
+      }
+    }
+
+    // Remove from localStorage
+    localStorage.removeItem(`ad_dashboardBottom${slotNumber}`);
+
+    // Update state
+    setBottomBanners({
+      ...bottomBanners,
+      [slotKey]: { image: '', url: '' }
+    });
+
+    setAds({
+      ...ads,
+      [`dashboardBottom${slotNumber}`]: null
+    });
+  };
 
   // Load existing hero banners from Supabase
   useEffect(() => {
@@ -1768,23 +1942,180 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
        {/* Dashboard Bottom Ad */}
       <div className="bg-white rounded-lg p-6 border border-gray-200">
-        <h3 className="text-xl font-semibold mb-4">Dashboard Bottom Ad</h3>
-        <p className="text-gray-600 mb-4">
-          Advertisement that appears at the bottom of the user dashboard
+        <h3 className="text-xl font-semibold mb-4">Dashboard Bottom Ads (Rotating)</h3>
+        <p className="text-gray-600 mb-6">
+          Upload up to 3 banner ads that will rotate every 8 seconds at the bottom of the user dashboard
         </p>
 
-        <div>
-          <InlineAdEditor
-            title="Dashboard Bottom Banner"
-            slot="dashboardBottom"
-            ad={ads.dashboardBottom}
-            onImageUpload={handleImageUpload}
-            onUrlChange={handleUrlChange}
-            onRemove={removeAd}
-            dimensions="1200x180px"
-            description="Appears at bottom of user dashboard"
-            aspectRatio="1200/180"
-          />
+        {/* Bottom Banner Slot 1 */}
+        <div className="mb-6 p-4 border-2 border-blue-300 rounded-lg bg-blue-50">
+          <h4 className="font-bold text-gray-900 mb-3">Bottom Banner Slot 1</h4>
+          <div className="space-y-3 bg-white p-3 rounded">
+            <div>
+              <label className="block text-sm font-medium mb-2">Banner Image</label>
+              {uploadingBottomBanner === 1 ? (
+                <div className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-blue-300 rounded-lg bg-blue-50">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-2"></div>
+                  <span className="text-sm text-blue-600 font-medium">Uploading...</span>
+                </div>
+              ) : bottomBanners.slot1.image ? (
+                <div className="relative">
+                  <img src={bottomBanners.slot1.image} alt="Banner 1" className="w-full h-32 object-cover rounded-lg" />
+                  <button
+                    onClick={() => removeBottomBanner(1)}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 bg-gray-50">
+                  <Upload className="w-12 h-12 text-gray-400 mb-2" />
+                  <span className="text-sm text-gray-600">Click to upload banner</span>
+                  <span className="text-xs text-gray-500 mt-1">Recommended size: 1200x180px</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handleBottomBannerUpload(1, e.target.files[0])}
+                  />
+                </label>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Click-through URL</label>
+              <div className="flex gap-2">
+                <Link2 className="w-5 h-5 text-gray-400 mt-2 flex-shrink-0" />
+                <input
+                  type="url"
+                  value={bottomBanners.slot1.url}
+                  onChange={(e) => handleBottomBannerChange(1, 'url', e.target.value)}
+                  placeholder="https://example.com"
+                  className="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-lg"
+                />
+              </div>
+            </div>
+            <button
+              onClick={() => saveBottomBanner(1)}
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 font-medium"
+            >
+              Save Banner 1
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom Banner Slot 2 */}
+        <div className="mb-6 p-4 border-2 border-green-300 rounded-lg bg-green-50">
+          <h4 className="font-bold text-gray-900 mb-3">Bottom Banner Slot 2</h4>
+          <div className="space-y-3 bg-white p-3 rounded">
+            <div>
+              <label className="block text-sm font-medium mb-2">Banner Image</label>
+              {uploadingBottomBanner === 2 ? (
+                <div className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-green-300 rounded-lg bg-green-50">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mb-2"></div>
+                  <span className="text-sm text-green-600 font-medium">Uploading...</span>
+                </div>
+              ) : bottomBanners.slot2.image ? (
+                <div className="relative">
+                  <img src={bottomBanners.slot2.image} alt="Banner 2" className="w-full h-32 object-cover rounded-lg" />
+                  <button
+                    onClick={() => removeBottomBanner(2)}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 bg-gray-50">
+                  <Upload className="w-12 h-12 text-gray-400 mb-2" />
+                  <span className="text-sm text-gray-600">Click to upload banner</span>
+                  <span className="text-xs text-gray-500 mt-1">Recommended size: 1200x180px</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handleBottomBannerUpload(2, e.target.files[0])}
+                  />
+                </label>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Click-through URL</label>
+              <div className="flex gap-2">
+                <Link2 className="w-5 h-5 text-gray-400 mt-2 flex-shrink-0" />
+                <input
+                  type="url"
+                  value={bottomBanners.slot2.url}
+                  onChange={(e) => handleBottomBannerChange(2, 'url', e.target.value)}
+                  placeholder="https://example.com"
+                  className="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-lg"
+                />
+              </div>
+            </div>
+            <button
+              onClick={() => saveBottomBanner(2)}
+              className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 font-medium"
+            >
+              Save Banner 2
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom Banner Slot 3 */}
+        <div className="mb-6 p-4 border-2 border-purple-300 rounded-lg bg-purple-50">
+          <h4 className="font-bold text-gray-900 mb-3">Bottom Banner Slot 3</h4>
+          <div className="space-y-3 bg-white p-3 rounded">
+            <div>
+              <label className="block text-sm font-medium mb-2">Banner Image</label>
+              {uploadingBottomBanner === 3 ? (
+                <div className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-purple-300 rounded-lg bg-purple-50">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mb-2"></div>
+                  <span className="text-sm text-purple-600 font-medium">Uploading...</span>
+                </div>
+              ) : bottomBanners.slot3.image ? (
+                <div className="relative">
+                  <img src={bottomBanners.slot3.image} alt="Banner 3" className="w-full h-32 object-cover rounded-lg" />
+                  <button
+                    onClick={() => removeBottomBanner(3)}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 bg-gray-50">
+                  <Upload className="w-12 h-12 text-gray-400 mb-2" />
+                  <span className="text-sm text-gray-600">Click to upload banner</span>
+                  <span className="text-xs text-gray-500 mt-1">Recommended size: 1200x180px</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handleBottomBannerUpload(3, e.target.files[0])}
+                  />
+                </label>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Click-through URL</label>
+              <div className="flex gap-2">
+                <Link2 className="w-5 h-5 text-gray-400 mt-2 flex-shrink-0" />
+                <input
+                  type="url"
+                  value={bottomBanners.slot3.url}
+                  onChange={(e) => handleBottomBannerChange(3, 'url', e.target.value)}
+                  placeholder="https://example.com"
+                  className="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-lg"
+                />
+              </div>
+            </div>
+            <button
+              onClick={() => saveBottomBanner(3)}
+              className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 font-medium"
+            >
+              Save Banner 3
+            </button>
+          </div>
         </div>
       </div>
     </div>
