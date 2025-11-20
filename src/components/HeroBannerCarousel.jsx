@@ -26,6 +26,9 @@ function HeroBannerCarousel() {
 
           const banner = banners[nextIndex];
 
+          // Update sessionStorage immediately to prevent double-loading on remounts
+          sessionStorage.setItem('lastHeroBannerIndex', nextIndex.toString());
+
           // Preload the image before showing it
           const img = new Image();
           img.onload = () => {
@@ -33,14 +36,12 @@ function HeroBannerCarousel() {
             setImageLoaded(true);
             setLoading(false);
             setHasLoaded(true);
-            sessionStorage.setItem('lastHeroBannerIndex', nextIndex.toString());
           };
           img.onerror = () => {
             // If image fails to load, still show the banner
             setCurrentBanner(banner);
             setLoading(false);
             setHasLoaded(true);
-            sessionStorage.setItem('lastHeroBannerIndex', nextIndex.toString());
           };
           img.src = banner.image_url;
         } else {
