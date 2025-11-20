@@ -622,21 +622,10 @@ const getGreeting = () => {
             {/* Hero Banner Carousel - Rotating promotional banners */}
             <HeroBannerCarousel />
 
-            {/* Desktop greeting with notification bell - show below hero banner on desktop only */}
-            <div className="hidden md:flex items-center justify-between">
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
-                <p className="text-sm text-gray-600 mt-1">Let's make some meaningful connections today</p>
-              </div>
-              <NotificationBell
-                onNavigate={(tab, userId) => {
-                  setActiveTab(tab);
-                  if (userId) {
-                    setSelectedConnectionId(userId);
-                  }
-                  window.scrollTo({ top: 0, behavior: 'instant' });
-                }}
-              />
+            {/* Desktop greeting - show below hero banner on desktop only */}
+            <div className="hidden md:block">
+              <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
+              <p className="text-sm text-gray-600 mt-1">Let's make some meaningful connections today</p>
             </div>
 
             {/* Events and Connections Side by Side */}
@@ -1013,7 +1002,13 @@ default:
     </div>
     <div className="md:flex">
 
-    <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onContactUsClick={() => setShowContactModal(true)} />
+    <Sidebar
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+      onContactUsClick={() => setShowContactModal(true)}
+      selectedConnectionId={selectedConnectionId}
+      setSelectedConnectionId={setSelectedConnectionId}
+    />
 
           <main className="flex-1 w-full overflow-x-hidden">
           {/* Mobile Header */}

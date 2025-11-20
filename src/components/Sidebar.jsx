@@ -2,8 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 import { Home, Calendar, Users, MessageCircle, User, CreditCard, Archive, Activity, BookOpen, Lightbulb, ChevronDown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { supabase } from '../lib/supabase.js';
+import NotificationBell from './NotificationBell.jsx';
 
-function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
+// Helper function to track user engagement across the app
+function trackEngagement() {
+  const currentCount = parseInt(localStorage.getItem('userEngagementCount') || '0', 10);
+  localStorage.setItem('userEngagementCount', (currentCount + 1).toString());
+}
+
+function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavigate, selectedConnectionId, setSelectedConnectionId }) {
   const { user, signOut } = useAuth();
   const [firstName, setFirstName] = useState(localStorage.getItem('userFirstName') || 'User');
   const [lastName, setLastName] = useState(localStorage.getItem('userLastName') || 'Name');
@@ -11,6 +18,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
   const fullName = `${firstName} ${lastName}`;
   const [photoUrl, setPhotoUrl] = useState(null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef(null);
 
   // Fetch user data from Supabase on mount
@@ -161,7 +169,10 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
           <div className="p-4">
             {/* Logo */}
             <button
-              onClick={() => setActiveTab('dashboard')}
+              onClick={() => {
+                trackEngagement();
+                setActiveTab('dashboard');
+              }}
               className="w-full flex items-center justify-center mb-4 cursor-pointer hover:opacity-80 transition-opacity"
             >
               <img
@@ -176,7 +187,10 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
               {navItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => setActiveTab(item.id)}
+                  onClick={() => {
+                    trackEngagement();
+                    setActiveTab(item.id);
+                  }}
                   className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-colors ${
                     activeTab === item.id
                      ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
@@ -191,6 +205,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
               {/* Resources & Insights */}
               <a
                 href="/resources-insights"
+                onClick={() => trackEngagement()}
                 className="w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-colors text-gray-700 hover:bg-gray-100"
               >
                 <BookOpen className="w-5 h-5" />
@@ -263,6 +278,25 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
                   </div>
                 )}
               </div>
+
+              {/* Notification Bell */}
+              <button
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="mt-3 w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-colors text-gray-700 hover:bg-gray-100"
+              >
+                <NotificationBell
+                  showDropdown={showNotifications}
+                  setShowDropdown={setShowNotifications}
+                  onNavigate={(tab, userId) => {
+                    setActiveTab(tab);
+                    if (userId && setSelectedConnectionId) {
+                      setSelectedConnectionId(userId);
+                    }
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                  }}
+                />
+                <span className="font-medium text-sm">Notifications</span>
+              </button>
             </nav>
           </div>
         </div>
