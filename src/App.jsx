@@ -6,7 +6,6 @@ import OnboardingFlow from './components/OnboardingFlow.jsx';
 import AdminPanel from './components/AdminPanel.jsx';
 import Events from './components/Events.jsx';
 import EventDetail from './components/EventDetail.jsx';
-import ResourcesInsights from './components/ResourcesInsights.jsx';
 import Settings from './components/Settings.jsx';
 import ResetPassword from './components/ResetPassword.jsx';
 import ConfirmEmailChange from './components/ConfirmEmailChange.jsx';
@@ -43,11 +42,11 @@ function App() {
         />
         <Route
           path="/resources-insights"
-          element={<ResourcesInsights />}
+          element={<Navigate to="/dashboard" state={{ activeTab: 'resources' }} replace />}
         />
         <Route
           path="/resources-insights/:contentId"
-          element={<ResourcesInsights />}
+          element={<Navigate to="/dashboard" state={{ activeTab: 'resources' }} replace />}
         />
         <Route
           path="/settings"

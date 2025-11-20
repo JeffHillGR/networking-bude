@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, ChevronDown, ChevronUp, X, Share2 } from 'lucide-react';
-import Sidebar from './Sidebar.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 
-function ResourcesInsights() {
-  const navigate = useNavigate();
+function ResourcesInsights({ onBackToDashboard }) {
   const { user } = useAuth();
   const [showArchive, setShowArchive] = useState(false);
   const [selectedContent, setSelectedContent] = useState(null);
@@ -14,7 +11,6 @@ function ResourcesInsights() {
   const [isLoading, setIsLoading] = useState(true);
   const [showShareModal, setShowShareModal] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
-  const [showSignupPrompt, setShowSignupPrompt] = useState(false);
 
   // Load featured content from Supabase on mount
   useEffect(() => {
@@ -66,12 +62,9 @@ function ResourcesInsights() {
   // Check if non-authenticated user has already viewed content
   useEffect(() => {
     if (!user) {
+      // Track public content viewing (for future use)
       const hasViewedPublicContent = sessionStorage.getItem('hasViewedPublicContent');
-      if (hasViewedPublicContent) {
-        // They've already viewed one piece of content, show signup prompt
-        setShowSignupPrompt(true);
-      } else {
-        // First view is free, mark it
+      if (!hasViewedPublicContent) {
         sessionStorage.setItem('hasViewedPublicContent', 'true');
       }
     }
@@ -215,56 +208,25 @@ function ResourcesInsights() {
   };
 
   return (
-    <>
-      {/* Top banner matching site header */}
-      <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base relative z-20">
-        <span className="font-medium">
-          Welcome to Networking BudE
-        </span>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 px-6 py-8">
+        <button
+          onClick={onBackToDashboard}
+          className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 md:mb-6 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span>Back to Dashboard</span>
+        </button>
+        <div className="text-center">
+          <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
+            <h1 className="text-3xl font-bold text-black">Resources & Insights</h1>
+          </div>
+          <p className="text-gray-600 mt-2">Curated content to help you grow</p>
+        </div>
       </div>
 
-      <div className="flex min-h-screen bg-gray-50">
-        <Sidebar
-          activeTab="resources"
-          setActiveTab={(tab) => {
-            if (!user && sessionStorage.getItem('hasViewedPublicContent')) {
-              setShowSignupPrompt(true);
-            } else {
-              navigate('/dashboard', { state: { activeTab: tab } });
-            }
-          }}
-          onContactUsClick={() => {
-            // This would open contact modal - for now just navigate to dashboard
-            navigate('/dashboard', { state: { activeTab: 'dashboard' } });
-          }}
-        />
-
-        <div className="flex-1">
-          <div className="bg-white border-b border-gray-200">
-            <div className="px-4 py-4">
-              <button
-                onClick={() => {
-                  if (!user && sessionStorage.getItem('hasViewedPublicContent')) {
-                    setShowSignupPrompt(true);
-                  } else {
-                    navigate('/dashboard', { state: { activeTab: 'dashboard' } });
-                  }
-                }}
-                className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-                <span>Back to Dashboard</span>
-              </button>
-              <div className="text-center">
-                <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
-                  <h1 className="text-3xl font-bold text-black">Resources & Insights</h1>
-                </div>
-                <p className="text-gray-600 mt-2">Curated content to help you grow</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="px-4 py-6 max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto px-6 py-8">
             {/* Featured Content */}
             <div className="mb-8">
               <div className="space-y-6">
@@ -296,8 +258,6 @@ function ResourcesInsights() {
                 </div>
               )}
             </div>
-          </div>
-        </div>
       </div>
 
       {/* Full Content Modal */}
@@ -484,40 +444,7 @@ function ResourcesInsights() {
           </div>
         </div>
       )}
-
-      {/* Signup Prompt Modal for Non-Authenticated Users */}
-      {showSignupPrompt && !user && (
-        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl border-4 border-[#D0ED00]">
-            <div className="text-center">
-              <div className="mb-6">
-                <div className="w-20 h-20 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto">
-                  <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                </div>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">Create an Account for Full Access</h2>
-              <p className="text-gray-600 mb-6">
-                It only takes 2 minutes to join our networking community and unlock all events and content!
-              </p>
-              <button
-                onClick={() => window.location.href = '/'}
-                className="w-full bg-[#009900] text-white py-3 rounded-lg font-bold hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] mb-3"
-              >
-                Create Account
-              </button>
-              <button
-                onClick={() => setShowSignupPrompt(false)}
-                className="text-gray-500 text-sm hover:text-gray-700"
-              >
-                Maybe later
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
+    </div>
   );
 }
 

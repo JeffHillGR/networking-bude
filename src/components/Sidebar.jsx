@@ -191,14 +191,20 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
               ))}
 
               {/* Resources & Insights */}
-              <a
-                href="/resources-insights"
-                onClick={() => trackEngagement()}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-colors text-gray-700 hover:bg-gray-100"
+              <button
+                onClick={() => {
+                  trackEngagement();
+                  setActiveTab('resources');
+                }}
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-colors ${
+                  activeTab === 'resources'
+                    ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
               >
                 <BookOpen className="w-5 h-5" />
                 <span className="font-medium text-sm">Resources & Insights</span>
-              </a>
+              </button>
 
               {/* My Activity Section */}
               <div className="border-t border-gray-200 my-3 pt-3">
