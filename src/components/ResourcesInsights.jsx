@@ -224,13 +224,20 @@ function ResourcesInsights() {
       </div>
 
       <div className="flex min-h-screen bg-gray-50">
-        <Sidebar activeTab="resources" setActiveTab={() => {
-          if (!user && sessionStorage.getItem('hasViewedPublicContent')) {
-            setShowSignupPrompt(true);
-          } else {
-            navigate('/dashboard');
-          }
-        }} />
+        <Sidebar
+          activeTab="resources"
+          setActiveTab={(tab) => {
+            if (!user && sessionStorage.getItem('hasViewedPublicContent')) {
+              setShowSignupPrompt(true);
+            } else {
+              navigate('/dashboard', { state: { activeTab: tab } });
+            }
+          }}
+          onContactUsClick={() => {
+            // This would open contact modal - for now just navigate to dashboard
+            navigate('/dashboard', { state: { activeTab: 'dashboard' } });
+          }}
+        />
 
         <div className="flex-1">
           <div className="bg-white border-b border-gray-200">
@@ -240,7 +247,7 @@ function ResourcesInsights() {
                   if (!user && sessionStorage.getItem('hasViewedPublicContent')) {
                     setShowSignupPrompt(true);
                   } else {
-                    navigate('/dashboard');
+                    navigate('/dashboard', { state: { activeTab: 'dashboard' } });
                   }
                 }}
                 className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 transition-colors"

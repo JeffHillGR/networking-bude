@@ -54,6 +54,74 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
   }, [user]);
 
   const [showActivity, setShowActivity] = useState(false);
+  const [interestedEvents, setInterestedEvents] = useState([]);
+  const [goingEvents, setGoingEvents] = useState([]);
+
+  // Fetch user's interested and going events
+  useEffect(() => {
+    async function fetchUserEvents() {
+      if (user?.id) {
+        try {
+          // Fetch events user is interested in (from heart/likes)
+          const { data: likesData } = await supabase
+            .from('event_likes')
+            .select('event_id')
+            .eq('user_id', user.id);
+
+          if (likesData && likesData.length > 0) {
+            const interestedEventIds = likesData.map(l => l.event_id);
+
+            const { data: eventsData } = await supabase
+              .from('events')
+              .select('id, title, image_url, start_date')
+              .in('id', interestedEventIds)
+              .order('start_date', { ascending: true })
+              .limit(4);
+
+            setInterestedEvents(eventsData || []);
+          } else {
+            setInterestedEvents([]);
+          }
+
+          // Fetch events user is going to (only this week's upcoming events)
+          const { data: goingData } = await supabase
+            .from('event_attendees')
+            .select('event_id')
+            .eq('user_id', user.id)
+            .eq('status', 'going');
+
+          if (goingData && goingData.length > 0) {
+            const goingEventIds = goingData.map(a => a.event_id);
+
+            // Get start and end of current week
+            const now = new Date();
+            const startOfWeek = new Date(now);
+            startOfWeek.setHours(0, 0, 0, 0);
+            startOfWeek.setDate(now.getDate() - now.getDay()); // Start of week (Sunday)
+
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 7); // End of week
+
+            const { data: eventsData } = await supabase
+              .from('events')
+              .select('id, title, image_url, start_date')
+              .in('id', goingEventIds)
+              .gte('start_date', startOfWeek.toISOString())
+              .lt('start_date', endOfWeek.toISOString())
+              .order('start_date', { ascending: true })
+              .limit(4);
+
+            setGoingEvents(eventsData || []);
+          } else {
+            setGoingEvents([]);
+          }
+        } catch (err) {
+          console.error('Error fetching user events:', err);
+        }
+      }
+    }
+    fetchUserEvents();
+  }, [user]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -70,8 +138,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
     { id: 'dashboard', icon: Home, label: 'Dashboard' },
     { id: 'connections', icon: Users, label: 'Connections' },
     { id: 'events', icon: Calendar, label: 'Events' },
-    { id: 'messages', icon: MessageCircle, label: 'Messages' },
-    { id: 'resources', icon: BookOpen, label: 'Resources & Insights' }
+    { id: 'messages', icon: MessageCircle, label: 'Messages' }
   ];
 
   return (
@@ -121,6 +188,15 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
                 </button>
               ))}
 
+              {/* Resources & Insights */}
+              <a
+                href="/resources-insights"
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-colors text-gray-700 hover:bg-gray-100"
+              >
+                <BookOpen className="w-5 h-5" />
+                <span className="font-medium text-sm">Resources & Insights</span>
+              </a>
+
               {/* My Activity Section */}
               <div className="border-t border-gray-200 my-3 pt-3">
                 {/* My Activity */}
@@ -134,14 +210,55 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
                 </button>
 
                 {showActivity && (
-                  <div className="ml-4 mt-2 space-y-2 px-3 py-2 bg-gray-50 rounded-lg">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-gray-600">Events Interested</span>
-                      <span className="font-bold text-[#009900]">12</span>
+                  <div className="ml-4 mt-2 space-y-3 px-3 py-2 bg-gray-50 rounded-lg">
+                    {/* Events Interested In */}
+                    <div>
+                      <div className="flex items-center justify-between text-xs mb-2">
+                        <span className="text-gray-600 font-medium">Events Interested In</span>
+                        <span className="font-bold text-[#009900]">{interestedEvents.length}</span>
+                      </div>
+                      {interestedEvents.length > 0 && (
+                        <div className="flex gap-1 flex-wrap">
+                          {interestedEvents.slice(0, 4).map((event) => (
+                            <div
+                              key={event.id}
+                              className="w-10 h-10 rounded overflow-hidden border border-gray-300"
+                              title={event.title}
+                            >
+                              <img
+                                src={event.image_url}
+                                alt={event.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-gray-600">Going This Week</span>
-                      <span className="font-bold text-[#009900]">3</span>
+
+                    {/* Events Going To This Week */}
+                    <div>
+                      <div className="flex items-center justify-between text-xs mb-2">
+                        <span className="text-gray-600 font-medium">Going This Week</span>
+                        <span className="font-bold text-[#009900]">{goingEvents.length}</span>
+                      </div>
+                      {goingEvents.length > 0 && (
+                        <div className="flex gap-1 flex-wrap">
+                          {goingEvents.slice(0, 4).map((event) => (
+                            <div
+                              key={event.id}
+                              className="w-10 h-10 rounded overflow-hidden border border-gray-300"
+                              title={event.title}
+                            >
+                              <img
+                                src={event.image_url}
+                                alt={event.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -172,7 +289,6 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
             )}
             <div className="flex-1 min-w-0 text-left">
               <p className="font-medium text-gray-900 truncate text-sm">{fullName}</p>
-              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
             </div>
             <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${showProfileDropdown ? 'rotate-180' : ''}`} />
           </button>
@@ -189,7 +305,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
                   className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                 >
                   <User className="w-4 h-4" />
-                  <span>Profile</span>
+                  <span>Profile & Settings</span>
                 </button>
                 <button
                   onClick={() => {
@@ -199,7 +315,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
                   className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                 >
                   <CreditCard className="w-4 h-4" />
-                  <span>Account</span>
+                  <span>Account & Billing</span>
                 </button>
                 <button
                   onClick={() => {
@@ -211,7 +327,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
-                  <span>Privacy</span>
+                  <span>Privacy & Security</span>
                 </button>
                 <button
                   onClick={() => {
