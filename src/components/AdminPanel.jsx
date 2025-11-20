@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Upload, X, Link2, Eye, EyeOff } from 'lucide-react';
+import { Upload, X, Link2, Eye, EyeOff, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
 import EventSlotsManager from './EventSlotsManager.jsx';
 
@@ -2281,6 +2281,132 @@ function ResourcesInsightsTab() {
     loadContentSlots();
   }, []);
 
+  // Swap two content slots using delete-and-reinsert pattern
+  const handleSwapSlots = async (slotA, slotB) => {
+    try {
+      console.log(`Swapping slots ${slotA} and ${slotB}`);
+
+      // Step 1: Fetch both complete content records from database
+      const { data: dataA, error: fetchErrorA } = await supabase
+        .from('featured_content')
+        .select('*')
+        .eq('slot_number', slotA)
+        .maybeSingle();
+
+      if (fetchErrorA) {
+        console.error('Error fetching slot A:', fetchErrorA);
+        throw fetchErrorA;
+      }
+
+      const { data: dataB, error: fetchErrorB } = await supabase
+        .from('featured_content')
+        .select('*')
+        .eq('slot_number', slotB)
+        .maybeSingle();
+
+      if (fetchErrorB) {
+        console.error('Error fetching slot B:', fetchErrorB);
+        throw fetchErrorB;
+      }
+
+      // If one or both slots are empty, handle appropriately
+      if (!dataA && !dataB) {
+        alert('Both slots are empty - nothing to swap');
+        return;
+      }
+
+      console.log('Fetched both slots, now deleting...');
+
+      // Step 2: Delete both slots (if they exist)
+      const slotsToDelete = [slotA, slotB].filter(slot => {
+        const data = slot === slotA ? dataA : dataB;
+        return data !== null;
+      });
+
+      if (slotsToDelete.length > 0) {
+        const { error: deleteError } = await supabase
+          .from('featured_content')
+          .delete()
+          .in('slot_number', slotsToDelete);
+
+        if (deleteError) {
+          console.error('Error deleting slots:', deleteError);
+          throw deleteError;
+        }
+      }
+
+      console.log('Deleted slots, now reinserting with swapped slot numbers...');
+
+      // Step 3: Reinsert with swapped slot numbers (remove id and timestamps)
+      const itemsToInsert = [];
+
+      if (dataA) {
+        const { id, created_at, updated_at, ...contentAData } = dataA;
+        itemsToInsert.push({ ...contentAData, slot_number: slotB });
+      }
+
+      if (dataB) {
+        const { id, created_at, updated_at, ...contentBData } = dataB;
+        itemsToInsert.push({ ...contentBData, slot_number: slotA });
+      }
+
+      if (itemsToInsert.length > 0) {
+        const { error: insertError } = await supabase
+          .from('featured_content')
+          .insert(itemsToInsert);
+
+        if (insertError) {
+          console.error('Error reinserting slots:', insertError);
+          throw insertError;
+        }
+      }
+
+      console.log('Successfully swapped slots');
+
+      // Step 4: Reload content to reflect changes
+      const { data: reloadedData, error: reloadError } = await supabase
+        .from('featured_content')
+        .select('*')
+        .order('slot_number', { ascending: true });
+
+      if (reloadError) {
+        console.error('Error reloading content:', reloadError);
+        throw reloadError;
+      }
+
+      const updatedSlots = [1, 2, 3].map(slotNum => {
+        const existing = reloadedData?.find(item => item.slot_number === slotNum);
+        return existing ? {
+          slot_number: slotNum,
+          title: existing.title || '',
+          description: existing.description || '',
+          image: existing.image || '',
+          url: existing.url || '',
+          tags: existing.tags || '',
+          sponsored_by: existing.sponsored_by || '',
+          full_content: existing.full_content || '',
+          author: existing.author || ''
+        } : {
+          slot_number: slotNum,
+          title: '',
+          description: '',
+          image: '',
+          url: '',
+          tags: '',
+          sponsored_by: '',
+          full_content: '',
+          author: ''
+        };
+      });
+
+      setContentSlots(updatedSlots);
+      alert(`Content swapped successfully: Slot ${slotA} ↔ Slot ${slotB}`);
+    } catch (err) {
+      console.error('Error swapping slots:', err);
+      alert('Failed to reorder content: ' + err.message);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold mb-6">Resources & Insights Management</h2>
@@ -2288,20 +2414,39 @@ function ResourcesInsightsTab() {
         Manage all three featured content slots displayed on the Dashboard and Resources pages.
       </p>
 
-      {/* Slot Selector */}
-      <div className="flex gap-4 mb-6">
+      {/* Slot Selector with Reorder Buttons */}
+      <div className="flex items-center gap-6 mb-6">
         {[1, 2, 3].map((slotNum) => (
-          <button
-            key={slotNum}
-            onClick={() => setActiveSlot(slotNum)}
-            className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-              activeSlot === slotNum
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            Content Slot #{slotNum}
-          </button>
+          <div key={slotNum} className="flex flex-row items-center gap-2">
+            {slotNum > 1 && (
+              <button
+                onClick={() => handleSwapSlots(slotNum, slotNum - 1)}
+                className="p-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors"
+                title={`Move slot ${slotNum} left (swap with slot ${slotNum - 1})`}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+            )}
+            <button
+              onClick={() => setActiveSlot(slotNum)}
+              className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                activeSlot === slotNum
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              Slot #{slotNum}
+            </button>
+            {slotNum < 3 && (
+              <button
+                onClick={() => handleSwapSlots(slotNum, slotNum + 1)}
+                className="p-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors"
+                title={`Move slot ${slotNum} right (swap with slot ${slotNum + 1})`}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         ))}
       </div>
 

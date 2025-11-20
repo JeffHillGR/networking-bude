@@ -3,9 +3,13 @@ import { Bell, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
-function NotificationBell({ onNavigate }) {
+function NotificationBell({ onNavigate, showDropdown, setShowDropdown }) {
   const { user } = useAuth();
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [internalShowDropdown, setInternalShowDropdown] = useState(false);
+
+  // Use external state if provided, otherwise use internal state
+  const isOpen = showDropdown !== undefined ? showDropdown : internalShowDropdown;
+  const setIsOpen = setShowDropdown || setInternalShowDropdown;
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -15,13 +19,13 @@ function NotificationBell({ onNavigate }) {
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
+        setIsOpen(false);
       }
     }
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [setIsOpen]);
 
   // Load notifications from database
   useEffect(() => {
@@ -45,7 +49,7 @@ function NotificationBell({ onNavigate }) {
           .select('*')
           .eq('user_id', userData.id)
           .order('created_at', { ascending: false })
-          .limit(20);
+          .limit(4);
 
         if (error) throw error;
 
@@ -193,7 +197,7 @@ function NotificationBell({ onNavigate }) {
     }
 
     // Close dropdown
-    setShowDropdown(false);
+    setIsOpen(false);
 
     // Navigate based on notification type, link, or title content
     if (onNavigate) {
@@ -259,33 +263,29 @@ function NotificationBell({ onNavigate }) {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      {/* Bell Icon Button */}
-      <button
-        onClick={() => setShowDropdown(!showDropdown)}
-        className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-        aria-label="Notifications"
-      >
-        <Bell className="w-6 h-6" />
+    <div className="relative flex items-center" ref={dropdownRef}>
+      {/* Bell Icon */}
+      <div className="relative text-gray-600">
+        <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
-      </button>
+      </div>
 
       {/* Dropdown */}
-      {showDropdown && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-[600px] overflow-hidden flex flex-col">
+      {isOpen && (
+        <div className="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-[240px] overflow-hidden flex flex-col">
           {/* Header */}
-          <div className="p-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between flex-shrink-0">
-            <h3 className="font-bold text-gray-900 text-lg">Notifications</h3>
+          <div className="px-3 py-2 border-b border-gray-200 bg-gray-50 flex items-center justify-between flex-shrink-0">
+            <h3 className="font-semibold text-gray-900 text-sm">Notifications</h3>
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
                 className="text-xs text-[#009900] hover:text-[#007700] font-medium"
               >
-                Mark all as read
+                Mark all
               </button>
             )}
           </div>
@@ -293,15 +293,14 @@ function NotificationBell({ onNavigate }) {
           {/* Notifications List */}
           <div className="overflow-y-auto flex-1">
             {loading ? (
-              <div className="p-8 text-center text-gray-500">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-                <p className="text-sm mt-2">Loading notifications...</p>
+              <div className="p-4 text-center text-gray-500">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mx-auto"></div>
+                <p className="text-xs mt-2">Loading...</p>
               </div>
             ) : notifications.length === 0 ? (
-              <div className="p-8 text-center text-gray-500">
-                <Bell className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                <p className="text-sm font-medium">No notifications yet</p>
-                <p className="text-xs text-gray-400 mt-1">We'll notify you when something happens!</p>
+              <div className="p-4 text-center text-gray-500">
+                <Bell className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                <p className="text-xs font-medium">No notifications</p>
               </div>
             ) : (
               <div className="divide-y divide-gray-100">
@@ -309,37 +308,37 @@ function NotificationBell({ onNavigate }) {
                   <div
                     key={notification.id}
                     onClick={() => handleNotificationClick(notification)}
-                    className={`p-4 hover:bg-gray-50 transition-colors cursor-pointer relative group ${
+                    className={`p-2 hover:bg-gray-50 transition-colors cursor-pointer relative group ${
                       !notification.is_read ? 'bg-blue-50' : ''
                     }`}
                   >
-                    <div className="flex items-start gap-3">
-                      <span className="text-2xl flex-shrink-0">
+                    <div className="flex items-start gap-2">
+                      <span className="text-base flex-shrink-0">
                         {getNotificationIcon(notification.type)}
                       </span>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-start justify-between gap-1">
                           <div className="flex-1 min-w-0">
-                            <h4 className={`text-sm font-semibold text-gray-900 ${!notification.is_read ? 'font-bold' : ''}`}>
+                            <h4 className={`text-xs font-semibold text-gray-900 line-clamp-1 ${!notification.is_read ? 'font-bold' : ''}`}>
                               {notification.title}
                             </h4>
-                            <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                            <p className="text-xs text-gray-600 mt-0.5 line-clamp-1">
                               {notification.message}
                             </p>
-                            <p className="text-xs text-gray-400 mt-2">
+                            <p className="text-xs text-gray-400 mt-0.5">
                               {formatTimestamp(notification.created_at)}
                             </p>
                           </div>
                           <button
                             onClick={(e) => deleteNotification(notification.id, e)}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-200 rounded flex-shrink-0"
+                            className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:bg-gray-200 rounded flex-shrink-0"
                             aria-label="Delete notification"
                           >
-                            <X className="w-4 h-4 text-gray-500" />
+                            <X className="w-3 h-3 text-gray-500" />
                           </button>
                         </div>
                         {!notification.is_read && (
-                          <div className="absolute left-2 top-1/2 -translate-y-1/2 w-2 h-2 bg-blue-500 rounded-full"></div>
+                          <div className="absolute left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
                         )}
                       </div>
                     </div>
