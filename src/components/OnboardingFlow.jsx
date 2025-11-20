@@ -533,7 +533,7 @@ export default function BudEOnboarding() {
             </button>
 
             {/* Join Now button - centered at bottom (desktop only) */}
-            <div className="hidden md:flex absolute bottom-8 left-0 right-0 z-10 justify-center">
+            <div className="hidden md:flex absolute bottom-16 left-0 right-0 z-10 justify-center">
               <button
                 onClick={() => setShowLandingHero(false)}
                 className="bg-gray-200 text-[#009900] font-bold text-lg px-10 py-3 rounded-full hover:bg-gray-300 transition-colors border-2 border-[#D0ED00] shadow-xl"
