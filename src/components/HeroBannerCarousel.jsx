@@ -8,6 +8,8 @@ function HeroBannerCarousel() {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchBanners = async () => {
       try {
         const { data: banners, error } = await supabase
@@ -17,6 +19,8 @@ function HeroBannerCarousel() {
           .order('slot_number');
 
         if (error) throw error;
+
+        if (cancelled) return; // Don't proceed if effect was cleaned up
 
         if (banners && banners.length > 0) {
           // Rotate through banners on each page load
@@ -32,30 +36,43 @@ function HeroBannerCarousel() {
           // Preload the image before showing it
           const img = new Image();
           img.onload = () => {
-            setCurrentBanner(banner);
-            setImageLoaded(true);
-            setLoading(false);
-            setHasLoaded(true);
+            if (!cancelled) {
+              setCurrentBanner(banner);
+              setImageLoaded(true);
+              setLoading(false);
+              setHasLoaded(true);
+            }
           };
           img.onerror = () => {
-            // If image fails to load, still show the banner
-            setCurrentBanner(banner);
-            setLoading(false);
-            setHasLoaded(true);
+            if (!cancelled) {
+              // If image fails to load, still show the banner
+              setCurrentBanner(banner);
+              setLoading(false);
+              setHasLoaded(true);
+            }
           };
           img.src = banner.image_url;
         } else {
+          if (!cancelled) {
+            setLoading(false);
+            setHasLoaded(true);
+          }
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error('Error loading hero banners:', error);
           setLoading(false);
           setHasLoaded(true);
         }
-      } catch (error) {
-        console.error('Error loading hero banners:', error);
-        setLoading(false);
-        setHasLoaded(true);
       }
     };
 
     fetchBanners();
+
+    // Cleanup function to prevent state updates after unmount
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   if (loading) {
