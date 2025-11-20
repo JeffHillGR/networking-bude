@@ -343,56 +343,6 @@ function Messages({ onBackToDashboard }) {
   // Calculate total unread count
   const totalUnreadCount = conversations.reduce((sum, conv) => sum + conv.unreadCount, 0);
 
-  if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading messages...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Show loading skeleton while data loads
-  if (loading) {
-    return (
-      <div className="h-screen flex flex-col bg-gray-50">
-        <div className="bg-white border-b border-gray-200 px-6 py-8 flex-shrink-0">
-          <button
-            onClick={onBackToDashboard}
-            className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 md:mb-6 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back to Dashboard</span>
-          </button>
-          <div className="text-center">
-            <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
-              <h1 className="text-3xl font-bold text-black">Messages</h1>
-            </div>
-            <p className="text-gray-600 mt-2">Connect and chat with your BudE connections</p>
-          </div>
-        </div>
-        <div className="flex flex-1 overflow-hidden">
-          <div className="w-full md:w-80 bg-white border-r border-gray-200 p-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="flex items-center gap-3 p-3 mb-2 animate-pulse">
-                <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
-                <div className="flex-1">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex-1 bg-white flex items-center justify-center">
-            <p className="text-gray-500">Loading messages...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="h-screen flex flex-col bg-gray-50 relative">
       {/* Header */}
@@ -435,7 +385,12 @@ function Messages({ onBackToDashboard }) {
           </div>
 
           <div className="flex-1 overflow-y-auto">
-            {conversations.length === 0 ? (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-[#009900]"></div>
+                <p className="text-gray-600 mt-3 text-sm">Loading conversations...</p>
+              </div>
+            ) : conversations.length === 0 ? (
               <div className="p-8 text-center text-gray-500">
                 <p className="mb-2">No conversations yet</p>
                 <p className="text-sm">Connect with other members to start chatting!</p>

@@ -132,6 +132,14 @@ function ResourcesInsights({ onBackToDashboard }) {
     }
   ];
 
+  // Loading spinner component
+  const LoadingSpinner = () => (
+    <div className="flex flex-col items-center justify-center py-20">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#009900]"></div>
+      <p className="text-gray-600 mt-4 text-sm">Loading content...</p>
+    </div>
+  );
+
   const ContentCard = ({ content, slotNumber }) => {
     const handleClick = () => {
       if (content.url) {
@@ -146,12 +154,13 @@ function ResourcesInsights({ onBackToDashboard }) {
     return (
     <div
       onClick={handleClick}
-      className={`bg-white rounded-lg shadow-sm p-6 transition-shadow border border-gray-200 ${isClickable ? 'hover:shadow-md cursor-pointer' : ''}`}
+      className={`bg-white rounded-lg shadow-sm p-6 transition-shadow border border-gray-200 ${isClickable ? 'hover:shadow-md cursor-pointer' : ''} animate-fade-in`}
     >
       <div className="flex flex-col md:flex-row gap-6">
         <img
           src={content.image}
           alt={content.title}
+          loading="lazy"
           className="w-full md:w-48 h-48 rounded-lg object-cover flex-shrink-0"
         />
         <div className="flex-1">
@@ -227,17 +236,22 @@ function ResourcesInsights({ onBackToDashboard }) {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-            {/* Featured Content */}
-            <div className="mb-8">
-              <div className="space-y-6">
-                {featuredContent.map((content, index) => (
-                  <ContentCard key={index} content={content} slotNumber={index + 1} />
-                ))}
-              </div>
-            </div>
+            {isLoading ? (
+              // Show loading spinner while fetching data
+              <LoadingSpinner />
+            ) : (
+              <>
+                {/* Featured Content */}
+                <div className="mb-8">
+                  <div className="space-y-6">
+                    {featuredContent.map((content, index) => (
+                      <ContentCard key={index} content={content} slotNumber={index + 1} />
+                    ))}
+                  </div>
+                </div>
 
-            {/* Content Archive */}
-            <div className="mb-8">
+                {/* Content Archive */}
+                <div className="mb-8">
               <button
                 onClick={() => setShowArchive(!showArchive)}
                 className="flex items-center justify-between w-full p-4 bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
@@ -257,7 +271,9 @@ function ResourcesInsights({ onBackToDashboard }) {
                   ))}
                 </div>
               )}
-            </div>
+                </div>
+              </>
+            )}
       </div>
 
       {/* Full Content Modal */}
@@ -305,6 +321,7 @@ function ResourcesInsights({ onBackToDashboard }) {
                 <img
                   src={selectedContent.image}
                   alt={selectedContent.title}
+                  loading="lazy"
                   className="w-full max-h-96 object-cover rounded-lg mb-6"
                 />
               )}

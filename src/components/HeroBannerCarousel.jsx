@@ -4,6 +4,8 @@ import { supabase } from '../lib/supabase';
 function HeroBannerCarousel() {
   const [currentBanner, setCurrentBanner] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     const fetchBanners = async () => {
@@ -22,13 +24,33 @@ function HeroBannerCarousel() {
           const lastShownIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
           const nextIndex = (lastShownIndex + 1) % banners.length;
 
-          setCurrentBanner(banners[nextIndex]);
-          sessionStorage.setItem('lastHeroBannerIndex', nextIndex.toString());
+          const banner = banners[nextIndex];
+
+          // Preload the image before showing it
+          const img = new Image();
+          img.onload = () => {
+            setCurrentBanner(banner);
+            setImageLoaded(true);
+            setLoading(false);
+            setHasLoaded(true);
+            sessionStorage.setItem('lastHeroBannerIndex', nextIndex.toString());
+          };
+          img.onerror = () => {
+            // If image fails to load, still show the banner
+            setCurrentBanner(banner);
+            setLoading(false);
+            setHasLoaded(true);
+            sessionStorage.setItem('lastHeroBannerIndex', nextIndex.toString());
+          };
+          img.src = banner.image_url;
+        } else {
+          setLoading(false);
+          setHasLoaded(true);
         }
       } catch (error) {
         console.error('Error loading hero banners:', error);
-      } finally {
         setLoading(false);
+        setHasLoaded(true);
       }
     };
 
@@ -36,25 +58,21 @@ function HeroBannerCarousel() {
   }, []);
 
   if (loading) {
-    return null; // Don't show anything while loading
-  }
-
-  // If no active banners, show fallback static banner
-  if (!currentBanner) {
     return (
-      <div className="relative h-48 rounded-lg overflow-hidden shadow-lg bg-gradient-to-r from-green-600 to-lime-400">
-        <img
-          src="/Tech-Week-rooftop.jpg"
-          alt="Networking Event at Sunset"
-          className="w-full h-full object-cover"
-          loading="eager"
-          fetchpriority="high"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-4 text-white">
-          <h2 className="text-xl md:text-2xl font-bold tracking-tight">Connect. Discover. Grow.</h2>
+      <div className="relative h-48 rounded-lg overflow-hidden shadow-lg bg-gray-200 animate-pulse">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="flex flex-col items-center">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-[#009900]"></div>
+            <p className="text-gray-600 mt-3 text-sm">Loading...</p>
+          </div>
         </div>
       </div>
     );
+  }
+
+  // If no active banners after loading, don't render anything
+  if (!currentBanner) {
+    return null;
   }
 
   return (
