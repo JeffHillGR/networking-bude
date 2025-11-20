@@ -48,25 +48,13 @@ function HeroBannerCarousel() {
 
           const banner = banners[bannerIndex];
 
-          // Preload the image before showing it
-          const img = new Image();
-          img.onload = () => {
-            if (!cancelled) {
-              setCurrentBanner(banner);
-              setImageLoaded(true);
-              setLoading(false);
-              setHasLoaded(true);
-            }
-          };
-          img.onerror = () => {
-            if (!cancelled) {
-              // If image fails to load, still show the banner
-              setCurrentBanner(banner);
-              setLoading(false);
-              setHasLoaded(true);
-            }
-          };
-          img.src = banner.image_url;
+          // Show banner immediately without preloading
+          if (!cancelled) {
+            setCurrentBanner(banner);
+            setImageLoaded(true);
+            setLoading(false);
+            setHasLoaded(true);
+          }
         } else {
           if (!cancelled) {
             setLoading(false);
