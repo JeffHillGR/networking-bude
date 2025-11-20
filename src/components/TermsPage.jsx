@@ -2,7 +2,7 @@ function TermsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] border-b border-gray-200 px-6 py-8">
+      <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] border-b border-gray-200 px-6 py-8 relative z-20">
         <div className="text-center">
           <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
             <h1 className="text-3xl font-bold text-black">Terms of Service</h1>

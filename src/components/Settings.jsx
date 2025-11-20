@@ -4,9 +4,9 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 // Matching algorithm now runs server-side via Edge Function
 
-function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
+function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDashboard }) {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [showCancelAccountModal, setShowCancelAccountModal] = useState(false);

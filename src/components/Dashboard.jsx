@@ -611,7 +611,7 @@ const getGreeting = () => {
     { id: 'events', icon: Calendar, label: 'Events' },
     { id: 'connections', icon: Users, label: 'Connections' },
     { id: 'messages', icon: MessageCircle, label: 'Messages' },
-    { id: 'settings', icon: User, label: 'Profile' }
+    { id: 'settings', icon: User, label: 'Profile & Settings' }
   ];
 
   const renderContent = () => {
@@ -943,6 +943,9 @@ const getGreeting = () => {
   case 'settings':
   return <Settings onBackToDashboard={() => setActiveTab('dashboard')} />;
 
+  case 'privacy':
+  return <Settings initialTab="privacy" onBackToDashboard={() => setActiveTab('dashboard')} />;
+
   case 'payment':
   return <Account onBackToDashboard={() => {
     setActiveTab('dashboard');
@@ -1003,7 +1006,7 @@ default:
 
   return (
     <div className="bg-gray-50 pb-32 md:pb-0" style={{ minHeight: '100dvh', WebkitOverflowScrolling: 'touch' }}>
-    <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base">
+    <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base relative z-20">
       <span className="font-medium">
         Welcome to Networking BudE
       </span>
@@ -1594,7 +1597,7 @@ default:
                 className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
               >
                 <User className="w-4 h-4" />
-                <span>Profile</span>
+                <span>Profile & Settings</span>
               </button>
               <button
                 onClick={() => {
@@ -1604,7 +1607,7 @@ default:
                 className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
               >
                 <CreditCard className="w-4 h-4" />
-                <span>Account</span>
+                <span>Account & Billing</span>
               </button>
               <button
                 onClick={() => {
@@ -1616,7 +1619,7 @@ default:
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
-                <span>Privacy</span>
+                <span>Privacy & Security</span>
               </button>
               <button
                 onClick={() => {

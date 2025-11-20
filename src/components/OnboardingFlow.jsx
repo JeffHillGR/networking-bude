@@ -412,7 +412,7 @@ export default function BudEOnboarding() {
   const renderLandingPage = () => (
     <div className="min-h-screen w-full bg-white overflow-y-auto">
       {/* Top bar - Lime-Green-Lime gradient with "Already a member?" */}
-      <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] px-4 py-2 text-center sticky top-0 z-10">
+      <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] px-4 py-2 text-center sticky top-0 z-20 relative">
         <button
           onClick={() => setShowLoginModal(true)}
           className="bg-[#009900] text-white font-medium text-sm md:text-base px-6 py-1.5 rounded-full border-2 border-white hover:bg-[#007700] transition-colors"

@@ -148,10 +148,10 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
         className="fixed left-0 w-64 h-screen bg-cover opacity-30 pointer-events-none"
         style={{
           backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
-          backgroundPosition: 'center 15%',
+          backgroundPosition: 'center top',
           backgroundSize: 'cover',
           transform: 'scale(1.1)',
-          top: '90px'
+          top: '0'
         }}
       />
       {/* Content Layer */}
