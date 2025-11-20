@@ -45,10 +45,11 @@ function Dashboard() {
     const newUrl = newSearch ? `${location.pathname}?${newSearch}` : location.pathname;
 
     // Only update if the URL actually changed
+    // Don't preserve location.state since URL params are now the source of truth
     if (currentTab !== (activeTab === 'dashboard' ? null : activeTab)) {
-      navigate(newUrl, { replace: true, state: location.state });
+      navigate(newUrl, { replace: true });
     }
-  }, [activeTab, navigate, location.pathname, location.search, location.state]);
+  }, [activeTab, navigate, location.pathname, location.search]);
   const [loadingConnections, setLoadingConnections] = useState(true);
   const [connectionLikedEvents, setConnectionLikedEvents] = useState({});
   const [connectionGoingEvents, setConnectionGoingEvents] = useState({});
