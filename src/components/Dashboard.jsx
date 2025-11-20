@@ -220,8 +220,8 @@ useEffect(() => {
     const engagementCount = parseInt(localStorage.getItem('userEngagementCount') || '0', 10);
 
     if (!hasSeenSharePrompt) {
-      // First time: Show after 4 meaningful interactions
-      if (engagementCount >= 4) {
+      // First time: Show after 2 meaningful interactions
+      if (engagementCount >= 2) {
         setShowSharePrompt(true);
         localStorage.setItem('hasSeenSharePrompt', 'true');
         localStorage.setItem('lastSharePromptDate', new Date().toISOString());
