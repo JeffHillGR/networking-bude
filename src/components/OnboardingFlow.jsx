@@ -36,14 +36,16 @@ export default function BudEOnboarding() {
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-1.png',
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-2.png',
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-3.png',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-4.png'
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-4.png',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-5.png'
   ];
 
   const mobileBanners = [
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-1.png?t=20251119',
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-2.png?t=20251119',
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-3.png?t=20251119',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-4.png?t=20251119'
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-4.png?t=20251119',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-5.png'
   ];
 
   // Preload banner images
@@ -59,7 +61,7 @@ export default function BudEOnboarding() {
     if (!showLandingHero || isHovering) return;
 
     const timer = setInterval(() => {
-      setHeroImageIndex(prev => (prev + 1) % 4); // Cycle 0 -> 1 -> 2 -> 3 -> 0
+      setHeroImageIndex(prev => (prev + 1) % 5); // Cycle 0 -> 1 -> 2 -> 3 -> 4 -> 0
     }, 8000);
 
     return () => clearInterval(timer);
@@ -460,10 +462,10 @@ export default function BudEOnboarding() {
               <div className="absolute inset-0 flex items-start pt-48 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
                 <div className="text-left bg-white/60 backdrop-blur-sm px-4 py-3 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
-                    Traditional Networking Scene
+                    Traditional networking scene
                   </h1>
                   <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
-                    Not Working For You?
+                    not working for you?
                   </h1>
                 </div>
               </div>
@@ -474,10 +476,10 @@ export default function BudEOnboarding() {
               <div className="absolute inset-0 flex items-start pt-48 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
                 <div className="text-left bg-white/60 backdrop-blur-sm px-4 py-3 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
-                    Resulting in a Drawer
+                    Resulting in a drawer
                   </h1>
                   <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
-                    Full of Lonely Business Cards?
+                    full of lonely business cards?
                   </h1>
                 </div>
               </div>
@@ -485,14 +487,28 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 3 */}
             {heroImageIndex === 2 && (
+              <div className="absolute inset-0 flex items-start pt-48 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
+                <div className="text-left bg-white/60 backdrop-blur-sm px-4 py-3 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+                  <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                    Trying to make connections
+                  </h1>
+                  <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                    giving you the blues?
+                  </h1>
+                </div>
+              </div>
+            )}
+
+            {/* Text Overlay for Banner 4 */}
+            {heroImageIndex === 3 && (
               <>
                 <div className="absolute inset-0 flex items-start pt-48 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
                   <div className="text-left bg-white/60 backdrop-blur-sm px-4 py-3 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                     <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
-                      Make Connections BEFORE the Event
+                      Make connections before the event;
                     </h1>
                     <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
-                      Work On Your Goals Together
+                      work on your goals together
                     </h1>
                   </div>
                 </div>
@@ -504,16 +520,16 @@ export default function BudEOnboarding() {
               </>
             )}
 
-            {/* Text Overlay for Banner 4 */}
-            {heroImageIndex === 3 && (
+            {/* Text Overlay for Banner 5 */}
+            {heroImageIndex === 4 && (
               <>
                 <div className="absolute inset-0 flex items-start pt-48 md:pt-40 lg:pt-48 px-8 md:px-16 lg:px-24">
                   <div className="text-left bg-white/60 backdrop-blur-sm px-4 py-3 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                     <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
-                      You'll Show Up More Confidently
+                      You'll show up more confidently
                     </h1>
                     <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
-                      Because You're Not Doing it Alone
+                      because you're not doing it alone
                     </h1>
                   </div>
                 </div>
@@ -527,7 +543,7 @@ export default function BudEOnboarding() {
 
             {/* Navigation arrows - bottom corners */}
             <button
-              onClick={() => setHeroImageIndex((prev) => (prev === 0 ? 3 : prev - 1))}
+              onClick={() => setHeroImageIndex((prev) => (prev === 0 ? 4 : prev - 1))}
               className="absolute bottom-[18%] left-[2%] z-10 p-4 rounded-full bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 group"
               aria-label="Previous slide"
             >
@@ -537,7 +553,7 @@ export default function BudEOnboarding() {
             </button>
 
             <button
-              onClick={() => setHeroImageIndex((prev) => (prev === 3 ? 0 : prev + 1))}
+              onClick={() => setHeroImageIndex((prev) => (prev === 4 ? 0 : prev + 1))}
               className="absolute bottom-[18%] right-[2%] z-10 p-4 rounded-full bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 group"
               aria-label="Next slide"
             >
