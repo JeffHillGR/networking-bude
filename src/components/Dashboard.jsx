@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Calendar, Heart, MessageCircle, User, Users, ExternalLink, Menu, X as XIcon } from 'lucide-react';
+import { Home, Calendar, Heart, MessageCircle, User, Users, ExternalLink, Menu, X as XIcon, BookOpen, CreditCard } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
 import Events from './Events';
 import Connections from './Connections';
@@ -608,10 +608,10 @@ const getGreeting = () => {
 
   const navItems = [
     { id: 'dashboard', icon: Home, label: 'Dashboard' },
-    { id: 'events', icon: Calendar, label: 'Events' },
     { id: 'connections', icon: Users, label: 'Connections' },
-    { id: 'messages', icon: MessageCircle, label: 'Messages' },
-    { id: 'settings', icon: User, label: 'Profile & Settings' }
+    { id: 'events', icon: Calendar, label: 'Events' },
+    { id: 'resources', icon: BookOpen, label: 'Resources', isLink: true, href: '/resources-insights' },
+    { id: 'messages', icon: MessageCircle, label: 'Messages' }
   ];
 
   const renderContent = () => {
@@ -896,6 +896,11 @@ const getGreeting = () => {
                 Share Feedback
               </button>
             </div>
+
+            {/* Copyright - Mobile only */}
+            <div className="md:hidden text-center mt-4">
+              <p className="text-xs text-gray-500">© 2025 The BudE System™</p>
+            </div>
           </div>
         );
 
@@ -1015,7 +1020,7 @@ default:
           <div className="md:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-10">
             <div className="flex items-center justify-between">
               <button
-                onClick={() => setShowMobileMenu(true)}
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
                 className="p-2 text-gray-600 hover:text-gray-900"
                 aria-label="Menu"
               >
@@ -1047,20 +1052,34 @@ default:
 
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-1 py-2 z-20">
         <div className="flex items-center justify-around">
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`flex flex-col items-center px-1 py-2 rounded-lg transition-colors min-w-0 ${
-                activeTab === item.id
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <item.icon className="h-5 w-5 flex-shrink-0" />
-              <span className="text-[10px] mt-1 truncate max-w-full">{item.label}</span>
-            </button>
-          ))}
+          {navItems.map((item) => {
+            if (item.isLink) {
+              return (
+                <a
+                  key={item.id}
+                  href={item.href}
+                  className="flex flex-col items-center px-1 py-2 rounded-lg transition-colors min-w-0 text-gray-600 hover:text-gray-900"
+                >
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
+                  <span className="text-[10px] mt-1 truncate max-w-full">{item.label}</span>
+                </a>
+              );
+            }
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`flex flex-col items-center px-1 py-2 rounded-lg transition-colors min-w-0 ${
+                  activeTab === item.id
+                    ? 'text-blue-600 bg-blue-50'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <item.icon className="h-5 w-5 flex-shrink-0" />
+                <span className="text-[10px] mt-1 truncate max-w-full">{item.label}</span>
+              </button>
+            );
+          })}
         </div>
       </nav>
 
@@ -1369,7 +1388,7 @@ default:
       {/* Beta Feedback Form Modal */}
       {showFeedbackModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => !feedbackSubmitted && setShowFeedbackModal(false)}>
-          <div className="bg-white rounded-lg p-4 md:p-5 max-w-lg w-full max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg p-3 md:p-4 max-w-sm w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             {feedbackSubmitted ? (
               <div className="text-center py-8">
                 <div className="mb-4">
@@ -1391,7 +1410,6 @@ default:
                     </svg>
                   </button>
                 </div>
-                <p className="text-sm text-gray-600 mb-4">We'd love to hear from you! Share your thoughts below.</p>
                 <form onSubmit={handleSubmitFeedback} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
@@ -1465,6 +1483,9 @@ default:
                 </form>
               </>
             )}
+            <div className="mt-4 pt-3 border-t border-gray-200">
+              <p className="text-xs text-gray-500 text-center">Networking BudE by The BudE System™</p>
+            </div>
           </div>
         </div>
       )}
@@ -1567,23 +1588,11 @@ default:
         </div>
       )}
 
-      {/* Mobile Menu Modal */}
+      {/* Mobile Menu Dropdown */}
       {showMobileMenu && (
-        <div className="fixed inset-0 bg-black/50 z-50 md:hidden" onClick={() => setShowMobileMenu(false)}>
-          <div
-            className="fixed right-0 top-0 bottom-0 w-64 bg-white shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="font-bold text-gray-900">Menu</h3>
-              <button
-                onClick={() => setShowMobileMenu(false)}
-                className="p-2 text-gray-600 hover:text-gray-900"
-              >
-                <XIcon className="w-6 h-6" />
-              </button>
-            </div>
-            <div className="p-4 space-y-2">
+        <div className="fixed top-20 left-4 w-[240px] bg-white border border-gray-200 shadow-lg rounded-lg z-50 md:hidden max-h-[80vh] overflow-hidden">
+            <div className="p-3 space-y-2 overflow-y-auto" style={{ maxHeight: '80vh' }}>
+              {/* Account Settings */}
               <button
                 onClick={() => {
                   setActiveTab('settings');
@@ -1591,8 +1600,8 @@ default:
                 }}
                 className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
               >
-                <User className="w-4 h-4" />
-                <span>Profile & Settings</span>
+                <User className="w-5 h-5" />
+                <span className="font-medium">Profile & Settings</span>
               </button>
               <button
                 onClick={() => {
@@ -1601,7 +1610,7 @@ default:
                 }}
                 className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
               >
-                <CreditCard className="w-4 h-4" />
+                <CreditCard className="w-5 h-5" />
                 <span>Account & Billing</span>
               </button>
               <button
@@ -1611,7 +1620,7 @@ default:
                 }}
                 className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
                 <span>Privacy & Security</span>
@@ -1623,12 +1632,12 @@ default:
                 }}
                 className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
                 <span>Contact Us</span>
               </button>
-              <div className="border-t border-gray-200 my-2"></div>
+              <div className="border-t border-gray-200 my-3"></div>
               <button
                 onClick={async () => {
                   setShowMobileMenu(false);
@@ -1637,16 +1646,12 @@ default:
                 }}
                 className="w-full text-left px-4 py-3 text-[#009900] font-semibold hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
                 <span>Log Out</span>
               </button>
             </div>
-            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
-              <p className="text-xs text-gray-500 text-center">© 2025 The BudE System™</p>
-            </div>
-          </div>
         </div>
       )}
 

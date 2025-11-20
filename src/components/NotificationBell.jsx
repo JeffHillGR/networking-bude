@@ -265,18 +265,22 @@ function NotificationBell({ onNavigate, showDropdown, setShowDropdown }) {
   return (
     <div className="relative flex items-center" ref={dropdownRef}>
       {/* Bell Icon */}
-      <div className="relative text-gray-600">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="relative text-gray-600 hover:text-gray-900 p-2 transition-colors"
+        aria-label="Notifications"
+      >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+          <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
-      </div>
+      </button>
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-[240px] overflow-hidden flex flex-col">
+        <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-[240px] overflow-hidden flex flex-col">
           {/* Header */}
           <div className="px-3 py-2 border-b border-gray-200 bg-gray-50 flex items-center justify-between flex-shrink-0">
             <h3 className="font-semibold text-gray-900 text-sm">Notifications</h3>

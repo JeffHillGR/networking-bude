@@ -267,7 +267,6 @@ function ResourcesInsights() {
           <div className="px-4 py-6 max-w-4xl mx-auto">
             {/* Featured Content */}
             <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Featured Content</h2>
               <div className="space-y-6">
                 {featuredContent.map((content, index) => (
                   <ContentCard key={index} content={content} slotNumber={index + 1} />
