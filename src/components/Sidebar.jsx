@@ -150,20 +150,8 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
   ];
 
   return (
-    <aside className="hidden md:block w-64 bg-white border-r border-gray-200 flex-shrink-0 relative overflow-hidden">
-      {/* Background Image */}
-      <div
-        className="fixed left-0 w-64 h-screen bg-cover opacity-30 pointer-events-none"
-        style={{
-          backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
-          backgroundPosition: 'center top',
-          backgroundSize: 'cover',
-          transform: 'scale(1.1)',
-          top: '0'
-        }}
-      />
-      {/* Content Layer */}
-      <div className="flex flex-col h-screen relative z-10">
+    <aside className="hidden md:block w-64 bg-white border-r border-gray-200 flex-shrink-0">
+      <div className="flex flex-col h-screen">
         {/* Scrollable navigation section */}
         <div className="flex-1 overflow-y-auto">
           <div className="p-4">
