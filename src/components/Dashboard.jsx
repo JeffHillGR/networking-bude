@@ -21,8 +21,34 @@ function Dashboard() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'dashboard');
+
+  // Initialize activeTab from URL search params for persistence across refreshes
+  const searchParams = new URLSearchParams(location.search);
+  const tabFromUrl = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabFromUrl || location.state?.activeTab || 'dashboard');
   const [connections, setConnections] = useState([]);
+
+  // Update URL when activeTab changes to persist tab state across refreshes
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const currentTab = params.get('tab');
+
+    if (activeTab === 'dashboard') {
+      // For dashboard, remove the tab param to keep URL clean
+      params.delete('tab');
+    } else {
+      // For other tabs, set the tab param
+      params.set('tab', activeTab);
+    }
+
+    const newSearch = params.toString();
+    const newUrl = newSearch ? `${location.pathname}?${newSearch}` : location.pathname;
+
+    // Only update if the URL actually changed
+    if (currentTab !== (activeTab === 'dashboard' ? null : activeTab)) {
+      navigate(newUrl, { replace: true, state: location.state });
+    }
+  }, [activeTab, navigate, location.pathname, location.search, location.state]);
   const [loadingConnections, setLoadingConnections] = useState(true);
   const [connectionLikedEvents, setConnectionLikedEvents] = useState({});
   const [connectionGoingEvents, setConnectionGoingEvents] = useState({});
