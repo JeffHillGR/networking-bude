@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Home, Calendar, Users, MessageCircle, User, CreditCard, Archive, Activity } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Home, Calendar, Users, MessageCircle, User, CreditCard, Archive, Activity, BookOpen, Lightbulb, ChevronDown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { supabase } from '../lib/supabase.js';
 
@@ -10,6 +10,8 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
   const [jobTitle, setJobTitle] = useState(localStorage.getItem('userJobTitle') || 'Job Title');
   const fullName = `${firstName} ${lastName}`;
   const [photoUrl, setPhotoUrl] = useState(null);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const dropdownRef = useRef(null);
 
   // Fetch user data from Supabase on mount
   useEffect(() => {
@@ -53,12 +55,23 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
 
   const [showActivity, setShowActivity] = useState(false);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowProfileDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const navItems = [
     { id: 'dashboard', icon: Home, label: 'Dashboard' },
     { id: 'events', icon: Calendar, label: 'Events' },
     { id: 'connections', icon: Users, label: 'Connections' },
     { id: 'messages', icon: MessageCircle, label: 'Messages' },
-    { id: 'settings', icon: User, label: 'Profile' }
+    { id: 'resources', icon: BookOpen, label: 'Resources & Insights' }
   ];
 
   return (
@@ -108,48 +121,42 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
                 </button>
               ))}
 
-              {/* Account Section */}
+              {/* My Activity Section */}
               <div className="border-t border-gray-200 my-3 pt-3">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-3">ACCOUNT</p>
-
                 {/* My Activity */}
                 <button
                   onClick={() => setShowActivity(!showActivity)}
-                  className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors text-gray-500 hover:bg-gray-100"
+                  className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors text-gray-700 hover:bg-gray-100"
                 >
                   <Activity className="w-4 h-4" />
-                  <span className="flex-1 text-left text-xs">My Activity</span>
+                  <span className="flex-1 text-left text-sm font-medium">My Activity</span>
                   <span className="text-xs">{showActivity ? '▼' : '▶'}</span>
                 </button>
 
                 {showActivity && (
-                  <div className="ml-4 mt-1 space-y-1 px-3 py-1">
+                  <div className="ml-4 mt-2 space-y-2 px-3 py-2 bg-gray-50 rounded-lg">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-gray-600">Profile Views</span>
-                      <span className="font-bold text-gray-900">342</span>
+                      <span className="text-gray-600">Events Interested</span>
+                      <span className="font-bold text-[#009900]">12</span>
                     </div>
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-gray-600">Upcoming Events</span>
-                      <span className="font-bold text-gray-900">8</span>
+                      <span className="text-gray-600">Going This Week</span>
+                      <span className="font-bold text-[#009900]">3</span>
                     </div>
                   </div>
                 )}
-
-                <button
-                  onClick={() => setActiveTab('payment')}
-                  className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-colors text-gray-500 hover:bg-gray-100"
-                >
-                  <CreditCard className="w-4 h-4" />
-                  <span>Account</span>
-                </button>
               </div>
             </nav>
           </div>
         </div>
 
         {/* Fixed user profile section at bottom */}
-        <div className="border-t border-gray-200 p-4 flex-shrink-0">
-          <div className="flex items-center gap-2 mb-3 p-2 bg-gray-100 rounded-lg">
+        <div className="border-t border-gray-200 p-4 flex-shrink-0 relative" ref={dropdownRef}>
+          {/* Clickable Profile Section */}
+          <button
+            onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+            className="w-full flex items-center gap-2 p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors mb-2"
+          >
             {photoUrl ? (
               <img
                 src={photoUrl}
@@ -163,27 +170,78 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
                 </span>
               </div>
             )}
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 text-left">
               <p className="font-medium text-gray-900 truncate text-sm">{fullName}</p>
-              <p className="text-xs text-gray-600 truncate">{jobTitle}</p>
+              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
             </div>
-          </div>
-          <div className="flex items-center justify-center gap-1.5 text-xs text-gray-900 mb-2">
-           <button onClick={() => setActiveTab('terms')} className="hover:underline">Terms</button>
-             <span>•</span>
-           <button onClick={() => setActiveTab('privacy')} className="hover:underline">Privacy</button>
-             <span>•</span>
-           <button onClick={onContactUsClick} className="hover:underline">Contact Us</button>
-          </div>
-          <button
-            onClick={async () => {
-              await signOut();
-              window.location.href = '/';
-            }}
-            className="w-full py-2 text-xs text-[#009900] font-bold hover:bg-gray-50 rounded transition-colors mb-1"
-          >
-            Logout
+            <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${showProfileDropdown ? 'rotate-180' : ''}`} />
           </button>
+
+          {/* Dropdown Menu */}
+          {showProfileDropdown && (
+            <div className="absolute bottom-full left-4 right-4 mb-2 bg-white border-2 border-gray-200 rounded-lg shadow-xl z-50">
+              <div className="py-2">
+                <button
+                  onClick={() => {
+                    setActiveTab('settings');
+                    setShowProfileDropdown(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  <User className="w-4 h-4" />
+                  <span>Profile</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveTab('payment');
+                    setShowProfileDropdown(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  <CreditCard className="w-4 h-4" />
+                  <span>Account</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveTab('privacy');
+                    setShowProfileDropdown(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  <span>Privacy</span>
+                </button>
+                <button
+                  onClick={() => {
+                    onContactUsClick();
+                    setShowProfileDropdown(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <span>Contact Us</span>
+                </button>
+                <div className="border-t border-gray-200 my-1"></div>
+                <button
+                  onClick={async () => {
+                    await signOut();
+                    window.location.href = '/';
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[#009900] font-semibold hover:bg-gray-100 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  <span>Log Out</span>
+                </button>
+              </div>
+            </div>
+          )}
+
           <p className="text-xs text-gray-900 text-center">© 2025 The BudE System™</p>
         </div>
       </div>

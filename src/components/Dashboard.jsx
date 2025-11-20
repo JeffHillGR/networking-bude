@@ -961,6 +961,37 @@ const getGreeting = () => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }} />;
 
+  case 'resources':
+    return (
+      <div className="space-y-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Resources & Insights</h1>
+          <p className="text-gray-600 mb-4">
+            Curated resources and data-driven insights to help you grow your professional network and career.
+          </p>
+          <div className="grid md:grid-cols-2 gap-6 mt-6">
+            {/* Resources Section */}
+            <div className="text-gray-500 text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+              <svg className="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              <p className="font-semibold text-gray-900 mb-1">Resources</p>
+              <p className="text-sm">Resource library coming soon</p>
+            </div>
+
+            {/* Insights Section */}
+            <div className="text-gray-500 text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+              <svg className="w-12 h-12 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <p className="font-semibold text-gray-900 mb-1">Insights</p>
+              <p className="text-sm">Personalized analytics coming soon</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
 default:
         return (
           <div className="flex items-center justify-center h-64">
@@ -1557,40 +1588,61 @@ default:
             <div className="p-4 space-y-2">
               <button
                 onClick={() => {
-                  setActiveTab('terms');
+                  setActiveTab('settings');
                   setShowMobileMenu(false);
                 }}
-                className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
               >
-                Terms of Service
+                <User className="w-4 h-4" />
+                <span>Profile</span>
+              </button>
+              <button
+                onClick={() => {
+                  setActiveTab('payment');
+                  setShowMobileMenu(false);
+                }}
+                className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
+              >
+                <CreditCard className="w-4 h-4" />
+                <span>Account</span>
               </button>
               <button
                 onClick={() => {
                   setActiveTab('privacy');
                   setShowMobileMenu(false);
                 }}
-                className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
               >
-                Privacy Policy
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span>Privacy</span>
               </button>
               <button
                 onClick={() => {
                   setShowContactModal(true);
                   setShowMobileMenu(false);
                 }}
-                className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
               >
-                Contact Us
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span>Contact Us</span>
               </button>
+              <div className="border-t border-gray-200 my-2"></div>
               <button
                 onClick={async () => {
                   setShowMobileMenu(false);
                   await signOut();
                   window.location.href = '/';
                 }}
-                className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="w-full text-left px-4 py-3 text-[#009900] font-semibold hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-3"
               >
-                Logout
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span>Log Out</span>
               </button>
             </div>
             <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">

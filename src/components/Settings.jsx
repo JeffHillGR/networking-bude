@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, Shield, Bell, Lock, Upload, X, ArrowLeft, Calendar, CheckCircle } from 'lucide-react';
+import { User, Shield, Bell, Lock, Upload, X, ArrowLeft, Calendar, CheckCircle, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 // Matching algorithm now runs server-side via Edge Function
@@ -30,6 +30,7 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
   const [contactSuccess, setContactSuccess] = useState(false);
   const [contactError, setContactError] = useState('');
   const [eventsAttendedCount, setEventsAttendedCount] = useState(0);
+  const [showPrivacyTerms, setShowPrivacyTerms] = useState(false);
 
   // Load profile data from localStorage on mount
   const loadProfileFromStorage = () => {
@@ -406,7 +407,8 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
     { id: 'profile', label: 'Profile', icon: User },
     { id: 'security', label: 'Security', icon: Shield },
     { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'privacy', label: 'Privacy', icon: Lock }
+    { id: 'privacy', label: 'Privacy', icon: Lock },
+    { id: 'terms', label: 'Terms of Service', icon: FileText }
   ];
 
   const toggleInterest = (interest) => {
@@ -1513,6 +1515,91 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
               </div>
             </div>
 
+            {/* Privacy Terms & Conditions - Expandable */}
+            <div className="bg-white rounded-lg shadow-sm border-2 border-gray-200 overflow-hidden">
+              <button
+                onClick={() => setShowPrivacyTerms(!showPrivacyTerms)}
+                className="w-full flex items-center justify-between p-6 hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <Lock className="w-5 h-5 text-gray-700" />
+                  <h2 className="text-xl font-bold text-gray-900">Privacy Policy</h2>
+                </div>
+                {showPrivacyTerms ? (
+                  <ChevronUp className="w-5 h-5 text-gray-600" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-600" />
+                )}
+              </button>
+
+              {showPrivacyTerms && (
+                <div className="px-6 pb-6 pt-2 max-h-96 overflow-y-auto border-t border-gray-200">
+                  <p className="text-sm text-gray-500 mb-4">Last updated: October 3, 2025</p>
+
+                  <div className="space-y-4 text-sm text-gray-700">
+                    <section>
+                      <h3 className="font-semibold text-gray-900 mb-2">1. Information We Collect</h3>
+                      <p className="mb-2">We collect information that you provide directly to us, including:</p>
+                      <ul className="list-disc ml-6 space-y-1 text-xs">
+                        <li>Name, email address, and profile information</li>
+                        <li>Professional details and networking preferences</li>
+                        <li>Messages and communications with other users</li>
+                        <li>Payment and billing information</li>
+                        <li>Usage data and analytics</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="font-semibold text-gray-900 mb-2">2. How We Use Your Information</h3>
+                      <p className="mb-2">We use the information we collect to:</p>
+                      <ul className="list-disc ml-6 space-y-1 text-xs">
+                        <li>Provide, maintain, and improve our services</li>
+                        <li>Connect you with other professionals</li>
+                        <li>Process payments and transactions</li>
+                        <li>Send you updates and marketing communications</li>
+                        <li>Respond to your requests and support needs</li>
+                        <li>Protect against fraud and abuse</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="font-semibold text-gray-900 mb-2">3. Information Sharing</h3>
+                      <p className="mb-2">We do not sell your personal information. We may share your information with:</p>
+                      <ul className="list-disc ml-6 space-y-1 text-xs">
+                        <li>Other users as part of the networking features</li>
+                        <li>Service providers who assist in our operations</li>
+                        <li>Law enforcement when required by law</li>
+                        <li>Other parties with your consent</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="font-semibold text-gray-900 mb-2">4. Data Security</h3>
+                      <p className="text-xs">We implement appropriate technical and organizational measures to protect your personal information. However, no method of transmission over the internet is 100% secure.</p>
+                    </section>
+
+                    <section>
+                      <h3 className="font-semibold text-gray-900 mb-2">5. Your Rights</h3>
+                      <p className="mb-2">You have the right to:</p>
+                      <ul className="list-disc ml-6 space-y-1 text-xs">
+                        <li>Access and receive a copy of your personal data</li>
+                        <li>Correct inaccurate or incomplete data</li>
+                        <li>Request deletion of your data</li>
+                        <li>Object to or restrict certain processing</li>
+                        <li>Data portability</li>
+                        <li>Withdraw consent at any time</li>
+                      </ul>
+                    </section>
+
+                    <section>
+                      <h3 className="font-semibold text-gray-900 mb-2">6. Contact Us</h3>
+                      <p className="text-xs">If you have questions about this Privacy Policy, please contact us at: privacy@bude.com</p>
+                    </section>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Share Feedback */}
             <div className="bg-white rounded-lg shadow-sm p-8 border-2 border-[#D0ED00]">
               <div className="flex items-center gap-2 mb-2 text-[#009900]">
@@ -1591,6 +1678,96 @@ function Settings({ autoOpenFeedback = false, onBackToDashboard }) {
                   </svg>
                   Cancel Account
                 </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Terms of Service Tab */}
+        {activeTab === 'terms' && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-lg shadow-sm p-8">
+              <div className="flex items-center gap-2 mb-4">
+                <FileText className="w-5 h-5 text-gray-700" />
+                <h2 className="text-2xl font-bold text-gray-900">Terms of Service</h2>
+              </div>
+              <p className="text-sm text-gray-500 mb-6">Last updated: October 3, 2025</p>
+
+              <div className="space-y-6 text-sm text-gray-700">
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">1. Acceptance of Terms</h3>
+                  <p>By accessing and using the BudE networking platform, you accept and agree to be bound by the terms and provision of this agreement.</p>
+                </section>
+
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">2. Use License</h3>
+                  <p>Permission is granted to temporarily access the materials on BudE for personal, non-commercial use only. This is the grant of a license, not a transfer of title.</p>
+                </section>
+
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">3. User Accounts</h3>
+                  <p>You are responsible for maintaining the confidentiality of your account and password. You agree to accept responsibility for all activities that occur under your account.</p>
+                </section>
+
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">4. Prohibited Uses</h3>
+                  <p className="mb-2">You may not use the service to:</p>
+                  <ul className="list-disc ml-6 space-y-1">
+                    <li>Violate any applicable laws or regulations</li>
+                    <li>Harass, abuse, or harm other users</li>
+                    <li>Impersonate any person or entity</li>
+                    <li>Transmit spam or unsolicited communications</li>
+                    <li>Interfere with the security of the service</li>
+                  </ul>
+
+                  <div className="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
+                    <p className="mb-3 font-medium">
+                      <strong>This is not a DATING app.</strong> If you are reported by another BudE user for using it for that purpose your correspondence will be reviewed and you could be subject to suspension and NO refund of your subscription.
+                    </p>
+                    <p className="font-medium">
+                      <strong>This app shall not be used by you (as a user) to SELL goods or services to other users.</strong> If you are reported by another BudE user for using it for that purpose your correspondence will be reviewed and you could be subject to suspension and NO refund of your subscription.
+                    </p>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">5. Subscription and Payment</h3>
+                  <p>Paid subscriptions are billed in advance on a monthly or annual basis. Subscriptions automatically renew unless cancelled before the renewal date.</p>
+                </section>
+
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">6. Cancellation and Refunds</h3>
+                  <p>You may cancel your subscription at any time. Refunds are provided on a case-by-case basis in accordance with our refund policy.</p>
+                </section>
+
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">7. Intellectual Property</h3>
+                  <p>The service and its original content, features, and functionality are owned by The BudE System™ and are protected by international copyright, trademark, and other intellectual property laws.</p>
+                </section>
+
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">8. Termination</h3>
+                  <p>We may terminate or suspend your account immediately, without prior notice, for conduct that we believe violates these Terms or is harmful to other users, us, or third parties.</p>
+                </section>
+
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">9. Limitation of Liability</h3>
+                  <p>In no event shall BudE or its suppliers be liable for any damages arising out of the use or inability to use the service.</p>
+                </section>
+
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">10. Changes to Terms</h3>
+                  <p>We reserve the right to modify these terms at any time. We will notify users of any material changes via email or through the service.</p>
+                </section>
+
+                <section>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">11. Contact Information</h3>
+                  <p>For questions about these Terms, please contact us at: support@bude.com</p>
+                </section>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-gray-200">
+                <p className="text-xs text-gray-500">© 2025 The BudE System™. All rights reserved.</p>
               </div>
             </div>
           </div>
