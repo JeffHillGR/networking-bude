@@ -68,8 +68,8 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick }) {
 
   const navItems = [
     { id: 'dashboard', icon: Home, label: 'Dashboard' },
-    { id: 'events', icon: Calendar, label: 'Events' },
     { id: 'connections', icon: Users, label: 'Connections' },
+    { id: 'events', icon: Calendar, label: 'Events' },
     { id: 'messages', icon: MessageCircle, label: 'Messages' },
     { id: 'resources', icon: BookOpen, label: 'Resources & Insights' }
   ];
