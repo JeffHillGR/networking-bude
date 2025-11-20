@@ -10,6 +10,13 @@ function HeroBannerCarousel() {
   useEffect(() => {
     let cancelled = false;
 
+    // Clear rotation flag on page load (not on component remount)
+    // This ensures rotation happens on refresh but not on tab navigation
+    if (performance.navigation.type === 1 || !sessionStorage.getItem('pageLoaded')) {
+      sessionStorage.removeItem('bannerRotatedThisSession');
+      sessionStorage.setItem('pageLoaded', 'true');
+    }
+
     const fetchBanners = async () => {
       try {
         const { data: banners, error } = await supabase
@@ -23,15 +30,23 @@ function HeroBannerCarousel() {
         if (cancelled) return; // Don't proceed if effect was cleaned up
 
         if (banners && banners.length > 0) {
-          // Rotate through banners on each page load
-          // Use sessionStorage to track which banner was shown last
-          const lastShownIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
-          const nextIndex = (lastShownIndex + 1) % banners.length;
+          // Only rotate on page refresh, not on component remount
+          // Check if we've already rotated during this page session
+          const hasRotatedThisSession = sessionStorage.getItem('bannerRotatedThisSession');
 
-          const banner = banners[nextIndex];
+          let bannerIndex;
+          if (!hasRotatedThisSession) {
+            // First mount after page load - rotate to next banner
+            const lastShownIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
+            bannerIndex = (lastShownIndex + 1) % banners.length;
+            sessionStorage.setItem('lastHeroBannerIndex', bannerIndex.toString());
+            sessionStorage.setItem('bannerRotatedThisSession', 'true');
+          } else {
+            // Subsequent mount (tab navigation) - use current banner
+            bannerIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
+          }
 
-          // Update sessionStorage immediately to prevent double-loading on remounts
-          sessionStorage.setItem('lastHeroBannerIndex', nextIndex.toString());
+          const banner = banners[bannerIndex];
 
           // Preload the image before showing it
           const img = new Image();
