@@ -561,11 +561,21 @@ export default function BudEOnboarding() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
               </svg>
             </button>
+
+            {/* Join Now button - centered at bottom (desktop only) */}
+            <div className="hidden md:flex absolute bottom-8 left-0 right-0 z-10 justify-center">
+              <button
+                onClick={() => setShowLandingHero(false)}
+                className="bg-gray-200 text-[#009900] font-bold text-lg px-10 py-3 rounded-full hover:bg-gray-300 transition-colors border-2 border-[#D0ED00] shadow-xl"
+              >
+                Join Now
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Bottom bar - White with "Join Now" */}
-        <div className="bg-white px-4 py-4 flex-shrink-0">
+        {/* Bottom bar - Mobile only */}
+        <div className="md:hidden bg-white px-4 py-4 flex-shrink-0">
           <div className="flex justify-center">
             <button
               onClick={() => setShowLandingHero(false)}
