@@ -81,21 +81,33 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
           console.log('[Sidebar] Likes data:', likesData, 'Error:', likesError);
 
           if (likesData && likesData.length > 0) {
-            const interestedEventIds = likesData.map(l => l.event_id);
+            const interestedEventIds = likesData.map(l => l.event_id).filter(id => id != null);
             console.log('[Sidebar] Interested event IDs:', interestedEventIds);
 
-            const { data: eventsData, error: eventsError } = await supabase
-              .from('events')
-              .select('id, title, image_url, start_date')
-              .in('id', interestedEventIds)
-              .order('start_date', { ascending: true })
-              .limit(4);
+            if (interestedEventIds.length > 0) {
+              // Build query - use .eq() for single item, .in() for multiple
+              let query = supabase
+                .from('events')
+                .select('id, title, image_url, start_date');
 
-            console.log('[Sidebar] Interested events:', eventsData, 'Error:', eventsError);
-            if (eventsError) {
-              console.error('[Sidebar] Error fetching interested events:', eventsError);
+              if (interestedEventIds.length === 1) {
+                query = query.eq('id', interestedEventIds[0]);
+              } else {
+                query = query.in('id', interestedEventIds);
+              }
+
+              const { data: eventsData, error: eventsError } = await query
+                .order('start_date', { ascending: true })
+                .limit(4);
+
+              console.log('[Sidebar] Interested events:', eventsData, 'Error:', eventsError);
+              if (eventsError) {
+                console.error('[Sidebar] Error fetching interested events:', eventsError);
+              }
+              setInterestedEvents(eventsData || []);
+            } else {
+              setInterestedEvents([]);
             }
-            setInterestedEvents(eventsData || []);
           } else {
             setInterestedEvents([]);
           }
@@ -110,34 +122,46 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
           console.log('[Sidebar] Going data:', goingData, 'Error:', goingError);
 
           if (goingData && goingData.length > 0) {
-            const goingEventIds = goingData.map(a => a.event_id);
+            const goingEventIds = goingData.map(a => a.event_id).filter(id => id != null);
             console.log('[Sidebar] Going event IDs:', goingEventIds);
 
-            // Get start and end of current week
-            const now = new Date();
-            const startOfWeek = new Date(now);
-            startOfWeek.setHours(0, 0, 0, 0);
-            startOfWeek.setDate(now.getDate() - now.getDay()); // Start of week (Sunday)
+            if (goingEventIds.length > 0) {
+              // Get start and end of current week
+              const now = new Date();
+              const startOfWeek = new Date(now);
+              startOfWeek.setHours(0, 0, 0, 0);
+              startOfWeek.setDate(now.getDate() - now.getDay()); // Start of week (Sunday)
 
-            const endOfWeek = new Date(startOfWeek);
-            endOfWeek.setDate(startOfWeek.getDate() + 7); // End of week
+              const endOfWeek = new Date(startOfWeek);
+              endOfWeek.setDate(startOfWeek.getDate() + 7); // End of week
 
-            console.log('[Sidebar] Week range:', startOfWeek.toISOString(), 'to', endOfWeek.toISOString());
+              console.log('[Sidebar] Week range:', startOfWeek.toISOString(), 'to', endOfWeek.toISOString());
 
-            const { data: eventsData, error: eventsError } = await supabase
-              .from('events')
-              .select('id, title, image_url, start_date')
-              .in('id', goingEventIds)
-              .gte('start_date', startOfWeek.toISOString())
-              .lt('start_date', endOfWeek.toISOString())
-              .order('start_date', { ascending: true })
-              .limit(4);
+              // Build query - use .eq() for single item, .in() for multiple
+              let query = supabase
+                .from('events')
+                .select('id, title, image_url, start_date');
 
-            console.log('[Sidebar] Going events this week:', eventsData, 'Error:', eventsError);
-            if (eventsError) {
-              console.error('[Sidebar] Error fetching going events:', eventsError);
+              if (goingEventIds.length === 1) {
+                query = query.eq('id', goingEventIds[0]);
+              } else {
+                query = query.in('id', goingEventIds);
+              }
+
+              const { data: eventsData, error: eventsError } = await query
+                .gte('start_date', startOfWeek.toISOString())
+                .lt('start_date', endOfWeek.toISOString())
+                .order('start_date', { ascending: true })
+                .limit(4);
+
+              console.log('[Sidebar] Going events this week:', eventsData, 'Error:', eventsError);
+              if (eventsError) {
+                console.error('[Sidebar] Error fetching going events:', eventsError);
+              }
+              setGoingEvents(eventsData || []);
+            } else {
+              setGoingEvents([]);
             }
-            setGoingEvents(eventsData || []);
           } else {
             setGoingEvents([]);
           }
