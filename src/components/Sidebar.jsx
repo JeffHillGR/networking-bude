@@ -82,15 +82,19 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
 
           if (likesData && likesData.length > 0) {
             const interestedEventIds = likesData.map(l => l.event_id);
+            console.log('[Sidebar] Interested event IDs:', interestedEventIds);
 
-            const { data: eventsData } = await supabase
+            const { data: eventsData, error: eventsError } = await supabase
               .from('events')
               .select('id, title, image_url, start_date')
               .in('id', interestedEventIds)
               .order('start_date', { ascending: true })
               .limit(4);
 
-            console.log('[Sidebar] Interested events:', eventsData);
+            console.log('[Sidebar] Interested events:', eventsData, 'Error:', eventsError);
+            if (eventsError) {
+              console.error('[Sidebar] Error fetching interested events:', eventsError);
+            }
             setInterestedEvents(eventsData || []);
           } else {
             setInterestedEvents([]);
@@ -107,6 +111,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
 
           if (goingData && goingData.length > 0) {
             const goingEventIds = goingData.map(a => a.event_id);
+            console.log('[Sidebar] Going event IDs:', goingEventIds);
 
             // Get start and end of current week
             const now = new Date();
@@ -119,7 +124,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
 
             console.log('[Sidebar] Week range:', startOfWeek.toISOString(), 'to', endOfWeek.toISOString());
 
-            const { data: eventsData } = await supabase
+            const { data: eventsData, error: eventsError } = await supabase
               .from('events')
               .select('id, title, image_url, start_date')
               .in('id', goingEventIds)
@@ -128,7 +133,10 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
               .order('start_date', { ascending: true })
               .limit(4);
 
-            console.log('[Sidebar] Going events this week:', eventsData);
+            console.log('[Sidebar] Going events this week:', eventsData, 'Error:', eventsError);
+            if (eventsError) {
+              console.error('[Sidebar] Error fetching going events:', eventsError);
+            }
             setGoingEvents(eventsData || []);
           } else {
             setGoingEvents([]);
