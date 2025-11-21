@@ -88,7 +88,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
               // Build query - use .eq() for single item, .in() for multiple
               let query = supabase
                 .from('events')
-                .select('id, title, image_url, start_date');
+                .select('id, title, image_url, date');
 
               if (interestedEventIds.length === 1) {
                 query = query.eq('id', interestedEventIds[0]);
@@ -97,7 +97,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
               }
 
               const { data: eventsData, error: eventsError } = await query
-                .order('start_date', { ascending: true })
+                .order('date', { ascending: true })
                 .limit(4);
 
               console.log('[Sidebar] Interested events:', eventsData, 'Error:', eventsError);
@@ -140,7 +140,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
               // Build query - use .eq() for single item, .in() for multiple
               let query = supabase
                 .from('events')
-                .select('id, title, image_url, start_date');
+                .select('id, title, image_url, date');
 
               if (goingEventIds.length === 1) {
                 query = query.eq('id', goingEventIds[0]);
@@ -149,9 +149,9 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
               }
 
               const { data: eventsData, error: eventsError } = await query
-                .gte('start_date', startOfWeek.toISOString())
-                .lt('start_date', endOfWeek.toISOString())
-                .order('start_date', { ascending: true })
+                .gte('date', startOfWeek.toISOString())
+                .lt('date', endOfWeek.toISOString())
+                .order('date', { ascending: true })
                 .limit(4);
 
               console.log('[Sidebar] Going events this week:', eventsData, 'Error:', eventsError);
