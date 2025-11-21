@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import EmojiPicker from 'emoji-picker-react';
 
-function Messages({ onBackToDashboard }) {
+function Messages({ onBackToDashboard, autoSelectUserId }) {
   const { user } = useAuth();
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messageInput, setMessageInput] = useState('');
@@ -20,6 +20,7 @@ function Messages({ onBackToDashboard }) {
   const [reportReason, setReportReason] = useState('');
   const [reportSubmitting, setReportSubmitting] = useState(false);
   const messagesEndRef = useRef(null);
+  const [conversationsLoaded, setConversationsLoaded] = useState(false);
 
   // Scroll to bottom of messages
   const scrollToBottom = () => {
@@ -94,9 +95,11 @@ function Messages({ onBackToDashboard }) {
 
         setConversations(conversationsWithProfiles);
         setLoading(false);
+        setConversationsLoaded(true);
       } catch (error) {
         console.error('Error loading conversations:', error);
         setLoading(false);
+        setConversationsLoaded(true);
       }
     };
 
@@ -136,6 +139,107 @@ function Messages({ onBackToDashboard }) {
     };
   }, [user]);
 
+  // Auto-select conversation when autoSelectUserId is provided
+  useEffect(() => {
+    if (!autoSelectUserId || !conversationsLoaded || !user) return;
+
+    const autoSelectConversation = async () => {
+      // First, try to find existing conversation in loaded conversations
+      const existingConv = conversations.find(conv => conv.otherUserId === autoSelectUserId);
+
+      if (existingConv) {
+        setSelectedConversation(existingConv);
+        setShowMobileChat(true);
+        return;
+      }
+
+      // If not found, create new conversation
+      try {
+        const userId1 = user.id < autoSelectUserId ? user.id : autoSelectUserId;
+        const userId2 = user.id < autoSelectUserId ? autoSelectUserId : user.id;
+
+        // Check if conversation exists in database
+        const { data: existingConvs, error: findError } = await supabase
+          .from('conversations')
+          .select('*')
+          .eq('user1_id', userId1)
+          .eq('user2_id', userId2)
+          .limit(1);
+
+        if (findError) throw findError;
+
+        let conversation;
+
+        if (existingConvs && existingConvs.length > 0) {
+          conversation = existingConvs[0];
+        } else {
+          // Create new conversation
+          const { data: newConv, error: createError } = await supabase
+            .from('conversations')
+            .insert({
+              user1_id: userId1,
+              user2_id: userId2
+            })
+            .select('*')
+            .single();
+
+          if (createError) throw createError;
+          conversation = newConv;
+        }
+
+        // Get other user's profile
+        const { data: profileData, error: profileError } = await supabase
+          .from('users')
+          .select('name, title, company, photo')
+          .eq('id', autoSelectUserId)
+          .single();
+
+        if (profileError) {
+          console.error('Error fetching user profile:', profileError);
+        }
+
+        const getInitials = (name) => {
+          if (!name) return 'U';
+          const parts = name.split(' ');
+          if (parts.length >= 2) {
+            return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+          }
+          return name.substring(0, 2).toUpperCase();
+        };
+
+        const formattedConv = {
+          id: conversation.id,
+          otherUserId: autoSelectUserId,
+          name: profileData?.name || 'Unknown User',
+          title: profileData?.title && profileData?.company
+            ? `${profileData.title} at ${profileData.company}`
+            : profileData?.title || profileData?.company || '',
+          photo: profileData?.photo,
+          lastMessage: 'Start a conversation',
+          timestamp: 'Now',
+          unread: false,
+          unreadCount: 0,
+          initials: getInitials(profileData?.name),
+          updatedAt: conversation.updated_at
+        };
+
+        // Add to conversations list if not already there
+        setConversations(prev => {
+          const exists = prev.find(c => c.id === conversation.id);
+          if (exists) return prev;
+          return [formattedConv, ...prev];
+        });
+
+        setSelectedConversation(formattedConv);
+        setShowMobileChat(true);
+      } catch (error) {
+        console.error('Error auto-selecting conversation:', error);
+      }
+    };
+
+    autoSelectConversation();
+  }, [autoSelectUserId, conversationsLoaded, conversations, user]);
+
   // Load messages for selected conversation
   useEffect(() => {
     if (!selectedConversation || !user) return;
@@ -174,7 +278,23 @@ function Messages({ onBackToDashboard }) {
           filter: `conversation_id=eq.${selectedConversation.id}`
         },
         (payload) => {
-          setMessages((prev) => [...prev, payload.new]);
+          setMessages((prev) => {
+            // Check if message already exists (avoid duplicates from optimistic updates)
+            const exists = prev.some(msg => msg.id === payload.new.id);
+            if (exists) return prev;
+
+            // Replace optimistic message if this is the real version
+            const hasOptimistic = prev.some(msg => msg.isOptimistic && msg.content === payload.new.content && msg.sender_id === payload.new.sender_id);
+            if (hasOptimistic) {
+              return prev.map(msg =>
+                msg.isOptimistic && msg.content === payload.new.content && msg.sender_id === payload.new.sender_id
+                  ? payload.new
+                  : msg
+              );
+            }
+
+            return [...prev, payload.new];
+          });
           scrollToBottom();
 
           // Mark as read if we're the recipient
@@ -233,6 +353,31 @@ function Messages({ onBackToDashboard }) {
     const messageContent = messageInput.trim();
     setMessageInput('');
 
+    // Create optimistic message with temporary ID
+    const optimisticMessage = {
+      id: `temp-${Date.now()}`,
+      conversation_id: selectedConversation.id,
+      sender_id: user.id,
+      recipient_id: selectedConversation.otherUserId,
+      content: messageContent,
+      created_at: new Date().toISOString(),
+      is_read: false,
+      isOptimistic: true // Flag to identify optimistic messages
+    };
+
+    // Add optimistic message immediately
+    setMessages(prev => [...prev, optimisticMessage]);
+    scrollToBottom();
+
+    // Update conversation last message
+    setConversations(prev =>
+      prev.map(conv =>
+        conv.id === selectedConversation.id
+          ? { ...conv, lastMessage: messageContent, timestamp: 'Just now' }
+          : conv
+      )
+    );
+
     try {
       console.log('Attempting to send message with data:', {
         conversation_id: selectedConversation.id,
@@ -261,10 +406,22 @@ function Messages({ onBackToDashboard }) {
         throw error;
       }
 
+      // Replace optimistic message with real one
+      if (data && data[0]) {
+        setMessages(prev =>
+          prev.map(msg =>
+            msg.id === optimisticMessage.id ? data[0] : msg
+          )
+        );
+      }
+
     } catch (error) {
       console.error('Error sending message:', error);
       alert('Failed to send message. Please try again.');
       setMessageInput(messageContent); // Restore message on error
+
+      // Remove optimistic message on error
+      setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
     } finally {
       setSending(false);
     }
@@ -491,6 +648,35 @@ function Messages({ onBackToDashboard }) {
                       onClick={() => setShowOptionsMenu(false)}
                     />
                     <div className="absolute right-0 top-12 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-20">
+                      <button
+                        onClick={async () => {
+                          if (window.confirm('Are you sure you want to delete this conversation? This action cannot be undone.')) {
+                            try {
+                              // Delete the conversation from database
+                              const { error } = await supabase
+                                .from('conversations')
+                                .delete()
+                                .eq('id', selectedConversation.id);
+
+                              if (error) throw error;
+
+                              // Remove from local state
+                              setConversations(prev => prev.filter(conv => conv.id !== selectedConversation.id));
+                              setSelectedConversation(null);
+                              setShowMobileChat(false);
+                              setShowOptionsMenu(false);
+                            } catch (error) {
+                              console.error('Error deleting conversation:', error);
+                              alert('Failed to delete conversation. Please try again.');
+                            }
+                          } else {
+                            setShowOptionsMenu(false);
+                          }
+                        }}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        🗑️ Delete Conversation
+                      </button>
                       <button
                         onClick={() => {
                           setShowReportModal(true);

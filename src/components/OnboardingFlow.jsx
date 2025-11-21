@@ -598,6 +598,8 @@ export default function BudEOnboarding() {
               <div className="md:w-1/2 text-left">
                 <p className="text-4xl md:text-5xl font-bold text-gray-600 leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
                   A networking wingperson for every event.
+                  <br /><br />
+                  In 3 easy steps
                 </p>
               </div>
               <div className="md:w-1/2">
@@ -804,6 +806,8 @@ export default function BudEOnboarding() {
       <div className="hidden md:flex md:w-1/2 items-center justify-end pr-4">
         <p className="text-4xl lg:text-5xl font-bold text-black leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
           A networking wingperson for every event.
+          <br /><br />
+          In 3 easy steps
         </p>
       </div>
 

@@ -55,6 +55,7 @@ function Dashboard() {
   const [connectionGoingEvents, setConnectionGoingEvents] = useState({});
   const [userFirstName, setUserFirstName] = useState('there');
   const [selectedConnectionId, setSelectedConnectionId] = useState(null);
+  const [selectedMessageUserId, setSelectedMessageUserId] = useState(null);
   const [events, setEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
 const [loadedFeaturedContent, setLoadedFeaturedContent] = useState([null, null, null]);
@@ -944,23 +945,29 @@ const getGreeting = () => {
     onBackToDashboard={() => {
       setActiveTab('dashboard');
       setSelectedConnectionId(null);
+      setSelectedMessageUserId(null);
       window.scrollTo({ top: 0, behavior: 'instant' });
     }}
     onNavigateToSettings={() => {
       setActiveTab('settings');
       window.scrollTo({ top: 0, behavior: 'instant' });
     }}
-    onNavigateToMessages={() => {
+    onNavigateToMessages={(userId) => {
+      setSelectedMessageUserId(userId);
       setActiveTab('messages');
       window.scrollTo({ top: 0, behavior: 'instant' });
     }}
   />;
 
   case 'messages':
-  return <Messages onBackToDashboard={() => {
-    setActiveTab('dashboard');
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }} />;
+  return <Messages
+    onBackToDashboard={() => {
+      setActiveTab('dashboard');
+      setSelectedMessageUserId(null);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }}
+    autoSelectUserId={selectedMessageUserId}
+  />;
 
   case 'resources':
   return <ResourcesInsights onBackToDashboard={() => {

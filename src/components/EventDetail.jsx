@@ -634,7 +634,7 @@ function EventDetail() {
                   <div className="flex gap-2 ml-4">
                     <button
                       onClick={handleToggleLike}
-                      className={`p-2 rounded-full border transition-colors ${
+                      className={`p-2 rounded-full border transition-colors group relative ${
                         isFavorited
                           ? 'bg-red-50 border-red-500 text-red-500'
                           : 'border-gray-300 text-gray-600 hover:border-gray-400'
@@ -642,6 +642,10 @@ function EventDetail() {
                       title={isFavorited ? 'Unlike event' : 'Like event'}
                     >
                       <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
+                      {/* Custom tooltip */}
+                      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-[#009900] text-white text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                        {isFavorited ? 'Not Interested' : 'Interested'}
+                      </span>
                     </button>
                     <button
                       onClick={handleToggleGoing}
@@ -654,15 +658,19 @@ function EventDetail() {
                     >
                       <Check className={`w-5 h-5 ${isGoing ? 'stroke-2' : ''}`} />
                       {/* Custom tooltip */}
-                      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-[#009900] text-white text-base font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-[#009900] text-white text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
                         {isGoing ? 'Not going' : "I'm going"}
                       </span>
                     </button>
                     <button
                       onClick={() => setShowShareModal(true)}
-                      className="p-2 rounded-full border border-gray-300 text-gray-600 hover:border-gray-400"
+                      className="p-2 rounded-full border border-gray-300 text-gray-600 hover:border-gray-400 group relative"
                     >
                       <Share2 className="w-5 h-5" />
+                      {/* Custom tooltip */}
+                      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-[#009900] text-white text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                        Share Event
+                      </span>
                     </button>
                   </div>
                 </div>

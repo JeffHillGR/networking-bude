@@ -1532,9 +1532,9 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                           conversationId = newConv.id;
                         }
 
-                        // Navigate to messages
+                        // Navigate to messages with the other user's ID
                         if (onNavigateToMessages) {
-                          onNavigateToMessages();
+                          onNavigateToMessages(selectedConnection.id);
                         }
                         setSelectedConnection(null);
                       } catch (error) {
