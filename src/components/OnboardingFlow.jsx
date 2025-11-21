@@ -36,14 +36,16 @@ export default function BudEOnboarding() {
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-1.png',
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-2.png',
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-3.png',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-4.png'
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-4.png',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-5.png'
   ];
 
   const mobileBanners = [
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-1.png?t=20251119',
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-2.png?t=20251119',
     'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-3.png?t=20251119',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-4.png?t=20251120'
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-4.png?t=20251120',
+    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-5.png'
   ];
 
   // Preload banner images
@@ -59,7 +61,7 @@ export default function BudEOnboarding() {
     if (!showLandingHero || isHovering) return;
 
     const timer = setInterval(() => {
-      setHeroImageIndex(prev => (prev + 1) % 4); // Cycle 0 -> 1 -> 2 -> 3 -> 0
+      setHeroImageIndex(prev => (prev + 1) % 5); // Cycle 0 -> 1 -> 2 -> 3 -> 4 -> 0
     }, 8000);
 
     return () => clearInterval(timer);
@@ -457,8 +459,8 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 1 */}
             {heroImageIndex === 0 && (
-              <div className="absolute inset-0 flex items-start pt-64 md:pt-48 lg:pt-60 px-8 md:px-16 lg:px-24">
-                <div className="text-left bg-white/60 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+              <div className="absolute inset-0 flex items-start pt-72 md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
+                <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Traditional networking scene
                   </h1>
@@ -471,8 +473,8 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 2 */}
             {heroImageIndex === 1 && (
-              <div className="absolute inset-0 flex items-start pt-64 md:pt-48 lg:pt-60 px-8 md:px-16 lg:px-24">
-                <div className="text-left bg-white/60 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+              <div className="absolute inset-0 flex items-start pt-72 md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
+                <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Resulting in a drawer
                   </h1>
@@ -485,8 +487,8 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 3 */}
             {heroImageIndex === 2 && (
-              <div className="absolute inset-0 flex items-start pt-64 md:pt-48 lg:pt-60 px-8 md:px-16 lg:px-24">
-                <div className="text-left bg-white/60 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+              <div className="absolute inset-0 flex items-start pt-72 md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
+                <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Trying to make connections
                   </h1>
@@ -499,13 +501,27 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 4 */}
             {heroImageIndex === 3 && (
-              <div className="absolute inset-0 flex items-start pt-64 md:pt-48 lg:pt-60 px-8 md:px-16 lg:px-24">
-                <div className="text-left bg-white/60 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+              <div className="absolute inset-0 flex items-start pt-72 md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
+                <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     We think we may have
                   </h1>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
-                    the solution for you ⬇⬇
+                    the solution for you
+                  </h1>
+                </div>
+              </div>
+            )}
+
+            {/* Text Overlay for Banner 5 */}
+            {heroImageIndex === 4 && (
+              <div className="absolute inset-0 flex items-start pt-72 md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
+                <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                    It only takes 3 easy steps to start
+                  </h1>
+                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                    making more meaningful connections
                   </h1>
                 </div>
               </div>
@@ -513,7 +529,7 @@ export default function BudEOnboarding() {
 
             {/* Navigation arrows - bottom corners */}
             <button
-              onClick={() => setHeroImageIndex((prev) => (prev === 0 ? 3 : prev - 1))}
+              onClick={() => setHeroImageIndex((prev) => (prev === 0 ? 4 : prev - 1))}
               className="absolute bottom-[18%] left-[2%] z-10 p-4 rounded-full bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 group"
               aria-label="Previous slide"
             >
@@ -523,7 +539,7 @@ export default function BudEOnboarding() {
             </button>
 
             <button
-              onClick={() => setHeroImageIndex((prev) => (prev === 3 ? 0 : prev + 1))}
+              onClick={() => setHeroImageIndex((prev) => (prev === 4 ? 0 : prev + 1))}
               className="absolute bottom-[18%] right-[2%] z-10 p-4 rounded-full bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 group"
               aria-label="Next slide"
             >
@@ -654,9 +670,16 @@ export default function BudEOnboarding() {
 
             {/* Mobile: Hook appears first */}
             <div className="md:hidden mb-8">
-              <p className="text-4xl font-bold text-gray-600 leading-tight text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-                Stop networking alone. Start networking smarter.
-              </p>
+              <div className="text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                <p className="text-3xl font-bold text-gray-600 leading-tight mb-3">
+                  Those 3 easy steps
+                </p>
+                <p className="text-2xl font-bold text-gray-600 leading-relaxed">
+                  Create your profile<br/>
+                  Start connecting<br/>
+                  Go to events together
+                </p>
+              </div>
             </div>
 
             <div className="flex flex-col md:flex-row gap-8 items-center my-8">
@@ -671,9 +694,16 @@ export default function BudEOnboarding() {
               </div>
               {/* Desktop: Hook on right */}
               <div className="hidden md:block md:w-1/2 text-right">
-                <p className="text-4xl md:text-5xl font-bold text-gray-600 leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-                  Stop networking alone. Start networking smarter.
-                </p>
+                <div style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                  <p className="text-4xl md:text-5xl font-bold text-gray-600 leading-tight mb-4">
+                    Those 3 easy steps
+                  </p>
+                  <p className="text-3xl md:text-4xl font-bold text-gray-600 leading-relaxed">
+                    Create your profile<br/>
+                    Start connecting<br/>
+                    Go to events together
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -947,9 +977,16 @@ export default function BudEOnboarding() {
             <img src="/BudE-Logo-Final.png" alt="BudE Logo" className="w-full h-auto mb-4" />
             <div className="space-y-4 flex flex-col items-center">
               <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-1.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
-              <p className="text-xl font-bold text-black leading-tight px-2 text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-                Stop networking alone. Start networking smarter.
-              </p>
+              <div className="text-center px-2" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                <p className="text-lg font-bold text-black leading-tight mb-2">
+                  Those 3 easy steps
+                </p>
+                <p className="text-base font-bold text-black leading-relaxed">
+                  Create your profile<br/>
+                  Start connecting<br/>
+                  Go to events together
+                </p>
+              </div>
               <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-3.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
             </div>
           </div>
