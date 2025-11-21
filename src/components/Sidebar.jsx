@@ -128,7 +128,51 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
         }
       }
     }
+
     fetchUserEvents();
+
+    if (!user?.id) return;
+
+    // Subscribe to event_likes changes for real-time updates
+    const likesChannel = supabase
+      .channel('event-likes-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'event_likes',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          // Refetch when likes change
+          fetchUserEvents();
+        }
+      )
+      .subscribe();
+
+    // Subscribe to event_attendees changes for real-time updates
+    const attendeesChannel = supabase
+      .channel('event-attendees-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'event_attendees',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          // Refetch when attendance changes
+          fetchUserEvents();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(likesChannel);
+      supabase.removeChannel(attendeesChannel);
+    };
   }, [user]);
 
   // Close dropdown when clicking outside
