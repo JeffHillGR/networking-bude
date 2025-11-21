@@ -70,11 +70,15 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
     async function fetchUserEvents() {
       if (user?.id) {
         try {
+          console.log('[Sidebar] Fetching events for user:', user.id);
+
           // Fetch events user is interested in (from heart/likes)
-          const { data: likesData } = await supabase
+          const { data: likesData, error: likesError } = await supabase
             .from('event_likes')
             .select('event_id')
             .eq('user_id', user.id);
+
+          console.log('[Sidebar] Likes data:', likesData, 'Error:', likesError);
 
           if (likesData && likesData.length > 0) {
             const interestedEventIds = likesData.map(l => l.event_id);
@@ -86,17 +90,20 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
               .order('start_date', { ascending: true })
               .limit(4);
 
+            console.log('[Sidebar] Interested events:', eventsData);
             setInterestedEvents(eventsData || []);
           } else {
             setInterestedEvents([]);
           }
 
           // Fetch events user is going to (only this week's upcoming events)
-          const { data: goingData } = await supabase
+          const { data: goingData, error: goingError } = await supabase
             .from('event_attendees')
             .select('event_id')
             .eq('user_id', user.id)
             .eq('status', 'going');
+
+          console.log('[Sidebar] Going data:', goingData, 'Error:', goingError);
 
           if (goingData && goingData.length > 0) {
             const goingEventIds = goingData.map(a => a.event_id);
@@ -110,6 +117,8 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
             const endOfWeek = new Date(startOfWeek);
             endOfWeek.setDate(startOfWeek.getDate() + 7); // End of week
 
+            console.log('[Sidebar] Week range:', startOfWeek.toISOString(), 'to', endOfWeek.toISOString());
+
             const { data: eventsData } = await supabase
               .from('events')
               .select('id, title, image_url, start_date')
@@ -119,6 +128,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
               .order('start_date', { ascending: true })
               .limit(4);
 
+            console.log('[Sidebar] Going events this week:', eventsData);
             setGoingEvents(eventsData || []);
           } else {
             setGoingEvents([]);
@@ -144,12 +154,15 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
           table: 'event_likes',
           filter: `user_id=eq.${user.id}`
         },
-        () => {
+        (payload) => {
+          console.log('[Sidebar] Event likes changed:', payload);
           // Refetch when likes change
           fetchUserEvents();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('[Sidebar] Likes subscription status:', status);
+      });
 
     // Subscribe to event_attendees changes for real-time updates
     const attendeesChannel = supabase
@@ -162,12 +175,15 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
           table: 'event_attendees',
           filter: `user_id=eq.${user.id}`
         },
-        () => {
+        (payload) => {
+          console.log('[Sidebar] Event attendees changed:', payload);
           // Refetch when attendance changes
           fetchUserEvents();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('[Sidebar] Attendees subscription status:', status);
+      });
 
     return () => {
       supabase.removeChannel(likesChannel);
