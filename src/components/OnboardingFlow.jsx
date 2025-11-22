@@ -618,7 +618,7 @@ export default function BudEOnboarding() {
             </p>
 
             <p>
-              Maybe you already have this. Maybe you don't. That's why I created The BudE System to help you build the same kind of meaningful, wingperson-powered networking I've been lucky enough to experience.
+              Maybe you already have this. Maybe you don't. That's why I created The BudE System, a human-powered algorithm, to help you build the same kind of meaningful, wingperson-powered networking I've been lucky enough to experience.
             </p>
 
             <p>
