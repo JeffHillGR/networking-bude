@@ -490,7 +490,7 @@ export default function BudEOnboarding() {
               <div className="absolute inset-0 flex items-start pt-72 md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
-                    Trying to make connections
+                    Making more "connections"
                   </h1>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     giving you the blues?

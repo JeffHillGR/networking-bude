@@ -725,7 +725,7 @@ const getGreeting = () => {
                         >
                           <div className="absolute inset-0 backdrop-blur-sm bg-white/60 flex items-center justify-center z-10">
                             <div className="text-center px-4">
-                              <p className="font-bold text-gray-900 text-sm mb-1">Complete Your Profile</p>
+                              <p className="font-bold text-gray-900 text-sm mb-1">Add To Your Profile</p>
                               <p className="text-xs text-gray-600">to find more connections</p>
                             </div>
                           </div>
