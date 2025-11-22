@@ -21,6 +21,96 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
   const [sessionDecisionCount, setSessionDecisionCount] = useState(0); // Track decisions THIS session (max 10)
   const [hasAnyMatchesInDB, setHasAnyMatchesInDB] = useState(true); // Did DB return ANY rows at all?
 
+  // Helper function to get match categories summary
+  const getMatchCategories = (matchReasons) => {
+    if (!matchReasons || matchReasons.length === 0) {
+      return [];
+    }
+
+    const categories = new Set();
+
+    matchReasons.forEach(reason => {
+      if (reason.includes('Both attend') || reason.includes('Both want to check out') || reason.includes('Introduction opportunity')) {
+        categories.add('Organizations');
+      }
+      if (reason.includes('Both seeking') || reason.includes('Shared goals:')) {
+        categories.add('Networking Goals');
+      }
+      if (reason.includes('Both interested in') || reason.includes('Shared values:')) {
+        categories.add('Personal Interests');
+      }
+      if (reason.includes('Same industry') || reason.includes('Related:')) {
+        categories.add('Professional Interests');
+      }
+    });
+
+    return Array.from(categories);
+  };
+
+  // Helper function to highlight matching text in green (for orgs, professional interests, industry)
+  const highlightMatches = (text, matchReasons) => {
+    if (!text || !matchReasons || matchReasons.length === 0) {
+      return text;
+    }
+
+    let highlightedText = text;
+    const processedPhrases = new Set(); // Track what we've already highlighted
+
+    matchReasons.forEach(reason => {
+      // Extract keywords from match reasons
+      let keywords = [];
+
+      // Only highlight specific items for organizations and professional interests
+      if (reason.includes('Both attend') || reason.includes('Both want to check out')) {
+        // "Both attend gr chamber, econ club" -> ["gr chamber", "econ club"]
+        const match = reason.match(/Both (?:attend|want to check out):\s*(.+)/i);
+        if (match) {
+          // Split by comma for multiple organizations
+          const items = match[1].split(',').map(item => item.trim());
+          keywords.push(...items);
+        }
+      } else if (reason.includes('Introduction opportunity')) {
+        // "Introduction opportunity: econ club, chamber" -> ["econ club", "chamber"]
+        const match = reason.match(/Introduction opportunity:\s*(.+)/i);
+        if (match) {
+          // Split by comma for multiple organizations
+          const items = match[1].split(',').map(item => item.trim());
+          keywords.push(...items);
+        }
+      } else if (reason.includes('Same industry') || reason.includes('Related:')) {
+        // "Same industry: Marketing" -> "Marketing"
+        // "Related: technology & non-profit" -> ["technology", "non-profit"]
+        const match = reason.match(/(?:Same industry|Related):\s*(.+)/i);
+        if (match) {
+          // Split by & or comma for multiple items
+          const items = match[1].split(/[&,]/).map(item => item.trim());
+          keywords.push(...items);
+        }
+      }
+      // Skip highlighting for "Both seeking", "Both interested in", "Shared goals", "Shared values"
+      // These will be handled by highlighting the section label instead
+
+      // Highlight each keyword
+      keywords.forEach(keyword => {
+        const trimmedKeyword = keyword.trim();
+        if (!trimmedKeyword || processedPhrases.has(trimmedKeyword.toLowerCase())) return;
+
+        processedPhrases.add(trimmedKeyword.toLowerCase());
+
+        // Escape special regex characters
+        const escapedKeyword = trimmedKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+        // Use word boundary matching for cleaner highlights
+        const regex = new RegExp(`\\b(${escapedKeyword})\\b`, 'gi');
+        if (regex.test(text)) {
+          highlightedText = highlightedText.replace(regex, '<span class="text-[#009900] font-semibold">$1</span>');
+        }
+      });
+    });
+
+    return highlightedText;
+  };
+
   // localStorage state for tracking actions
   const [passedConnections, setPassedConnections] = useState(() => {
     const saved = localStorage.getItem('connections_passed');
@@ -99,6 +189,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
           .select(`
             matched_user_id,
             compatibility_score,
+            match_reasons,
             status,
             updated_at,
             initiated_by_user_id,
@@ -147,6 +238,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
             industry: matchedUser.industry || '',
             photo: matchedUser.photo || null,
             connectionScore: match.compatibility_score,
+            matchReasons: match.match_reasons || [],
             orgsAttend: Array.isArray(matchedUser.organizations_current)
               ? matchedUser.organizations_current.join(', ')
               : matchedUser.organizations_current || '',
@@ -940,13 +1032,18 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
               {/* Card Content */}
               <div className="p-6">
-                <div className="flex items-center justify-center gap-6 mb-6 pb-6 border-b border-gray-200">
+                <div className="mb-6 pb-6 border-b border-gray-200">
                   <div className="text-center">
-                    <div className="flex items-center gap-2 text-green-600 mb-1">
+                    <div className="flex items-center justify-center gap-2 text-green-600 mb-1">
                       <TrendingUp className="w-5 h-5" />
                       <span className="text-2xl font-bold">{currentCard.connectionScore}%</span>
                     </div>
-                    <p className="text-xs text-gray-600">BudE Compatibility</p>
+                    <p className="text-xs text-gray-600 mb-2">BudE Compatibility</p>
+                    {getMatchCategories(currentCard.matchReasons).length > 0 && (
+                      <p className="text-xs text-[#009900]">
+                        You both share similar: {getMatchCategories(currentCard.matchReasons).join(', ')}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -970,35 +1067,50 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                   {currentCard.industry && (
                     <div>
                       <p className="text-sm font-semibold text-gray-700 mb-1">Industry:</p>
-                      <p className="text-gray-600 text-sm capitalize">{currentCard.industry}</p>
+                      <p
+                        className="text-gray-600 text-sm capitalize"
+                        dangerouslySetInnerHTML={{ __html: highlightMatches(currentCard.industry, currentCard.matchReasons) }}
+                      />
                     </div>
                   )}
 
                   {currentCard.orgsAttend && (
                     <div>
                       <p className="text-sm font-semibold text-gray-700 mb-1">Organizations That Have Events I Like To Attend:</p>
-                      <p className="text-gray-600 text-sm">{currentCard.orgsAttend}</p>
+                      <p
+                        className="text-gray-600 text-sm"
+                        dangerouslySetInnerHTML={{ __html: highlightMatches(currentCard.orgsAttend, currentCard.matchReasons) }}
+                      />
                     </div>
                   )}
 
                   {currentCard.orgsCheckOut && (
                     <div>
                       <p className="text-sm font-semibold text-gray-700 mb-1">Organizations I've Wanted to Check Out:</p>
-                      <p className="text-gray-600 text-sm">{currentCard.orgsCheckOut}</p>
+                      <p
+                        className="text-gray-600 text-sm"
+                        dangerouslySetInnerHTML={{ __html: highlightMatches(currentCard.orgsCheckOut, currentCard.matchReasons) }}
+                      />
                     </div>
                   )}
 
                   {currentCard.professionalInterests && (
                     <div>
                       <p className="text-sm font-semibold text-gray-700 mb-1">Professional Interests:</p>
-                      <p className="text-gray-600 text-sm">{currentCard.professionalInterests}</p>
+                      <p
+                        className="text-gray-600 text-sm"
+                        dangerouslySetInnerHTML={{ __html: highlightMatches(currentCard.professionalInterests, currentCard.matchReasons) }}
+                      />
                     </div>
                   )}
 
                   {currentCard.professionalInterestsOther && (
                     <div>
                       <p className="text-sm font-semibold text-gray-700 mb-1">Professional Interests Other:</p>
-                      <p className="text-gray-600 text-sm">{currentCard.professionalInterestsOther}</p>
+                      <p
+                        className="text-gray-600 text-sm"
+                        dangerouslySetInnerHTML={{ __html: highlightMatches(currentCard.professionalInterestsOther, currentCard.matchReasons) }}
+                      />
                     </div>
                   )}
 
@@ -1354,13 +1466,18 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
             {/* Card Content */}
             <div className="p-6">
-              <div className="flex items-center justify-center gap-6 mb-6 pb-6 border-b border-gray-200">
+              <div className="mb-6 pb-6 border-b border-gray-200">
                 <div className="text-center">
-                  <div className="flex items-center gap-2 text-green-600 mb-1">
+                  <div className="flex items-center justify-center gap-2 text-green-600 mb-1">
                     <TrendingUp className="w-5 h-5" />
                     <span className="text-2xl font-bold">{selectedConnection.connectionScore}%</span>
                   </div>
-                  <p className="text-xs text-gray-600">BudE Compatibility</p>
+                  <p className="text-xs text-gray-600 mb-2">BudE Compatibility</p>
+                  {getMatchCategories(selectedConnection.matchReasons).length > 0 && (
+                    <p className="text-xs text-[#009900]">
+                      You both share similar: {getMatchCategories(selectedConnection.matchReasons).join(', ')}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -1384,35 +1501,50 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                 {selectedConnection.industry && (
                   <div>
                     <p className="text-sm font-semibold text-gray-700 mb-1">Industry:</p>
-                    <p className="text-gray-600 text-sm capitalize">{selectedConnection.industry}</p>
+                    <p
+                      className="text-gray-600 text-sm capitalize"
+                      dangerouslySetInnerHTML={{ __html: highlightMatches(selectedConnection.industry, selectedConnection.matchReasons) }}
+                    />
                   </div>
                 )}
 
                 {selectedConnection.orgsAttend && (
                   <div>
                     <p className="text-sm font-semibold text-gray-700 mb-1">Organizations That Have Events I Like To Attend:</p>
-                    <p className="text-gray-600 text-sm">{selectedConnection.orgsAttend}</p>
+                    <p
+                      className="text-gray-600 text-sm"
+                      dangerouslySetInnerHTML={{ __html: highlightMatches(selectedConnection.orgsAttend, selectedConnection.matchReasons) }}
+                    />
                   </div>
                 )}
 
                 {selectedConnection.orgsCheckOut && (
                   <div>
                     <p className="text-sm font-semibold text-gray-700 mb-1">Organizations I've Wanted to Check Out:</p>
-                    <p className="text-gray-600 text-sm">{selectedConnection.orgsCheckOut}</p>
+                    <p
+                      className="text-gray-600 text-sm"
+                      dangerouslySetInnerHTML={{ __html: highlightMatches(selectedConnection.orgsCheckOut, selectedConnection.matchReasons) }}
+                    />
                   </div>
                 )}
 
                 {selectedConnection.professionalInterests && (
                   <div>
                     <p className="text-sm font-semibold text-gray-700 mb-1">Professional Interests:</p>
-                    <p className="text-gray-600 text-sm">{selectedConnection.professionalInterests}</p>
+                    <p
+                      className="text-gray-600 text-sm"
+                      dangerouslySetInnerHTML={{ __html: highlightMatches(selectedConnection.professionalInterests, selectedConnection.matchReasons) }}
+                    />
                   </div>
                 )}
 
                 {selectedConnection.professionalInterestsOther && (
                   <div>
                     <p className="text-sm font-semibold text-gray-700 mb-1">Professional Interests Other:</p>
-                    <p className="text-gray-600 text-sm">{selectedConnection.professionalInterestsOther}</p>
+                    <p
+                      className="text-gray-600 text-sm"
+                      dangerouslySetInnerHTML={{ __html: highlightMatches(selectedConnection.professionalInterestsOther, selectedConnection.matchReasons) }}
+                    />
                   </div>
                 )}
 

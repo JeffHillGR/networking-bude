@@ -256,9 +256,24 @@ useEffect(() => {
         localStorage.setItem('lastSharePromptDate', new Date().toISOString());
       }
     } else if (lastSharePromptDate) {
-      // Returning users: Show every 14 days minimum
-      const hoursSinceLastPrompt = Math.floor((new Date() - new Date(lastSharePromptDate)) / (1000 * 60 * 60));
-      if (hoursSinceLastPrompt >= 336) { // 14 days = 336 hours
+      // Returning users: Show every Tuesday (aligns with email cadence)
+      const now = new Date();
+      const lastShown = new Date(lastSharePromptDate);
+      const daysSinceLastPrompt = Math.floor((now - lastShown) / (1000 * 60 * 60 * 24));
+      const isTuesday = now.getDay() === 2; // 0 = Sunday, 2 = Tuesday
+
+      // Get week number for comparison (simple week calculation)
+      const getWeekNumber = (date) => {
+        const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+        const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+      };
+
+      const currentWeek = getWeekNumber(now);
+      const lastShownWeek = getWeekNumber(lastShown);
+
+      // Show if it's Tuesday and we haven't shown it this week, OR if it's been 7+ days as fallback
+      if ((isTuesday && currentWeek !== lastShownWeek) || daysSinceLastPrompt >= 7) {
         setShowSharePrompt(true);
         localStorage.setItem('lastSharePromptDate', new Date().toISOString());
       }
