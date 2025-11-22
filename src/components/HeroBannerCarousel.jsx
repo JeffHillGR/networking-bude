@@ -17,6 +17,41 @@ function HeroBannerCarousel() {
       sessionStorage.setItem('pageLoaded', 'true');
     }
 
+    // Try to load cached banners immediately for instant display
+    const cachedBanners = sessionStorage.getItem('cachedHeroBanners');
+    let displayedFromCache = false;
+
+    if (cachedBanners) {
+      try {
+        const banners = JSON.parse(cachedBanners);
+        if (banners && banners.length > 0) {
+          // Determine which banner to show
+          const hasRotatedThisSession = sessionStorage.getItem('bannerRotatedThisSession');
+          let bannerIndex;
+
+          if (!hasRotatedThisSession) {
+            const lastShownIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
+            bannerIndex = (lastShownIndex + 1) % banners.length;
+            sessionStorage.setItem('lastHeroBannerIndex', bannerIndex.toString());
+            sessionStorage.setItem('bannerRotatedThisSession', 'true');
+          } else {
+            bannerIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
+          }
+
+          const banner = banners[bannerIndex];
+
+          // Show cached banner immediately
+          setCurrentBanner(banner);
+          setImageLoaded(true);
+          setLoading(false);
+          setHasLoaded(true);
+          displayedFromCache = true;
+        }
+      } catch (e) {
+        console.error('Error parsing cached banners:', e);
+      }
+    }
+
     const fetchBanners = async () => {
       try {
         const { data: banners, error } = await supabase
@@ -30,39 +65,45 @@ function HeroBannerCarousel() {
         if (cancelled) return; // Don't proceed if effect was cleaned up
 
         if (banners && banners.length > 0) {
-          // Only rotate on page refresh, not on component remount
-          // Check if we've already rotated during this page session
-          const hasRotatedThisSession = sessionStorage.getItem('bannerRotatedThisSession');
+          // Cache the fresh banners for next time
+          sessionStorage.setItem('cachedHeroBanners', JSON.stringify(banners));
 
-          let bannerIndex;
-          if (!hasRotatedThisSession) {
-            // First mount after page load - rotate to next banner
-            const lastShownIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
-            bannerIndex = (lastShownIndex + 1) % banners.length;
-            sessionStorage.setItem('lastHeroBannerIndex', bannerIndex.toString());
-            sessionStorage.setItem('bannerRotatedThisSession', 'true');
-          } else {
-            // Subsequent mount (tab navigation) - use current banner
-            bannerIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
-          }
+          // Only update display if we didn't already show from cache
+          if (!displayedFromCache) {
+            // Only rotate on page refresh, not on component remount
+            // Check if we've already rotated during this page session
+            const hasRotatedThisSession = sessionStorage.getItem('bannerRotatedThisSession');
 
-          const banner = banners[bannerIndex];
+            let bannerIndex;
+            if (!hasRotatedThisSession) {
+              // First mount after page load - rotate to next banner
+              const lastShownIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
+              bannerIndex = (lastShownIndex + 1) % banners.length;
+              sessionStorage.setItem('lastHeroBannerIndex', bannerIndex.toString());
+              sessionStorage.setItem('bannerRotatedThisSession', 'true');
+            } else {
+              // Subsequent mount (tab navigation) - use current banner
+              bannerIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
+            }
 
-          // Show banner immediately without preloading
-          if (!cancelled) {
-            setCurrentBanner(banner);
-            setImageLoaded(true);
-            setLoading(false);
-            setHasLoaded(true);
+            const banner = banners[bannerIndex];
+
+            // Show banner
+            if (!cancelled) {
+              setCurrentBanner(banner);
+              setImageLoaded(true);
+              setLoading(false);
+              setHasLoaded(true);
+            }
           }
         } else {
-          if (!cancelled) {
+          if (!cancelled && !displayedFromCache) {
             setLoading(false);
             setHasLoaded(true);
           }
         }
       } catch (error) {
-        if (!cancelled) {
+        if (!cancelled && !displayedFromCache) {
           console.error('Error loading hero banners:', error);
           setLoading(false);
           setHasLoaded(true);

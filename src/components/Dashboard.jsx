@@ -53,7 +53,7 @@ function Dashboard() {
   const [loadingConnections, setLoadingConnections] = useState(true);
   const [connectionLikedEvents, setConnectionLikedEvents] = useState({});
   const [connectionGoingEvents, setConnectionGoingEvents] = useState({});
-  const [userFirstName, setUserFirstName] = useState('there');
+  const [userFirstName, setUserFirstName] = useState('');
   const [selectedConnectionId, setSelectedConnectionId] = useState(null);
   const [selectedMessageUserId, setSelectedMessageUserId] = useState(null);
   const [events, setEvents] = useState([]);
@@ -653,7 +653,7 @@ const getGreeting = () => {
 
             {/* Desktop greeting - show below hero banner on desktop only */}
             <div className="hidden md:block">
-              <h1 className="text-xl font-bold text-gray-900">{getGreeting()}, {userFirstName}!</h1>
+              <h1 className="text-xl font-bold text-gray-900">{getGreeting()}{userFirstName ? `, ${userFirstName}` : ''}!</h1>
               <p className="text-sm text-gray-600 mt-1">Let's make some meaningful connections today</p>
             </div>
 
@@ -675,7 +675,7 @@ const getGreeting = () => {
                 </div>
                 <div className="space-y-4 flex-grow">
                   {/* Show loading state, then real connections, then placeholders */}
-                  {loadingConnections ? (
+                  {(loadingConnections || loadingEvents) ? (
                     // Loading skeleton
                     [0, 1, 2].map((index) => (
                       <div
@@ -736,7 +736,8 @@ const getGreeting = () => {
                           setActiveTab('connections');
                           window.scrollTo({ top: 0, behavior: 'instant' });
                         }}
-                        className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px] cursor-pointer hover:shadow-md hover:border-[#009900] transition-all"
+                        className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px] cursor-pointer hover:shadow-md hover:border-[#009900] transition-all animate-fade-in"
+                        style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}
                       >
                         <div className="flex gap-3 md:gap-4">
                           {/* Profile photo or initials */}
@@ -785,11 +786,29 @@ const getGreeting = () => {
                   <p className="text-sm text-gray-600">Then check out some events <span className="font-bold">together</span></p>
                 </div>
                 <div className="space-y-4 flex-grow">
-                  {events.slice(0, 3).map((event, index) => (
+                  {(loadingConnections || loadingEvents) ? (
+                    // Loading skeleton
+                    [0, 1, 2].map((index) => (
+                      <div
+                        key={`loading-event-${index}`}
+                        className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex min-h-[136px] animate-pulse"
+                      >
+                        <div className="w-32 h-32 bg-gray-200 flex-shrink-0" />
+                        <div className="p-3 flex-1 min-w-0">
+                          <div className="h-4 bg-gray-200 rounded w-20 mb-2" />
+                          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                          <div className="h-3 bg-gray-200 rounded w-full mb-1" />
+                          <div className="h-3 bg-gray-200 rounded w-2/3" />
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    events.slice(0, 3).map((event, index) => (
                   <div
                     key={index}
                     onClick={() => navigate(`/events/${event.id}`)}
-                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200 flex min-h-[136px]"
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200 flex min-h-[136px] animate-fade-in"
+                    style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}
                   >
                     {event.image && (
                       <img
@@ -812,7 +831,8 @@ const getGreeting = () => {
                       </div>
                     </div>
                   </div>
-                ))}
+                ))
+                  )}
               </div>
               </div>
             </div>

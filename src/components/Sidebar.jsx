@@ -16,7 +16,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
   const [lastName, setLastName] = useState(localStorage.getItem('userLastName') || 'Name');
   const [jobTitle, setJobTitle] = useState(localStorage.getItem('userJobTitle') || 'Job Title');
   const fullName = `${firstName} ${lastName}`;
-  const [photoUrl, setPhotoUrl] = useState(null);
+  const [photoUrl, setPhotoUrl] = useState(localStorage.getItem('userPhotoUrl') || null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef(null);
@@ -41,17 +41,23 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
             const userFirstName = data.first_name || 'User';
             const userLastName = data.last_name || 'Name';
             const userJobTitle = data.title || 'Job Title';
+            const userPhoto = data.photo || null;
 
             // Update state
             setFirstName(userFirstName);
             setLastName(userLastName);
             setJobTitle(userJobTitle);
-            setPhotoUrl(data.photo || null);
+            setPhotoUrl(userPhoto);
 
             // Update localStorage so it's available for other components
             localStorage.setItem('userFirstName', userFirstName);
             localStorage.setItem('userLastName', userLastName);
             localStorage.setItem('userJobTitle', userJobTitle);
+            if (userPhoto) {
+              localStorage.setItem('userPhotoUrl', userPhoto);
+            } else {
+              localStorage.removeItem('userPhotoUrl');
+            }
           }
         } catch (err) {
           console.error('Error in fetchUserData:', err);
