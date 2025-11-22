@@ -599,7 +599,7 @@ export default function BudEOnboarding() {
                 <p className="text-4xl md:text-5xl font-bold text-gray-600 leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
                   A networking wingperson for every event.
                   <br /><br />
-                  In 3 easy steps
+              
                 </p>
               </div>
               <div className="md:w-1/2">

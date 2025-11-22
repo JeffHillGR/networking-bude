@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { User, Shield, Bell, Lock, Upload, X, ArrowLeft, Calendar, CheckCircle, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -6,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDashboard }) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(initialTab);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -30,6 +32,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
   const [contactSuccess, setContactSuccess] = useState(false);
   const [contactError, setContactError] = useState('');
   const [eventsAttendedCount, setEventsAttendedCount] = useState(0);
+  const [goingEvents, setGoingEvents] = useState([]);
   const [showPrivacyTerms, setShowPrivacyTerms] = useState(false);
 
   // Load profile data from localStorage on mount
@@ -157,20 +160,54 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
     }
   }, [user?.email]);
 
-  // Load events attended count
+  // Load events attended count and details
   useEffect(() => {
     async function loadEventsAttended() {
       if (!user) return;
 
       try {
-        const { count, error } = await supabase
+        // Get event IDs user is attending
+        const { data: attendeeData, error: attendeeError } = await supabase
           .from('event_attendees')
-          .select('*', { count: 'exact', head: true })
+          .select('event_id')
           .eq('user_id', user.id)
           .eq('status', 'going');
 
-        if (!error && count !== null) {
-          setEventsAttendedCount(count);
+        if (attendeeError) {
+          console.error('Error loading event attendees:', attendeeError);
+          return;
+        }
+
+        if (attendeeData && attendeeData.length > 0) {
+          setEventsAttendedCount(attendeeData.length);
+
+          const eventIds = attendeeData.map(a => a.event_id).filter(id => id != null);
+
+          if (eventIds.length > 0) {
+            // Build query - use .eq() for single item, .in() for multiple
+            let query = supabase
+              .from('events')
+              .select('id, title, image_url, date');
+
+            if (eventIds.length === 1) {
+              query = query.eq('id', eventIds[0]);
+            } else {
+              query = query.in('id', eventIds);
+            }
+
+            const { data: eventsData, error: eventsError } = await query
+              .order('date', { ascending: true })
+              .limit(7);
+
+            if (eventsError) {
+              console.error('Error fetching events:', eventsError);
+            } else {
+              setGoingEvents(eventsData || []);
+            }
+          }
+        } else {
+          setEventsAttendedCount(0);
+          setGoingEvents([]);
         }
       } catch (err) {
         console.error('Error loading events attended:', err);
@@ -1292,6 +1329,34 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
                   )}
                 </div>
               </div>
+
+              {/* Events Going To */}
+              {goingEvents.length > 0 && (
+                <div className="mt-6">
+                  <h4 className="font-semibold text-gray-900 mb-3">Events You're Attending</h4>
+                  <div className="flex flex-wrap gap-3">
+                    {goingEvents.map((event) => (
+                      <button
+                        key={event.id}
+                        onClick={() => navigate(`/events/${event.id}`)}
+                        className="relative group cursor-pointer"
+                        title={event.title}
+                      >
+                        <div className="w-24 h-24 rounded-lg overflow-hidden border-2 border-gray-300 group-hover:border-[#009900] transition-all">
+                          <img
+                            src={event.image_url}
+                            alt={event.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                          />
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 text-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          {event.title.length > 20 ? event.title.substring(0, 20) + '...' : event.title}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

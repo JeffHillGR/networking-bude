@@ -70,19 +70,14 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
     async function fetchUserEvents() {
       if (user?.id) {
         try {
-          console.log('[Sidebar] Fetching events for user:', user.id);
-
           // Fetch events user is interested in (from heart/likes)
-          const { data: likesData, error: likesError } = await supabase
+          const { data: likesData } = await supabase
             .from('event_likes')
             .select('event_id')
             .eq('user_id', user.id);
 
-          console.log('[Sidebar] Likes data:', likesData, 'Error:', likesError);
-
           if (likesData && likesData.length > 0) {
             const interestedEventIds = likesData.map(l => l.event_id).filter(id => id != null);
-            console.log('[Sidebar] Interested event IDs:', interestedEventIds);
 
             if (interestedEventIds.length > 0) {
               // Build query - use .eq() for single item, .in() for multiple
@@ -100,7 +95,6 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
                 .order('date', { ascending: true })
                 .limit(4);
 
-              console.log('[Sidebar] Interested events:', eventsData, 'Error:', eventsError);
               if (eventsError) {
                 console.error('[Sidebar] Error fetching interested events:', eventsError);
               }
@@ -113,30 +107,16 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
           }
 
           // Fetch events user is going to (only this week's upcoming events)
-          const { data: goingData, error: goingError } = await supabase
+          const { data: goingData } = await supabase
             .from('event_attendees')
             .select('event_id')
             .eq('user_id', user.id)
             .eq('status', 'going');
 
-          console.log('[Sidebar] Going data:', goingData, 'Error:', goingError);
-
           if (goingData && goingData.length > 0) {
             const goingEventIds = goingData.map(a => a.event_id).filter(id => id != null);
-            console.log('[Sidebar] Going event IDs:', goingEventIds);
 
             if (goingEventIds.length > 0) {
-              // Get start and end of current week
-              const now = new Date();
-              const startOfWeek = new Date(now);
-              startOfWeek.setHours(0, 0, 0, 0);
-              startOfWeek.setDate(now.getDate() - now.getDay()); // Start of week (Sunday)
-
-              const endOfWeek = new Date(startOfWeek);
-              endOfWeek.setDate(startOfWeek.getDate() + 7); // End of week
-
-              console.log('[Sidebar] Week range:', startOfWeek.toISOString(), 'to', endOfWeek.toISOString());
-
               // Build query - use .eq() for single item, .in() for multiple
               let query = supabase
                 .from('events')
@@ -149,12 +129,9 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
               }
 
               const { data: eventsData, error: eventsError } = await query
-                .gte('date', startOfWeek.toISOString())
-                .lt('date', endOfWeek.toISOString())
                 .order('date', { ascending: true })
-                .limit(4);
+                .limit(7);
 
-              console.log('[Sidebar] Going events this week:', eventsData, 'Error:', eventsError);
               if (eventsError) {
                 console.error('[Sidebar] Error fetching going events:', eventsError);
               }
@@ -186,15 +163,12 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
           table: 'event_likes',
           filter: `user_id=eq.${user.id}`
         },
-        (payload) => {
-          console.log('[Sidebar] Event likes changed:', payload);
+        () => {
           // Refetch when likes change
           fetchUserEvents();
         }
       )
-      .subscribe((status) => {
-        console.log('[Sidebar] Likes subscription status:', status);
-      });
+      .subscribe();
 
     // Subscribe to event_attendees changes for real-time updates
     const attendeesChannel = supabase
@@ -207,15 +181,12 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
           table: 'event_attendees',
           filter: `user_id=eq.${user.id}`
         },
-        (payload) => {
-          console.log('[Sidebar] Event attendees changed:', payload);
+        () => {
           // Refetch when attendance changes
           fetchUserEvents();
         }
       )
-      .subscribe((status) => {
-        console.log('[Sidebar] Attendees subscription status:', status);
-      });
+      .subscribe();
 
     return () => {
       supabase.removeChannel(likesChannel);
@@ -337,10 +308,10 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
                       )}
                     </div>
 
-                    {/* Events Going To This Week */}
+                    {/* Events Going To */}
                     <div>
                       <div className="flex items-center justify-between text-xs mb-2">
-                        <span className="text-gray-600 font-medium">Going This Week</span>
+                        <span className="text-gray-600 font-medium">Events Going To</span>
                         <span className="font-bold text-[#009900]">{goingEvents.length}</span>
                       </div>
                       {goingEvents.length > 0 && (
