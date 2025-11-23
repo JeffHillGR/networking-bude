@@ -13,7 +13,7 @@
  * - Personal Interests (5 points)
  *
  * Total: 105 points possible, capped at 100
- * Minimum threshold: 70/100 to be shown as a potential connection
+ * Minimum threshold: 60/100 to be shown as a potential connection (temporarily lowered from 70)
  */
 
 import { supabase } from './supabase';
@@ -92,7 +92,7 @@ export function calculateCompatibility(user1, user2) {
   return {
     score: Math.round(totalScore),
     matches,
-    meetsThreshold: totalScore >= 70
+    meetsThreshold: totalScore >= 60
   };
 }
 
@@ -445,7 +445,7 @@ function areIndustriesRelated(industry1, industry2) {
 
 /**
  * Batch calculate compatibility for a user against multiple candidates
- * Returns sorted array of matches that meet the threshold (70+)
+ * Returns sorted array of matches that meet the threshold (60+)
  *
  * EXCEPTION RULES:
  * 1. Safety Net Rule: For users with max score <40% in 100+ user pool, show 1-2 basic matches
@@ -464,7 +464,7 @@ export function findMatches(userProfile, candidateProfiles, limit = 10, options 
     ...calculateCompatibility(userProfile, candidate)
   }));
 
-  // Standard matches (70%+ threshold)
+  // Standard matches (60%+ threshold)
   let matches = allResults
     .filter(match => match.meetsThreshold)
     .sort((a, b) => b.score - a.score);
@@ -618,7 +618,7 @@ async function createMatch(userId, matchedUserId, score, reasons = []) {
  * - Profile updates
  *
  * Calculates compatibility between all users and creates
- * matches in the connection_flow table for scores >= 70%
+ * matches in the connection_flow table for scores >= 60%
  */
 export async function runMatchingAlgorithm() {
   try {
@@ -654,7 +654,7 @@ export async function runMatchingAlgorithm() {
     // Calculate compatibility between all users
     let matchesCreated = 0;
     let totalPairsEvaluated = 0;
-    const matchThreshold = 70; // Only create matches above 70%
+    const matchThreshold = 60; // Only create matches above 60% (temporarily lowered from 70)
 
     console.log(`📊 Evaluating ${users.length} users for matches...`);
 
