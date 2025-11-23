@@ -124,21 +124,21 @@ export default function BudEOnboarding() {
     company: '',
     industry: '',
     sameIndustry: '',
-    gender: '',
-    genderPreference: '',
-    yearBorn: '',
-    yearBornConnect: '',
     zipCode: '',
     radius: '',
     organizations: [],
     organizationsOther: '',
     organizationsToCheckOut: [],
     organizationsToCheckOutOther: '',
+    groupsBelongTo: '',
+    lookingToAccomplish: [],
     professionalInterests: [],
     professionalInterestsOther: '',
     personalInterests: '',
-    networkingGoals: ''
+    networkingGoals: '',
+    photo: ''
   });
+  const [photoFile, setPhotoFile] = useState(null);
 
   const organizations = [
     'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
@@ -333,6 +333,60 @@ export default function BudEOnboarding() {
     }));
   };
 
+  // Helper function to compress images (same as Settings.jsx)
+  const compressImage = async (file, maxWidth = 400, maxHeight = 400, quality = 0.85) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Calculate new dimensions while maintaining aspect ratio
+          if (width > height) {
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = (width * maxHeight) / height;
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const compressedFile = new File([blob], file.name, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now()
+                });
+                resolve(compressedFile);
+              } else {
+                reject(new Error('Canvas to Blob conversion failed'));
+              }
+            },
+            'image/jpeg',
+            quality
+          );
+        };
+        img.onerror = reject;
+      };
+      reader.onerror = reject;
+    });
+  };
+
   const handleFinalSubmit = async () => {
     setIsSubmitting(true);
 
@@ -349,24 +403,66 @@ export default function BudEOnboarding() {
         industry: formData.industry,
         zip_code: formData.zipCode,
         location: formData.zipCode,
-        year_born: formData.yearBorn ? parseInt(formData.yearBorn, 10) : null,
-        year_born_connect: formData.yearBornConnect,
-        gender: formData.gender,
-        gender_preference: formData.genderPreference,
         same_industry_preference: formData.sameIndustry,
         organizations_current: formData.organizations,
         organizations_other: formData.organizationsOther,
         organizations_interested: formData.organizationsToCheckOut,
         organizations_to_check_out_other: formData.organizationsToCheckOutOther,
+        groups_belong_to: formData.groupsBelongTo,
+        looking_to_accomplish: formData.lookingToAccomplish,
         professional_interests: formData.professionalInterests,
         professional_interests_other: formData.professionalInterestsOther,
         personal_interests: formData.personalInterests || '',
         networking_goals: formData.networkingGoals,
+        photo: null,  // Will be updated after upload
         connection_count: 0,
         max_connections: 10
       });
 
       if (error) throw error;
+
+      console.log('✅ User created in Supabase');
+
+      // Upload photo if provided
+      if (photoFile && data?.user?.id) {
+        try {
+          console.log('📸 Uploading profile photo...');
+
+          // Compress image
+          const compressedFile = await compressImage(photoFile);
+
+          // Upload to Supabase Storage
+          const fileName = 'profile.jpg';
+          const filePath = `${data.user.id}/${fileName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('profile-photos')
+            .upload(filePath, compressedFile, {
+              cacheControl: '3600',
+              upsert: true
+            });
+
+          if (uploadError) throw uploadError;
+
+          // Get public URL
+          const { data: { publicUrl } } = supabase.storage
+            .from('profile-photos')
+            .getPublicUrl(filePath);
+
+          // Update user record with photo URL
+          const { error: updateError } = await supabase
+            .from('users')
+            .update({ photo: publicUrl })
+            .eq('id', data.user.id);
+
+          if (updateError) throw updateError;
+
+          console.log('✅ Photo uploaded successfully');
+        } catch (photoError) {
+          console.error('⚠️ Photo upload failed (non-critical):', photoError);
+          // Don't fail the whole signup if photo upload fails
+        }
+      }
 
       console.log('✅ User created in Supabase');
 
@@ -1082,9 +1178,10 @@ export default function BudEOnboarding() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold mb-1 text-gray-900">Zip Code</label>
+                  <label className="block text-sm font-bold mb-1 text-gray-900">Work Zip Code <span className="text-red-500">*</span></label>
                   <input
                     type="text"
+                    required
                     className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                     value={formData.zipCode}
                     onChange={(e) => handleChange('zipCode', e.target.value)}
@@ -1144,72 +1241,7 @@ export default function BudEOnboarding() {
               </div>
             </div>
 
-            {/* Row 3: Gender & Gender Connect */}
-            <div className="bg-white rounded-lg p-4 shadow-md">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-bold mb-1 text-gray-900">Gender <span className="text-gray-500 font-normal">(optional)</span></label>
-                  <select
-                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                    value={formData.gender}
-                    onChange={(e) => handleChange('gender', e.target.value)}
-                  >
-                    <option value=""></option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="nonbinary">Non-binary</option>
-                    <option value="prefer-not">Prefer not to say</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-bold mb-1 text-gray-900">Gender Preference Connect?</label>
-                  <select
-                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                    value={formData.genderPreference}
-                    onChange={(e) => handleChange('genderPreference', e.target.value)}
-                  >
-                    <option value="">Select preference</option>
-                    <option value="same">Same gender</option>
-                    <option value="different">Different gender</option>
-                    <option value="any">Any gender</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Row 4: Year Born & Age Connect */}
-            <div className="bg-white rounded-lg p-4 shadow-md">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-bold mb-1 text-gray-900">Year Born <span className="text-gray-500 font-normal">(optional)</span></label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                    placeholder="YYYY"
-                    maxLength={4}
-                    value={formData.yearBorn}
-                    onChange={(e) => handleChange('yearBorn', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold mb-1 text-gray-900">Age Connect?</label>
-                  <select
-                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                    value={formData.yearBornConnect}
-                    onChange={(e) => handleChange('yearBornConnect', e.target.value)}
-                  >
-                    <option value="">Select age preference</option>
-                    <option value="similar5">Similar Age (+/- 5 Years)</option>
-                    <option value="similar10">Similar Age (+/- 10 Years)</option>
-                    <option value="Mentor">Older - Mentor</option>
-                    <option value="Mentee">Younger - Mentee</option>
-                    <option value="No Preference">No Preference</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Row 5: Organizations - Side by Side */}
+            {/* Row 3: Organizations - Side by Side */}
             <div className="bg-white rounded-lg p-4 shadow-md">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
@@ -1269,6 +1301,49 @@ export default function BudEOnboarding() {
                     onChange={(e) => handleChange('organizationsToCheckOutOther', e.target.value)}
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* Row 4: Groups I belong to */}
+            <div className="bg-white rounded-lg p-4 shadow-md">
+              <div>
+                <label className="block text-sm font-bold mb-1 text-gray-900">Groups I belong to</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                  placeholder="Leadership Grand Rapids, University Alumni, BNI, YNPN, Other/suggest a group"
+                  value={formData.groupsBelongTo}
+                  onChange={(e) => handleChange('groupsBelongTo', e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Row 5: Professional Interests */}
+            <div className="bg-white rounded-lg p-4 shadow-md">
+              <div>
+                <label className="block text-sm font-bold mb-2 text-gray-900">Professional Interests</label>
+                <div className="flex flex-wrap gap-2">
+                  {professionalInterestOptions.map(interest => (
+                    <button
+                      key={interest}
+                      onClick={() => toggleProfessionalInterest(interest)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                        formData.professionalInterests.includes(interest)
+                          ? 'bg-[#009900] text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {interest}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  placeholder="Other professional interest"
+                  className="w-full mt-2 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                  value={formData.professionalInterestsOther}
+                  onChange={(e) => handleChange('professionalInterestsOther', e.target.value)}
+                />
               </div>
             </div>
           </div>
@@ -1372,32 +1447,48 @@ const renderStep2 = () => (
 
         <div className="space-y-4">
           <div>
-            <h2 className="text-xl font-bold mb-1.5">Professional Interests</h2>
-            <p className="text-gray-600 mb-2 text-sm">Select the professional areas that interest you most</p>
-            <div className="flex flex-wrap gap-1.5">
-              {professionalInterestOptions.map(interest => (
-                <button
-                  key={interest}
-                  onClick={() => toggleProfessionalInterest(interest)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                    formData.professionalInterests.includes(interest)
-                      ? 'bg-black text-white'
-                      : 'bg-white border border-gray-300 text-gray-700 hover:border-gray-400'
-                  }`}
-                >
-                  {interest}
-                </button>
-              ))}
-            </div>
-            <div className="mt-2">
-              <input
-                type="text"
-                placeholder="Other professional interest (please specify)"
-                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                value={formData.professionalInterestsOther}
-                onChange={(e) => handleChange('professionalInterestsOther', e.target.value)}
-              />
-            </div>
+            <h2 className="text-xl font-bold mb-1.5">I'm looking to</h2>
+            <p className="text-gray-600 mb-2 text-xs">Hold Ctrl (Windows) or Cmd (Mac) to select multiple options</p>
+            <select
+              multiple
+              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+              style={{ minHeight: '150px' }}
+              value={formData.lookingToAccomplish}
+              onChange={(e) => {
+                const selected = Array.from(e.target.selectedOptions, option => option.value);
+                handleChange('lookingToAccomplish', selected);
+              }}
+            >
+              <option value="Launch a business">Launch a business</option>
+              <option value="Find professional cohorts">Find professional cohorts</option>
+              <option value="Find a collaborator for a project">Find a collaborator for a project</option>
+              <option value="Fill vacant board positions">Fill vacant board positions</option>
+              <option value="Join a board">Join a board</option>
+              <option value="Find volunteers for my organization">Find volunteers for my organization</option>
+              <option value="Volunteer more">Volunteer more</option>
+              <option value="Check out educational events with someone">Check out educational events with someone</option>
+              <option value="Make a connection in a specific organization (elaborate in Networking Goals)">Make a connection in a specific organization (elaborate in Networking Goals)</option>
+              <option value="Get out and network more">Get out and network more</option>
+              <option value="Get out of my home office more">Get out of my home office more</option>
+              <option value="Change career paths">Change career paths</option>
+              <option value="Find a coach">Find a coach</option>
+              <option value="Make a few new friends">Make a few new friends</option>
+              <option value="Sell my products or services here to other users (you've come to the wrong place for that)">Sell my products or services here to other users (you've come to the wrong place for that)</option>
+              <option value="Other (please elaborate in Networking Goals)">Other (please elaborate in Networking Goals)</option>
+            </select>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-bold mb-2">Networking Goals <span className="text-red-500">*</span></h2>
+            <textarea
+              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-24 text-sm"
+              placeholder="• What frustrates you most about traditional networking?&#10;• In a perfect world what would networking look like to you?&#10;• The more descriptive the better."
+              value={formData.networkingGoals}
+              onChange={(e) => handleChange('networkingGoals', e.target.value)}
+              maxLength={500}
+              required
+            />
+            <p className="text-sm text-gray-500 mt-2">{formData.networkingGoals.length}/500 characters</p>
           </div>
 
           <div>
@@ -1417,16 +1508,33 @@ const renderStep2 = () => (
           </div>
 
           <div>
-            <h2 className="text-xl font-bold mb-2">Networking Goals <span className="text-red-500">*</span></h2>
-            <textarea
-              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-24 text-sm"
-              placeholder="• What frustrates you most about traditional networking?&#10;• In a perfect world what would networking look like to you?&#10;• The more descriptive the better."
-              value={formData.networkingGoals}
-              onChange={(e) => handleChange('networkingGoals', e.target.value)}
-              maxLength={500}
-              required
+            <h2 className="text-xl font-bold mb-1.5">Upload a photo</h2>
+            <p className="text-gray-600 mb-2 text-sm">Personalize your profile</p>
+            <input
+              type="file"
+              accept="image/*"
+              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  // Validate file type
+                  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+                  if (!validTypes.includes(file.type)) {
+                    alert('Please upload a valid image file (JPG, PNG, or WebP)');
+                    return;
+                  }
+
+                  // Validate file size (10MB max)
+                  if (file.size > 10 * 1024 * 1024) {
+                    alert('Image must be less than 10MB');
+                    return;
+                  }
+
+                  // Store file for upload after user creation
+                  setPhotoFile(file);
+                }
+              }}
             />
-            <p className="text-sm text-gray-500 mt-2">{formData.networkingGoals.length}/500 characters</p>
           </div>
         </div>
 

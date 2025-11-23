@@ -2,17 +2,17 @@
  * BudE Matching Algorithm
  *
  * Calculates compatibility scores between users based on:
- * - Networking Goals (35 points)
- * - Organizations (40 points) - split into:
- *   - Complementary match (20 points): My attend ↔ Your check out
- *   - Same-field match (20 points): Both attend same OR both check out same
+ * - Networking Goals (25 points)
+ * - Organizations (30 points) - split into:
+ *   - Complementary match (15 points): My attend ↔ Your check out
+ *   - Same-field match (15 points): Both attend same OR both check out same
  * - Professional Interests (15 points)
  * - Industry (5 points)
- * - Gender Preference (5 points)
- * - Age Preference (5 points)
+ * - Groups in Common (12.5 points)
+ * - "Looking To" Overlap (12.5 points)
  * - Personal Interests (5 points)
  *
- * Total: 110 points possible, capped at 100
+ * Total: 105 points possible, capped at 100
  * Minimum threshold: 70/100 to be shown as a potential connection
  */
 
@@ -31,8 +31,8 @@ export function calculateCompatibility(user1, user2) {
     organizations: { score: 0, details: [] },
     professionalInterests: { score: 0, details: [] },
     industry: { score: 0, details: [] },
-    gender: { score: 0, details: [] },
-    age: { score: 0, details: [] },
+    groups: { score: 0, details: [] },
+    lookingTo: { score: 0, details: [] },
     personalInterests: { score: 0, details: [] }
   };
 
@@ -42,7 +42,7 @@ export function calculateCompatibility(user1, user2) {
   matches.networkingGoals.details = goalsScore.matches;
   totalScore += goalsScore.score;
 
-  // 2. ORGANIZATIONS (50 points total)
+  // 2. ORGANIZATIONS (30 points total)
   const orgsScore = scoreOrganizations(
     user1.orgsAttend,
     user1.orgsWantToCheckOut,
@@ -68,17 +68,17 @@ export function calculateCompatibility(user1, user2) {
   matches.industry.details = industryScore.matches;
   totalScore += industryScore.score;
 
-  // 5. GENDER PREFERENCE (5 points)
-  const genderScore = scoreGenderPreference(user1, user2);
-  matches.gender.score = genderScore.score;
-  matches.gender.details = genderScore.matches;
-  totalScore += genderScore.score;
+  // 5. GROUPS IN COMMON (12.5 points)
+  const groupsScore = scoreGroups(user1.groupsBelongTo, user2.groupsBelongTo);
+  matches.groups.score = groupsScore.score;
+  matches.groups.details = groupsScore.matches;
+  totalScore += groupsScore.score;
 
-  // 6. AGE PREFERENCE (5 points)
-  const ageScore = scoreAgePreference(user1, user2);
-  matches.age.score = ageScore.score;
-  matches.age.details = ageScore.matches;
-  totalScore += ageScore.score;
+  // 6. "LOOKING TO" OVERLAP (12.5 points)
+  const lookingToScore = scoreLookingTo(user1.lookingToAccomplish, user2.lookingToAccomplish);
+  matches.lookingTo.score = lookingToScore.score;
+  matches.lookingTo.details = lookingToScore.matches;
+  totalScore += lookingToScore.score;
 
   // 7. PERSONAL INTERESTS/HOBBIES (5 points)
   const personalScore = scorePersonalInterests(
@@ -97,10 +97,10 @@ export function calculateCompatibility(user1, user2) {
 }
 
 /**
- * Score Networking Goals (35 points max)
+ * Score Networking Goals (25 points max)
  */
 function scoreNetworkingGoals(goals1, goals2) {
-  const maxScore = 35;
+  const maxScore = 25;
   let score = 0;
   const matches = [];
 
@@ -182,13 +182,13 @@ function scoreNetworkingGoals(goals1, goals2) {
 }
 
 /**
- * Score Organizations (40 points max)
+ * Score Organizations (30 points max)
  *
- * BUCKET 1 (20 points): Complementary Match
+ * BUCKET 1 (15 points): Complementary Match
  *   - My "Orgs I attend" ↔ Your "Orgs I want to check out"
  *   - OR Your "Orgs I attend" ↔ My "Orgs I want to check out"
  *
- * BUCKET 2 (20 points): Same-Field Match
+ * BUCKET 2 (15 points): Same-Field Match
  *   - Both attend same orgs
  *   - OR both want to check out same orgs
  */
@@ -206,14 +206,14 @@ function scoreOrganizations(user1Attend, user1WantToCheckOut, user2Attend, user2
   const u2Attend = parseList(user2Attend);
   const u2CheckOut = parseList(user2WantToCheckOut);
 
-  // BUCKET 1: Complementary Match (20 points max)
+  // BUCKET 1: Complementary Match (15 points max)
   // User1 attends, User2 wants to check out (or vice versa)
   const complementary1 = findSharedItems(u1Attend, u2CheckOut);
   const complementary2 = findSharedItems(u1CheckOut, u2Attend);
   const allComplementary = [...complementary1, ...complementary2];
 
   if (allComplementary.length > 0) {
-    score += 20;
+    score += 15;
     if (complementary1.length > 0) {
       matches.push(`Introduction opportunity: ${complementary1.join(', ')}`);
     }
@@ -222,13 +222,13 @@ function scoreOrganizations(user1Attend, user1WantToCheckOut, user2Attend, user2
     }
   }
 
-  // BUCKET 2: Same-Field Match (20 points max)
+  // BUCKET 2: Same-Field Match (15 points max)
   // Both attend same OR both want to check out same
   const sharedAttend = findSharedItems(u1Attend, u2Attend);
   const sharedCheckOut = findSharedItems(u1CheckOut, u2CheckOut);
 
   if (sharedAttend.length > 0 || sharedCheckOut.length > 0) {
-    score += 20;
+    score += 15;
     if (sharedAttend.length > 0) {
       matches.push(`Both attend: ${sharedAttend.join(', ')}`);
     }
@@ -238,7 +238,7 @@ function scoreOrganizations(user1Attend, user1WantToCheckOut, user2Attend, user2
   }
 
   return {
-    score: Math.min(score, 40),
+    score: Math.min(score, 30),
     matches
   };
 }
@@ -295,63 +295,62 @@ function scoreIndustry(industry1, industry2) {
 }
 
 /**
- * Score Gender Preference (2.5 points max)
+ * Score Groups in Common (12.5 points max)
  */
-function scoreGenderPreference(user1, user2) {
+function scoreGroups(groups1, groups2) {
   let score = 0;
   const matches = [];
 
-  // If either user has no preference, give full points
-  if (!user1.genderPreference || user1.genderPreference === 'No preference' || user1.genderPreference === 'any' ||
-      !user2.genderPreference || user2.genderPreference === 'No preference' || user2.genderPreference === 'any') {
-    score = 2.5;
-    matches.push('No gender preference restrictions');
-    return { score, matches };
-  }
+  if (!groups1 || !groups2) return { score, matches };
 
-  // Check if preferences are compatible
-  const user1WantsUser2 = user1.genderPreference === 'No preference' ||
-                          user1.genderPreference === 'any' ||
-                          user1.genderPreference === user2.gender;
-  const user2WantsUser1 = user2.genderPreference === 'No preference' ||
-                          user2.genderPreference === 'any' ||
-                          user2.genderPreference === user1.gender;
+  const text1 = groups1.toLowerCase();
+  const text2 = groups2.toLowerCase();
 
-  if (user1WantsUser2 && user2WantsUser1) {
-    score = 2.5;
-    matches.push('Gender preferences compatible');
+  // Parse groups (comma-separated or similar)
+  const list1 = text1.split(/[,;]/).map(g => g.trim()).filter(g => g.length > 0);
+  const list2 = text2.split(/[,;]/).map(g => g.trim()).filter(g => g.length > 0);
+
+  // Find shared groups (allow partial matches for flexibility)
+  const sharedGroups = [];
+  list1.forEach(g1 => {
+    list2.forEach(g2 => {
+      if (g1.includes(g2) || g2.includes(g1)) {
+        if (!sharedGroups.includes(g1)) {
+          sharedGroups.push(g1);
+        }
+      }
+    });
+  });
+
+  if (sharedGroups.length > 0) {
+    // Give full points if any groups match
+    score = 12.5;
+    matches.push(`Shared groups: ${sharedGroups.join(', ')}`);
   }
 
   return { score, matches };
 }
 
 /**
- * Score Age Preference (2.5 points max)
+ * Score "Looking To" Overlap (12.5 points max)
  */
-function scoreAgePreference(user1, user2) {
+function scoreLookingTo(looking1, looking2) {
   let score = 0;
   const matches = [];
 
-  if (!user1.age || !user2.age) {
-    score = 2.5; // Give benefit of doubt if age data missing
-    return { score, matches };
-  }
+  // Handle both array and string formats
+  const goals1 = Array.isArray(looking1) ? looking1 : (looking1 ? [looking1] : []);
+  const goals2 = Array.isArray(looking2) ? looking2 : (looking2 ? [looking2] : []);
 
-  // If either user has no age preference, give full points
-  if (!user1.agePreference || user1.agePreference === 'No preference' || user1.agePreference === 'No Preference' ||
-      !user2.agePreference || user2.agePreference === 'No preference' || user2.agePreference === 'No Preference') {
-    score = 2.5;
-    matches.push('No age preference restrictions');
-    return { score, matches };
-  }
+  if (goals1.length === 0 || goals2.length === 0) return { score, matches };
 
-  // Check if ages fall within preferred ranges
-  const user1InRange = isAgeInRange(user2.age, user1.agePreference);
-  const user2InRange = isAgeInRange(user1.age, user2.agePreference);
+  // Check for exact matches
+  const sharedGoals = goals1.filter(g => goals2.includes(g));
 
-  if (user1InRange && user2InRange) {
-    score = 2.5;
-    matches.push('Age preferences compatible');
+  if (sharedGoals.length > 0) {
+    // Give full points if any goals match
+    score = 12.5;
+    matches.push(`Shared goals: ${sharedGoals.join(', ')}`);
   }
 
   return { score, matches };
@@ -445,28 +444,11 @@ function areIndustriesRelated(industry1, industry2) {
 }
 
 /**
- * Check if an age falls within a preferred range
- */
-function isAgeInRange(age, agePreference) {
-  if (!agePreference || agePreference === 'No preference') return true;
-
-  // Parse age range (e.g., "25-34", "35-44", "45+")
-  if (agePreference.includes('+')) {
-    const minAge = parseInt(agePreference.replace('+', ''));
-    return age >= minAge;
-  }
-
-  const [min, max] = agePreference.split('-').map(n => parseInt(n));
-  return age >= min && age <= max;
-}
-
-/**
  * Batch calculate compatibility for a user against multiple candidates
  * Returns sorted array of matches that meet the threshold (70+)
  *
  * EXCEPTION RULES:
- * 1. Gender Preference Override (80%+ Rule): Show matches 80%+ even if gender preference mismatches
- * 2. Safety Net Rule: For users with max score <40% in 100+ user pool, show 1-2 basic matches
+ * 1. Safety Net Rule: For users with max score <40% in 100+ user pool, show 1-2 basic matches
  */
 export function findMatches(userProfile, candidateProfiles, limit = 10, options = {}) {
   const {
@@ -582,14 +564,10 @@ function findSafetyNetMatches(userProfile, allResults, limit = 2) {
  * Convert Supabase user format to matching algorithm format
  */
 function convertUserToAlgorithmFormat(user) {
-  const currentYear = new Date().getFullYear();
-
   return {
     id: user.id,
     firstName: user.first_name || '',
     lastName: user.last_name || '',
-    age: user.year_born ? currentYear - user.year_born : 0,
-    gender: user.gender || '',
     industry: user.industry || '',
     networkingGoals: user.networking_goals || '',
     orgsAttend: Array.isArray(user.organizations_current)
@@ -598,14 +576,14 @@ function convertUserToAlgorithmFormat(user) {
     orgsWantToCheckOut: Array.isArray(user.organizations_interested)
       ? user.organizations_interested.join(', ')
       : (user.organizations_interested || ''),
+    groupsBelongTo: user.groups_belong_to || '',
+    lookingToAccomplish: user.looking_to_accomplish || [],
     professionalInterests: Array.isArray(user.professional_interests)
       ? user.professional_interests.join(', ')
       : (user.professional_interests || ''),
     personalInterests: Array.isArray(user.personal_interests)
       ? user.personal_interests.join(', ')
-      : (user.personal_interests || ''),
-    genderPreference: user.gender_preference || 'No preference',
-    agePreference: user.year_born_connect || 'No Preference'
+      : (user.personal_interests || '')
   };
 }
 

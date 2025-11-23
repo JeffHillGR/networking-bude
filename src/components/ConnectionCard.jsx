@@ -20,6 +20,30 @@ function ConnectionCard({ user, matchScore, matchReasons, onConnect, onViewProfi
         </div>
       </div>
 
+      {/* Profile Details */}
+      {(user.groups_belong_to || (user.looking_to_accomplish && user.looking_to_accomplish.length > 0)) && (
+        <div className="mb-4 space-y-3">
+          {user.groups_belong_to && (
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <h4 className="text-xs font-bold text-gray-600 uppercase mb-1">Groups</h4>
+              <p className="text-sm text-gray-800">{user.groups_belong_to}</p>
+            </div>
+          )}
+          {user.looking_to_accomplish && user.looking_to_accomplish.length > 0 && (
+            <div className="bg-gray-50 p-3 rounded-lg">
+              <h4 className="text-xs font-bold text-gray-600 uppercase mb-1">I'm looking to</h4>
+              <div className="flex flex-wrap gap-1.5">
+                {user.looking_to_accomplish.map((goal, idx) => (
+                  <span key={idx} className="text-xs bg-white px-2 py-1 rounded border border-gray-200 text-gray-700">
+                    {goal}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Compatibility Score Badge - Prominent */}
       <div className="inline-flex items-center gap-3 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-500 px-5 py-3 rounded-xl mb-4 shadow-sm">
         <span className="text-3xl font-bold text-green-700">{matchScore}%</span>

@@ -74,15 +74,13 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
         // Store additional onboarding data
         industry: data.industry || '',
         sameIndustry: data.sameIndustry || '',
-        gender: data.gender || '',
-        genderPreference: data.genderPreference || '',
-        dob: data.dob || '',
-        dobPreference: data.dobPreference || '',
         zipCode: data.zipCode || '',
         organizations: data.organizations || [],
         organizationsOther: data.organizationsOther || '',
         organizationsToCheckOut: data.organizationsToCheckOut || [],
         organizationsToCheckOutOther: data.organizationsToCheckOutOther || '',
+        groupsBelongTo: data.groupsBelongTo || '',
+        lookingToAccomplish: data.lookingToAccomplish || [],
         personalInterests: data.personalInterests || '',
         networkingGoals: data.networkingGoals || ''
       };
@@ -106,15 +104,13 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
       bio: '',
       industry: '',
       sameIndustry: '',
-      gender: '',
-      genderPreference: '',
-      dob: '',
-      dobPreference: '',
       zipCode: '',
       organizations: [],
       organizationsOther: '',
       organizationsToCheckOut: [],
       organizationsToCheckOutOther: '',
+      groupsBelongTo: '',
+      lookingToAccomplish: [],
       personalInterests: '',
       networkingGoals: ''
     };
@@ -231,8 +227,8 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
     { name: 'Organizations (Attending)', value: profile.organizationsAttending?.length >= 3, weight: 8 },
     { name: 'Organizations (Member)', value: profile.organizationsMember?.length >= 3, weight: 6 },
     { name: 'Same Industry Preference', value: profile.sameIndustry, weight: 4 },
-    { name: 'Gender', value: profile.gender, weight: 2 },
-    { name: 'Gender Preference', value: profile.genderPreference, weight: 2 }
+    { name: 'Groups Belong To', value: profile.groupsBelongTo, weight: 4 },
+    { name: 'Looking To Accomplish', value: profile.lookingToAccomplish?.length > 0, weight: 4 }
   ];
 
   const calculateProfileStrength = () => {
@@ -351,15 +347,13 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
             bio: userData.networking_goals || '',
             industry: userData.industry || '',
             sameIndustry: userData.same_industry_preference || '',
-            gender: userData.gender || '',
-            genderPreference: userData.gender_preference || '',
-            dob: userData.year_born ? String(userData.year_born) : '',
-            dobPreference: userData.year_born_connect || '',
             zipCode: userData.zip_code || '',
             organizations: userData.organizations_current || [],
             organizationsOther: userData.organizations_other || '',
             organizationsToCheckOut: userData.organizations_interested || [],
             organizationsToCheckOutOther: userData.organizations_to_check_out_other || '',
+            groupsBelongTo: userData.groups_belong_to || '',
+            lookingToAccomplish: userData.looking_to_accomplish || [],
             personalInterests: Array.isArray(userData.personal_interests)
               ? userData.personal_interests.join(', ')
               : (userData.personal_interests || ''),
@@ -552,15 +546,13 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
           organizations_interested: profile.organizationsToCheckOut || [],
           organizations_other: profile.organizationsOther || '',
           organizations_to_check_out_other: profile.organizationsToCheckOutOther || '',
+          groups_belong_to: profile.groupsBelongTo || '',
+          looking_to_accomplish: profile.lookingToAccomplish || [],
           professional_interests: Array.isArray(selectedInterests) ? selectedInterests : [],
           professional_interests_other: profile.professionalInterestsOther || '',
           personal_interests: profile.personalInterests || '',
           networking_goals: profile.networkingGoals || '',
-          same_industry_preference: profile.sameIndustry || '',
-          gender: profile.gender || '',
-          gender_preference: profile.genderPreference || '',
-          year_born: profile.dob ? new Date(profile.dob).getFullYear() : null,
-          year_born_connect: profile.dobPreference || ''
+          same_industry_preference: profile.sameIndustry || ''
         };
 
         // Note: Email updates are handled separately through secure two-step verification
@@ -1113,7 +1105,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
               <div className="border-t border-gray-200 pt-6 mt-6">
                 <h3 className="font-bold text-gray-900 mb-4">Connection Preferences</h3>
                 <p className="text-sm text-gray-600 mb-4">Update your networking preferences to help us find better matches for you</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-6">
                   <div>
                     <label className="block font-medium text-gray-900 mb-2">Same Industry Preference</label>
                     <select
@@ -1129,47 +1121,46 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
                   </div>
 
                   <div>
-                    <label className="block font-medium text-gray-900 mb-2">Gender</label>
-                    <select
-                      value={profile.gender || ''}
-                      onChange={(e) => setProfile({...profile, gender: e.target.value})}
+                    <label className="block font-medium text-gray-900 mb-2">Groups I belong to</label>
+                    <p className="text-sm text-gray-600 mb-2">List groups or organizations you're a member of</p>
+                    <input
+                      type="text"
+                      value={profile.groupsBelongTo || ''}
+                      onChange={(e) => setProfile({...profile, groupsBelongTo: e.target.value})}
                       className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
-                    >
-                      <option value="">Prefer not to say</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="non-binary">Non-binary</option>
-                      <option value="other">Other</option>
-                    </select>
+                      placeholder="Leadership Grand Rapids, University Alumni, BNI, YNPN, Other/suggest a group"
+                    />
                   </div>
 
                   <div>
-                    <label className="block font-medium text-gray-900 mb-2">Gender Preference for Connections</label>
+                    <label className="block font-medium text-gray-900 mb-2">I'm looking to</label>
+                    <p className="text-sm text-gray-600 mb-2">Hold Ctrl (Windows) or Cmd (Mac) to select multiple options</p>
                     <select
-                      value={profile.genderPreference || ''}
-                      onChange={(e) => setProfile({...profile, genderPreference: e.target.value})}
-                      className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
+                      multiple
+                      value={profile.lookingToAccomplish || []}
+                      onChange={(e) => {
+                        const selected = Array.from(e.target.selectedOptions, option => option.value);
+                        setProfile({...profile, lookingToAccomplish: selected});
+                      }}
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white text-sm"
+                      style={{ minHeight: '150px' }}
                     >
-                      <option value="">No preference</option>
-                      <option value="male">Prefer male connections</option>
-                      <option value="female">Prefer female connections</option>
-                      <option value="non-binary">Prefer non-binary connections</option>
-                      <option value="same">Prefer same gender as mine</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block font-medium text-gray-900 mb-2">Age Group Preference</label>
-                    <select
-                      value={profile.dobPreference || ''}
-                      onChange={(e) => setProfile({...profile, dobPreference: e.target.value})}
-                      className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
-                    >
-                      <option value="">No preference</option>
-                      <option value="similar">Similar age (+/- 10 years)</option>
-                      <option value="younger">Prefer younger connections</option>
-                      <option value="older">Prefer older connections</option>
-                      <option value="any">Any age group</option>
+                      <option value="Launch a business">Launch a business</option>
+                      <option value="Find professional cohorts">Find professional cohorts</option>
+                      <option value="Find a collaborator for a project">Find a collaborator for a project</option>
+                      <option value="Fill vacant board positions">Fill vacant board positions</option>
+                      <option value="Join a board">Join a board</option>
+                      <option value="Find volunteers for my organization">Find volunteers for my organization</option>
+                      <option value="Volunteer more">Volunteer more</option>
+                      <option value="Check out educational events with someone">Check out educational events with someone</option>
+                      <option value="Make a connection in a specific organization (elaborate in Networking Goals)">Make a connection in a specific organization (elaborate in Networking Goals)</option>
+                      <option value="Get out and network more">Get out and network more</option>
+                      <option value="Get out of my home office more">Get out of my home office more</option>
+                      <option value="Change career paths">Change career paths</option>
+                      <option value="Find a coach">Find a coach</option>
+                      <option value="Make a few new friends">Make a few new friends</option>
+                      <option value="Sell my products or services here to other users (you've come to the wrong place for that)">Sell my products or services here to other users (you've come to the wrong place for that)</option>
+                      <option value="Other (please elaborate in Networking Goals)">Other (please elaborate in Networking Goals)</option>
                     </select>
                   </div>
                 </div>

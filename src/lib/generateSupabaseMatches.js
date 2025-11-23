@@ -67,14 +67,12 @@ function transformUser(user) {
     industry: user.industry || '',
     orgsAttend: arrayToString(user.organizations_current),
     orgsWantToCheckOut: arrayToString(user.organizations_interested),
+    groupsBelongTo: user.groups_belong_to || '',
+    lookingToAccomplish: user.looking_to_accomplish || [],
     professionalInterests: arrayToString(user.professional_interests),
     professionalInterestsOther: user.professional_interests_other || '',
     personalInterests: arrayToString(user.personal_interests),
     networkingGoals: user.networking_goals || '',
-    gender: user.gender || '',
-    genderPreference: user.gender_preference || '',
-    yearBorn: user.year_born || null,
-    yearBornConnect: user.year_born_connect || '',
     sameIndustryPreference: user.same_industry_preference || ''
   };
 }

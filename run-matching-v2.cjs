@@ -24,14 +24,10 @@ const { calculateCompatibility } = require('./src/lib/matchingAlgorithm.js');
  * Convert Supabase user format to algorithm format
  */
 function convertUserToAlgorithmFormat(user) {
-  const currentYear = new Date().getFullYear();
-
   return {
     id: user.id,
     firstName: user.first_name || '',
     lastName: user.last_name || '',
-    age: user.year_born ? currentYear - user.year_born : 0,
-    gender: user.gender || '',
     industry: user.industry || '',
     networkingGoals: user.networking_goals || '',
     orgsAttend: Array.isArray(user.organizations_current)
@@ -40,14 +36,14 @@ function convertUserToAlgorithmFormat(user) {
     orgsWantToCheckOut: Array.isArray(user.organizations_interested)
       ? user.organizations_interested.join(', ')
       : (user.organizations_interested || ''),
+    groupsBelongTo: user.groups_belong_to || '',
+    lookingToAccomplish: user.looking_to_accomplish || [],
     professionalInterests: Array.isArray(user.professional_interests)
       ? user.professional_interests.join(', ')
       : (user.professional_interests || ''),
     personalInterests: Array.isArray(user.personal_interests)
       ? user.personal_interests.join(', ')
-      : (user.personal_interests || ''),
-    genderPreference: user.gender_preference || 'No preference',
-    agePreference: user.year_born_connect || 'No Preference'
+      : (user.personal_interests || '')
   };
 }
 
