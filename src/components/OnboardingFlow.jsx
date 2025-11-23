@@ -555,10 +555,10 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 1 */}
             {heroImageIndex === 0 && (
-              <div className="absolute inset-0 flex items-start pt-72 md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
+              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
-                    Traditional networking 
+                    Traditional networking
                   </h1>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     leaving you frustrated?
@@ -569,7 +569,7 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 2 */}
             {heroImageIndex === 1 && (
-              <div className="absolute inset-0 flex items-start pt-72 md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
+              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Adding to that drawer
@@ -583,7 +583,7 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 3 */}
             {heroImageIndex === 2 && (
-              <div className="absolute inset-0 flex items-start pt-72 md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
+              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Making more "connections"
@@ -597,7 +597,7 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 4 */}
             {heroImageIndex === 3 && (
-              <div className="absolute inset-0 flex items-start pt-72 md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
+              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     We think we may have
@@ -611,8 +611,14 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 5 */}
             {heroImageIndex === 4 && (
-              <div className="absolute inset-0 flex items-start pt-72 md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
-                <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
+                <div
+                  className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg cursor-pointer hover:bg-white/50 transition-all"
+                  style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
+                  onClick={() => {
+                    document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Just 3 easy steps to start
                   </h1>
@@ -644,27 +650,15 @@ export default function BudEOnboarding() {
               </svg>
             </button>
 
-            {/* Join Now button - centered at bottom (desktop only) */}
-            <div className="hidden md:flex absolute bottom-16 left-0 right-0 z-10 justify-center">
+            {/* Join Now button - centered at bottom */}
+            <div className="absolute bottom-2 left-0 right-0 z-10 flex justify-center">
               <button
                 onClick={() => setShowLandingHero(false)}
-                className="bg-gray-200 text-[#009900] font-bold text-lg px-10 py-3 rounded-full hover:bg-gray-300 transition-colors border-2 border-[#D0ED00] shadow-xl"
+                className="bg-gray-200 text-[#009900] font-bold text-sm md:text-lg px-6 py-2 md:px-10 md:py-3 rounded-full hover:bg-gray-300 transition-colors border-2 border-[#D0ED00] shadow-xl"
               >
                 Check It Out
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* Bottom bar - Mobile only */}
-        <div className="md:hidden bg-white px-4 py-4 flex-shrink-0">
-          <div className="flex justify-center">
-            <button
-              onClick={() => setShowLandingHero(false)}
-              className="bg-gray-200 text-[#009900] font-bold text-lg px-10 py-3 rounded-full hover:bg-gray-300 transition-colors border-2 border-[#D0ED00]"
-            >
-              Check It Out
-            </button>
           </div>
         </div>
       </div>
@@ -751,7 +745,7 @@ export default function BudEOnboarding() {
       </div>
 
       {/* How It Works Section */}
-      <div className="bg-white px-6 py-12" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+      <div id="how-it-works" className="bg-white px-6 py-12" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
         <div className="max-w-3xl mx-auto">
           {/* How It Works Title */}
           <div className="text-center mb-8">
