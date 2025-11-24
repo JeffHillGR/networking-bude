@@ -94,12 +94,8 @@ function createTechEventSVG() {
       <rect width="160" height="600" fill="none" stroke="#60a5fa" stroke-width="2"/>
     </svg>
   `;
-  // Use browser's btoa or fallback to encodeURIComponent
-  if (typeof btoa !== 'undefined') {
-    return 'data:image/svg+xml;base64,' + btoa(svg);
-  } else {
-    return 'data:image/svg+xml,' + encodeURIComponent(svg);
-  }
+  // Use encodeURIComponent for proper Unicode character support
+  return 'data:image/svg+xml,' + encodeURIComponent(svg);
 }
 
 function createGalaEventSVG() {
@@ -158,12 +154,8 @@ function createGalaEventSVG() {
       <rect width="160" height="600" fill="none" stroke="#a78bfa" stroke-width="2"/>
     </svg>
   `;
-  // Use browser's btoa or fallback to encodeURIComponent
-  if (typeof btoa !== 'undefined') {
-    return 'data:image/svg+xml;base64,' + btoa(svg);
-  } else {
-    return 'data:image/svg+xml,' + encodeURIComponent(svg);
-  }
+  // Use encodeURIComponent for proper Unicode character support
+  return 'data:image/svg+xml,' + encodeURIComponent(svg);
 }
 
 function createMembershipDriveSVG() {
@@ -216,12 +208,8 @@ function createMembershipDriveSVG() {
       <rect width="728" height="160" fill="none" stroke="#10b981" stroke-width="3"/>
     </svg>
   `;
-  // Use browser's btoa or fallback to encodeURIComponent
-  if (typeof btoa !== 'undefined') {
-    return 'data:image/svg+xml;base64,' + btoa(svg);
-  } else {
-    return 'data:image/svg+xml,' + encodeURIComponent(svg);
-  }
+  // Use encodeURIComponent for proper Unicode character support
+  return 'data:image/svg+xml,' + encodeURIComponent(svg);
 }
 
 // Remove mock ads (useful for testing)
