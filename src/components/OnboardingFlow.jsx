@@ -518,7 +518,7 @@ export default function BudEOnboarding() {
       </div>
 
       {/* Hero section - takes up full viewport */}
-      <div className="h-[calc(90vh+20px)] flex flex-col">
+      <div className="h-[90vh] md:h-[calc(90vh+20px)] flex flex-col">
         {/* Hero image carousel with fade transitions */}
         <div
           ref={carouselRef}
@@ -553,7 +553,7 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 1 */}
             {heroImageIndex === 0 && (
-              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
+              <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Traditional networking
@@ -567,7 +567,7 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 2 */}
             {heroImageIndex === 1 && (
-              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
+              <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Adding to that drawer
@@ -581,7 +581,7 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 3 */}
             {heroImageIndex === 2 && (
-              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
+              <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Trying to make "connections"
@@ -595,7 +595,7 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 4 */}
             {heroImageIndex === 3 && (
-              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
+              <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     We think we may have
@@ -609,7 +609,7 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 5 */}
             {heroImageIndex === 4 && (
-              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
+              <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
                 <div
                   className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg cursor-pointer hover:bg-white/50 transition-all pointer-events-auto"
                   style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
@@ -630,34 +630,44 @@ export default function BudEOnboarding() {
             {/* Navigation arrows - bottom corners */}
             <button
               onClick={() => setHeroImageIndex((prev) => (prev === 0 ? 4 : prev - 1))}
-              className="absolute bottom-2 md:bottom-[18%] left-[2%] z-10 p-4 rounded-full bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 group"
+              className="absolute bottom-2 md:bottom-[18%] left-[2%] z-20 p-4 rounded-full bg-white/90 hover:bg-white active:bg-white active:scale-95 shadow-lg hover:shadow-xl transition-all duration-150 group touch-manipulation"
               aria-label="Previous slide"
             >
-              <svg className="w-6 h-6 text-gray-600 group-hover:text-gray-800 group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-gray-600 group-hover:text-gray-800 group-active:text-gray-800 group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
 
             <button
               onClick={() => setHeroImageIndex((prev) => (prev === 4 ? 0 : prev + 1))}
-              className="absolute bottom-2 md:bottom-[18%] right-[2%] z-10 p-4 rounded-full bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 group"
+              className="absolute bottom-2 md:bottom-[18%] right-[2%] z-20 p-4 rounded-full bg-white/90 hover:bg-white active:bg-white active:scale-95 shadow-lg hover:shadow-xl transition-all duration-150 group touch-manipulation"
               aria-label="Next slide"
             >
-              <svg className="w-6 h-6 text-gray-600 group-hover:text-gray-800 group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-gray-600 group-hover:text-gray-800 group-active:text-gray-800 group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
               </svg>
             </button>
 
-            {/* Join Now button - centered at bottom */}
-            <div className="absolute bottom-4 md:bottom-6 left-0 right-0 z-10 flex justify-center">
+            {/* Check It Out button - inside picture frame for desktop only */}
+            <div className="hidden md:flex absolute bottom-4 md:bottom-6 left-0 right-0 z-10 justify-center">
               <button
                 onClick={() => setShowLandingHero(false)}
-                className="bg-gray-200 text-[#009900] font-bold text-sm md:text-lg px-6 py-2 md:px-10 md:py-3 rounded-full hover:bg-gray-300 transition-colors border-2 border-[#D0ED00] shadow-xl"
+                className="bg-gray-200 text-[#009900] font-bold text-sm md:text-lg px-6 py-2 md:px-10 md:py-3 rounded-full hover:bg-gray-300 active:bg-gray-300 active:scale-95 transition-all duration-150 border-2 border-[#D0ED00] shadow-xl touch-manipulation"
               >
                 Check It Out
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Check It Out button - below banner for mobile only */}
+        <div className="flex md:hidden justify-center py-4 bg-white">
+          <button
+            onClick={() => setShowLandingHero(false)}
+            className="bg-gray-200 text-[#009900] font-bold text-sm md:text-lg px-6 py-2 md:px-10 md:py-3 rounded-full hover:bg-gray-300 active:bg-gray-300 active:scale-95 transition-all duration-150 border-2 border-[#D0ED00] shadow-xl touch-manipulation"
+          >
+            Check It Out
+          </button>
         </div>
       </div>
 
