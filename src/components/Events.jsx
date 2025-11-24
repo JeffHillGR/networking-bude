@@ -547,6 +547,18 @@ function Events({ onBackToDashboard }) {
                     style={{ aspectRatio: '728/160' }}
                   />
                 </a>
+              ) : ads.eventsBottom?.image ? (
+                <div
+                  onClick={() => setShowAdInquiryModal(true)}
+                  className="block cursor-pointer"
+                >
+                  <img
+                    src={ads.eventsBottom.image}
+                    alt="Advertisement"
+                    className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                    style={{ aspectRatio: '728/160' }}
+                  />
+                </div>
               ) : (
                 <div
                   onClick={() => setShowAdInquiryModal(true)}
@@ -585,6 +597,18 @@ function Events({ onBackToDashboard }) {
                     style={{ aspectRatio: '160/600' }}
                   />
                 </a>
+              ) : ads.eventsSidebar1?.image ? (
+                <div
+                  onClick={() => setShowAdInquiryModal(true)}
+                  className="block cursor-pointer"
+                >
+                  <img
+                    src={ads.eventsSidebar1.image}
+                    alt="Advertisement"
+                    className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                    style={{ aspectRatio: '160/600' }}
+                  />
+                </div>
               ) : (
                 <div
                   onClick={() => setShowAdInquiryModal(true)}
@@ -618,6 +642,18 @@ function Events({ onBackToDashboard }) {
                     style={{ aspectRatio: '160/600' }}
                   />
                 </a>
+              ) : ads.eventsSidebar2?.image ? (
+                <div
+                  onClick={() => setShowAdInquiryModal(true)}
+                  className="block cursor-pointer"
+                >
+                  <img
+                    src={ads.eventsSidebar2.image}
+                    alt="Advertisement"
+                    className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                    style={{ aspectRatio: '160/600' }}
+                  />
+                </div>
               ) : (
                 <div
                   onClick={() => setShowAdInquiryModal(true)}
