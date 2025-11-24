@@ -688,7 +688,7 @@ export default function BudEOnboarding() {
             </p>
 
             <p>
-              For years I heard "traditional networking isn't working"—and I felt it too. Those giant 800-person breakfasts in downtown Grand Rapids? I'd show up anxious, wondering who to approach, rarely making meaningful connections. Just another business card in the drawer.
+              For years I heard "traditional networking isn't working" - and I felt it too. Those giant 800-person breakfasts in downtown Grand Rapids? I'd show up anxious, wondering who to approach, rarely making meaningful connections. Just another business card in the drawer.
             </p>
 
             <p>
@@ -715,7 +715,7 @@ export default function BudEOnboarding() {
             </div>
 
             <p>
-              Now I have a crew of 6–7 intentional, community-focused pros who help each other grow. It's been game-changing.
+              Now I have a crew of 6-7 intentional, community-focused pros who help each other grow. It's been game-changing.
             </p>
 
             <p>
@@ -723,7 +723,7 @@ export default function BudEOnboarding() {
             </p>
 
             <p>
-              That's why I created The BudE System—a human-powered algorithm to help you build the same kind of meaningful, wingperson-powered networking I've experienced.
+              That's why I created The BudE System - a human-powered algorithm to help you build the same kind of meaningful, wingperson-powered networking I've experienced.
             </p>
 
             <p>
