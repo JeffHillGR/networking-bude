@@ -19,11 +19,11 @@ export function setupMockAds() {
     tags: 'technology,innovation,ai,conference'
   };
 
-  // Mock Ad 2: Charity Run Event (Sidebar - Vertical 160x600)
-  const charityRunAd = {
+  // Mock Ad 2: Food Bank Fundraiser (Sidebar - Vertical 160x600)
+  const charityEventAd = {
     image: createCharityRunSVG(),
     url: '', // Empty URL triggers ad inquiry modal
-    tags: 'charity,fundraiser,health,community'
+    tags: 'charity,fundraiser,foodbank,community'
   };
 
   // Mock Ad 3: Business Expo (Bottom Banner - Horizontal 728x160)
@@ -35,13 +35,13 @@ export function setupMockAds() {
 
   // Save to localStorage
   localStorage.setItem('ad_eventsSidebar1', JSON.stringify(aiConferenceAd));
-  localStorage.setItem('ad_eventsSidebar2', JSON.stringify(charityRunAd));
+  localStorage.setItem('ad_eventsSidebar2', JSON.stringify(charityEventAd));
   localStorage.setItem('ad_eventsBottom', JSON.stringify(businessExpoAd));
   localStorage.setItem('ad_eventDetailBanner', JSON.stringify(businessExpoAd));
 
   console.log('✅ Mock ads loaded successfully!');
   console.log('  - AI & Innovation Conference (Sidebar 1)');
-  console.log('  - Charity Run Event (Sidebar 2)');
+  console.log('  - Food Bank Fundraiser (Sidebar 2)');
   console.log('  - Business Expo (Bottom Banner)');
 }
 
@@ -119,61 +119,55 @@ function createAIConferenceSVG() {
 function createCharityRunSVG() {
   const svg = `
     <svg width="160" height="600" xmlns="http://www.w3.org/2000/svg">
-      <!-- Fresh gradient background -->
+      <!-- Modern gradient background -->
       <defs>
-        <linearGradient id="runGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:#047857;stop-opacity:1" />
-          <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+        <linearGradient id="charityGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#7c2d12;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#dc2626;stop-opacity:1" />
         </linearGradient>
       </defs>
-      <rect width="160" height="600" fill="url(#runGrad)"/>
+      <rect width="160" height="600" fill="url(#charityGrad)"/>
 
-      <!-- Running person illustration -->
-      <!-- Head -->
-      <circle cx="75" cy="80" r="12" fill="#d0ed00"/>
-      <!-- Body -->
-      <path d="M 75 92 L 75 130" stroke="#d0ed00" stroke-width="5" stroke-linecap="round"/>
-      <!-- Running arms -->
-      <path d="M 75 100 L 60 115" stroke="#d0ed00" stroke-width="4" stroke-linecap="round"/>
-      <path d="M 75 105 L 90 90" stroke="#d0ed00" stroke-width="4" stroke-linecap="round"/>
-      <!-- Running legs -->
-      <path d="M 75 130 L 85 150" stroke="#d0ed00" stroke-width="5" stroke-linecap="round"/>
-      <path d="M 75 130 L 60 145" stroke="#d0ed00" stroke-width="5" stroke-linecap="round"/>
+      <!-- Abstract heart/community illustration -->
+      <circle cx="80" cy="100" r="45" fill="#fca5a5" opacity="0.15"/>
+      <circle cx="80" cy="100" r="30" fill="#fca5a5" opacity="0.2"/>
 
-      <!-- Motion lines -->
-      <line x1="95" y1="90" x2="110" y2="85" stroke="#d0ed00" stroke-width="2" opacity="0.4"/>
-      <line x1="95" y1="100" x2="115" y2="95" stroke="#d0ed00" stroke-width="2" opacity="0.4"/>
-      <line x1="95" y1="110" x2="112" y2="105" stroke="#d0ed00" stroke-width="2" opacity="0.4"/>
+      <!-- Stylized heart -->
+      <path d="M 80 130 C 80 130 60 110 60 95 C 60 85 65 80 72 80 C 76 80 80 83 80 83 C 80 83 84 80 88 80 C 95 80 100 85 100 95 C 100 110 80 130 80 130 Z" fill="#fca5a5"/>
 
-      <!-- Heart icon -->
-      <path d="M 80 175 C 80 170 85 167 88 170 C 91 167 96 170 96 175 C 96 180 88 187 88 187 C 88 187 80 180 80 175 Z" fill="#fca5a5"/>
+      <!-- Community dots around heart -->
+      <circle cx="50" cy="90" r="5" fill="#fca5a5" opacity="0.6"/>
+      <circle cx="110" cy="90" r="5" fill="#fca5a5" opacity="0.6"/>
+      <circle cx="50" cy="110" r="5" fill="#fca5a5" opacity="0.6"/>
+      <circle cx="110" cy="110" r="5" fill="#fca5a5" opacity="0.6"/>
 
       <!-- Title -->
-      <text x="80" y="220" font-family="system-ui, -apple-system, sans-serif" font-size="19" font-weight="700" fill="white" text-anchor="middle">
-        Community
+      <text x="80" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle">
+        Food Bank
       </text>
-      <text x="80" y="242" font-family="system-ui, -apple-system, sans-serif" font-size="19" font-weight="700" fill="white" text-anchor="middle">
-        5K Run
+      <text x="80" y="212" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="white" text-anchor="middle">
+        Fundraiser
       </text>
-      <text x="80" y="265" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="500" fill="#d0ed00" text-anchor="middle">
-        for Charity
+      <text x="80" y="238" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="500" fill="#fca5a5" text-anchor="middle">
+        Dinner &amp; Auction
       </text>
 
       <!-- Date Badge -->
-      <rect x="25" y="295" width="110" height="55" fill="rgba(255,255,255,0.15)" rx="12"/>
-      <text x="80" y="317" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="white" text-anchor="middle">Saturday, April 19</text>
-      <text x="80" y="335" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="rgba(255,255,255,0.9)" text-anchor="middle">8:00 AM Start</text>
+      <rect x="25" y="275" width="110" height="60" fill="rgba(252,165,165,0.2)" rx="12"/>
+      <text x="80" y="298" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600" fill="white" text-anchor="middle">March 28, 2025</text>
+      <text x="80" y="316" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="rgba(255,255,255,0.9)" text-anchor="middle">6:00 PM</text>
+      <text x="80" y="331" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="rgba(255,255,255,0.85)" text-anchor="middle">Grand Rapids</text>
 
       <!-- Features -->
-      <text x="80" y="380" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="rgba(255,255,255,0.85)" text-anchor="middle">
-        <tspan x="80" dy="0">All Ages Welcome</tspan>
-        <tspan x="80" dy="18">Free T-Shirt</tspan>
-        <tspan x="80" dy="18">Post-Race Food</tspan>
+      <text x="80" y="380" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="rgba(255,255,255,0.9)" text-anchor="middle">
+        <tspan x="80" dy="0">Live Music</tspan>
+        <tspan x="80" dy="18">Silent Auction</tspan>
+        <tspan x="80" dy="18">Local Food</tspan>
       </text>
 
       <!-- CTA -->
       <rect x="30" y="480" width="100" height="40" fill="#d0ed00" rx="20"/>
-      <text x="80" y="505" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#047857" text-anchor="middle">Sign Up</text>
+      <text x="80" y="505" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#7c2d12" text-anchor="middle">Get Tickets</text>
 
       <!-- Sample Label -->
       <text x="80" y="565" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="white" opacity="0.4" text-anchor="middle">SAMPLE AD</text>
