@@ -512,6 +512,7 @@ export default function BudEOnboarding() {
         <button
           onClick={() => setShowLoginModal(true)}
           className="bg-[#009900] text-white font-medium text-sm md:text-base px-6 py-1.5 rounded-full border-2 border-white hover:bg-[#007700] transition-colors"
+          style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
         >
           Already a Member?
         </button>
@@ -555,10 +556,10 @@ export default function BudEOnboarding() {
             {heroImageIndex === 0 && (
               <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
-                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
                     Traditional networking
                   </h1>
-                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
                     leaving you frustrated?
                   </h1>
                 </div>
@@ -569,10 +570,10 @@ export default function BudEOnboarding() {
             {heroImageIndex === 1 && (
               <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
-                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
                     Adding to that drawer
                   </h1>
-                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
                     full of lonely business cards?
                   </h1>
                 </div>
@@ -583,10 +584,10 @@ export default function BudEOnboarding() {
             {heroImageIndex === 2 && (
               <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
-                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
                     Trying to make "connections"
                   </h1>
-                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
                     giving you the blues?
                   </h1>
                 </div>
@@ -597,10 +598,10 @@ export default function BudEOnboarding() {
             {heroImageIndex === 3 && (
               <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
-                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
                     We think we may have
                   </h1>
-                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
                     the solution for you
                   </h1>
                 </div>
@@ -617,10 +618,10 @@ export default function BudEOnboarding() {
                     document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
                   }}
                 >
-                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
                     Just 3 easy steps to start
                   </h1>
-                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
+                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
                     making more meaningful connections
                   </h1>
                 </div>
@@ -653,6 +654,7 @@ export default function BudEOnboarding() {
               <button
                 onClick={() => setShowLandingHero(false)}
                 className="bg-gray-200 text-[#009900] font-bold text-sm md:text-lg px-6 py-2 md:px-10 md:py-3 rounded-full hover:bg-gray-300 active:bg-gray-300 active:scale-95 transition-all duration-150 border-2 border-[#D0ED00] shadow-xl touch-manipulation"
+                style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
               >
                 Check It Out
               </button>
@@ -665,6 +667,7 @@ export default function BudEOnboarding() {
           <button
             onClick={() => setShowLandingHero(false)}
             className="bg-gray-200 text-[#009900] font-bold text-sm md:text-lg px-6 py-2 md:px-10 md:py-3 rounded-full hover:bg-gray-300 active:bg-gray-300 active:scale-95 transition-all duration-150 border-2 border-[#D0ED00] shadow-xl touch-manipulation"
+            style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
           >
             Check It Out
           </button>
@@ -779,10 +782,10 @@ export default function BudEOnboarding() {
             {/* Mobile: Hook appears first */}
             <div className="md:hidden mb-8">
               <div className="text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-                <p className="text-3xl font-bold text-gray-600 leading-tight mb-3">
+                <p className="text-3xl font-bold text-black leading-tight mb-3">
                   Those 3 easy steps
                 </p>
-                <p className="text-2xl font-bold text-gray-600 leading-relaxed">
+                <p className="text-2xl font-bold text-black leading-relaxed">
                   Create your profile<br/>
                   Start connecting<br/>
                   Go to events together
@@ -803,10 +806,10 @@ export default function BudEOnboarding() {
               {/* Desktop: Hook on right */}
               <div className="hidden md:block md:w-1/2 text-right">
                 <div style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-                  <p className="text-4xl md:text-5xl font-bold text-gray-600 leading-tight mb-4">
+                  <p className="text-4xl md:text-5xl font-bold text-black leading-tight mb-4">
                     Those 3 easy steps
                   </p>
-                  <p className="text-3xl md:text-4xl font-bold text-gray-600 leading-relaxed">
+                  <p className="text-3xl md:text-4xl font-bold text-black leading-relaxed">
                     Create your profile<br/>
                     Start connecting<br/>
                     Go to events together
@@ -846,7 +849,7 @@ export default function BudEOnboarding() {
             <div className="flex flex-col md:flex-row gap-8 items-center my-8">
               {/* Desktop: Hook on left */}
               <div className="hidden md:block md:w-1/2 text-left">
-                <p className="text-4xl md:text-5xl font-bold text-gray-600 leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                <p className="text-4xl md:text-5xl font-bold text-black leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
                   You support their goals; they support yours.
                 </p>
               </div>
@@ -869,7 +872,7 @@ export default function BudEOnboarding() {
 
           {/* Mobile: Hook appears at bottom */}
           <div className="md:hidden mt-8 mb-6">
-            <p className="text-4xl font-bold text-gray-600 leading-tight text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+            <p className="text-4xl font-bold text-black leading-tight text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
               You support their goals; they support yours.
             </p>
           </div>
