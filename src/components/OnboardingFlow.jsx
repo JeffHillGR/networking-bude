@@ -1191,7 +1191,7 @@ export default function BudEOnboarding() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold mb-1 text-gray-900">Work Zip Code <span className="text-red-500">*</span></label>
+                  <label className="block text-sm font-bold mb-1 text-gray-900">Zip Code <span className="text-red-500">*</span> <span className="text-gray-500 font-normal">(You'll see soon why this is important)</span></label>
                   <input
                     type="text"
                     required
