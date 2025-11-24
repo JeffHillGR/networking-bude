@@ -73,7 +73,6 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
         bio: data.networkingGoals || data.personalInterests || '',
         // Store additional onboarding data
         industry: data.industry || '',
-        sameIndustry: data.sameIndustry || '',
         zipCode: data.zipCode || '',
         organizations: data.organizations || [],
         organizationsOther: data.organizationsOther || '',
@@ -103,7 +102,6 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
       phone: '',
       bio: '',
       industry: '',
-      sameIndustry: '',
       zipCode: '',
       organizations: [],
       organizationsOther: '',
@@ -226,7 +224,6 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
     { name: 'Networking Goals', value: profile.networkingGoals?.length > 0, weight: 10 },
     { name: 'Organizations (Attending)', value: profile.organizationsAttending?.length >= 3, weight: 8 },
     { name: 'Organizations (Member)', value: profile.organizationsMember?.length >= 3, weight: 6 },
-    { name: 'Same Industry Preference', value: profile.sameIndustry, weight: 4 },
     { name: 'Groups Belong To', value: profile.groupsBelongTo, weight: 4 },
     { name: 'Looking To Accomplish', value: profile.lookingToAccomplish?.length > 0, weight: 4 }
   ];
@@ -346,7 +343,6 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
             phone: userData.phone || '',
             bio: userData.networking_goals || '',
             industry: userData.industry || '',
-            sameIndustry: userData.same_industry_preference || '',
             zipCode: userData.zip_code || '',
             organizations: userData.organizations_current || [],
             organizationsOther: userData.organizations_other || '',
@@ -551,8 +547,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
           professional_interests: Array.isArray(selectedInterests) ? selectedInterests : [],
           professional_interests_other: profile.professionalInterestsOther || '',
           personal_interests: profile.personalInterests || '',
-          networking_goals: profile.networkingGoals || '',
-          same_industry_preference: profile.sameIndustry || ''
+          networking_goals: profile.networkingGoals || ''
         };
 
         // Note: Email updates are handled separately through secure two-step verification
@@ -1106,20 +1101,6 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
                 <h3 className="font-bold text-gray-900 mb-4">Connection Preferences</h3>
                 <p className="text-sm text-gray-600 mb-4">Update your networking preferences to help us find better matches for you</p>
                 <div className="space-y-6">
-                  <div>
-                    <label className="block font-medium text-gray-900 mb-2">Same Industry Preference</label>
-                    <select
-                      value={profile.sameIndustry || ''}
-                      onChange={(e) => setProfile({...profile, sameIndustry: e.target.value})}
-                      className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
-                    >
-                      <option value="">Select your preference</option>
-                      <option value="yes">Yes, prefer same industry</option>
-                      <option value="no">No preference</option>
-                      <option value="different">Prefer different industries</option>
-                    </select>
-                  </div>
-
                   <div>
                     <label className="block font-medium text-gray-900 mb-2">Groups I belong to</label>
                     <p className="text-sm text-gray-600 mb-2">List groups or organizations you're a member of</p>

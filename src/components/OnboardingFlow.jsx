@@ -123,7 +123,6 @@ export default function BudEOnboarding() {
     jobTitle: '',
     company: '',
     industry: '',
-    sameIndustry: '',
     zipCode: '',
     radius: '',
     organizations: [],
@@ -403,7 +402,6 @@ export default function BudEOnboarding() {
         industry: formData.industry,
         zip_code: formData.zipCode,
         location: formData.zipCode,
-        same_industry_preference: formData.sameIndustry,
         organizations_current: formData.organizations,
         organizations_other: formData.organizationsOther,
         organizations_interested: formData.organizationsToCheckOut,
@@ -520,7 +518,7 @@ export default function BudEOnboarding() {
       </div>
 
       {/* Hero section - takes up full viewport */}
-      <div className="h-screen flex flex-col">
+      <div className="h-[calc(90vh+20px)] flex flex-col">
         {/* Hero image carousel with fade transitions */}
         <div
           ref={carouselRef}
@@ -536,7 +534,7 @@ export default function BudEOnboarding() {
                 key={`mobile-${index}`}
                 src={img}
                 alt={`Networking BudE ${index + 1}`}
-                className={`md:hidden absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out ${
+                className={`md:hidden absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-700 ease-in-out pointer-events-none ${
                   index === heroImageIndex ? 'opacity-100' : 'opacity-0'
                 }`}
               />
@@ -547,7 +545,7 @@ export default function BudEOnboarding() {
                 key={`desktop-${index}`}
                 src={img}
                 alt={`Networking BudE ${index + 1}`}
-                className={`hidden md:block absolute inset-0 w-full h-full object-fill transition-opacity duration-700 ease-in-out ${
+                className={`hidden md:block absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-700 ease-in-out pointer-events-none ${
                   index === heroImageIndex ? 'opacity-100' : 'opacity-0'
                 }`}
               />
@@ -555,8 +553,8 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 1 */}
             {heroImageIndex === 0 && (
-              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
-                <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
+                <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Traditional networking
                   </h1>
@@ -569,8 +567,8 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 2 */}
             {heroImageIndex === 1 && (
-              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
-                <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
+                <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Adding to that drawer
                   </h1>
@@ -583,8 +581,8 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 3 */}
             {heroImageIndex === 2 && (
-              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
-                <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
+                <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     Trying to make "connections"
                   </h1>
@@ -597,8 +595,8 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 4 */}
             {heroImageIndex === 3 && (
-              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
-                <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
+                <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-black leading-tight">
                     We think we may have
                   </h1>
@@ -611,9 +609,9 @@ export default function BudEOnboarding() {
 
             {/* Text Overlay for Banner 5 */}
             {heroImageIndex === 4 && (
-              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24">
+              <div className="absolute inset-0 flex items-start pt-[379px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
                 <div
-                  className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg cursor-pointer hover:bg-white/50 transition-all"
+                  className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg cursor-pointer hover:bg-white/50 transition-all pointer-events-auto"
                   style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
                   onClick={() => {
                     document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
@@ -651,7 +649,7 @@ export default function BudEOnboarding() {
             </button>
 
             {/* Join Now button - centered at bottom */}
-            <div className="absolute bottom-2 left-0 right-0 z-10 flex justify-center">
+            <div className="absolute bottom-4 md:bottom-6 left-0 right-0 z-10 flex justify-center">
               <button
                 onClick={() => setShowLandingHero(false)}
                 className="bg-gray-200 text-[#009900] font-bold text-sm md:text-lg px-6 py-2 md:px-10 md:py-3 rounded-full hover:bg-gray-300 transition-colors border-2 border-[#D0ED00] shadow-xl"
@@ -1193,53 +1191,38 @@ export default function BudEOnboarding() {
               </div>
             </div>
 
-            {/* Row 2: Industry & Industry Connect */}
+            {/* Row 2: Industry */}
             <div className="bg-white rounded-lg p-4 shadow-md">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-bold mb-1 text-gray-900">Industry <span className="text-gray-500 font-normal">(optional)</span></label>
-                  <select
-                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                    value={formData.industry}
-                    onChange={(e) => handleChange('industry', e.target.value)}
-                  >
-                    <option value="">Select your industry</option>
-                    <option value="accounting">Accounting</option>
-                    <option value="construction">Construction</option>
-                    <option value="consulting">Consulting</option>
-                    <option value="education">Education</option>
-                    <option value="entertainment">Entertainment</option>
-                    <option value="entrepreneur">Entrepreneur/Business Owner</option>
-                    <option value="events">Events</option>
-                    <option value="healthcare">Healthcare</option>
-                    <option value="finance">Finance</option>
-                    <option value="government">Government</option>
-                    <option value="law">Law</option>
-                    <option value="manufacturing">Manufacturing</option>
-                    <option value="marketing">Marketing</option>
-                    <option value="media">Media</option>
-                    <option value="non-profit">Non-Profit</option>
-                    <option value="professional development">Professional Development</option>
-                    <option value="real estate">Real Estate</option>
-                    <option value="recruiting">Recruiting</option>
-                    <option value="startup">Startup/Founder</option>
-                    <option value="technology">Technology</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-bold mb-1 text-gray-900">Same Industry Connect</label>
-                  <select
-                    className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                    value={formData.sameIndustry}
-                    onChange={(e) => handleChange('sameIndustry', e.target.value)}
-                  >
-                    <option value="">Choose preference</option>
-                    <option value="Yes">Yes, Same Industry</option>
-                    <option value="No">No, Different Industry</option>
-                    <option value="Either">Either</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-sm font-bold mb-1 text-gray-900">Industry <span className="text-gray-500 font-normal">(optional)</span></label>
+                <select
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                  value={formData.industry}
+                  onChange={(e) => handleChange('industry', e.target.value)}
+                >
+                  <option value="">Select your industry</option>
+                  <option value="accounting">Accounting</option>
+                  <option value="construction">Construction</option>
+                  <option value="consulting">Consulting</option>
+                  <option value="education">Education</option>
+                  <option value="entertainment">Entertainment</option>
+                  <option value="entrepreneur">Entrepreneur/Business Owner</option>
+                  <option value="events">Events</option>
+                  <option value="healthcare">Healthcare</option>
+                  <option value="finance">Finance</option>
+                  <option value="government">Government</option>
+                  <option value="law">Law</option>
+                  <option value="manufacturing">Manufacturing</option>
+                  <option value="marketing">Marketing</option>
+                  <option value="media">Media</option>
+                  <option value="non-profit">Non-Profit</option>
+                  <option value="professional development">Professional Development</option>
+                  <option value="real estate">Real Estate</option>
+                  <option value="recruiting">Recruiting</option>
+                  <option value="startup">Startup/Founder</option>
+                  <option value="technology">Technology</option>
+                  <option value="other">Other</option>
+                </select>
               </div>
             </div>
 
@@ -1309,11 +1292,11 @@ export default function BudEOnboarding() {
             {/* Row 4: Groups I belong to */}
             <div className="bg-white rounded-lg p-4 shadow-md">
               <div>
-                <label className="block text-sm font-bold mb-1 text-gray-900">Groups I belong to</label>
+                <label className="block text-sm font-bold mb-1 text-gray-900">Groups I belong to <span className="text-gray-500 font-normal">(optional)</span></label>
                 <input
                   type="text"
                   className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                  placeholder="Leadership Grand Rapids, University Alumni, BNI, YNPN, Other/suggest a group"
+                  placeholder="Leadership Grand Rapids, University Alumni, BNI, YNPN, Other, Suggest a Group"
                   value={formData.groupsBelongTo}
                   onChange={(e) => handleChange('groupsBelongTo', e.target.value)}
                 />
@@ -1449,8 +1432,37 @@ const renderStep2 = () => (
 
         <div className="space-y-4">
           <div>
-            <h2 className="text-xl font-bold mb-1.5">I'm looking to</h2>
-            <p className="text-gray-600 mb-2 text-xs">Hold Ctrl (Windows) or Cmd (Mac) to select multiple options</p>
+            <h2 className="text-xl font-bold mb-2">Networking Goals <span className="text-red-500">*</span></h2>
+            <textarea
+              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-24 text-sm"
+              placeholder="• What frustrates you most about traditional networking?&#10;• In a perfect world what would networking look like to you?&#10;• The more descriptive the better."
+              value={formData.networkingGoals}
+              onChange={(e) => handleChange('networkingGoals', e.target.value)}
+              maxLength={500}
+              required
+            />
+            <p className="text-sm text-gray-500 mt-2">{formData.networkingGoals.length}/500 characters</p>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-bold mb-1.5">Personal Interests <span className="text-red-500">*</span></h2>
+            <p className="text-gray-600 mb-2 text-sm">
+              What keeps you busy in your spare time? This helps create more meaningful connections beyond just professional interests.
+            </p>
+            <textarea
+              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-24 text-sm"
+              placeholder="Tell us about your personal interests..."
+              value={formData.personalInterests}
+              onChange={(e) => handleChange('personalInterests', e.target.value)}
+              maxLength={500}
+              required
+            />
+            <p className="text-sm text-gray-500 mt-2">{formData.personalInterests.length}/500 characters</p>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-bold mb-1.5">Bonus Question <span className="text-gray-500 font-normal">(Optional)</span>: I'm looking to...</h2>
+            <p className="text-gray-600 mb-2 text-sm">You can select multiple options</p>
             <select
               multiple
               className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
@@ -1478,35 +1490,6 @@ const renderStep2 = () => (
               <option value="Sell my products or services here to other users (you've come to the wrong place for that)">Sell my products or services here to other users (you've come to the wrong place for that)</option>
               <option value="Other (please elaborate in Networking Goals)">Other (please elaborate in Networking Goals)</option>
             </select>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold mb-2">Networking Goals <span className="text-red-500">*</span></h2>
-            <textarea
-              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-24 text-sm"
-              placeholder="• What frustrates you most about traditional networking?&#10;• In a perfect world what would networking look like to you?&#10;• The more descriptive the better."
-              value={formData.networkingGoals}
-              onChange={(e) => handleChange('networkingGoals', e.target.value)}
-              maxLength={500}
-              required
-            />
-            <p className="text-sm text-gray-500 mt-2">{formData.networkingGoals.length}/500 characters</p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold mb-1.5">Personal Interests <span className="text-red-500">*</span></h2>
-            <p className="text-gray-600 mb-2 text-sm">
-              What keeps you busy in your spare time? This helps create more meaningful connections beyond just professional interests.
-            </p>
-            <textarea
-              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-24 text-sm"
-              placeholder="Tell us about your personal interests..."
-              value={formData.personalInterests}
-              onChange={(e) => handleChange('personalInterests', e.target.value)}
-              maxLength={500}
-              required
-            />
-            <p className="text-sm text-gray-500 mt-2">{formData.personalInterests.length}/500 characters</p>
           </div>
 
           <div>

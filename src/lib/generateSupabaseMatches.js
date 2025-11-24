@@ -72,8 +72,7 @@ function transformUser(user) {
     professionalInterests: arrayToString(user.professional_interests),
     professionalInterestsOther: user.professional_interests_other || '',
     personalInterests: arrayToString(user.personal_interests),
-    networkingGoals: user.networking_goals || '',
-    sameIndustryPreference: user.same_industry_preference || ''
+    networkingGoals: user.networking_goals || ''
   };
 }
 
