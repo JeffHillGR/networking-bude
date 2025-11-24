@@ -632,7 +632,7 @@ export default function BudEOnboarding() {
             {/* Navigation arrows - bottom corners */}
             <button
               onClick={() => setHeroImageIndex((prev) => (prev === 0 ? 4 : prev - 1))}
-              className="absolute bottom-[18%] left-[2%] z-10 p-4 rounded-full bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 group"
+              className="absolute bottom-2 md:bottom-[18%] left-[2%] z-10 p-4 rounded-full bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 group"
               aria-label="Previous slide"
             >
               <svg className="w-6 h-6 text-gray-600 group-hover:text-gray-800 group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -642,7 +642,7 @@ export default function BudEOnboarding() {
 
             <button
               onClick={() => setHeroImageIndex((prev) => (prev === 4 ? 0 : prev + 1))}
-              className="absolute bottom-[18%] right-[2%] z-10 p-4 rounded-full bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 group"
+              className="absolute bottom-2 md:bottom-[18%] right-[2%] z-10 p-4 rounded-full bg-white/90 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 group"
               aria-label="Next slide"
             >
               <svg className="w-6 h-6 text-gray-600 group-hover:text-gray-800 group-hover:scale-110 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -677,19 +677,19 @@ export default function BudEOnboarding() {
             </p>
 
             <p>
-              For years I kept hearing, "traditional networking isn't working." Honestly, I felt that too, especially walking into those giant 800-person breakfasts in downtown Grand Rapids. I'd show up in my rarely-used dress clothes, already anxious, already wondering who to interrupt, who to avoid, and whether I'd make even one meaningful connection. Usually the answer was… nope. Just another business card in the drawer.
+              For years I heard "traditional networking isn't working"—and I felt it too. Those giant 800-person breakfasts in downtown Grand Rapids? I'd show up anxious, wondering who to approach, rarely making meaningful connections. Just another business card in the drawer.
             </p>
 
             <p>
-              I've been doing professional networking for 25+ years, building community, growing my business, switching jobs, learning new things. But post-Covid, the old way felt even more awkward. Lots of small talk, not much substance.
+              After 25+ years of professional networking, the old way felt even more awkward post-Covid. Lots of small talk, not much substance.
             </p>
 
             <div className="flex flex-col md:flex-row gap-8 items-center my-8">
               <div className="md:w-1/2 text-left">
-                <p className="text-4xl md:text-5xl font-bold text-gray-600 leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                <p className="text-4xl md:text-5xl font-bold text-black leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
                   A networking wingperson for every event.
                   <br /><br />
-              
+
                 </p>
               </div>
               <div className="md:w-1/2">
@@ -698,21 +698,29 @@ export default function BudEOnboarding() {
                 </p>
 
                 <p className="mt-6">
-                  When I started inviting friends and colleagues to events, the whole experience changed. Suddenly networking became strategic and fun. We introduced each other to collaborators and clients. We worked the room together. We made real connections, the kind that turned into coffees, lunches, and new opportunities. My networking buddies had the same results.
+                  When I started bringing friends and colleagues to events, networking became strategic and fun. We introduced each other to collaborators and clients, worked the room together, and made real connections that turned into opportunities.
                 </p>
               </div>
             </div>
 
             <p>
-              Now I have a small crew of 6–7 great people I go to events with, not thousands of passive connections, but a handful of intentional, community-focused pros who help each other grow. It's been game-changing.
+              Now I have a crew of 6–7 intentional, community-focused pros who help each other grow. It's been game-changing.
             </p>
 
             <p>
-              Maybe you already have this. Maybe you don't. That's why I created The BudE System, a human-powered algorithm, to help you build the same kind of meaningful, wingperson-powered networking I've been lucky enough to experience.
+              Maybe you have this group of friends you network with already. Maybe you don't.
             </p>
 
             <p>
-              I hope you find real connections here. Check out the events and insights, and make the most of them.
+              That's why I created The BudE System—a human-powered algorithm to help you build the same kind of meaningful, wingperson-powered networking I've experienced.
+            </p>
+
+            <p>
+              And maybe you don't feel like you need a system like this. But perhaps there are people out there who could use a seasoned and successful super-connector like you. Think not so much about what you can get out of this app, but what you can give it.
+            </p>
+
+            <p>
+              I sincerely hope you find real connections here.
             </p>
 
             <p className="font-semibold">

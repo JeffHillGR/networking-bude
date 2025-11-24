@@ -1231,7 +1231,8 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                       featuredCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
                   }}
-                  className={`bg-white rounded-lg p-4 shadow-sm transition-shadow ${person.isPlaceholder ? 'cursor-default opacity-60' : 'hover:shadow-md cursor-pointer'}`}
+                  className={`bg-white rounded-lg p-4 shadow-sm transition-shadow animate-fade-in ${person.isPlaceholder ? 'cursor-default opacity-60' : 'hover:shadow-md cursor-pointer'}`}
+                  style={{ animationDelay: `${index * 80}ms`, animationFillMode: 'backwards' }}
                 >
                   {person.isPlaceholder ? (
                     /* Placeholder sidebar card */
@@ -1320,14 +1321,15 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
               </div>
             ) : (
               <div className="space-y-4">
-                {filteredConnections.map((person) => (
+                {filteredConnections.map((person, index) => (
                   <div
                     key={person.id}
                     onClick={() => {
                       setSelectedConnection(person);
                       trackEngagement(); // Count viewing saved/pending connection details as engagement
                     }}
-                    className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-all cursor-pointer"
+                    className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-all cursor-pointer animate-fade-in"
+                    style={{ animationDelay: `${index * 80}ms`, animationFillMode: 'backwards' }}
                   >
                     <div className="flex gap-4">
                       {person.photo ? (

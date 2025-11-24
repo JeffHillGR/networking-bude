@@ -325,14 +325,15 @@ function Events({ onBackToDashboard }) {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {featuredEvents.map((event) => (
+                {featuredEvents.map((event, index) => (
                   <div
                     key={event.id}
                     onClick={() => {
                       trackEngagement(); // Count viewing event as engagement
                       navigate(`/events/${event.id}`);
                     }}
-                    className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                    className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer animate-fade-in"
+                    style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}
                   >
                     <div className="relative h-48 bg-white">
                       <img src={event.image} alt={event.title} className="w-full h-full object-contain" />
@@ -414,14 +415,15 @@ function Events({ onBackToDashboard }) {
             <div>
               <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6">More Events</h2>
               <div className="space-y-4">
-                {[...moreEvents].sort((a, b) => parseEventDate(a.date) - parseEventDate(b.date)).map((event) => (
+                {[...moreEvents].sort((a, b) => parseEventDate(a.date) - parseEventDate(b.date)).map((event, index) => (
                   <div
                     key={event.id}
                     onClick={() => {
                       trackEngagement(); // Count viewing event as engagement
                       navigate(`/events/${event.id}`);
                     }}
-                    className={`bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md transition-shadow cursor-pointer relative ${event.isTrending ? 'border-2 border-green-200' : ''}`}
+                    className={`bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md transition-shadow cursor-pointer relative animate-fade-in ${event.isTrending ? 'border-2 border-green-200' : ''}`}
+                    style={{ animationDelay: `${index * 80}ms`, animationFillMode: 'backwards' }}
                   >
                     <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                       <img src={event.image} alt={event.title} className="w-full md:w-48 h-48 md:h-32 object-contain rounded-lg flex-shrink-0 bg-white" />

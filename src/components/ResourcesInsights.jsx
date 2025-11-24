@@ -154,7 +154,7 @@ function ResourcesInsights({ onBackToDashboard }) {
     return (
     <div
       onClick={handleClick}
-      className={`bg-white rounded-lg shadow-sm p-6 transition-shadow border border-gray-200 ${isClickable ? 'hover:shadow-md cursor-pointer' : ''} animate-fade-in`}
+      className={`bg-white rounded-lg shadow-sm p-6 transition-shadow border border-gray-200 ${isClickable ? 'hover:shadow-md cursor-pointer' : ''}`}
     >
       <div className="flex flex-col md:flex-row gap-6">
         <img
