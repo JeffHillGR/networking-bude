@@ -272,7 +272,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
                 }`}
               >
                 <BookOpen className="w-5 h-5" />
-                <span className="font-medium text-sm">Resources & Insights</span>
+                <span className="font-medium text-sm">Insights</span>
               </button>
 
               {/* My Activity Section */}

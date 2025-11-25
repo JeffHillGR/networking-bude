@@ -292,7 +292,7 @@ function AdminPanel() {
                   : 'border-transparent text-gray-600 hover:text-gray-900'
               }`}
             >
-              Resources & Insights
+              Insights
             </button>
             <button
               onClick={() => setActiveTab('moderation')}
@@ -2409,7 +2409,7 @@ function ResourcesInsightsTab() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold mb-6">Resources & Insights Management</h2>
+      <h2 className="text-2xl font-bold mb-6">Insights Management</h2>
       <p className="text-gray-600 mb-6">
         Manage all three featured content slots displayed on the Dashboard and Resources pages.
       </p>

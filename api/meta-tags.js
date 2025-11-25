@@ -147,7 +147,7 @@ export default async function handler(req, res) {
     <!-- Open Graph / Facebook / LinkedIn -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="${fullUrl}" />
-    <meta property="og:title" content="Resources & Insights | Networking BudE" />
+    <meta property="og:title" content="Insights | Networking BudE" />
     <meta property="og:description" content="Discover curated networking content, podcasts, and insights to help you grow professionally in West Michigan." />
     <meta property="og:image" content="https://www.networkingbude.com/BudE-Color-Logo-Rev.png" />
     <meta property="og:image:secure_url" content="https://www.networkingbude.com/BudE-Color-Logo-Rev.png" />
@@ -159,7 +159,7 @@ export default async function handler(req, res) {
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="${fullUrl}" />
-    <meta name="twitter:title" content="Resources & Insights | Networking BudE" />
+    <meta name="twitter:title" content="Insights | Networking BudE" />
     <meta name="twitter:description" content="Discover curated networking content, podcasts, and insights to help you grow professionally in West Michigan." />
     <meta name="twitter:image" content="https://www.networkingbude.com/BudE-Color-Logo-Rev.png" />
         `;

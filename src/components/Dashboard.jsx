@@ -654,7 +654,7 @@ const getGreeting = () => {
     { id: 'dashboard', icon: Home, label: 'Dashboard' },
     { id: 'connections', icon: Users, label: 'Connections' },
     { id: 'events', icon: Calendar, label: 'Events' },
-    { id: 'resources', icon: BookOpen, label: 'Resources', isLink: true, href: '/resources-insights' },
+    { id: 'resources', icon: BookOpen, label: 'Insights', isLink: true, href: '/resources-insights' },
     { id: 'messages', icon: MessageCircle, label: 'Messages' }
   ];
 
@@ -860,7 +860,7 @@ const getGreeting = () => {
                     onClick={() => navigate('/resources-insights')}
                     className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black cursor-pointer hover:bg-gray-50 transition-colors"
                   >
-                    <h3 className="font-bold text-black text-lg">All Resources and Insights →</h3>
+                    <h3 className="font-bold text-black text-lg">All Insights →</h3>
                   </div>
                   <p className="text-xs text-gray-500 mt-0.5">Curated content to help you grow</p>
                 </div>

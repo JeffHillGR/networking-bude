@@ -832,7 +832,7 @@ export default function BudEOnboarding() {
                   <li>We suggest compatible connections.</li>
                   <li>We show you weekly events worth checking out (and yes, you'll be surprised how much more effective they are with a BudE).</li>
                   <li>We tell you who in your selected network is interested in each event and who's actually going!</li>
-                  <li>We give you Resources and Insights to elevate your networking game and support your professional growth.</li>
+                  <li>We give you Insights to elevate your networking game and support your professional growth.</li>
                 </ul>
               </div>
               {/* Desktop: Hook on right */}
