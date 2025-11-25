@@ -72,6 +72,7 @@ const [showContactModal, setShowContactModal] = useState(false);
 const [contactSubmitted, setContactSubmitted] = useState(false);
 const [isSubmittingContact, setIsSubmittingContact] = useState(false);
 const [showMobileMenu, setShowMobileMenu] = useState(false);
+const [showAboutModal, setShowAboutModal] = useState(false);
 const [contactData, setContactData] = useState({
   name: '',
   email: '',
@@ -967,6 +968,12 @@ const getGreeting = () => {
                 <p className="text-lg font-bold text-gray-900">The BudE System™</p>
                 <p className="text-sm text-gray-600">Grand Rapids, Michigan</p>
                 <p className="text-xs text-gray-500 mt-4">© 2025</p>
+                <button
+                  onClick={() => setShowAboutModal(true)}
+                  className="text-sm text-[#009900] hover:text-[#007700] underline mt-2"
+                >
+                  About Us
+                </button>
               </div>
             </div>
           </div>
@@ -1633,6 +1640,56 @@ default:
                 </form>
               </>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* About Us Modal */}
+      {showAboutModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-xl relative p-8">
+            <button
+              onClick={() => setShowAboutModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
+            >
+              ×
+            </button>
+
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">About Us</h2>
+              <p className="text-lg text-[#009900] font-semibold">The BudE System™</p>
+            </div>
+
+            {/* Narrative Section - Placeholder for user's content */}
+            <div className="prose max-w-none mb-8">
+              <p className="text-gray-700 leading-relaxed mb-4">
+                {/* User will add their narrative here */}
+                [Your narrative text will go here. Share your story, mission, and what makes The BudE System special.]
+              </p>
+            </div>
+
+            {/* Team Photos Section - Placeholder */}
+            <div className="mt-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Team</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                {/* User will add team member photos and info here */}
+                <div className="text-center">
+                  <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-2"></div>
+                  <p className="font-semibold text-gray-900">[Team Member Name]</p>
+                  <p className="text-sm text-gray-600">[Role]</p>
+                </div>
+                {/* More team members can be added */}
+              </div>
+            </div>
+
+            <div className="mt-8 text-center">
+              <button
+                onClick={() => setShowAboutModal(false)}
+                className="px-6 py-2 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
