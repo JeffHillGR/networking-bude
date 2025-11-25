@@ -41,7 +41,7 @@ function AboutUs({ onBackToDashboard, onContactUsClick }) {
           {/* Team Section */}
           <div className="mt-8 pt-8 border-t border-gray-200">
             <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Our Team</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-4xl mx-auto">
               {/* Jeff Hill */}
               <div className="text-center">
                 <img
@@ -57,26 +57,6 @@ function AboutUs({ onBackToDashboard, onContactUsClick }) {
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center text-[#0077B5] hover:text-[#005885]"
                   aria-label="Jeff Hill LinkedIn"
-                >
-                  <Linkedin className="w-4 h-4" />
-                </a>
-              </div>
-
-              {/* Stephen Clemenger */}
-              <div className="text-center">
-                <img
-                  src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Stephen%20Clemenger.jpeg"
-                  alt="Stephen Clemenger"
-                  className="w-32 h-32 rounded-lg mx-auto mb-3 object-cover"
-                />
-                <p className="font-semibold text-gray-900 mb-1 whitespace-nowrap">Stephen Clemenger</p>
-                <p className="text-sm text-gray-600 mb-2">Technology Consultant</p>
-                <a
-                  href="https://www.linkedin.com/in/clemenger/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center text-[#0077B5] hover:text-[#005885]"
-                  aria-label="Stephen Clemenger LinkedIn"
                 >
                   <Linkedin className="w-4 h-4" />
                 </a>
