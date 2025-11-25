@@ -997,7 +997,11 @@ const getGreeting = () => {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {/* Jeff Hill */}
                         <div className="text-center">
-                          <div className="w-32 h-32 bg-gray-200 rounded-lg mx-auto mb-2"></div>
+                          <img
+                            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Jeff%20Hill%20LI.jpeg"
+                            alt="Jeff Hill"
+                            className="w-32 h-32 rounded-lg mx-auto mb-2 object-cover"
+                          />
                           <a
                             href="https://www.linkedin.com/in/jeffahill/"
                             target="_blank"
@@ -1011,7 +1015,11 @@ const getGreeting = () => {
 
                         {/* Stephen Clemenger */}
                         <div className="text-center">
-                          <div className="w-32 h-32 bg-gray-200 rounded-lg mx-auto mb-2"></div>
+                          <img
+                            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Stephen%20Clemenger.jpeg"
+                            alt="Stephen Clemenger"
+                            className="w-32 h-32 rounded-lg mx-auto mb-2 object-cover"
+                          />
                           <a
                             href="https://www.linkedin.com/in/clemenger/"
                             target="_blank"
@@ -1025,7 +1033,11 @@ const getGreeting = () => {
 
                         {/* Tiffany Neuman */}
                         <div className="text-center">
-                          <div className="w-32 h-32 bg-gray-200 rounded-lg mx-auto mb-2"></div>
+                          <img
+                            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Tiffany%20Neuman.jpeg"
+                            alt="Tiffany Neuman"
+                            className="w-32 h-32 rounded-lg mx-auto mb-2 object-cover"
+                          />
                           <a
                             href="https://www.linkedin.com/in/tiffanyneuman/"
                             target="_blank"
@@ -1039,7 +1051,11 @@ const getGreeting = () => {
 
                         {/* Kristina Linder */}
                         <div className="text-center">
-                          <div className="w-32 h-32 bg-gray-200 rounded-lg mx-auto mb-2"></div>
+                          <img
+                            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Kristina%20Linder.jpeg"
+                            alt="Kristina Linder"
+                            className="w-32 h-32 rounded-lg mx-auto mb-2 object-cover"
+                          />
                           <a
                             href="https://www.linkedin.com/in/kristinalinderccxp/"
                             target="_blank"
