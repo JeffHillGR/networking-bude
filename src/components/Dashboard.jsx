@@ -961,9 +961,13 @@ const getGreeting = () => {
               )}
             </div>
 
-            {/* Copyright - Mobile only */}
-            <div className="md:hidden text-center mt-4">
-              <p className="text-xs text-gray-500">© 2025 The BudE System™</p>
+            {/* Footer Section */}
+            <div className="mt-8 pt-6 border-t border-gray-200">
+              <div className="text-center space-y-2">
+                <p className="text-lg font-bold text-gray-900">The BudE System™</p>
+                <p className="text-sm text-gray-600">Grand Rapids, Michigan</p>
+                <p className="text-xs text-gray-500 mt-4">© 2025 The BudE System™</p>
+              </div>
             </div>
           </div>
         );
