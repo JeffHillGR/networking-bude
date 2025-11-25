@@ -983,11 +983,22 @@ const getGreeting = () => {
                   <div className="max-w-3xl mx-auto">
                     <h3 className="text-2xl font-bold text-gray-900 mb-4">About Us</h3>
 
-                    {/* Narrative Section - Placeholder for user's content */}
+                    {/* Narrative Section */}
                     <div className="prose max-w-none mb-6">
                       <p className="text-gray-700 leading-relaxed mb-4">
-                        {/* User will add their narrative here */}
-                        [Your narrative text will go here. Share your story, mission, and what makes The BudE System special.]
+                        The BudE System was born out of the frustration with traditional networking, as we've come to know it for more than 50 years in this country. The statistical improbability that you're going to make the right meaningful connections at traditional networking events. Going it alone is not going well for most people.
+                      </p>
+                      <p className="text-gray-700 leading-relaxed mb-4">
+                        The premise and practice is that working with in a "buddy system" (that's right, from grade school), finding a BudE (or a cohort of BudE's) and going to events together, that you can more successfully build the professional community you've been looking for. One that fosters collaboration, one that helps you build your business or your new idea, or that just gives you friends to experience educational events with.
+                      </p>
+                      <p className="text-gray-700 leading-relaxed mb-4">
+                        We've all been taught since college or professional training to "go it alone." It's OK to not want to go it alone. And frankly it's just a lot more fun with BudE's.
+                      </p>
+                      <p className="text-gray-700 leading-relaxed mb-4">
+                        You no longer have to feel awkward alone.
+                      </p>
+                      <p className="text-gray-700 leading-relaxed">
+                        Hope you enjoy your experience here.
                       </p>
                     </div>
 
