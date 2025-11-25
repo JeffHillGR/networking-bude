@@ -130,7 +130,7 @@ export default function BudEOnboarding() {
     organizationsToCheckOut: [],
     organizationsToCheckOutOther: '',
     groupsBelongTo: '',
-    lookingToAccomplish: [],
+    lookingToAccomplish: '',
     professionalInterests: [],
     professionalInterestsOther: '',
     personalInterests: '',
@@ -1529,17 +1529,13 @@ const renderStep2 = () => (
 
           <div>
             <h2 className="text-xl font-bold mb-1.5">Bonus Question <span className="text-gray-500 font-normal">(Optional)</span>: I'm looking to...</h2>
-            <p className="text-gray-600 mb-2 text-sm">You can select multiple options</p>
+            <p className="text-gray-600 mb-2 text-sm">Select one option that best describes what you're looking for</p>
             <select
-              multiple
               className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-              style={{ minHeight: '150px' }}
               value={formData.lookingToAccomplish}
-              onChange={(e) => {
-                const selected = Array.from(e.target.selectedOptions, option => option.value);
-                handleChange('lookingToAccomplish', selected);
-              }}
+              onChange={(e) => handleChange('lookingToAccomplish', e.target.value)}
             >
+              <option value="">Select an option...</option>
               <option value="Launch a business">Launch a business</option>
               <option value="Find professional cohorts">Find professional cohorts</option>
               <option value="Find a collaborator for a project">Find a collaborator for a project</option>

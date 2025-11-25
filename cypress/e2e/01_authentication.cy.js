@@ -153,7 +153,7 @@ describe('Authentication Flow', () => {
     it('should progress to Step 2 with required fields filled', () => {
       cy.get('input[name="jobTitle"]').type('Software Engineer');
       cy.get('input[name="company"]').type('Tech Corp');
-      cy.get('input[name="zipCode"]').scrollIntoView().type('49503');
+      cy.get('input[name="zipCode"]').scrollIntoView().type('49503', { force: true });
       cy.get('select[name="industry"]').select('technology');
 
       cy.contains('button', /continue|next/i).click();
@@ -182,7 +182,7 @@ describe('Authentication Flow', () => {
       cy.contains('button', /continue|next/i).click();
 
       cy.get('input[name="jobTitle"]').type('Software Engineer');
-      cy.get('input[name="zipCode"]').scrollIntoView().type('49503');
+      cy.get('input[name="zipCode"]').scrollIntoView().type('49503', { force: true });
       cy.contains('button', /continue|next/i).click();
 
       // Wait for Step 2 to load
@@ -217,7 +217,7 @@ describe('Authentication Flow', () => {
       cy.get('textarea[name="networkingGoals"]').type('I want to expand my professional network and find mentorship opportunities.');
       cy.get('textarea[name="personalInterests"]').type('Hiking, reading, and learning new technologies.');
 
-      cy.contains('button', /create account|complete/i).click();
+      cy.contains('button', /create my account/i).click();
 
       // Wait for signup requests
       cy.wait('@signupRequest').its('response.statusCode').should('eq', 200);
@@ -463,12 +463,12 @@ describe('Authentication Flow', () => {
       cy.contains('button', /continue|next/i).click();
 
       cy.get('input[name="jobTitle"]').type('Engineer');
-      cy.get('input[name="zipCode"]').scrollIntoView().type('49503');
+      cy.get('input[name="zipCode"]').scrollIntoView().type('49503', { force: true });
       cy.contains('button', /continue|next/i).click();
 
       cy.get('textarea[name="networkingGoals"]').type('Test goals');
       cy.get('textarea[name="personalInterests"]').type('Test interests');
-      cy.contains('button', /create account|complete/i).click();
+      cy.contains('button', /create my account/i).click();
 
       cy.wait('@signupRequest');
 
@@ -489,12 +489,12 @@ describe('Authentication Flow', () => {
       cy.get('input[type="password"]').type(testPassword);
       cy.contains('button', /continue|next/i).click();
 
-      cy.get('input[name="zipCode"]').scrollIntoView().type('49503');
+      cy.get('input[name="zipCode"]').scrollIntoView().type('49503', { force: true });
       cy.contains('button', /continue|next/i).click();
 
       cy.get('textarea[name="networkingGoals"]').type('Goals');
       cy.get('textarea[name="personalInterests"]').type('Interests');
-      cy.contains('button', /create account|complete/i).click();
+      cy.contains('button', /create my account/i).click();
 
       cy.wait('@failedSignup');
 
