@@ -781,7 +781,7 @@ export default function BudEOnboarding() {
       <div className="bg-gray-50 flex justify-center pb-8 px-4 md:px-6">
         <div className="flex gap-4 md:gap-12 max-w-[820px] w-full items-center">
           <img
-            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Two-People-Collaborating-BudeColors.jpg"
+            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Two-People-Collaborating-BudeColors.png"
             alt="People Collaborating"
             className="w-1/2 h-64 md:h-80 object-contain border border-black rounded-lg"
             loading="lazy"
