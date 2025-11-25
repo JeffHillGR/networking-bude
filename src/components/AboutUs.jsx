@@ -33,9 +33,6 @@ function AboutUs({ onBackToDashboard, onContactUsClick }) {
             <p className="text-gray-700 leading-relaxed mb-4">
               We've all been taught since college or professional training to "go it alone." It's OK to not want to go it alone. And frankly it's just a lot more fun with BudE's.
             </p>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              You no longer have to feel awkward alone.
-            </p>
             <p className="text-gray-700 leading-relaxed">
               Hope you enjoy your experience here.
             </p>
@@ -43,7 +40,7 @@ function AboutUs({ onBackToDashboard, onContactUsClick }) {
 
           {/* Team Section */}
           <div className="mt-8 pt-8 border-t border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Our Team</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Our Team</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {/* Jeff Hill */}
               <div className="text-center">
@@ -52,26 +49,17 @@ function AboutUs({ onBackToDashboard, onContactUsClick }) {
                   alt="Jeff Hill"
                   className="w-32 h-32 rounded-lg mx-auto mb-3 object-cover"
                 />
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <a
-                    href="https://www.linkedin.com/in/jeffahill/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-gray-900 hover:text-gray-700 hover:underline"
-                  >
-                    Jeff Hill
-                  </a>
-                  <a
-                    href="https://www.linkedin.com/in/jeffahill/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#0077B5] hover:text-[#005885]"
-                    aria-label="Jeff Hill LinkedIn"
-                  >
-                    <Linkedin className="w-4 h-4" />
-                  </a>
-                </div>
-                <p className="text-sm text-gray-600">Founder</p>
+                <p className="font-semibold text-gray-900 mb-1 whitespace-nowrap">Jeff Hill</p>
+                <p className="text-sm text-gray-600 mb-2">Founder</p>
+                <a
+                  href="https://www.linkedin.com/in/jeffahill/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center text-[#0077B5] hover:text-[#005885]"
+                  aria-label="Jeff Hill LinkedIn"
+                >
+                  <Linkedin className="w-4 h-4" />
+                </a>
               </div>
 
               {/* Stephen Clemenger */}
@@ -81,26 +69,17 @@ function AboutUs({ onBackToDashboard, onContactUsClick }) {
                   alt="Stephen Clemenger"
                   className="w-32 h-32 rounded-lg mx-auto mb-3 object-cover"
                 />
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <a
-                    href="https://www.linkedin.com/in/clemenger/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-gray-900 hover:text-gray-700 hover:underline"
-                  >
-                    Stephen Clemenger
-                  </a>
-                  <a
-                    href="https://www.linkedin.com/in/clemenger/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#0077B5] hover:text-[#005885]"
-                    aria-label="Stephen Clemenger LinkedIn"
-                  >
-                    <Linkedin className="w-4 h-4" />
-                  </a>
-                </div>
-                <p className="text-sm text-gray-600">Technology Consultant</p>
+                <p className="font-semibold text-gray-900 mb-1 whitespace-nowrap">Stephen Clemenger</p>
+                <p className="text-sm text-gray-600 mb-2">Technology Consultant</p>
+                <a
+                  href="https://www.linkedin.com/in/clemenger/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center text-[#0077B5] hover:text-[#005885]"
+                  aria-label="Stephen Clemenger LinkedIn"
+                >
+                  <Linkedin className="w-4 h-4" />
+                </a>
               </div>
 
               {/* Tiffany Neuman */}
@@ -110,26 +89,17 @@ function AboutUs({ onBackToDashboard, onContactUsClick }) {
                   alt="Tiffany Neuman"
                   className="w-32 h-32 rounded-lg mx-auto mb-3 object-cover"
                 />
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <a
-                    href="https://www.linkedin.com/in/tiffanyneuman/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-gray-900 hover:text-gray-700 hover:underline"
-                  >
-                    Tiffany Neuman
-                  </a>
-                  <a
-                    href="https://www.linkedin.com/in/tiffanyneuman/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#0077B5] hover:text-[#005885]"
-                    aria-label="Tiffany Neuman LinkedIn"
-                  >
-                    <Linkedin className="w-4 h-4" />
-                  </a>
-                </div>
-                <p className="text-sm text-gray-600">Branding/Legacy Consultant</p>
+                <p className="font-semibold text-gray-900 mb-1 whitespace-nowrap">Tiffany Neuman</p>
+                <p className="text-sm text-gray-600 mb-2">Brand Consultant</p>
+                <a
+                  href="https://www.linkedin.com/in/tiffanyneuman/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center text-[#0077B5] hover:text-[#005885]"
+                  aria-label="Tiffany Neuman LinkedIn"
+                >
+                  <Linkedin className="w-4 h-4" />
+                </a>
               </div>
 
               {/* Kristina Linder */}
@@ -139,26 +109,17 @@ function AboutUs({ onBackToDashboard, onContactUsClick }) {
                   alt="Kristina Linder"
                   className="w-32 h-32 rounded-lg mx-auto mb-3 object-cover"
                 />
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <a
-                    href="https://www.linkedin.com/in/kristinalinderccxp/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-gray-900 hover:text-gray-700 hover:underline"
-                  >
-                    Kristina Linder
-                  </a>
-                  <a
-                    href="https://www.linkedin.com/in/kristinalinderccxp/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#0077B5] hover:text-[#005885]"
-                    aria-label="Kristina Linder LinkedIn"
-                  >
-                    <Linkedin className="w-4 h-4" />
-                  </a>
-                </div>
-                <p className="text-sm text-gray-600">Director of BudE Experience</p>
+                <p className="font-semibold text-gray-900 mb-1 whitespace-nowrap">Kristina Linder</p>
+                <p className="text-sm text-gray-600 mb-2">Director of User Experience</p>
+                <a
+                  href="https://www.linkedin.com/in/kristinalinderccxp/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center text-[#0077B5] hover:text-[#005885]"
+                  aria-label="Kristina Linder LinkedIn"
+                >
+                  <Linkedin className="w-4 h-4" />
+                </a>
               </div>
             </div>
           </div>

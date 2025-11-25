@@ -7,6 +7,7 @@ function ResourcesInsights({ onBackToDashboard }) {
   const { user } = useAuth();
   const [selectedContent, setSelectedContent] = useState(null);
   const [loadedContent, setLoadedContent] = useState(Array(10).fill(null));
+  const [archivedContent, setArchivedContent] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showShareModal, setShowShareModal] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -16,7 +17,7 @@ function ResourcesInsights({ onBackToDashboard }) {
     const loadFeaturedContent = async () => {
       try {
         const { data, error } = await supabase
-          .from('featured_content')
+          .from('insights')
           .select('*')
           .order('slot_number', { ascending: true });
 
@@ -28,24 +29,34 @@ function ResourcesInsights({ onBackToDashboard }) {
 
         if (data && data.length > 0) {
           const contentArray = Array(10).fill(null);
+          const archiveArray = [];
 
           data.forEach(item => {
             const index = item.slot_number - 1;
-            if (index >= 0 && index < 10) {
-              contentArray[index] = {
-                image: item.image,
-                title: item.title,
-                description: item.description,
-                url: item.url,
-                tags: item.tags,
-                sponsoredBy: item.sponsored_by,
-                fullContent: item.full_content,
-                author: item.author
-              };
+            const contentItem = {
+              image: item.image,
+              title: item.title,
+              description: item.description,
+              url: item.url,
+              tags: item.tags,
+              sponsoredBy: item.sponsored_by,
+              fullContent: item.full_content,
+              author: item.author,
+              createdAt: item.created_at
+            };
+
+            // Slots 1-3 are featured content
+            if (index >= 0 && index < 3) {
+              contentArray[index] = contentItem;
+            }
+            // Slot 4+ is archived content
+            else if (item.slot_number >= 4) {
+              archiveArray.push(contentItem);
             }
           });
 
           setLoadedContent(contentArray);
+          setArchivedContent(archiveArray);
         }
 
         setIsLoading(false);
@@ -105,66 +116,6 @@ function ResourcesInsights({ onBackToDashboard }) {
     }
     return null;
   }).filter(content => content !== null);
-
-  // Archived content
-  const archivedContent = [
-    {
-      id: 1,
-      title: "Building Meaningful Professional Networks",
-      description: "Learn strategies for authentic networking that leads to lasting professional relationships.",
-      date: "September 15, 2024",
-      category: "Networking",
-      image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&q=80"
-    },
-    {
-      id: 2,
-      title: "Mastering the Virtual Coffee Chat",
-      description: "Best practices for making virtual meetings as impactful as in-person connections.",
-      date: "August 22, 2024",
-      category: "Communication",
-      image: "https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?w=800&q=80"
-    },
-    {
-      id: 3,
-      title: "Personal Branding in the Digital Age",
-      description: "How to present your authentic professional self across digital platforms.",
-      date: "July 10, 2024",
-      category: "Personal Development",
-      image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80"
-    },
-    {
-      id: 4,
-      title: "The Art of Following Up",
-      description: "Turn initial connections into meaningful professional relationships.",
-      date: "June 5, 2024",
-      category: "Networking",
-      image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&q=80"
-    },
-    {
-      id: 5,
-      title: "Leveraging LinkedIn for Professional Growth",
-      description: "Maximize your LinkedIn presence to attract opportunities and build your network.",
-      date: "May 18, 2024",
-      category: "Social Media",
-      image: "https://images.unsplash.com/photo-1611944212129-29977ae1398c?w=800&q=80"
-    },
-    {
-      id: 6,
-      title: "Navigating Career Transitions with Confidence",
-      description: "Strategic approaches to changing careers while maintaining your professional momentum.",
-      date: "April 30, 2024",
-      category: "Career Development",
-      image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=80"
-    },
-    {
-      id: 7,
-      title: "Building a Strong Professional Support System",
-      description: "Create a network of mentors, peers, and supporters to accelerate your career growth.",
-      date: "March 25, 2024",
-      category: "Mentorship",
-      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80"
-    }
-  ];
 
   // Loading spinner component
   const LoadingSpinner = () => (
@@ -285,45 +236,19 @@ function ResourcesInsights({ onBackToDashboard }) {
                 </div>
 
                 {/* Archive Section */}
-                <div className="border-t border-gray-300 pt-12">
-                  <div className="text-center mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Content Archive</h2>
-                    <p className="text-gray-600">Browse our collection of professional development content</p>
+                {archivedContent.length > 0 && (
+                  <div className="border-t border-gray-300 pt-12">
+                    <div className="text-center mb-8">
+                      <h2 className="text-2xl font-bold text-gray-900 mb-2">Content Archive</h2>
+                      <p className="text-gray-600">Browse our collection of professional development content</p>
+                    </div>
+                    <div className="space-y-6">
+                      {archivedContent.map((item, index) => (
+                        <ContentCard key={index} content={item} slotNumber={index + 4} />
+                      ))}
+                    </div>
                   </div>
-                  <div className="space-y-6">
-                    {archivedContent.map((item) => (
-                      <div
-                        key={item.id}
-                        className="bg-white rounded-lg shadow-sm p-6 transition-shadow border border-gray-200 hover:shadow-md"
-                      >
-                        <div className="flex flex-col md:flex-row gap-6">
-                          <img
-                            src={item.image}
-                            alt={item.title}
-                            loading="lazy"
-                            className="w-full md:w-48 h-48 rounded-lg object-cover flex-shrink-0"
-                          />
-                          <div className="flex-1">
-                            <div className="flex items-start justify-between mb-3">
-                              <span className="inline-block bg-[#D0ED00]/20 text-[#009900] text-xs px-3 py-1 rounded font-medium">
-                                {item.category}
-                              </span>
-                              <span className="text-sm text-gray-500">{item.date}</span>
-                            </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
-                            <p className="text-gray-600 mb-4">{item.description}</p>
-                            <button
-                              onClick={() => alert('Full content coming soon! This feature will be available after beta testing.')}
-                              className="text-[#009900] hover:text-[#007700] font-medium text-sm"
-                            >
-                              Read More →
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                )}
               </>
             )}
       </div>

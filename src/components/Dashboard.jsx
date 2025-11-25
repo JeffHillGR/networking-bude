@@ -341,7 +341,7 @@ const getGreeting = () => {
     const loadFeaturedContent = async () => {
       try {
         const { data, error } = await supabase
-          .from('featured_content')
+          .from('insights')
           .select('*')
           .order('slot_number', { ascending: true });
 

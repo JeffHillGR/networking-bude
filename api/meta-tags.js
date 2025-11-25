@@ -104,7 +104,7 @@ export default async function handler(req, res) {
         const supabase = createClient(supabaseUrl, supabaseKey);
 
         const { data: content, error } = await supabase
-          .from('featured_content')
+          .from('insights')
           .select('*')
           .eq('slot_number', contentId)
           .single();
