@@ -4,18 +4,19 @@ function AboutUs({ onBackToDashboard, onContactUsClick }) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center h-16">
-            <button
-              onClick={onBackToDashboard}
-              className="mr-4 p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="Back to dashboard"
-            >
-              <ArrowLeft className="w-5 h-5 text-gray-600" />
-            </button>
-            <h1 className="text-2xl font-bold text-gray-900">About Us</h1>
+      <div className="bg-white border-b border-gray-200 px-6 py-8">
+        <button
+          onClick={onBackToDashboard}
+          className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 md:mb-6 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span>Back to Dashboard</span>
+        </button>
+        <div className="text-center">
+          <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
+            <h1 className="text-3xl font-bold text-black">About Us</h1>
           </div>
+          <p className="text-gray-600 mt-2">Meet the team behind The BudE System</p>
         </div>
       </div>
 
