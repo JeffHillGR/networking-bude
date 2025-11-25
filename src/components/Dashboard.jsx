@@ -11,6 +11,7 @@ import Account from './Account';
 import TermsPage from './TermsPage';
 import PrivacyPage from './PrivacyPage';
 import ArchivePage from './ArchivePage';
+import AboutUs from './AboutUs';
 import FeedbackWidget from './FeedbackWidget';
 import NotificationBell from './NotificationBell.jsx';
 import HeroBannerCarousel from './HeroBannerCarousel.jsx';
@@ -72,7 +73,6 @@ const [showContactModal, setShowContactModal] = useState(false);
 const [contactSubmitted, setContactSubmitted] = useState(false);
 const [isSubmittingContact, setIsSubmittingContact] = useState(false);
 const [showMobileMenu, setShowMobileMenu] = useState(false);
-const [showAboutModal, setShowAboutModal] = useState(false);
 const [contactData, setContactData] = useState({
   name: '',
   email: '',
@@ -969,119 +969,15 @@ const getGreeting = () => {
                 <p className="text-sm text-gray-600">Grand Rapids, Michigan</p>
                 <p className="text-xs text-gray-500 mt-4">© 2025</p>
                 <button
-                  onClick={() => setShowAboutModal(!showAboutModal)}
-                  className="text-sm text-[#009900] hover:text-[#007700] underline mt-2 flex items-center justify-center gap-1 mx-auto"
+                  onClick={() => {
+                    setActiveTab('about');
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                  }}
+                  className="text-sm text-[#009900] hover:text-[#007700] underline mt-2"
                 >
                   About Us
-                  <span className="text-xs">{showAboutModal ? '▲' : '▼'}</span>
                 </button>
               </div>
-
-              {/* Expandable About Us Section */}
-              {showAboutModal && (
-                <div className="mt-6 p-6 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="max-w-3xl mx-auto">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">About Us</h3>
-
-                    {/* Narrative Section */}
-                    <div className="prose max-w-none mb-6">
-                      <p className="text-gray-700 leading-relaxed mb-4">
-                        The BudE System was born out of the frustration with traditional networking, as we've come to know it for more than 50 years in this country. The statistical improbability that you're going to make the right meaningful connections at traditional networking events. Going it alone is not going well for most people.
-                      </p>
-                      <p className="text-gray-700 leading-relaxed mb-4">
-                        The premise and practice is that working within a "buddy system" (that's right, from grade school), finding a BudE (or a cohort of BudE's) and going to events together, that you can more successfully build the professional community you've been looking for. One that fosters collaboration, one that helps you build your business or your new idea, or that just gives you friends to experience educational events with.
-                      </p>
-                      <p className="text-gray-700 leading-relaxed mb-4">
-                        We've all been taught since college or professional training to "go it alone." It's OK to not want to go it alone. And frankly it's just a lot more fun with BudE's.
-                      </p>
-                      <p className="text-gray-700 leading-relaxed mb-4">
-                        You no longer have to feel awkward alone.
-                      </p>
-                      <p className="text-gray-700 leading-relaxed">
-                        Hope you enjoy your experience here.
-                      </p>
-                    </div>
-
-                    {/* Team Section */}
-                    <div className="mt-6">
-                      <h4 className="text-xl font-bold text-gray-900 mb-4">Our Team</h4>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        {/* Jeff Hill */}
-                        <div className="text-center">
-                          <img
-                            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Jeff%20Hill%20LI.jpeg"
-                            alt="Jeff Hill"
-                            className="w-32 h-32 rounded-lg mx-auto mb-2 object-cover"
-                          />
-                          <a
-                            href="https://www.linkedin.com/in/jeffahill/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-semibold text-gray-900 hover:text-gray-700 hover:underline"
-                          >
-                            Jeff Hill
-                          </a>
-                          <p className="text-sm text-gray-600">Founder</p>
-                        </div>
-
-                        {/* Stephen Clemenger */}
-                        <div className="text-center">
-                          <img
-                            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Stephen%20Clemenger.jpeg"
-                            alt="Stephen Clemenger"
-                            className="w-32 h-32 rounded-lg mx-auto mb-2 object-cover"
-                          />
-                          <a
-                            href="https://www.linkedin.com/in/clemenger/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-semibold text-gray-900 hover:text-gray-700 hover:underline"
-                          >
-                            Stephen Clemenger
-                          </a>
-                          <p className="text-sm text-gray-600">Technology Consultant</p>
-                        </div>
-
-                        {/* Tiffany Neuman */}
-                        <div className="text-center">
-                          <img
-                            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Tiffany%20Neuman.jpeg"
-                            alt="Tiffany Neuman"
-                            className="w-32 h-32 rounded-lg mx-auto mb-2 object-cover"
-                          />
-                          <a
-                            href="https://www.linkedin.com/in/tiffanyneuman/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-semibold text-gray-900 hover:text-gray-700 hover:underline"
-                          >
-                            Tiffany Neuman
-                          </a>
-                          <p className="text-sm text-gray-600">Branding/Legacy Consultant</p>
-                        </div>
-
-                        {/* Kristina Linder */}
-                        <div className="text-center">
-                          <img
-                            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Kristina%20Linder.jpeg"
-                            alt="Kristina Linder"
-                            className="w-32 h-32 rounded-lg mx-auto mb-2 object-cover"
-                          />
-                          <a
-                            href="https://www.linkedin.com/in/kristinalinderccxp/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-semibold text-gray-900 hover:text-gray-700 hover:underline"
-                          >
-                            Kristina Linder
-                          </a>
-                          <p className="text-sm text-gray-600">Director of BudE Experience</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         );
@@ -1120,6 +1016,15 @@ const getGreeting = () => {
       window.scrollTo({ top: 0, behavior: 'instant' });
     }}
     autoSelectUserId={selectedMessageUserId}
+  />;
+
+  case 'about':
+  return <AboutUs
+    onBackToDashboard={() => {
+      setActiveTab('dashboard');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }}
+    onContactUsClick={() => setShowContactModal(true)}
   />;
 
   case 'resources':
