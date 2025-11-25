@@ -916,7 +916,7 @@ const getGreeting = () => {
                 <div className="mt-4 text-center">
                   <button
                     onClick={() => navigate('/resources-insights')}
-                    className="w-full bg-[#D0ED00] text-[#009900] font-bold py-3 px-6 rounded-lg border-2 border-black hover:bg-[#c4e000] transition-colors"
+                    className="w-full bg-[#B8D96D] text-[#006600] font-bold py-3 px-6 rounded-lg border-2 border-black hover:bg-[#A8C95D] transition-colors"
                   >
                     View All Insights
                   </button>
