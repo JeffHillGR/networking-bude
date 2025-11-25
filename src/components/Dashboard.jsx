@@ -997,7 +997,7 @@ const getGreeting = () => {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {/* Jeff Hill */}
                         <div className="text-center">
-                          <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-2"></div>
+                          <div className="w-32 h-32 bg-gray-200 rounded-lg mx-auto mb-2"></div>
                           <a
                             href="https://www.linkedin.com/in/jeffahill/"
                             target="_blank"
@@ -1011,7 +1011,7 @@ const getGreeting = () => {
 
                         {/* Stephen Clemenger */}
                         <div className="text-center">
-                          <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-2"></div>
+                          <div className="w-32 h-32 bg-gray-200 rounded-lg mx-auto mb-2"></div>
                           <a
                             href="https://www.linkedin.com/in/clemenger/"
                             target="_blank"
@@ -1025,7 +1025,7 @@ const getGreeting = () => {
 
                         {/* Tiffany Neuman */}
                         <div className="text-center">
-                          <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-2"></div>
+                          <div className="w-32 h-32 bg-gray-200 rounded-lg mx-auto mb-2"></div>
                           <a
                             href="https://www.linkedin.com/in/tiffanyneuman/"
                             target="_blank"
@@ -1039,7 +1039,7 @@ const getGreeting = () => {
 
                         {/* Kristina Linder */}
                         <div className="text-center">
-                          <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-2"></div>
+                          <div className="w-32 h-32 bg-gray-200 rounded-lg mx-auto mb-2"></div>
                           <a
                             href="https://www.linkedin.com/in/kristinalinderccxp/"
                             target="_blank"
