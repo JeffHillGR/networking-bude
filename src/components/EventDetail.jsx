@@ -552,7 +552,7 @@ function EventDetail() {
           <meta property="og:url" content={`https://www.networkingbude.com/events/${eventId}`} />
           <meta property="og:title" content={event.title} />
           <meta property="og:description" content={event.description || `Join us for ${event.title} on Networking BudE`} />
-          <meta property="og:image" content={event.image || 'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png'} />
+          <meta property="og:image" content={event.image || 'BudE-Color-Logo-Rev.png'} />
           <meta property="og:image:width" content="1200" />
           <meta property="og:image:height" content="630" />
           <meta property="og:site_name" content="Networking BudE" />
@@ -562,7 +562,7 @@ function EventDetail() {
           <meta name="twitter:url" content={`https://www.networkingbude.com/events/${eventId}`} />
           <meta name="twitter:title" content={event.title} />
           <meta name="twitter:description" content={event.description || `Join us for ${event.title} on Networking BudE`} />
-          <meta name="twitter:image" content={event.image || 'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png'} />
+          <meta name="twitter:image" content={event.image || 'BudE-Color-Logo-Rev.png'} />
 
           {/* LinkedIn - uses Open Graph tags */}
         </Helmet>
@@ -904,7 +904,7 @@ function EventDetail() {
                 <div
                   className="absolute inset-0 bg-cover opacity-30"
                   style={{
-                    backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
+                    backgroundImage: 'url(My-phone-blurry-tall-2.jpg)',
                     backgroundPosition: 'center 90%'
                   }}
                 />
@@ -1213,7 +1213,7 @@ function EventDetail() {
             </button>
             <div className="flex items-center justify-center gap-6 mb-6">
               <img
-                src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
+                src="scientist-chalkboard.jpg"
                 alt="Scientist at work"
                 className="h-24 md:h-32 w-auto flex-shrink-0 rounded-lg object-cover shadow-lg"
               />

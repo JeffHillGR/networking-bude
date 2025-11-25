@@ -21,7 +21,7 @@ class ErrorBoundary extends React.Component {
           <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 text-center border-4 border-[#D0ED00]">
             <div className="mb-6">
               <img
-                src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/main/public/scientist-chalkboard.jpg"
+                src="scientist-chalkboard.jpg"
                 alt="BudE taking a break"
                 className="w-32 h-32 mx-auto rounded-full object-cover border-4 border-[#009900]"
               />

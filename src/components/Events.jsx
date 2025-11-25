@@ -60,7 +60,7 @@ function Events({ onBackToDashboard }) {
     window.scrollTo(0, 0);
 
     // Setup mock ads for demo (TEMPORARY - remove when real ads are live)
-    setupMockAds();
+    // setupMockAds(); // Commented out to allow custom ads to persist
 
     // Load ads from localStorage
     setAds({
@@ -568,7 +568,7 @@ function Events({ onBackToDashboard }) {
                   <div
                     className="absolute inset-0 bg-cover opacity-30"
                     style={{
-                      backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
+                      backgroundImage: 'url(My-phone-blurry-tall-2.jpg)',
                       backgroundPosition: 'center'
                     }}
                   />
@@ -618,7 +618,7 @@ function Events({ onBackToDashboard }) {
                   <div
                     className="absolute inset-0 bg-cover opacity-30"
                     style={{
-                      backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
+                      backgroundImage: 'url(My-phone-blurry-tall-2.jpg)',
                       backgroundPosition: 'center'
                     }}
                   />
@@ -663,7 +663,7 @@ function Events({ onBackToDashboard }) {
                   <div
                     className="absolute inset-0 bg-cover opacity-30"
                     style={{
-                      backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
+                      backgroundImage: 'url(My-phone-blurry-tall-2.jpg)',
                       backgroundPosition: 'center'
                     }}
                   />

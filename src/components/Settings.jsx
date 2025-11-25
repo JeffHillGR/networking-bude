@@ -1001,7 +1001,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
                   />
                   <label
                     htmlFor="photo-upload"
-                    className="cursor-pointer inline-block bg-[#009900] text-white px-4 py-2 rounded-lg hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00]"
+                    className="cursor-pointer inline-block bg-[#009900] text-white px-4 py-2 rounded-lg hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
                   >
                     {uploadingPhoto ? 'Uploading...' : 'Upload Photo'}
                   </label>
@@ -1162,7 +1162,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
                           onClick={() => toggleOrganization(org)}
                           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                             profile.organizations?.includes(org)
-                              ? 'bg-black text-white'
+                              ? 'bg-[#009900] text-white'
                               : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
                           }`}
                         >
@@ -1192,7 +1192,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
                           onClick={() => toggleOrganizationToCheckOut(org)}
                           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                             profile.organizationsToCheckOut?.includes(org)
-                              ? 'bg-blue-600 text-white'
+                              ? 'bg-[#009900] text-white'
                               : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
                           }`}
                         >
@@ -1254,7 +1254,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
                       onClick={() => toggleInterest(interest)}
                       className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                         selectedInterests.includes(interest)
-                          ? 'bg-black text-white'
+                          ? 'bg-[#009900] text-white'
                           : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
                       }`}
                     >

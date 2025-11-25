@@ -33,19 +33,19 @@ export default function BudEOnboarding() {
   const carouselRef = useRef(null);
 
   const desktopBanners = [
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-1.png',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-2.png',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-3.png',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-4.png',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Banner-5.png'
+    '/Landing-Page-Banner-1.png',
+    '/Landing-Page-Banner-2.png',
+    '/Landing-Page-Banner-3.png',
+    '/Landing-Page-Banner-4.png',
+    '/Landing-Page-Banner-5.png'
   ];
 
   const mobileBanners = [
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-1.png?t=20251119',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-2.png?t=20251119',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-3.png?t=20251119',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-4.png?t=20251120',
-    'https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Landing-Page-Mobile-5.png'
+    '/Landing-Page-Mobile-1.png',
+    '/Landing-Page-Mobile-2.png',
+    '/Landing-Page-Mobile-3.png',
+    '/Landing-Page-Mobile-4.png',
+    '/Landing-Page-Mobile-5.png'
   ];
 
   // Preload banner images
@@ -498,7 +498,7 @@ export default function BudEOnboarding() {
 
   const BudELogo = () => (
   <img
-  src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png"
+  src="/BudE-Color-Logo-Rev.png"
   alt="BudE Logo"
   className="h-16.5 w-auto"
 />
@@ -615,7 +615,37 @@ export default function BudEOnboarding() {
                   className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg cursor-pointer hover:bg-white/50 transition-all pointer-events-auto"
                   style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
                   onClick={() => {
-                    document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+                    // Custom smooth scroll with slower animation (especially for mobile)
+                    const target = document.getElementById('how-it-works');
+                    if (!target) return;
+
+                    const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
+                    const startPosition = window.pageYOffset;
+                    const distance = targetPosition - startPosition;
+                    const duration = 1500; // 1.5 seconds for smoother, slower scroll
+                    let startTime = null;
+
+                    // Easing function for smooth deceleration
+                    const easeInOutCubic = (t) => {
+                      return t < 0.5
+                        ? 4 * t * t * t
+                        : 1 - Math.pow(-2 * t + 2, 3) / 2;
+                    };
+
+                    const animation = (currentTime) => {
+                      if (startTime === null) startTime = currentTime;
+                      const timeElapsed = currentTime - startTime;
+                      const progress = Math.min(timeElapsed / duration, 1);
+                      const ease = easeInOutCubic(progress);
+
+                      window.scrollTo(0, startPosition + distance * ease);
+
+                      if (timeElapsed < duration) {
+                        requestAnimationFrame(animation);
+                      }
+                    };
+
+                    requestAnimationFrame(animation);
                   }}
                 >
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
@@ -698,7 +728,7 @@ export default function BudEOnboarding() {
             <div className="flex flex-col md:flex-row gap-8 items-center my-8">
               <div className="md:w-1/2 text-left">
                 <p className="text-4xl md:text-5xl font-bold text-black leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-                  A networking wingperson for every event.
+                  A networking wingperson for every event
                   <br /><br />
 
                 </p>
@@ -751,14 +781,16 @@ export default function BudEOnboarding() {
       <div className="bg-gray-50 flex justify-center pb-8 px-4 md:px-6">
         <div className="flex gap-4 md:gap-12 max-w-[820px] w-full items-center">
           <img
-            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-1.png"
+            src="/People-networking-1.png"
             alt="People Networking"
             className="w-1/2 object-contain"
+            loading="lazy"
           />
           <img
-            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-3.png"
+            src="/People-networking-3.png"
             alt="People Networking"
             className="w-[45%] object-contain"
+            loading="lazy"
           />
         </div>
       </div>
@@ -831,9 +863,10 @@ export default function BudEOnboarding() {
       {/* Athena Image */}
       <div className="bg-white flex justify-center pb-8">
         <img
-          src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Athena-2.jpg"
+          src="/Athena-2.jpg"
           alt="Athena"
           className="max-w-3xl w-full px-6"
+          loading="lazy"
         />
       </div>
 
@@ -850,7 +883,7 @@ export default function BudEOnboarding() {
               {/* Desktop: Hook on left */}
               <div className="hidden md:block md:w-1/2 text-left">
                 <p className="text-4xl md:text-5xl font-bold text-black leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-                  You support their goals; they support yours.
+                  You support their goals; they support yours
                 </p>
               </div>
               <div className="md:w-1/2">
@@ -873,7 +906,7 @@ export default function BudEOnboarding() {
           {/* Mobile: Hook appears at bottom */}
           <div className="md:hidden mt-8 mb-6">
             <p className="text-4xl font-bold text-black leading-tight text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-              You support their goals; they support yours.
+              You support their goals; they support yours
             </p>
           </div>
 
@@ -914,7 +947,7 @@ export default function BudEOnboarding() {
       {/* Hook Statement - Left Side */}
       <div className="hidden md:flex md:w-1/2 items-center justify-end pr-4">
         <p className="text-4xl lg:text-5xl font-bold text-black leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-          A networking wingperson for every event.
+          A networking wingperson for every event
           <br /><br />
           In 3 easy steps
         </p>
@@ -925,7 +958,7 @@ export default function BudEOnboarding() {
         {/* BudE Logo */}
         <div className="flex justify-center mb-6">
           <img
-            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/BudE-Color-Logo-Rev.png"
+            src="/BudE-Color-Logo-Rev.png"
             alt="BudE Logo"
             className="h-20 w-auto"
           />
@@ -1079,7 +1112,7 @@ export default function BudEOnboarding() {
           <div
             className="absolute left-0 top-0 w-full h-full bg-cover opacity-30 pointer-events-none"
             style={{
-              backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
+              backgroundImage: 'url(/My-phone-blurry-tall-2.jpg)',
               backgroundPosition: 'right top',
               backgroundSize: 'cover',
               transform: 'scale(1.1)'
@@ -1089,7 +1122,7 @@ export default function BudEOnboarding() {
           <div className="p-4 relative z-10">
             <img src="/BudE-Logo-Final.png" alt="BudE Logo" className="w-full h-auto mb-4" />
             <div className="space-y-4 flex flex-col items-center">
-              <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-1.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
+              <img src="/People-networking-1.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" loading="lazy" />
               <div className="text-center px-2" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
                 <p className="text-lg font-bold text-black leading-tight mb-2">
                   Those 3 easy steps
@@ -1100,7 +1133,7 @@ export default function BudEOnboarding() {
                   Go to events together
                 </p>
               </div>
-              <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-3.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
+              <img src="/People-networking-3.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" loading="lazy" />
             </div>
           </div>
         </div>
@@ -1391,7 +1424,7 @@ const renderStep2 = () => (
         <div
           className="absolute left-0 top-0 w-full h-full bg-cover opacity-30 pointer-events-none"
           style={{
-            backgroundImage: 'url(https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/My-phone-blurry-tall-2.jpg)',
+            backgroundImage: 'url(/My-phone-blurry-tall-2.jpg)',
             backgroundPosition: 'right top',
             backgroundSize: 'cover',
             transform: 'scale(1.1)'
@@ -1401,11 +1434,11 @@ const renderStep2 = () => (
         <div className="p-4 relative z-10">
           <img src="/BudE-Logo-Final.png" alt="BudE Logo" className="w-full h-auto mb-4" />
           <div className="space-y-4 flex flex-col items-center">
-            <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-1.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
+            <img src="/People-networking-1.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" loading="lazy" />
             <p className="text-xl font-bold text-black leading-tight px-2 text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-              You support their goals; they support yours.
+              You support their goals; they support yours
             </p>
-            <img src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/People-networking-3.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" />
+            <img src="/People-networking-3.png" alt="People Networking" className="w-4/5 h-auto rounded-lg" loading="lazy" />
           </div>
         </div>
       </div>
