@@ -779,22 +779,24 @@ export default function BudEOnboarding() {
 
       {/* People Networking Images - Side by Side */}
       <div className="bg-gray-50 flex justify-center pb-8 px-4 md:px-6">
-        <div className="flex gap-3 md:gap-4 max-w-3xl w-full items-center justify-center">
-          <div className="flex-1">
+        <div className="grid grid-cols-2 gap-3 md:gap-4 max-w-3xl w-full">
+          <div className="w-full h-48 md:h-80 border border-black rounded-lg overflow-hidden">
             <img
               src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Two-People-Collaborating-BudeColors.png"
               alt="People Collaborating"
-              className="w-full h-48 md:h-80 object-cover border border-black rounded-lg"
+              className="w-full h-full object-cover"
               loading="lazy"
             />
           </div>
-          <div className="flex-1">
-            <img
-              src="/People-networking-3.png"
-              alt="People Networking"
-              className="w-full h-48 md:h-80 object-cover border border-black rounded-lg"
-              loading="lazy"
-            />
+          <div className="w-full h-48 md:h-80 bg-white border border-black rounded-lg flex items-center justify-center">
+            <div className="w-full h-full p-4 md:p-6 flex items-center justify-center">
+              <img
+                src="/People-networking-3.png"
+                alt="People Networking"
+                className="w-full h-full object-contain"
+                loading="lazy"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -989,6 +991,7 @@ export default function BudEOnboarding() {
               <label className="block text-sm font-semibold mb-1 text-gray-900">First Name <span className="text-red-500">*</span></label>
               <input
                 type="text"
+                name="firstName"
                 required
                 className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                 value={formData.firstName}
@@ -999,6 +1002,7 @@ export default function BudEOnboarding() {
               <label className="block text-sm font-semibold mb-1 text-gray-900">Last Name <span className="text-red-500">*</span></label>
               <input
                 type="text"
+                name="lastName"
                 required
                 className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009900] focus:border-transparent"
                 value={formData.lastName}
@@ -1184,6 +1188,7 @@ export default function BudEOnboarding() {
                   <label className="block text-sm font-bold mb-1 text-gray-900">Job Title</label>
                   <input
                     type="text"
+                    name="jobTitle"
                     className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                     placeholder="Or what you are known for"
                     value={formData.jobTitle}
@@ -1222,20 +1227,28 @@ export default function BudEOnboarding() {
                   <label className="block text-sm font-bold mb-1 text-gray-900">Company <span className="text-gray-500 font-normal">(optional)</span></label>
                   <input
                     type="text"
+                    name="company"
                     className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                     value={formData.company}
                     onChange={(e) => handleChange('company', e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold mb-1 text-gray-900">Zip Code <span className="text-red-500">*</span> <span className="text-gray-500 font-normal">(You'll see soon why this is important)</span></label>
+                  <label className="block text-sm font-bold mb-1 text-gray-900">Zip Code <span className="text-red-500">*</span></label>
                   <input
                     type="text"
+                    name="zipCode"
                     required
+                    inputMode="numeric"
+                    pattern="[0-9]{5}"
                     className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                     value={formData.zipCode}
-                    onChange={(e) => handleChange('zipCode', e.target.value)}
-                    maxLength={10}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 5);
+                      handleChange('zipCode', value);
+                    }}
+                    maxLength={5}
+                    placeholder="12345"
                   />
                 </div>
               </div>
@@ -1246,6 +1259,7 @@ export default function BudEOnboarding() {
               <div>
                 <label className="block text-sm font-bold mb-1 text-gray-900">Industry <span className="text-gray-500 font-normal">(optional)</span></label>
                 <select
+                  name="industry"
                   className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                   value={formData.industry}
                   onChange={(e) => handleChange('industry', e.target.value)}
@@ -1345,6 +1359,7 @@ export default function BudEOnboarding() {
                 <label className="block text-sm font-bold mb-1 text-gray-900">Groups I belong to <span className="text-gray-500 font-normal">(optional)</span></label>
                 <input
                   type="text"
+                  name="groupsBelongTo"
                   className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                   placeholder="Leadership Grand Rapids, University Alumni, BNI, YNPN, Other, Suggest a Group"
                   value={formData.groupsBelongTo}
@@ -1484,6 +1499,7 @@ const renderStep2 = () => (
           <div>
             <h2 className="text-xl font-bold mb-2">Networking Goals <span className="text-red-500">*</span></h2>
             <textarea
+              name="networkingGoals"
               className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-24 text-sm"
               placeholder="• What frustrates you most about traditional networking?&#10;• In a perfect world what would networking look like to you?&#10;• The more descriptive the better."
               value={formData.networkingGoals}
@@ -1500,6 +1516,7 @@ const renderStep2 = () => (
               What keeps you busy in your spare time? This helps create more meaningful connections beyond just professional interests.
             </p>
             <textarea
+              name="personalInterests"
               className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 min-h-24 text-sm"
               placeholder="Tell us about your personal interests..."
               value={formData.personalInterests}
