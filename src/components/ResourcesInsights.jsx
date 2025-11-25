@@ -7,7 +7,7 @@ function ResourcesInsights({ onBackToDashboard }) {
   const { user } = useAuth();
   const [showArchive, setShowArchive] = useState(false);
   const [selectedContent, setSelectedContent] = useState(null);
-  const [loadedContent, setLoadedContent] = useState([null, null, null]);
+  const [loadedContent, setLoadedContent] = useState(Array(10).fill(null));
   const [isLoading, setIsLoading] = useState(true);
   const [showShareModal, setShowShareModal] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -28,11 +28,11 @@ function ResourcesInsights({ onBackToDashboard }) {
         }
 
         if (data && data.length > 0) {
-          const contentArray = [null, null, null];
+          const contentArray = Array(10).fill(null);
 
           data.forEach(item => {
             const index = item.slot_number - 1;
-            if (index >= 0 && index < 3) {
+            if (index >= 0 && index < 10) {
               contentArray[index] = {
                 image: item.image,
                 title: item.title,
@@ -97,12 +97,15 @@ function ResourcesInsights({ onBackToDashboard }) {
     }
   ];
 
-  // Build featured content array: use database content where available, otherwise use defaults
-  const slot1 = (loadedContent[0] && loadedContent[0].title) ? loadedContent[0] : defaultFeaturedContent[0];
-  const slot2 = (loadedContent[1] && loadedContent[1].title) ? loadedContent[1] : defaultFeaturedContent[1];
-  const slot3 = (loadedContent[2] && loadedContent[2].title) ? loadedContent[2] : defaultFeaturedContent[2];
-
-  const featuredContent = [slot1, slot2, slot3];
+  // Build featured content array: use database content where available, otherwise use defaults for first 3
+  const featuredContent = loadedContent.map((content, index) => {
+    if (content && content.title) {
+      return content;
+    } else if (index < 3) {
+      return defaultFeaturedContent[index];
+    }
+    return null;
+  }).filter(content => content !== null);
 
   // Archived content - these were previously featured
   const archivedContent = [

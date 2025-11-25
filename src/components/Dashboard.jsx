@@ -405,12 +405,13 @@ const getGreeting = () => {
     }
   ];
 
-  // Build featured content array: use database content where available, otherwise use defaults
-  const slot1 = (loadedFeaturedContent[0] && loadedFeaturedContent[0].title) ? loadedFeaturedContent[0] : defaultFeaturedContent[0];
-  const slot2 = (loadedFeaturedContent[1] && loadedFeaturedContent[1].title) ? loadedFeaturedContent[1] : defaultFeaturedContent[1];
-  const slot3 = (loadedFeaturedContent[2] && loadedFeaturedContent[2].title) ? loadedFeaturedContent[2] : defaultFeaturedContent[2];
-
-  const featuredContent = [slot1, slot2, slot3];
+  // Build featured content array: use database content where available, otherwise use defaults (only first 3 for dashboard)
+  const featuredContent = loadedFeaturedContent.slice(0, 3).map((content, index) => {
+    if (content && content.title) {
+      return content;
+    }
+    return defaultFeaturedContent[index];
+  });
 
   // Fetch real connections from database
   useEffect(() => {
@@ -856,57 +857,69 @@ const getGreeting = () => {
             <div>
               <div className="bg-white rounded-lg p-4 md:p-5 shadow-sm border border-gray-200">
                 <div className="mb-2 text-center">
-                  <div
-                    onClick={() => navigate('/resources-insights')}
-                    className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black cursor-pointer hover:bg-gray-50 transition-colors"
-                  >
-                    <h3 className="font-bold text-black text-lg">Insights →</h3>
+                  <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black">
+                    <h3 className="font-bold text-black text-lg">Insights</h3>
                   </div>
                   <p className="text-xs text-gray-500 mt-0.5">Curated content to help you grow</p>
                 </div>
 
-                {/* Featured Content with Thumbnail on Left */}
-                <div
-                  onClick={() => {
-                    // Track engagement when viewing featured content
-                    const currentCount = parseInt(localStorage.getItem('userEngagementCount') || '0', 10);
-                    localStorage.setItem('userEngagementCount', (currentCount + 1).toString());
-                    navigate('/resources-insights');
-                  }}
-                  className="flex flex-col md:flex-row items-start gap-4 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition-colors cursor-pointer"
-                >
-                  {/* Thumbnail Image */}
-                  <img
-                    src={featuredContent[0].image}
-                    alt={featuredContent[0].title}
-                    className="w-32 h-32 md:w-36 md:h-36 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm"
-                  />
+                {/* Featured Content - All 3 Cards */}
+                <div className="space-y-4">
+                  {featuredContent.map((content, index) => (
+                    <div
+                      key={index}
+                      onClick={() => {
+                        // Track engagement when viewing featured content
+                        const currentCount = parseInt(localStorage.getItem('userEngagementCount') || '0', 10);
+                        localStorage.setItem('userEngagementCount', (currentCount + 1).toString());
+                        navigate('/resources-insights');
+                      }}
+                      className="flex flex-col md:flex-row items-start gap-4 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition-colors cursor-pointer"
+                    >
+                      {/* Thumbnail Image */}
+                      <img
+                        src={content.image}
+                        alt={content.title}
+                        className="w-32 h-32 md:w-36 md:h-36 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm"
+                      />
 
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-gray-900 mb-2 text-lg leading-tight">{featuredContent[0].title}</h4>
-                    {featuredContent[0].author && (
-                      <p className="text-xs text-gray-500 italic mb-2">By {featuredContent[0].author}</p>
-                    )}
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-2 leading-relaxed">{featuredContent[0].description}</p>
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                      {featuredContent[0].tags && (
-                        <div className="flex gap-2 flex-wrap">
-                          {featuredContent[0].tags.split(',').slice(0, 2).map((tag, i) => (
-                            <span key={i} className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded">
-                              {tag.trim()}
-                            </span>
-                          ))}
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-gray-900 mb-2 text-lg leading-tight">{content.title}</h4>
+                        {content.author && (
+                          <p className="text-xs text-gray-500 italic mb-2">By {content.author}</p>
+                        )}
+                        <p className="text-sm text-gray-600 mb-2 line-clamp-2 leading-relaxed">{content.description}</p>
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                          {content.tags && (
+                            <div className="flex gap-2 flex-wrap">
+                              {content.tags.split(',').slice(0, 2).map((tag, i) => (
+                                <span key={i} className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded">
+                                  {tag.trim()}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          {content.sponsoredBy && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-gray-400">Sponsored by</span>
+                              <span className="text-xs font-medium text-gray-700">{content.sponsoredBy}</span>
+                            </div>
+                          )}
                         </div>
-                      )}
-                      {featuredContent[0].sponsoredBy && (
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-400">Sponsored by</span>
-                          <span className="text-xs font-medium text-gray-700">{featuredContent[0].sponsoredBy}</span>
-                        </div>
-                      )}
+                      </div>
                     </div>
-                  </div>
+                  ))}
+                </div>
+
+                {/* View All Button */}
+                <div className="mt-4 text-center">
+                  <button
+                    onClick={() => navigate('/resources-insights')}
+                    className="w-full bg-[#D0ED00] text-[#009900] font-bold py-3 px-6 rounded-lg hover:bg-[#c4e000] transition-colors"
+                  >
+                    View All Insights
+                  </button>
                 </div>
               </div>
             </div>

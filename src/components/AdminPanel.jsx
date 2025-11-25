@@ -2411,12 +2411,12 @@ function ResourcesInsightsTab() {
     <div className="space-y-6">
       <h2 className="text-2xl font-bold mb-6">Insights Management</h2>
       <p className="text-gray-600 mb-6">
-        Manage all three featured content slots displayed on the Dashboard and Resources pages.
+        Manage up to ten featured content slots. The first 3 slots appear on the Dashboard; all slots appear on the Insights page.
       </p>
 
       {/* Slot Selector with Reorder Buttons */}
-      <div className="flex items-center gap-6 mb-6">
-        {[1, 2, 3].map((slotNum) => (
+      <div className="flex flex-wrap items-center gap-3 mb-6">
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((slotNum) => (
           <div key={slotNum} className="flex flex-row items-center gap-2">
             {slotNum > 1 && (
               <button
@@ -2429,15 +2429,15 @@ function ResourcesInsightsTab() {
             )}
             <button
               onClick={() => setActiveSlot(slotNum)}
-              className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
                 activeSlot === slotNum
                   ? 'bg-green-600 text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
-              Slot #{slotNum}
+              #{slotNum}
             </button>
-            {slotNum < 3 && (
+            {slotNum < 10 && (
               <button
                 onClick={() => handleSwapSlots(slotNum, slotNum + 1)}
                 className="p-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors"
