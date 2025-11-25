@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, ExternalLink, ChevronDown, ChevronUp, X, Share2 } from 'lucide-react';
+import { ArrowLeft, ExternalLink, X, Share2 } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 
 function ResourcesInsights({ onBackToDashboard }) {
   const { user } = useAuth();
-  const [showArchive, setShowArchive] = useState(false);
   const [selectedContent, setSelectedContent] = useState(null);
   const [loadedContent, setLoadedContent] = useState(Array(10).fill(null));
   const [isLoading, setIsLoading] = useState(true);
@@ -106,34 +105,6 @@ function ResourcesInsights({ onBackToDashboard }) {
     }
     return null;
   }).filter(content => content !== null);
-
-  // Archived content - these were previously featured
-  const archivedContent = [
-    {
-      image: 'https://travischappell.com/wp-content/uploads/2023/08/phone-img-podcast.png',
-      title: 'How to Lose Everything and Come Back Even Stronger with Annette Raynor',
-      description: 'Travis Chappell interviews Annette Raynor, who brings two decades of IT experience. Learn about resilience through economic downturns, building enterprises, and the lessons learned from overcoming significant financial setbacks.',
-      url: 'https://travischappell.com/travis_podcast/047-how-to-lose-everything-and-come-back-even-stronger-with-annette-raynor/',
-      tags: 'Resilience, Entrepreneurship',
-      sponsoredBy: ''
-    },
-    {
-      image: 'https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1320417949i/84699.jpg',
-      title: 'Never Eat Alone: The Power of Relationship Building',
-      description: 'Keith Ferrazzi\'s groundbreaking book on building authentic professional relationships and mastering the art of networking to advance your career and enrich your life.',
-      url: 'https://www.goodreads.com/book/show/84699.Never_Eat_Alone',
-      tags: 'Networking, Relationships, Career Growth',
-      sponsoredBy: ''
-    },
-    {
-      image: 'https://hbr.org/resources/images/article_assets/2016/04/R1605J_NIEMI_TOC.jpg',
-      title: 'Learn to Love Networking',
-      description: 'Harvard Business Review explores why networking feels uncomfortable and provides research-backed strategies to make professional networking more authentic and effective.',
-      url: 'https://hbr.org/2016/05/learn-to-love-networking',
-      tags: 'Networking, Professional Development',
-      sponsoredBy: ''
-    }
-  ];
 
   // Loading spinner component
   const LoadingSpinner = () => (
@@ -251,29 +222,6 @@ function ResourcesInsights({ onBackToDashboard }) {
                       <ContentCard key={index} content={content} slotNumber={index + 1} />
                     ))}
                   </div>
-                </div>
-
-                {/* Content Archive */}
-                <div className="mb-8">
-              <button
-                onClick={() => setShowArchive(!showArchive)}
-                className="flex items-center justify-between w-full p-4 bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
-              >
-                <h2 className="text-xl font-bold text-gray-900">Content Archive</h2>
-                {showArchive ? (
-                  <ChevronUp className="w-6 h-6 text-gray-600" />
-                ) : (
-                  <ChevronDown className="w-6 h-6 text-gray-600" />
-                )}
-              </button>
-
-              {showArchive && (
-                <div className="mt-6 space-y-6">
-                  {archivedContent.map((content, index) => (
-                    <ContentCard key={index} content={content} />
-                  ))}
-                </div>
-              )}
                 </div>
               </>
             )}
