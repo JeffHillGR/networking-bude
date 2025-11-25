@@ -16,7 +16,6 @@ function AboutUs({ onBackToDashboard, onContactUsClick }) {
           <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
             <h1 className="text-3xl font-bold text-black">About Us</h1>
           </div>
-          <p className="text-gray-600 mt-2">Meet the team behind The BudE System</p>
         </div>
       </div>
 
