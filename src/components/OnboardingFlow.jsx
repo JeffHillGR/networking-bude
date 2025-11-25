@@ -779,19 +779,23 @@ export default function BudEOnboarding() {
 
       {/* People Networking Images - Side by Side */}
       <div className="bg-gray-50 flex justify-center pb-8 px-4 md:px-6">
-        <div className="flex gap-4 md:gap-12 max-w-[820px] w-full items-center">
-          <img
-            src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Two-People-Collaborating-BudeColors.png"
-            alt="People Collaborating"
-            className="w-1/2 h-64 md:h-80 object-cover border border-black rounded-lg"
-            loading="lazy"
-          />
-          <img
-            src="/People-networking-3.png"
-            alt="People Networking"
-            className="w-1/2 h-64 md:h-80 object-cover border border-black rounded-lg"
-            loading="lazy"
-          />
+        <div className="flex gap-3 md:gap-4 max-w-3xl w-full items-center justify-center">
+          <div className="flex-1">
+            <img
+              src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Two-People-Collaborating-BudeColors.png"
+              alt="People Collaborating"
+              className="w-full h-64 md:h-80 object-cover border border-black rounded-lg"
+              loading="lazy"
+            />
+          </div>
+          <div className="flex-1">
+            <img
+              src="/People-networking-3.png"
+              alt="People Networking"
+              className="w-full h-64 md:h-80 object-cover border border-black rounded-lg"
+              loading="lazy"
+            />
+          </div>
         </div>
       </div>
 
