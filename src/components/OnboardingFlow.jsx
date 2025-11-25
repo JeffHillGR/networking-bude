@@ -783,13 +783,13 @@ export default function BudEOnboarding() {
           <img
             src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Two-People-Collaborating-BudeColors.png"
             alt="People Collaborating"
-            className="w-1/2 h-64 md:h-80 object-contain border border-black rounded-lg"
+            className="w-1/2 h-64 md:h-80 object-cover border border-black rounded-lg"
             loading="lazy"
           />
           <img
             src="/People-networking-3.png"
             alt="People Networking"
-            className="w-1/2 h-64 md:h-80 object-contain border border-black rounded-lg"
+            className="w-1/2 h-64 md:h-80 object-cover border border-black rounded-lg"
             loading="lazy"
           />
         </div>
