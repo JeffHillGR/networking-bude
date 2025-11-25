@@ -991,17 +991,65 @@ const getGreeting = () => {
                       </p>
                     </div>
 
-                    {/* Team Photos Section - Placeholder */}
+                    {/* Team Section */}
                     <div className="mt-6">
                       <h4 className="text-xl font-bold text-gray-900 mb-4">Our Team</h4>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                        {/* User will add team member photos and info here */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        {/* Jeff Hill */}
                         <div className="text-center">
                           <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-2"></div>
-                          <p className="font-semibold text-gray-900">[Team Member Name]</p>
-                          <p className="text-sm text-gray-600">[Role]</p>
+                          <a
+                            href="https://www.linkedin.com/in/jeffahill/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold text-[#009900] hover:text-[#007700] hover:underline"
+                          >
+                            Jeff Hill
+                          </a>
+                          <p className="text-sm text-gray-600">Founder</p>
                         </div>
-                        {/* More team members can be added */}
+
+                        {/* Stephen Clemenger */}
+                        <div className="text-center">
+                          <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-2"></div>
+                          <a
+                            href="https://www.linkedin.com/in/clemenger/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold text-[#009900] hover:text-[#007700] hover:underline"
+                          >
+                            Stephen Clemenger
+                          </a>
+                          <p className="text-sm text-gray-600">Technology Consultant</p>
+                        </div>
+
+                        {/* Tiffany Neuman */}
+                        <div className="text-center">
+                          <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-2"></div>
+                          <a
+                            href="https://www.linkedin.com/in/tiffanyneuman/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold text-[#009900] hover:text-[#007700] hover:underline"
+                          >
+                            Tiffany Neuman
+                          </a>
+                          <p className="text-sm text-gray-600">Branding/Legacy Consultant</p>
+                        </div>
+
+                        {/* Kristina Linder */}
+                        <div className="text-center">
+                          <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-2"></div>
+                          <a
+                            href="https://www.linkedin.com/in/kristinalinderccxp/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold text-[#009900] hover:text-[#007700] hover:underline"
+                          >
+                            Kristina Linder
+                          </a>
+                          <p className="text-sm text-gray-600">Director of BudE Experience</p>
+                        </div>
                       </div>
                     </div>
                   </div>
