@@ -966,7 +966,7 @@ const getGreeting = () => {
               <div className="text-center space-y-2">
                 <p className="text-lg font-bold text-gray-900">The BudE System™</p>
                 <p className="text-sm text-gray-600">Grand Rapids, Michigan</p>
-                <p className="text-xs text-gray-500 mt-4">© 2025 The BudE System™</p>
+                <p className="text-xs text-gray-500 mt-4">© 2025</p>
               </div>
             </div>
           </div>
