@@ -1002,7 +1002,7 @@ const getGreeting = () => {
                             href="https://www.linkedin.com/in/jeffahill/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="font-semibold text-[#009900] hover:text-[#007700] hover:underline"
+                            className="font-semibold text-gray-900 hover:text-gray-700 hover:underline"
                           >
                             Jeff Hill
                           </a>
@@ -1016,7 +1016,7 @@ const getGreeting = () => {
                             href="https://www.linkedin.com/in/clemenger/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="font-semibold text-[#009900] hover:text-[#007700] hover:underline"
+                            className="font-semibold text-gray-900 hover:text-gray-700 hover:underline"
                           >
                             Stephen Clemenger
                           </a>
@@ -1030,7 +1030,7 @@ const getGreeting = () => {
                             href="https://www.linkedin.com/in/tiffanyneuman/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="font-semibold text-[#009900] hover:text-[#007700] hover:underline"
+                            className="font-semibold text-gray-900 hover:text-gray-700 hover:underline"
                           >
                             Tiffany Neuman
                           </a>
@@ -1044,7 +1044,7 @@ const getGreeting = () => {
                             href="https://www.linkedin.com/in/kristinalinderccxp/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="font-semibold text-[#009900] hover:text-[#007700] hover:underline"
+                            className="font-semibold text-gray-900 hover:text-gray-700 hover:underline"
                           >
                             Kristina Linder
                           </a>
