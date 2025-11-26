@@ -837,7 +837,6 @@ const getGreeting = () => {
                     <div className="p-3 flex-1 min-w-0">
                       <div className="flex items-start justify-between mb-1">
                         <div className="flex-1 min-w-0">
-                          <span className="inline-block bg-black text-white text-xs px-2 py-0.5 rounded mb-1">{event.badge || 'In-Person'}</span>
                           <h4 className="font-bold text-gray-900 text-sm line-clamp-2">{event.title}</h4>
                         </div>
                       </div>
