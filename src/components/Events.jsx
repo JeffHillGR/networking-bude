@@ -117,8 +117,16 @@ function Events({ onBackToDashboard }) {
         setEventInterestCounts(counts);
         setEventGoingCounts(goingCounts);
 
+        // Debug: Log raw event data from database
+        console.log('📊 Events from database (ordered by slot_number):', data.map(e => ({
+          slot: e.slot_number,
+          title: e.title,
+          featured: e.is_featured
+        })));
+
         // Transform data to match the expected format
         // Mark as trending if interested count > 5
+        // Wildcard is always slot #4 (stays with the slot, not the event)
         const transformedEvents = data.map(event => ({
           id: event.id,
           title: event.title,
@@ -130,7 +138,9 @@ function Events({ onBackToDashboard }) {
           image: event.image_url,
           badge: event.event_badge,
           isFeatured: event.is_featured,
-          isTrending: (counts[event.id] || 0) > 5
+          isTrending: (counts[event.id] || 0) > 5,
+          slotNumber: event.slot_number,
+          isWildcard: event.slot_number === 4
         }));
 
         setAllEvents(transformedEvents);
@@ -147,6 +157,14 @@ function Events({ onBackToDashboard }) {
   // Separate featured and non-featured events
   const featuredEvents = allEvents.filter(e => e.isFeatured);
   const upcomingEvents = allEvents.filter(e => !e.isFeatured);
+
+  // Debug: Log featured events with their positions
+  console.log('⭐ Featured events:', featuredEvents.map((e, index) => ({
+    position: index + 1,
+    slot: e.slotNumber,
+    title: e.title,
+    isWildcard: e.isWildcard
+  })));
 
   // Helper function to parse date strings for sorting
   const parseEventDate = (dateString) => {
@@ -336,14 +354,16 @@ function Events({ onBackToDashboard }) {
                       trackEngagement(); // Count viewing event as engagement
                       navigate(`/events/${event.id}`);
                     }}
-                    className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer animate-fade-in"
+                    className={`bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer animate-fade-in ${event.isWildcard ? 'border-4 border-[#D0ED00]' : 'border border-black'}`}
                     style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}
                   >
                     <div className="relative h-48 bg-white">
                       <img src={event.image} alt={event.title} className="w-full h-full object-contain" />
-                      <div className="absolute top-4 left-4 bg-black text-white px-3 py-1 rounded-full text-sm font-medium">
-                        {event.badge}
-                      </div>
+                      {event.isWildcard && (
+                        <div className="absolute top-4 right-4 bg-gradient-to-r from-[#009900] to-[#D0ED00] text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg">
+                          🃏 Wildcard Pick
+                        </div>
+                      )}
                       {event.soldOut && (
                         <div className="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg">
                           SOLD OUT
@@ -351,6 +371,13 @@ function Events({ onBackToDashboard }) {
                       )}
                     </div>
                     <div className="p-6">
+                      {event.isWildcard && (
+                        <div className="mb-3 p-3 bg-gradient-to-r from-green-50 to-lime-50 border-l-4 border-[#D0ED00] rounded">
+                          <p className="text-sm text-gray-700 italic">
+                            In case you don't feel like professional networking this week
+                          </p>
+                        </div>
+                      )}
                       <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>
                       <p className="text-gray-600 mb-4">{event.description}</p>
                       <div className="mb-3">
@@ -426,27 +453,36 @@ function Events({ onBackToDashboard }) {
                       trackEngagement(); // Count viewing event as engagement
                       navigate(`/events/${event.id}`);
                     }}
-                    className={`bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md transition-shadow cursor-pointer relative animate-fade-in ${event.isTrending ? 'border-2 border-green-200' : ''}`}
+                    className={`bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer relative animate-fade-in h-[240px] ${event.isWildcard ? 'border-2 border-[#D0ED00]' : event.isTrending ? 'border-2 border-green-200' : 'border border-black'}`}
                     style={{ animationDelay: `${index * 80}ms`, animationFillMode: 'backwards' }}
                   >
                     <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                       <img src={event.image} alt={event.title} className="w-full md:w-48 h-48 md:h-32 object-contain rounded-lg flex-shrink-0 bg-white" />
                       <div className="flex-1 min-w-0">
+                        {event.isWildcard && (
+                          <div className="mb-2 p-2 bg-gradient-to-r from-green-50 to-lime-50 border-l-4 border-[#D0ED00] rounded">
+                            <p className="text-xs md:text-sm text-gray-700 italic flex items-center gap-2">
+                              🃏 <span className="font-bold">Wildcard Pick:</span> In case you don't feel like professional networking this week
+                            </p>
+                          </div>
+                        )}
                         <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-2 gap-2">
                           <div className="flex-1 min-w-0">
                             <h3 className="text-lg md:text-xl font-bold text-gray-900">{event.title}</h3>
                             <p className="text-sm md:text-base text-gray-600 mt-1">{event.description}</p>
                           </div>
                           <div className="flex gap-2 flex-shrink-0">
+                            {event.isWildcard && (
+                              <span className="bg-gradient-to-r from-[#009900] to-[#D0ED00] text-white px-3 py-1 rounded-full text-xs font-bold border-2 border-[#D0ED00] flex items-center gap-1">
+                                🃏 Wildcard
+                              </span>
+                            )}
                             {event.isTrending && (
                               <span className="bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs font-bold border border-red-400 flex items-center gap-1">
                                 <TrendingUp className="h-3 w-3" />
                                 Trending
                               </span>
                             )}
-                            <span className="bg-black text-white px-3 py-1 rounded-full text-xs font-medium">
-                              {event.badge}
-                            </span>
                             {event.price === 'Free' && (
                               <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
                                 Free

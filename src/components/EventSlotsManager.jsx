@@ -288,14 +288,15 @@ function EventSlotsManager() {
         console.log('Deleted both events, now reinserting with swapped slot numbers...');
 
         // Step 3: Reinsert with swapped slot numbers (remove id and timestamps)
+        // Also update is_featured based on new slot position
         const { id: currentId, created_at: currentCreated, updated_at: currentUpdated, ...currentEventData } = currentData;
         const { id: prevId, created_at: prevCreated, updated_at: prevUpdated, ...prevEventData } = prevData;
 
         const { error: insertError } = await supabase
           .from('events')
           .insert([
-            { ...currentEventData, slot_number: slotNumber - 1 },
-            { ...prevEventData, slot_number: slotNumber }
+            { ...currentEventData, slot_number: slotNumber - 1, is_featured: (slotNumber - 1) <= 4 },
+            { ...prevEventData, slot_number: slotNumber, is_featured: slotNumber <= 4 }
           ]);
 
         if (insertError) {
@@ -326,10 +327,11 @@ function EventSlotsManager() {
         if (deleteError) throw deleteError;
 
         // Reinsert with new slot number (remove id and timestamps)
+        // Also update is_featured based on new slot position
         const { id, created_at, updated_at, ...cleanEventData } = eventData;
         const { error: insertError } = await supabase
           .from('events')
-          .insert({ ...cleanEventData, slot_number: slotNumber - 1 });
+          .insert({ ...cleanEventData, slot_number: slotNumber - 1, is_featured: (slotNumber - 1) <= 4 });
 
         if (insertError) throw insertError;
       }
@@ -400,14 +402,15 @@ function EventSlotsManager() {
         console.log('Deleted both events, now reinserting with swapped slot numbers...');
 
         // Step 3: Reinsert with swapped slot numbers (remove id and timestamps)
+        // Also update is_featured based on new slot position
         const { id: currentId, created_at: currentCreated, updated_at: currentUpdated, ...currentEventData } = currentData;
         const { id: nextId, created_at: nextCreated, updated_at: nextUpdated, ...nextEventData } = nextData;
 
         const { error: insertError } = await supabase
           .from('events')
           .insert([
-            { ...currentEventData, slot_number: slotNumber + 1 },
-            { ...nextEventData, slot_number: slotNumber }
+            { ...currentEventData, slot_number: slotNumber + 1, is_featured: (slotNumber + 1) <= 4 },
+            { ...nextEventData, slot_number: slotNumber, is_featured: slotNumber <= 4 }
           ]);
 
         if (insertError) {
@@ -438,10 +441,11 @@ function EventSlotsManager() {
         if (deleteError) throw deleteError;
 
         // Reinsert with new slot number (remove id and timestamps)
+        // Also update is_featured based on new slot position
         const { id, created_at, updated_at, ...cleanEventData } = eventData;
         const { error: insertError } = await supabase
           .from('events')
-          .insert({ ...cleanEventData, slot_number: slotNumber + 1 });
+          .insert({ ...cleanEventData, slot_number: slotNumber + 1, is_featured: (slotNumber + 1) <= 4 });
 
         if (insertError) throw insertError;
       }
@@ -472,8 +476,12 @@ function EventSlotsManager() {
     try {
       const proxyUrl = 'https://api.allorigins.win/raw?url=';
       const response = await fetch(proxyUrl + encodeURIComponent(url));
-      const html = await response.text();
 
+      if (!response.ok) {
+        throw new Error(`Failed to fetch: ${response.status}`);
+      }
+
+      const html = await response.text();
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
 
@@ -487,36 +495,66 @@ function EventSlotsManager() {
         try {
           const data = JSON.parse(script.textContent);
           // Handle both single Event objects and arrays
-          const events = Array.isArray(data) ? data : [data];
-          eventData = events.find(item => item['@type'] === 'Event');
-          if (eventData) break;
+          const items = Array.isArray(data) ? data : [data];
+
+          // Look for Event type first
+          eventData = items.find(item => item && item['@type'] === 'Event');
+
+          // If not found, check for other types that might contain event info
+          if (!eventData) {
+            // Some sites nest Event inside other types or use variations
+            for (const item of items) {
+              if (item && typeof item === 'object') {
+                // Check if any property is an Event
+                for (const key in item) {
+                  if (item[key] && typeof item[key] === 'object' && item[key]['@type'] === 'Event') {
+                    eventData = item[key];
+                    break;
+                  }
+                }
+                // Check for EducationEvent, BusinessEvent, etc. (Event subtypes)
+                if (item['@type'] && typeof item['@type'] === 'string' && item['@type'].includes('Event')) {
+                  eventData = item;
+                  break;
+                }
+              }
+              if (eventData) break;
+            }
+          }
+
+          if (eventData) {
+            console.log('Found structured event data');
+            break;
+          }
         } catch (e) {
-          console.log('Failed to parse JSON-LD:', e);
+          console.warn('Failed to parse JSON-LD script');
         }
       }
 
       if (eventData) {
-        console.log('Found structured event data:', eventData);
-
-        // Extract title
+        // Extract title from structured data
         if (eventData.name) {
           scrapedData.title = eventData.name;
         }
 
-        // Extract description
+        // Extract description from structured data
         if (eventData.description) {
           scrapedData.short_description = eventData.description.substring(0, 200);
           scrapedData.full_description = eventData.description;
         }
 
-        // Extract date and time
+        // Extract date and time from structured data
         if (eventData.startDate) {
-          const startDate = new Date(eventData.startDate);
-          scrapedData.date = startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
-          scrapedData.time = startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+          try {
+            const startDate = new Date(eventData.startDate);
+            scrapedData.date = startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+            scrapedData.time = startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+          } catch (e) {
+            console.warn('Failed to parse event date');
+          }
         }
 
-        // Extract location
+        // Extract location from structured data
         if (eventData.location) {
           if (typeof eventData.location === 'string') {
             scrapedData.location_name = eventData.location;
@@ -533,7 +571,7 @@ function EventSlotsManager() {
           }
         }
 
-        // Extract organizer
+        // Extract organizer from structured data
         if (eventData.organizer) {
           if (typeof eventData.organizer === 'string') {
             scrapedData.organization = 'Other';
@@ -544,38 +582,128 @@ function EventSlotsManager() {
           }
         }
 
-        // Extract image
+        // Extract image from structured data
         if (eventData.image) {
-          const imageUrl = typeof eventData.image === 'string' ? eventData.image : eventData.image.url || eventData.image[0];
-          if (imageUrl) {
-            scrapedData.image_url = imageUrl.startsWith('http') ? imageUrl : new URL(imageUrl, url).href;
+          try {
+            const imageUrl = typeof eventData.image === 'string' ? eventData.image :
+                           (eventData.image.url || (Array.isArray(eventData.image) ? eventData.image[0] : null));
+            if (imageUrl) {
+              scrapedData.image_url = imageUrl.startsWith('http') ? imageUrl : new URL(imageUrl, url).href;
+            }
+          } catch (e) {
+            console.warn('Failed to parse image URL from structured data');
           }
         }
       }
 
-      // Fallback to meta tags if structured data not found
+      // Fallback chain for title
       if (!scrapedData.title) {
-        const title = doc.querySelector('h1')?.textContent?.trim() ||
-                     doc.querySelector('meta[property="og:title"]')?.getAttribute('content') ||
-                     doc.querySelector('title')?.textContent?.trim() || '';
-        scrapedData.title = title;
+        scrapedData.title =
+          doc.querySelector('meta[property="og:title"]')?.getAttribute('content')?.trim() ||
+          doc.querySelector('meta[name="twitter:title"]')?.getAttribute('content')?.trim() ||
+          doc.querySelector('h1')?.textContent?.trim() ||
+          doc.querySelector('title')?.textContent?.trim() ||
+          '';
       }
 
+      // Fallback chain for description
       if (!scrapedData.short_description) {
-        const metaDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content') ||
-                        doc.querySelector('meta[property="og:description"]')?.getAttribute('content');
+        const metaDesc =
+          doc.querySelector('meta[property="og:description"]')?.getAttribute('content')?.trim() ||
+          doc.querySelector('meta[name="description"]')?.getAttribute('content')?.trim() ||
+          doc.querySelector('meta[name="twitter:description"]')?.getAttribute('content')?.trim() ||
+          '';
         if (metaDesc) {
-          scrapedData.short_description = metaDesc;
+          scrapedData.short_description = metaDesc.substring(0, 200);
           scrapedData.full_description = metaDesc;
         }
       }
 
+      // Fallback chain for image
       if (!scrapedData.image_url) {
-        const ogImage = doc.querySelector('meta[property="og:image"]')?.getAttribute('content');
+        const ogImage =
+          doc.querySelector('meta[property="og:image"]')?.getAttribute('content') ||
+          doc.querySelector('meta[name="twitter:image"]')?.getAttribute('content') ||
+          doc.querySelector('img[class*="event"]')?.getAttribute('src') ||
+          doc.querySelector('img[class*="hero"]')?.getAttribute('src') ||
+          doc.querySelector('img[class*="featured"]')?.getAttribute('src') ||
+          doc.querySelector('img[class*="banner"]')?.getAttribute('src') ||
+          '';
         if (ogImage) {
-          scrapedData.image_url = ogImage.startsWith('http') ? ogImage : new URL(ogImage, url).href;
+          try {
+            scrapedData.image_url = ogImage.startsWith('http') ? ogImage : new URL(ogImage, url).href;
+          } catch (e) {
+            console.warn('Failed to construct absolute image URL');
+          }
         }
       }
+
+      // Fallback for date (look for common date patterns in HTML)
+      if (!scrapedData.date) {
+        const dateSelectors = [
+          '[class*="event-date"]',
+          '[class*="date"]',
+          '[itemprop="startDate"]',
+          'time[datetime]',
+          '[class*="when"]'
+        ];
+        for (const selector of dateSelectors) {
+          const dateElem = doc.querySelector(selector);
+          if (dateElem) {
+            const dateText = dateElem.getAttribute('datetime') || dateElem.textContent?.trim();
+            if (dateText && dateText.length > 0 && dateText.length < 100) {
+              scrapedData.date = dateText;
+              break;
+            }
+          }
+        }
+      }
+
+      // Fallback for location
+      if (!scrapedData.location_name) {
+        const locationSelectors = [
+          '[class*="location"]',
+          '[class*="venue"]',
+          '[itemprop="location"]',
+          '[class*="where"]',
+          '[class*="place"]'
+        ];
+        for (const selector of locationSelectors) {
+          const locationElem = doc.querySelector(selector);
+          if (locationElem) {
+            const locationText = locationElem.textContent?.trim();
+            if (locationText && locationText.length > 0 && locationText.length < 200) {
+              scrapedData.location_name = locationText;
+              break;
+            }
+          }
+        }
+      }
+
+      // Fallback for organizer/organization
+      if (!scrapedData.organization_custom) {
+        const orgSelectors = [
+          '[class*="organizer"]',
+          '[class*="host"]',
+          '[itemprop="organizer"]',
+          '[class*="presenter"]'
+        ];
+        for (const selector of orgSelectors) {
+          const orgElem = doc.querySelector(selector);
+          if (orgElem) {
+            const orgText = orgElem.textContent?.trim();
+            if (orgText && orgText.length > 0 && orgText.length < 100) {
+              scrapedData.organization = 'Other';
+              scrapedData.organization_custom = orgText;
+              break;
+            }
+          }
+        }
+      }
+
+      // Log what we found for debugging
+      const fieldsFound = Object.keys(scrapedData).filter(k => scrapedData[k] && k !== 'registration_url');
+      console.log(`Scraped ${fieldsFound.length} fields:`, fieldsFound);
 
       // Update the event with scraped data
       setEvents(prev => ({
@@ -591,10 +719,14 @@ function EventSlotsManager() {
         }
       }));
 
-      alert('Content scraped! Please review and fill in remaining details.');
+      if (fieldsFound.length > 0) {
+        alert(`Scraped ${fieldsFound.length} field(s)! Please review and fill in remaining details.`);
+      } else {
+        alert('Could not extract data from this URL. Please enter details manually.');
+      }
     } catch (error) {
       console.error('Scraping error:', error);
-      setScrapeErrors(prev => ({ ...prev, [slotNumber]: 'Unable to scrape this URL. Please enter details manually.' }));
+      setScrapeErrors(prev => ({ ...prev, [slotNumber]: `Unable to scrape: ${error.message}. Please enter details manually.` }));
     } finally {
       setScraping(prev => ({ ...prev, [slotNumber]: false }));
     }
@@ -609,9 +741,10 @@ function EventSlotsManager() {
     const isExpanded = expandedSlot === slotNumber;
     const hasEvent = !!events[slotNumber]?.title;
     const isFeatured = slotNumber <= 4;
+    const isWildcard = slotNumber === 4;
 
     return (
-      <div key={slotNumber} className="border-2 border-gray-300 rounded-lg p-4 bg-white">
+      <div key={slotNumber} className={`border-2 ${isWildcard ? 'border-[#D0ED00] border-4' : 'border-gray-300'} rounded-lg p-4 bg-white`}>
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
@@ -625,6 +758,7 @@ function EventSlotsManager() {
               <h4 className="font-bold text-sm text-gray-900">
                 Event Slot {slotNumber}
                 {isFeatured && <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">Featured</span>}
+                {isWildcard && <span className="ml-2 text-xs bg-gradient-to-r from-[#009900] to-[#D0ED00] text-white px-2 py-0.5 rounded font-bold">🃏 Wildcard</span>}
               </h4>
               {hasEvent && !isExpanded && (
                 <p className="text-xs text-gray-600 mt-0.5">{event.title}</p>
