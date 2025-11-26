@@ -343,10 +343,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
               </div>
 
               {/* Notification Bell */}
-              <button
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="mt-3 w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-colors text-gray-700 hover:bg-gray-100"
-              >
+              <div className="mt-3 w-full flex items-center gap-3 px-3 py-2">
                 <NotificationBell
                   showDropdown={showNotifications}
                   setShowDropdown={setShowNotifications}
@@ -359,7 +356,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
                   }}
                 />
                 <span className="font-medium text-sm">Notifications</span>
-              </button>
+              </div>
             </nav>
           </div>
         </div>
