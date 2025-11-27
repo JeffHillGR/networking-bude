@@ -132,10 +132,18 @@ describe('Admin Panel', () => {
           {
             id: '1',
             reported_user_id: 'user-123',
-            reporting_user_id: 'user-456',
+            reporter_id: 'user-456',
             reason: 'Inappropriate behavior',
             reviewed: false,
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            reporter: {
+              name: 'John Reporter',
+              email: 'reporter@example.com'
+            },
+            reported_user: {
+              name: 'Jane Reported',
+              email: 'reported@example.com'
+            }
           }
         ]
       }).as('getReports');
@@ -161,10 +169,18 @@ describe('Admin Panel', () => {
           {
             id: '1',
             reported_user_id: 'user-123',
-            reporting_user_id: 'user-456',
+            reporter_id: 'user-456',
             reason: 'Spam',
             reviewed: false,
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            reporter: {
+              name: 'John Reporter',
+              email: 'reporter@example.com'
+            },
+            reported_user: {
+              name: 'Jane Reported',
+              email: 'reported@example.com'
+            }
           }
         ]
       }).as('getReports');
@@ -190,11 +206,19 @@ describe('Admin Panel', () => {
           {
             id: '1',
             reported_user_id: 'user-123',
-            reporting_user_id: 'user-456',
+            reporter_id: 'user-456',
             reason: 'Harassment',
             description: 'Detailed description of the incident',
             reviewed: false,
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            reporter: {
+              name: 'John Reporter',
+              email: 'reporter@example.com'
+            },
+            reported_user: {
+              name: 'Jane Reported',
+              email: 'reported@example.com'
+            }
           }
         ]
       }).as('getReports');
@@ -205,8 +229,10 @@ describe('Admin Panel', () => {
       cy.contains(/moderation/i).click();
       cy.wait('@getReports');
 
-      // Expand report details
-      cy.get('[data-testid="report-item"]').first().click();
+      // Wait for report item to be visible
+      cy.get('[data-testid="report-item"]', { timeout: 10000 }).should('be.visible');
+
+      // Description should be visible (reports are not collapsed)
       cy.contains(/detailed description/i).should('be.visible');
     });
   });
