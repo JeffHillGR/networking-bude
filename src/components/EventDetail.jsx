@@ -27,6 +27,8 @@ function EventDetail() {
   const [goingAttendees, setGoingAttendees] = useState([]);
   const [showGoingList, setShowGoingList] = useState(false);
   const [showGoingDisclaimer, setShowGoingDisclaimer] = useState(false);
+  const [interestedConnections, setInterestedConnections] = useState([]);
+  const [showInterestedList, setShowInterestedList] = useState(false);
 
   // Track user engagement when viewing event details
   useEffect(() => {
@@ -188,38 +190,58 @@ function EventDetail() {
 
           setGoingAttendees(attendeesList);
 
-          // Fetch user's connections who are interested in this event
+          // Fetch users from connection_flow who are interested in this event (liked it)
           if (user) {
-            // Get user's connection IDs
+            // Step 1: Get users with status: connected, pending, or recommended
             const { data: matchesData } = await supabase
               .from('connection_flow')
               .select('matched_user_id')
-              .eq('user_id', user.id);
+              .eq('user_id', user.id)
+              .in('status', ['connected', 'pending', 'recommended']);
 
             const connectionIds = matchesData?.map(m => m.matched_user_id) || [];
+            console.log('Connection IDs found:', connectionIds);
 
             if (connectionIds.length > 0) {
-              // Check which connections liked or registered for this event
-              const [connLikesResult, connClicksResult] = await Promise.all([
-                supabase
-                  .from('event_likes')
-                  .select('user_id')
-                  .eq('event_id', eventId)
-                  .in('user_id', connectionIds),
-                supabase
-                  .from('event_registration_clicks')
-                  .select('user_id')
-                  .eq('event_id', eventId)
-                  .in('user_id', connectionIds)
-              ]);
+              // Step 2: Check which of those users liked this event
+              const { data: connLikesData, error: likesError } = await supabase
+                .from('event_likes')
+                .select('user_id')
+                .eq('event_id', eventId)
+                .in('user_id', connectionIds);
 
-              // Get unique connection IDs who are interested
-              const interestedConnectionIds = new Set([
-                ...(connLikesResult.data?.map(l => l.user_id) || []),
-                ...(connClicksResult.data?.map(c => c.user_id) || [])
-              ]);
+              if (likesError) {
+                console.error('Error fetching connection likes:', likesError);
+              }
+
+              const interestedConnectionIds = new Set(connLikesData?.map(l => l.user_id) || []);
+              console.log('Interested connection IDs:', Array.from(interestedConnectionIds));
 
               setConnectionsInterestedCount(interestedConnectionIds.size);
+
+              // Step 3: Fetch profile data directly from users table
+              // (Requires RLS policy allowing users to view connection profiles)
+              if (interestedConnectionIds.size > 0) {
+                const { data: usersData, error: usersError } = await supabase
+                  .from('users')
+                  .select('id, first_name, last_name, name, photo')
+                  .in('id', Array.from(interestedConnectionIds));
+
+                if (usersError) {
+                  console.error('Error fetching interested profiles:', usersError);
+                } else {
+                  console.log('Raw users data from database:', usersData);
+                  const interestedList = (usersData || [])
+                    .map(user => ({
+                      id: user.id,
+                      name: user.name || `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+                      profilePicture: user.photo
+                    }));
+
+                  console.log('Interested connections list (formatted):', interestedList);
+                  setInterestedConnections(interestedList);
+                }
+              }
             }
           }
         }
@@ -601,7 +623,6 @@ function EventDetail() {
               <span>Back to All Events</span>
             </button>
             <h1 className="text-2xl font-bold text-gray-900">Event Details</h1>
-            <p className="text-gray-600 mt-1">This is a real event. Check it out!</p>
           </div>
         </div>
 
@@ -778,12 +799,43 @@ function EventDetail() {
                   {interestedCount > 0 && (
                     <div className="flex gap-3">
                       <Heart className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-                      <div>
+                      <div className="flex-1">
                         <div className="font-semibold text-gray-900">{interestedCount} Interested</div>
                         {connectionsInterestedCount > 0 && (
-                          <div className="text-sm text-gray-600">
-                            {connectionsInterestedCount} Of Your Connections Showed Interest
-                          </div>
+                          <>
+                            <button
+                              onClick={() => setShowInterestedList(!showInterestedList)}
+                              className="text-sm text-[#009900] hover:text-[#007700] transition-colors flex items-center gap-2 mt-1"
+                            >
+                              {connectionsInterestedCount} Of Your Connections Showed Interest
+                              <span className="text-xs">▼</span>
+                            </button>
+                            {showInterestedList && interestedConnections.length > 0 && (
+                              <div className="mt-3 space-y-2 max-h-64 overflow-y-auto">
+                                {interestedConnections.slice(0, 10).map((connection, idx) => (
+                                  <div key={idx} className="flex items-center gap-2 text-sm">
+                                    {connection.profilePicture ? (
+                                      <img
+                                        src={connection.profilePicture}
+                                        alt={connection.name}
+                                        className="w-8 h-8 rounded-full object-cover border border-gray-200"
+                                      />
+                                    ) : (
+                                      <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold">
+                                        {connection.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                      </div>
+                                    )}
+                                    <span className="text-gray-900">{connection.name}</span>
+                                  </div>
+                                ))}
+                                {interestedConnections.length > 10 && (
+                                  <div className="text-xs text-gray-500 pl-10">
+                                    + {interestedConnections.length - 10} more
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>
