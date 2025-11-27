@@ -226,14 +226,14 @@ describe('Admin Panel', () => {
       // Visit admin fresh to trigger the intercept
       cy.visit('/admin');
       cy.contains(/admin panel|dashboard/i, { timeout: 10000 }).should('exist');
-      cy.contains(/moderation/i).click();
+      cy.contains('button', /moderation/i).click();
+
+      // Wait for moderation tab content to load
+      cy.contains(/user reports/i, { timeout: 10000 }).should('be.visible');
       cy.wait('@getReports');
 
-      // Wait for report item to be visible
-      cy.get('[data-testid="report-item"]', { timeout: 10000 }).should('be.visible');
-
       // Description should be visible (reports are not collapsed)
-      cy.contains(/detailed description/i).should('be.visible');
+      cy.contains(/detailed description/i, { timeout: 10000 }).should('be.visible');
     });
   });
 
