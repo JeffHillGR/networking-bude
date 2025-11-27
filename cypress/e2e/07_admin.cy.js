@@ -79,7 +79,7 @@ describe('Admin Panel', () => {
     });
 
     it('should display EventSlotsManager', () => {
-      cy.contains(/event slots|manage events/i).should('be.visible');
+      cy.contains(/events page listings|event slot 1/i, { timeout: 10000 }).should('be.visible');
     });
 
     it('should display wildcard slot badge', () => {
@@ -89,6 +89,7 @@ describe('Admin Panel', () => {
     });
 
     it('should display existing event slots', () => {
+      // Set up intercept before navigating
       cy.intercept('GET', '**/rest/v1/events*', {
         statusCode: 200,
         body: [
@@ -109,7 +110,10 @@ describe('Admin Panel', () => {
         ]
       }).as('getEvents');
 
-      cy.reload();
+      // Visit admin fresh and navigate to Events tab to trigger intercept
+      cy.visit('/admin');
+      cy.contains(/admin panel|dashboard/i, { timeout: 10000 }).should('exist');
+      cy.contains('button', /events/i).click();
       cy.wait('@getEvents');
 
       cy.contains(/slot.*1/i).should('be.visible');
@@ -199,7 +203,8 @@ describe('Admin Panel', () => {
       cy.contains(/moderation/i).click();
       cy.wait('@getReports');
 
-      cy.contains(/mark as reviewed|review/i).click();
+      // Wait for the "Mark as Reviewed" button to be visible, then click it
+      cy.contains('button', /mark as reviewed/i, { timeout: 10000 }).should('be.visible').click();
       cy.wait('@markReviewed');
     });
 
