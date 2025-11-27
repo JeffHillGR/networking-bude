@@ -10,6 +10,8 @@ function EventSlotsManager() {
   const [scrapeUrls, setScrapeUrls] = useState({});
   const [scraping, setScraping] = useState({});
   const [scrapeErrors, setScrapeErrors] = useState({});
+  const [batchScraping, setBatchScraping] = useState(false);
+  const [batchResults, setBatchResults] = useState(null);
 
   const organizations = [
     'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
@@ -17,6 +19,23 @@ function EventSlotsManager() {
     'Hello West Michigan', 'CARWM', 'Creative Mornings GR', 'Athena',
     'Inforum', 'Start Garden', 'Other'
   ];
+
+  // Organization event page URLs for batch scraping
+  // Add/update URLs as needed for each organization
+  const organizationEventPages = {
+    'GR Chamber of Commerce': 'https://www.grandrapids.org/events',
+    'Rotary Club': 'https://www.grandrapidsrotary.org/events',
+    'CREW': 'https://www.crewgrandrapids.org/events',
+    'GRYP': 'https://www.gryp.org/events',
+    'Economic Club of Grand Rapids': 'https://economicclubgr.org/events',
+    'Bamboo GR': 'https://bamboograndrapids.com/events',
+    'Hello West Michigan': 'https://hellowestmichigan.com/events',
+    'CARWM': 'https://carwm.org/events',
+    'Creative Mornings GR': 'https://creativemornings.com/cities/grr',
+    'Athena': 'https://athenawestmichigan.org/events',
+    'Inforum': 'https://inforummichigan.org/events',
+    'Start Garden': 'https://startgarden.com/events'
+  };
 
   const emptyEvent = {
     title: '',
@@ -460,6 +479,270 @@ function EventSlotsManager() {
       await loadEvents();
     } finally {
       setSaving(prev => ({ ...prev, [slotNumber]: false, [slotNumber + 1]: false }));
+    }
+  };
+
+  // Helper function to scrape a single URL and extract event data
+  const scrapeEventFromUrl = async (url) => {
+    try {
+      const proxyUrl = 'https://api.allorigins.win/raw?url=';
+      const response = await fetch(proxyUrl + encodeURIComponent(url));
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch: ${response.status}`);
+      }
+
+      const html = await response.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      let scrapedData = { registration_url: url };
+
+      // Try to find JSON-LD structured data (used by Eventbrite and many event sites)
+      const jsonLdScripts = doc.querySelectorAll('script[type="application/ld+json"]');
+      let eventData = null;
+
+      for (const script of jsonLdScripts) {
+        try {
+          const data = JSON.parse(script.textContent);
+          const items = Array.isArray(data) ? data : [data];
+
+          eventData = items.find(item => item && item['@type'] === 'Event');
+
+          if (!eventData) {
+            for (const item of items) {
+              if (item && typeof item === 'object') {
+                for (const key in item) {
+                  if (item[key] && typeof item[key] === 'object' && item[key]['@type'] === 'Event') {
+                    eventData = item[key];
+                    break;
+                  }
+                }
+                if (item['@type'] && typeof item['@type'] === 'string' && item['@type'].includes('Event')) {
+                  eventData = item;
+                  break;
+                }
+              }
+              if (eventData) break;
+            }
+          }
+
+          if (eventData) break;
+        } catch (e) {
+          console.warn('Failed to parse JSON-LD script');
+        }
+      }
+
+      if (eventData) {
+        if (eventData.name) scrapedData.title = eventData.name;
+        if (eventData.description) {
+          scrapedData.short_description = eventData.description.substring(0, 200);
+          scrapedData.full_description = eventData.description;
+        }
+        if (eventData.startDate) {
+          try {
+            const startDate = new Date(eventData.startDate);
+            scrapedData.date = startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+            scrapedData.time = startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            scrapedData.dateObj = startDate; // Keep for sorting
+          } catch (e) {
+            console.warn('Failed to parse event date');
+          }
+        }
+        if (eventData.location) {
+          if (typeof eventData.location === 'string') {
+            scrapedData.location_name = eventData.location;
+          } else if (eventData.location.name) {
+            scrapedData.location_name = eventData.location.name;
+            if (eventData.location.address) {
+              const addr = eventData.location.address;
+              if (typeof addr === 'string') {
+                scrapedData.full_address = addr;
+              } else if (addr.streetAddress || addr.addressLocality) {
+                scrapedData.full_address = [addr.streetAddress, addr.addressLocality, addr.addressRegion].filter(Boolean).join(', ');
+              }
+            }
+          }
+        }
+        if (eventData.organizer) {
+          if (typeof eventData.organizer === 'string') {
+            scrapedData.organizer_name = eventData.organizer;
+          } else if (eventData.organizer.name) {
+            scrapedData.organizer_name = eventData.organizer.name;
+          }
+        }
+        if (eventData.image) {
+          try {
+            const imageUrl = typeof eventData.image === 'string' ? eventData.image :
+                           (eventData.image.url || (Array.isArray(eventData.image) ? eventData.image[0] : null));
+            if (imageUrl) {
+              scrapedData.image_url = imageUrl.startsWith('http') ? imageUrl : new URL(imageUrl, url).href;
+            }
+          } catch (e) {
+            console.warn('Failed to parse image URL from structured data');
+          }
+        }
+      }
+
+      // Fallback chains
+      if (!scrapedData.title) {
+        scrapedData.title =
+          doc.querySelector('meta[property="og:title"]')?.getAttribute('content')?.trim() ||
+          doc.querySelector('meta[name="twitter:title"]')?.getAttribute('content')?.trim() ||
+          doc.querySelector('h1')?.textContent?.trim() ||
+          '';
+      }
+
+      if (!scrapedData.short_description) {
+        const metaDesc =
+          doc.querySelector('meta[property="og:description"]')?.getAttribute('content')?.trim() ||
+          doc.querySelector('meta[name="description"]')?.getAttribute('content')?.trim() ||
+          '';
+        if (metaDesc) {
+          scrapedData.short_description = metaDesc.substring(0, 200);
+          scrapedData.full_description = metaDesc;
+        }
+      }
+
+      if (!scrapedData.image_url) {
+        const ogImage =
+          doc.querySelector('meta[property="og:image"]')?.getAttribute('content') ||
+          doc.querySelector('meta[name="twitter:image"]')?.getAttribute('content') ||
+          '';
+        if (ogImage) {
+          try {
+            scrapedData.image_url = ogImage.startsWith('http') ? ogImage : new URL(ogImage, url).href;
+          } catch (e) {
+            console.warn('Failed to construct absolute image URL');
+          }
+        }
+      }
+
+      return scrapedData;
+    } catch (error) {
+      console.error(`Error scraping ${url}:`, error);
+      return null;
+    }
+  };
+
+  // Batch scrape from all organizations
+  const handleBatchScrape = async () => {
+    setBatchScraping(true);
+    setBatchResults(null);
+
+    try {
+      // STEP 1: Delete past events (events that have already happened or are happening today)
+      console.log('Step 1: Cleaning up past events...');
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Start of today
+
+      let deletedCount = 0;
+      for (const [slotNumber, event] of Object.entries(events)) {
+        if (event && event.date) {
+          try {
+            // Parse the event date
+            const eventDate = new Date(event.date);
+
+            // If event is today or in the past, delete it
+            if (eventDate <= today) {
+              console.log(`Deleting past event in slot ${slotNumber}: ${event.title}`);
+              await supabase
+                .from('events')
+                .delete()
+                .eq('slot_number', slotNumber);
+              deletedCount++;
+            }
+          } catch (e) {
+            console.warn(`Failed to parse date for slot ${slotNumber}:`, event.date);
+          }
+        }
+      }
+
+      console.log(`Deleted ${deletedCount} past events`);
+
+      // Reload events to get fresh state
+      await loadEvents();
+
+      // STEP 2: Scrape and fill empty slots
+      console.log('Step 2: Scraping new events...');
+      const allEvents = [];
+      const twoWeeksFromNow = new Date();
+      twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14);
+
+      // Scrape from each organization
+      for (const [orgName, url] of Object.entries(organizationEventPages)) {
+        console.log(`Scraping ${orgName}...`);
+        const scrapedData = await scrapeEventFromUrl(url);
+
+        if (scrapedData && scrapedData.title && scrapedData.dateObj) {
+          // Only include events within next 2 weeks
+          if (scrapedData.dateObj >= new Date() && scrapedData.dateObj <= twoWeeksFromNow) {
+            allEvents.push({
+              ...scrapedData,
+              organization: orgName,
+              organization_custom: orgName === 'Other' ? scrapedData.organizer_name : ''
+            });
+          }
+        }
+      }
+
+      console.log(`Found ${allEvents.length} events within next 2 weeks`);
+
+      // Sort by date (earliest first)
+      allEvents.sort((a, b) => a.dateObj - b.dateObj);
+
+      // Take max 1 event per organization
+      const selectedEvents = [];
+      const usedOrgs = new Set();
+
+      for (const event of allEvents) {
+        if (!usedOrgs.has(event.organization)) {
+          selectedEvents.push(event);
+          usedOrgs.add(event.organization);
+        }
+      }
+
+      console.log(`Selected ${selectedEvents.length} events from different orgs`);
+
+      // Fill only empty slots (after reload)
+      const updatedEvents = { ...events };
+      let filledCount = 0;
+
+      for (let slotNumber = 1; slotNumber <= 7; slotNumber++) {
+        // Check if slot is empty
+        const existingEvent = updatedEvents[slotNumber];
+        const isEmpty = !existingEvent || !existingEvent.title;
+
+        if (isEmpty && selectedEvents.length > 0) {
+          // Fill this empty slot with the next available event
+          const nextEvent = selectedEvents.shift();
+          updatedEvents[slotNumber] = {
+            ...emptyEvent,
+            slot_number: slotNumber,
+            ...nextEvent,
+            // Remove the dateObj (it was just for sorting)
+            dateObj: undefined
+          };
+          filledCount++;
+          console.log(`Filled slot ${slotNumber} with: ${nextEvent.title}`);
+        }
+      }
+
+      setEvents(updatedEvents);
+      setBatchResults({
+        total: allEvents.length,
+        selected: selectedEvents.length + filledCount,
+        orgs: Array.from(usedOrgs),
+        deleted: deletedCount,
+        filled: filledCount
+      });
+
+      alert(`✓ Cleanup & Auto-Fill Complete!\n\n• Removed ${deletedCount} past event(s)\n• Found ${allEvents.length} upcoming events\n• Filled ${filledCount} empty slot(s)\n\nPlease review and save each slot.`);
+    } catch (error) {
+      console.error('Batch scrape error:', error);
+      alert('Failed to auto-fill events. Please try again or add events manually.');
+    } finally {
+      setBatchScraping(false);
     }
   };
 
@@ -1054,6 +1337,54 @@ function EventSlotsManager() {
           Slots 1-4 are <strong>Featured Events</strong> (displayed in 2x2 grid). Slots 5-7 are standard events (displayed below).
           Empty slots won't appear on the public events page.
         </p>
+      </div>
+
+      {/* Auto-Fill Button */}
+      <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-[#009900] rounded-lg p-4 mb-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <h3 className="font-bold text-lg text-gray-900 mb-2 flex items-center gap-2">
+              🎯 Smart Cleanup & Auto-Fill
+            </h3>
+            <p className="text-sm text-gray-700 mb-2">
+              Two-step process: Clean up past events, then auto-fill empty slots.
+            </p>
+            <ul className="text-xs text-gray-600 space-y-1 mb-3">
+              <li>• <strong>Step 1:</strong> Deletes past events (today or earlier)</li>
+              <li>• <strong>Step 2:</strong> Scrapes {Object.keys(organizationEventPages).length} organizations for events in the <strong>next 2 weeks</strong></li>
+              <li>• Limits to <strong>1 event per organization</strong> (max diversity)</li>
+              <li>• Only fills <strong>empty slots</strong> (preserves future events)</li>
+            </ul>
+            {batchResults && (
+              <div className="text-xs bg-white rounded p-2 border border-green-200">
+                <p className="text-green-700 font-semibold">
+                  ✓ Last run: Found {batchResults.total} events, filled {batchResults.selected} slots
+                </p>
+                <p className="text-gray-600 mt-1">
+                  Organizations: {batchResults.orgs.slice(0, 3).join(', ')}
+                  {batchResults.orgs.length > 3 && ` +${batchResults.orgs.length - 3} more`}
+                </p>
+              </div>
+            )}
+          </div>
+          <button
+            onClick={handleBatchScrape}
+            disabled={batchScraping}
+            className="px-6 py-3 bg-gradient-to-r from-[#009900] to-[#007700] text-white rounded-lg font-bold text-sm hover:from-[#007700] hover:to-[#005500] disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed shadow-lg transition-all whitespace-nowrap"
+          >
+            {batchScraping ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Scraping...
+              </span>
+            ) : (
+              'Auto-Fill 7 Events'
+            )}
+          </button>
+        </div>
       </div>
 
       {[1, 2, 3, 4, 5, 6, 7].map(slotNumber => renderEventSlot(slotNumber))}
