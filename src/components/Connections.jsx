@@ -210,7 +210,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
             )
           `)
           .eq('user_id', userData.id)
-          .in('status', ['recommended', 'perhaps', 'pending', 'saved', 'connected'])
+          .in('status', ['recommended', 'perhaps', 'pending', 'connected'])
           .order('compatibility_score', { ascending: false });
 
         if (matchesError) throw matchesError;
@@ -264,7 +264,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
             // They will automatically return to recommended after 7 days (handled above)
           } else if (match.status === 'pending') {
             pending.push(connectionData);
-          } else if (match.status === 'saved' || match.status === 'connected') {
+          } else if (match.status === 'connected') {
             saved.push(connectionData);
           }
         });
@@ -428,7 +428,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
       // Find the connection in saved connections first
       const savedConn = savedConnections.find(conn => conn.id === selectedConnectionId);
       if (savedConn) {
-        setActiveTab('saved');
+        setActiveTab('connected');
         setSelectedConnection(savedConn);
         return;
       }
@@ -477,7 +477,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
           !pendingConnections.some(p => p.id === conn.id)
         )
         .slice(0, 5); // Show top 5 at a time
-    } else if (activeTab === 'saved') {
+    } else if (activeTab === 'connected') {
       return savedConnections;
     } else if (activeTab === 'pending') {
       return pendingConnections;
@@ -893,14 +893,14 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
             Recommended
           </button>
           <button
-            onClick={() => setActiveTab('saved')}
+            onClick={() => setActiveTab('connected')}
             className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-colors ${
-              activeTab === 'saved'
+              activeTab === 'connected'
                 ? 'bg-[#009900] text-white shadow-sm border-2 border-[#D0ED00]'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
-            Saved
+            Connected
           </button>
           <button
             onClick={() => setActiveTab('pending')}
@@ -1131,7 +1131,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                   {/* Liked Events */}
                   {connectionLikedEvents[currentCard.userId]?.length > 0 && (
                     <div className="pt-4 border-t border-gray-200">
-                      <p className="text-sm font-semibold text-gray-700 mb-2">Interested in:</p>
+                      <p className="text-sm font-semibold text-gray-700 mb-2">Events you've shown interest in:</p>
                       <div className="flex gap-2">
                         {connectionLikedEvents[currentCard.userId].map((event, idx) => (
                           <div
@@ -1159,7 +1159,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                   {/* Going Events */}
                   {connectionGoingEvents[currentCard.userId]?.length > 0 && (
                     <div className="pt-4 border-t border-gray-200">
-                      <p className="text-sm font-semibold text-gray-700 mb-2">📅 Going to:</p>
+                      <p className="text-sm font-semibold text-gray-700 mb-2">📅 Events you're going to:</p>
                       <div className="space-y-2">
                         {connectionGoingEvents[currentCard.userId].map((event, idx) => (
                           <div key={idx} className="flex items-center gap-3 p-2 bg-gray-50 rounded">
@@ -1315,7 +1315,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
             {filteredConnections.length === 0 ? (
               <div className="bg-white rounded-lg shadow-lg p-12 text-center">
                 <p className="text-gray-500 text-lg">
-                  {activeTab === 'saved' && "You haven't saved any connections yet. Mark someone as 'Perhaps' to review them later."}
+                  {activeTab === 'connected' && "You haven't connected with anyone yet. Send connection requests to build your network!"}
                   {activeTab === 'pending' && "No pending connection requests. Send a connection request to see it here."}
                 </p>
               </div>
@@ -1358,7 +1358,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                           ))}
                         </div>
 
-                        {activeTab === 'saved' && (
+                        {activeTab === 'connected' && (
                           <>
                             {person.isMutual ? (
                               /* Mutual Connection - Show badge and messaging option */
@@ -1434,7 +1434,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
       </div>
 
       {/* Expanded Profile View Modal for Saved/Pending */}
-      {selectedConnection && (activeTab === 'saved' || activeTab === 'pending') && !showConnectModal && (
+      {selectedConnection && (activeTab === 'connected' || activeTab === 'pending') && !showConnectModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setSelectedConnection(null)}>
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             {/* Card Header */}
@@ -1567,7 +1567,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                 {/* Going Events */}
                 {connectionGoingEvents[selectedConnection.userId]?.length > 0 && (
                   <div className="pt-4 border-t border-gray-200">
-                    <p className="text-sm font-semibold text-gray-700 mb-2">📅 Going to:</p>
+                    <p className="text-sm font-semibold text-gray-700 mb-2">📅 Events you're going to:</p>
                     <div className="space-y-2">
                       {connectionGoingEvents[selectedConnection.userId].map((event, idx) => (
                         <div key={idx} className="flex items-center gap-3 p-2 bg-gray-50 rounded">
@@ -1590,7 +1590,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
               </div>
 
               {/* Action Buttons based on tab */}
-              {activeTab === 'saved' && !selectedConnection.isMutual && (
+              {activeTab === 'connected' && !selectedConnection.isMutual && (
                 <div className="flex gap-2">
                   <button
                     onClick={async () => {
@@ -1617,7 +1617,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                 </div>
               )}
 
-              {activeTab === 'saved' && selectedConnection.isMutual && (
+              {activeTab === 'connected' && selectedConnection.isMutual && (
                 <div className="text-center space-y-4">
                   <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 border-2 border-[#009900] text-[#009900] rounded text-sm font-semibold">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

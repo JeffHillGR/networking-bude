@@ -23,17 +23,16 @@ describe('Connections Flow', () => {
 
       // Should have tabs for different connection states
       cy.contains(/recommended/i).should('be.visible');
-      cy.contains(/saved/i).should('be.visible');
+      cy.contains(/connected/i).should('be.visible');
       cy.contains(/pending/i).should('be.visible');
-      cy.contains(/connected|mutual/i).should('be.visible');
     });
 
     it('should switch between connection tabs', () => {
       cy.visit('/connections');
 
-      // Click on Saved tab
-      cy.contains(/saved/i).click();
-      cy.url().should('include', '?tab=saved');
+      // Click on Connected tab
+      cy.contains(/connected/i).click();
+      cy.url().should('include', '?tab=connected');
 
       // Click on Pending tab
       cy.contains(/pending/i).click();
