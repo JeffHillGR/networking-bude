@@ -1953,7 +1953,7 @@ function ModerationTab({ onReportReviewed }) {
         ) : (
           <div className="space-y-4">
             {reports.map((report) => (
-              <div key={report.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+              <div key={report.id} data-testid="report-item" className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
@@ -1968,6 +1968,11 @@ function ModerationTab({ onReportReviewed }) {
                     <p className="text-sm text-gray-600 mb-2">
                       <span className="font-medium">Reason:</span> {report.reason}
                     </p>
+                    {report.description && (
+                      <p className="text-sm text-gray-600 mb-2">
+                        <span className="font-medium">Description:</span> {report.description}
+                      </p>
+                    )}
                     <div className="flex items-center gap-4 text-xs text-gray-500">
                       <span>Reporter: {report.reporter?.email}</span>
                       <span>Reported: {report.reported_user?.email}</span>
