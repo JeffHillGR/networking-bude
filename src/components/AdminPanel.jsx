@@ -161,19 +161,29 @@ function AdminPanel() {
     const reader = new FileReader();
     reader.onloadend = () => {
       const newAd = { ...ads[slot], image: reader.result };
-      updateAd(slot, newAd);
+      setAds({ ...ads, [slot]: newAd });
     };
     reader.readAsDataURL(file);
   };
 
   const handleUrlChange = (slot, url) => {
     const newAd = { ...ads[slot], url };
-    updateAd(slot, newAd);
+    setAds({ ...ads, [slot]: newAd });
   };
 
-  const updateAd = (slot, adData) => {
-    localStorage.setItem(`ad_${slot}`, JSON.stringify(adData));
-    setAds({ ...ads, [slot]: adData });
+  const handleTagsChange = (slot, tags) => {
+    const newAd = { ...ads[slot], tags };
+    setAds({ ...ads, [slot]: newAd });
+  };
+
+  const saveAd = (slot) => {
+    const ad = ads[slot];
+    if (!ad || !ad.image || !ad.url) {
+      alert('Please add both an image and URL before saving.');
+      return;
+    }
+    localStorage.setItem(`ad_${slot}`, JSON.stringify(ad));
+    alert(`Ad saved successfully!`);
   };
 
   const removeAd = (slot) => {
@@ -346,6 +356,8 @@ function AdminPanel() {
             ads={ads}
             handleImageUpload={handleImageUpload}
             handleUrlChange={handleUrlChange}
+            handleTagsChange={handleTagsChange}
+            saveAd={saveAd}
             removeAd={removeAd}
           />
         )}
@@ -1049,7 +1061,7 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
   );
 }
 
-function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
+function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, handleTagsChange, saveAd, removeAd }) {
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6">Events Page Content and Ads</h2>
@@ -1069,6 +1081,8 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
               ad={ads.eventsBottom}
               onImageUpload={handleImageUpload}
               onUrlChange={handleUrlChange}
+              onTagsChange={handleTagsChange}
+              onSave={saveAd}
               onRemove={removeAd}
               dimensions="728x160px"
               description="Full width banner below Events list"
@@ -1085,6 +1099,8 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
             ad={ads.eventsSidebar1}
             onImageUpload={handleImageUpload}
             onUrlChange={handleUrlChange}
+            onTagsChange={handleTagsChange}
+            onSave={saveAd}
             onRemove={removeAd}
             dimensions="160x600px"
             description="Appears in right sidebar, top position"
@@ -1097,6 +1113,8 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
             ad={ads.eventsSidebar2}
             onImageUpload={handleImageUpload}
             onUrlChange={handleUrlChange}
+            onTagsChange={handleTagsChange}
+            onSave={saveAd}
             onRemove={removeAd}
             dimensions="160x600px"
             description="Appears in right sidebar, lower position"
@@ -1980,15 +1998,7 @@ function ModerationTab({ onReportReviewed }) {
   );
 }
 
-function InlineAdEditor({ title, slot, ad, onImageUpload, onUrlChange, onRemove, dimensions, description, aspectRatio = "160/600" }) {
-  const [tags, setTags] = useState(ad?.tags || '');
-
-  const handleTagsChange = (newTags) => {
-    setTags(newTags);
-    const updatedAd = { ...ad, tags: newTags };
-    localStorage.setItem(`ad_${slot}`, JSON.stringify(updatedAd));
-  };
-
+function InlineAdEditor({ title, slot, ad, onImageUpload, onUrlChange, onTagsChange, onSave, onRemove, dimensions, description, aspectRatio = "160/600" }) {
   return (
     <div className="bg-white rounded-lg shadow-sm p-4 border-2 border-gray-300">
       <div className="mb-3">
@@ -2051,8 +2061,8 @@ function InlineAdEditor({ title, slot, ad, onImageUpload, onUrlChange, onRemove,
         <label className="block text-xs font-medium mb-2">Content Tags (comma-separated)</label>
         <input
           type="text"
-          value={tags}
-          onChange={(e) => handleTagsChange(e.target.value)}
+          value={ad?.tags || ''}
+          onChange={(e) => onTagsChange(slot, e.target.value)}
           placeholder="e.g., Technology, Leadership, Innovation"
           className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg"
         />
@@ -2085,14 +2095,13 @@ function InlineAdEditor({ title, slot, ad, onImageUpload, onUrlChange, onRemove,
         </select>
       </div>
 
-      {ad?.image && ad?.url && (
-        <div className="mt-3 pt-3 border-t border-gray-200">
-          <div className="flex items-center gap-2 text-xs text-green-600">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span className="font-medium">LIVE</span>
-          </div>
-        </div>
-      )}
+      {/* Save Button */}
+      <button
+        onClick={() => onSave(slot)}
+        className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 font-medium text-sm"
+      >
+        Save Ad
+      </button>
     </div>
   );
 }
