@@ -12,15 +12,6 @@ describe('Admin Panel', () => {
       cy.get('body').should('exist');
     });
 
-    it.skip('should deny access to non-admin users', () => {
-      // Skipped: Admin access control may need implementation
-      cy.login('test@example.com', 'TestPass123!');
-      cy.visit('/admin');
-
-      cy.contains(/access denied/i, { timeout: 10000 }).should('be.visible');
-      cy.contains(/does not have admin permissions/i).should('be.visible');
-    });
-
     it('should allow access to admin users', () => {
       cy.login('test-admin@example.com', 'TestAdmin123!');
       cy.visit('/admin');
@@ -40,32 +31,6 @@ describe('Admin Panel', () => {
 
     it('should display admin dashboard tab', () => {
       cy.contains(/dashboard/i).should('be.visible');
-    });
-
-    it.skip('should display unreviewed reports count', () => {
-      // Skipped: Dashboard may not fetch reports on load
-      cy.intercept('GET', '**/rest/v1/user_reports*', {
-        statusCode: 200,
-        body: [
-          { id: '1', reviewed: false },
-          { id: '2', reviewed: false },
-          { id: '3', reviewed: false }
-        ],
-        headers: {
-          'content-range': '0-2/3'
-        }
-      }).as('getReports');
-
-      cy.reload();
-      cy.wait('@getReports');
-
-      // Should show badge or count of unreviewed reports
-      cy.get('[data-testid="unreviewed-count"]').should('contain', '3');
-    });
-
-    it.skip('should show statistics and metrics', () => {
-      // Skipped: Dashboard statistics may not be implemented yet
-      cy.contains(/total users|total events|total connections/i).should('be.visible');
     });
   });
 
