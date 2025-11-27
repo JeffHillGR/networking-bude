@@ -4,6 +4,16 @@ import { Upload, X, Link2, Eye, EyeOff, ChevronUp, ChevronDown } from 'lucide-re
 import { supabase } from '../lib/supabase.js';
 import EventSlotsManager from './EventSlotsManager.jsx';
 
+// Maximum file size for image uploads (5MB)
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+
+// Helper function to format bytes to readable size
+const formatFileSize = (bytes) => {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+};
+
 function AdminPanel() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -140,14 +150,20 @@ function AdminPanel() {
   };
 
   const handleImageUpload = (slot, file) => {
+    if (!file) return;
+
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      alert(`File too large! Please select an image smaller than ${formatFileSize(MAX_FILE_SIZE)}.\n\nYour file size: ${formatFileSize(file.size)}`);
+      return;
+    }
+
     const reader = new FileReader();
     reader.onloadend = () => {
       const newAd = { ...ads[slot], image: reader.result };
       updateAd(slot, newAd);
     };
-    if (file) {
-      reader.readAsDataURL(file);
-    }
+    reader.readAsDataURL(file);
   };
 
   const handleUrlChange = (slot, url) => {
@@ -401,6 +417,12 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
   const handleBottomBannerUpload = async (slotNumber, file) => {
     if (!file) return;
 
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      alert(`File too large! Please select an image smaller than ${formatFileSize(MAX_FILE_SIZE)}.\n\nYour file size: ${formatFileSize(file.size)}`);
+      return;
+    }
+
     setUploadingBottomBanner(slotNumber);
     try {
       const slotKey = `slot${slotNumber}`;
@@ -597,6 +619,12 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
   // Handle hero banner image upload to Supabase Storage
   const handleHeroBannerUpload = async (slotNumber, file) => {
     if (!file) return;
+
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      alert(`File too large! Please select an image smaller than ${formatFileSize(MAX_FILE_SIZE)}.\n\nYour file size: ${formatFileSize(file.size)}`);
+      return;
+    }
 
     setUploadingBanner(slotNumber);
     try {
@@ -1139,13 +1167,19 @@ function ResourcesInsightsTab() {
   };
 
   const handleImageUpload = (slotNumber, file) => {
+    if (!file) return;
+
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      alert(`File too large! Please select an image smaller than ${formatFileSize(MAX_FILE_SIZE)}.\n\nYour file size: ${formatFileSize(file.size)}`);
+      return;
+    }
+
     const reader = new FileReader();
     reader.onloadend = () => {
       handleInputChange(slotNumber, 'image', reader.result);
     };
-    if (file) {
-      reader.readAsDataURL(file);
-    }
+    reader.readAsDataURL(file);
   };
 
   const handleSaveContent = async (slotNumber) => {
