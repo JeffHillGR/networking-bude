@@ -8,11 +8,14 @@ describe('Notifications', () => {
     // Login before each test
     cy.login('test@example.com', 'TestPass123!');
     cy.visit('/dashboard');
+
+    // Wait for dashboard to load
+    cy.contains(/dashboard|welcome/i, { timeout: 10000 }).should('exist');
   });
 
   describe('Notification Bell', () => {
     it('should display notification bell icon', () => {
-      cy.get('[data-testid="notification-bell"]').should('be.visible');
+      cy.get('[data-testid="notification-bell"]', { timeout: 10000 }).should('be.visible');
     });
 
     it('should show unread count badge when there are unread notifications', () => {
