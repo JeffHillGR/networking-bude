@@ -95,10 +95,10 @@ function EventSlotsManager() {
   const handleImageUpload = async (slotNumber, file) => {
     if (!file) return;
 
-    // Validate file size (5MB max)
-    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    // Validate file size (1.5MB max)
+    const maxSize = 1.5 * 1024 * 1024; // 1.5MB in bytes
     if (file.size > maxSize) {
-      alert('Image must be smaller than 5MB. Please compress or resize the image.');
+      alert('Image must be smaller than 1.5MB. Please compress or resize the image.');
       return;
     }
 

@@ -4,8 +4,8 @@ import { Upload, X, Link2, Eye, EyeOff, ChevronUp, ChevronDown } from 'lucide-re
 import { supabase } from '../lib/supabase.js';
 import EventSlotsManager from './EventSlotsManager.jsx';
 
-// Maximum file size for image uploads (5MB)
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+// Maximum file size for image uploads (1.5MB)
+const MAX_FILE_SIZE = 1.5 * 1024 * 1024; // 1.5MB in bytes
 
 // Helper function to format bytes to readable size
 const formatFileSize = (bytes) => {

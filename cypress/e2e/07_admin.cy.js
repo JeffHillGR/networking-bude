@@ -82,31 +82,35 @@ describe('Admin Panel', () => {
       cy.contains(/event slots|manage events/i).should('be.visible');
     });
 
-    it('should allow creating wildcard event slots', () => {
-      cy.contains(/add wildcard|create slot/i).should('be.visible');
+    it('should display wildcard slot badge', () => {
+      // Wait for Event Slot 4 to be visible, then check for wildcard badge
+      cy.contains(/event slot 4/i, { timeout: 10000 }).should('be.visible');
+      cy.contains(/wildcard/i).should('be.visible');
     });
 
     it('should display existing event slots', () => {
-      cy.intercept('GET', '**/rest/v1/event_slots*', {
+      cy.intercept('GET', '**/rest/v1/events*', {
         statusCode: 200,
         body: [
           {
             id: '1',
             slot_number: 1,
-            event_id: 'event-123',
-            is_wildcard: false
+            title: 'Test Event 1',
+            date: new Date().toISOString(),
+            created_at: new Date().toISOString()
           },
           {
             id: '2',
             slot_number: 2,
-            event_id: null,
-            is_wildcard: true
+            title: 'Test Event 2',
+            date: new Date().toISOString(),
+            created_at: new Date().toISOString()
           }
         ]
-      }).as('getEventSlots');
+      }).as('getEvents');
 
       cy.reload();
-      cy.wait('@getEventSlots');
+      cy.wait('@getEvents');
 
       cy.contains(/slot.*1/i).should('be.visible');
       cy.contains(/slot.*2/i).should('be.visible');
