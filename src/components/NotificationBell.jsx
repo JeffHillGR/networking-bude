@@ -266,13 +266,17 @@ function NotificationBell({ onNavigate, showDropdown, setShowDropdown }) {
     <div className="relative inline-flex items-center" ref={dropdownRef}>
       {/* Bell Icon */}
       <button
+        data-testid="notification-bell"
         onClick={() => setIsOpen(!isOpen)}
         className="relative text-gray-600 hover:text-gray-900 transition-colors inline-flex items-center"
         aria-label="Notifications"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+          <span
+            data-testid="notification-badge"
+            className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"
+          >
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -280,7 +284,10 @@ function NotificationBell({ onNavigate, showDropdown, setShowDropdown }) {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 md:left-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-[240px] overflow-hidden flex flex-col">
+        <div
+          data-testid="notification-dropdown"
+          className="absolute right-0 md:left-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-[240px] overflow-hidden flex flex-col"
+        >
           {/* Header */}
           <div className="px-3 py-2 border-b border-gray-200 bg-gray-50 flex items-center justify-between flex-shrink-0">
             <h3 className="font-semibold text-gray-900 text-sm">Notifications</h3>
@@ -311,9 +318,10 @@ function NotificationBell({ onNavigate, showDropdown, setShowDropdown }) {
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
+                    data-testid="notification-item"
                     onClick={() => handleNotificationClick(notification)}
                     className={`p-2 hover:bg-gray-50 transition-colors cursor-pointer relative group ${
-                      !notification.is_read ? 'bg-blue-50' : ''
+                      !notification.is_read ? 'bg-blue-50 unread' : ''
                     }`}
                   >
                     <div className="flex items-start gap-2">
@@ -334,6 +342,7 @@ function NotificationBell({ onNavigate, showDropdown, setShowDropdown }) {
                             </p>
                           </div>
                           <button
+                            data-testid="delete-notification"
                             onClick={(e) => deleteNotification(notification.id, e)}
                             className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:bg-gray-200 rounded flex-shrink-0"
                             aria-label="Delete notification"
