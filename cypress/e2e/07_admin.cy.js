@@ -12,50 +12,29 @@ describe('Admin Panel', () => {
       cy.get('body').should('exist');
     });
 
-    it.skip('should deny access to non-admin users', () => {
-      // Skipped: Requires working login flow
+    it('should deny access to non-admin users', () => {
       cy.login('test@example.com', 'TestPass123!');
       cy.visit('/admin');
 
-      cy.contains(/access denied/i).should('be.visible');
+      cy.contains(/access denied/i, { timeout: 10000 }).should('be.visible');
       cy.contains(/does not have admin permissions/i).should('be.visible');
     });
 
-    it.skip('should allow access to admin users', () => {
-      // Skipped: Requires working login flow
-      // Mock admin user
-      cy.intercept('GET', '**/rest/v1/users*', {
-        statusCode: 200,
-        body: {
-          id: '123',
-          email: 'admin@example.com',
-          is_admin: true
-        }
-      }).as('getAdminUser');
-
-      cy.login('admin@example.com', 'AdminPass123!');
+    it('should allow access to admin users', () => {
+      cy.login('test-admin@example.com', 'TestAdmin123!');
       cy.visit('/admin');
 
-      cy.wait('@getAdminUser');
-      cy.contains(/admin panel|dashboard/i).should('be.visible');
+      cy.contains(/admin panel|dashboard/i, { timeout: 10000 }).should('be.visible');
     });
   });
 
-  describe.skip('Admin Dashboard', () => {
-    // Skipped: Requires working login flow
+  describe('Admin Dashboard', () => {
     beforeEach(() => {
-      // Mock admin authentication
-      cy.intercept('GET', '**/rest/v1/users*', {
-        statusCode: 200,
-        body: {
-          id: '123',
-          email: 'admin@example.com',
-          is_admin: true
-        }
-      }).as('getAdminUser');
-
-      cy.login('admin@example.com', 'AdminPass123!');
+      cy.login('test-admin@example.com', 'TestAdmin123!');
       cy.visit('/admin');
+
+      // Wait for dashboard to load
+      cy.contains(/admin panel|dashboard/i, { timeout: 10000 }).should('exist');
     });
 
     it('should display admin dashboard tab', () => {
@@ -88,20 +67,13 @@ describe('Admin Panel', () => {
     });
   });
 
-  describe.skip('Admin Tabs', () => {
-    // Skipped: Requires working login flow
+  describe('Admin Tabs', () => {
     beforeEach(() => {
-      cy.intercept('GET', '**/rest/v1/users*', {
-        statusCode: 200,
-        body: {
-          id: '123',
-          email: 'admin@example.com',
-          is_admin: true
-        }
-      }).as('getAdminUser');
-
-      cy.login('admin@example.com', 'AdminPass123!');
+      cy.login('test-admin@example.com', 'TestAdmin123!');
       cy.visit('/admin');
+
+      // Wait for dashboard to load
+      cy.contains(/admin panel|dashboard/i, { timeout: 10000 }).should('exist');
     });
 
     it('should display all admin tabs', () => {
@@ -126,20 +98,13 @@ describe('Admin Panel', () => {
     });
   });
 
-  describe.skip('Events Management', () => {
-    // Skipped: Requires working login flow
+  describe('Events Management', () => {
     beforeEach(() => {
-      cy.intercept('GET', '**/rest/v1/users*', {
-        statusCode: 200,
-        body: {
-          id: '123',
-          email: 'admin@example.com',
-          is_admin: true
-        }
-      }).as('getAdminUser');
-
-      cy.login('admin@example.com', 'AdminPass123!');
+      cy.login('test-admin@example.com', 'TestAdmin123!');
       cy.visit('/admin');
+
+      // Wait for dashboard to load
+      cy.contains(/admin panel|dashboard/i, { timeout: 10000 }).should('exist');
 
       // Navigate to Events tab
       cy.contains(/^events$/i).click();
@@ -180,20 +145,13 @@ describe('Admin Panel', () => {
     });
   });
 
-  describe.skip('Moderation Panel', () => {
-    // Skipped: Requires working login flow
+  describe('Moderation Panel', () => {
     beforeEach(() => {
-      cy.intercept('GET', '**/rest/v1/users*', {
-        statusCode: 200,
-        body: {
-          id: '123',
-          email: 'admin@example.com',
-          is_admin: true
-        }
-      }).as('getAdminUser');
-
-      cy.login('admin@example.com', 'AdminPass123!');
+      cy.login('test-admin@example.com', 'TestAdmin123!');
       cy.visit('/admin');
+
+      // Wait for dashboard to load
+      cy.contains(/admin panel|dashboard/i, { timeout: 10000 }).should('exist');
 
       // Navigate to Moderation tab
       cy.contains(/moderation/i).click();
@@ -276,20 +234,13 @@ describe('Admin Panel', () => {
     });
   });
 
-  describe.skip('Ad Management', () => {
-    // Skipped: Requires working login flow
+  describe('Ad Management', () => {
     beforeEach(() => {
-      cy.intercept('GET', '**/rest/v1/users*', {
-        statusCode: 200,
-        body: {
-          id: '123',
-          email: 'admin@example.com',
-          is_admin: true
-        }
-      }).as('getAdminUser');
-
-      cy.login('admin@example.com', 'AdminPass123!');
+      cy.login('test-admin@example.com', 'TestAdmin123!');
       cy.visit('/admin');
+
+      // Wait for dashboard to load
+      cy.contains(/admin panel|dashboard/i, { timeout: 10000 }).should('exist');
     });
 
     it('should allow uploading ad images', () => {
@@ -310,20 +261,13 @@ describe('Admin Panel', () => {
     });
   });
 
-  describe.skip('Resources & Insights', () => {
-    // Skipped: Requires working login flow
+  describe('Resources & Insights', () => {
     beforeEach(() => {
-      cy.intercept('GET', '**/rest/v1/users*', {
-        statusCode: 200,
-        body: {
-          id: '123',
-          email: 'admin@example.com',
-          is_admin: true
-        }
-      }).as('getAdminUser');
-
-      cy.login('admin@example.com', 'AdminPass123!');
+      cy.login('test-admin@example.com', 'TestAdmin123!');
       cy.visit('/admin');
+
+      // Wait for dashboard to load
+      cy.contains(/admin panel|dashboard/i, { timeout: 10000 }).should('exist');
 
       // Navigate to Resources tab
       cy.contains(/resources/i).click();
@@ -339,24 +283,14 @@ describe('Admin Panel', () => {
     });
   });
 
-  describe.skip('Responsive Design', () => {
-    // Skipped: Requires working login flow
+  describe('Responsive Design', () => {
     it('should work on tablet viewport', () => {
       cy.viewport('ipad-2');
 
-      cy.intercept('GET', '**/rest/v1/users*', {
-        statusCode: 200,
-        body: {
-          id: '123',
-          email: 'admin@example.com',
-          is_admin: true
-        }
-      }).as('getAdminUser');
-
-      cy.login('admin@example.com', 'AdminPass123!');
+      cy.login('test-admin@example.com', 'TestAdmin123!');
       cy.visit('/admin');
 
-      cy.contains(/admin panel|dashboard/i).should('be.visible');
+      cy.contains(/admin panel|dashboard/i, { timeout: 10000 }).should('be.visible');
     });
   });
 });
