@@ -350,6 +350,7 @@ function Events({ onBackToDashboard }) {
                 {featuredEvents.map((event, index) => (
                   <div
                     key={event.id}
+                    data-testid="event-card"
                     onClick={() => {
                       trackEngagement(); // Count viewing event as engagement
                       navigate(`/events/${event.id}`);
@@ -449,6 +450,7 @@ function Events({ onBackToDashboard }) {
                 {[...moreEvents].sort((a, b) => parseEventDate(a.date) - parseEventDate(b.date)).map((event, index) => (
                   <div
                     key={event.id}
+                    data-testid="event-card"
                     onClick={() => {
                       trackEngagement(); // Count viewing event as engagement
                       navigate(`/events/${event.id}`);
