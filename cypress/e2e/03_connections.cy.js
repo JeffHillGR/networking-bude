@@ -288,7 +288,8 @@ describe('Connections Flow', () => {
     });
   });
 
-  describe('Connection Limits', () => {
+  // Skipped: Paid subscription features removed until full production
+  describe.skip('Connection Limits', () => {
     it('should display connection count and limit', () => {
       cy.visit('/connections');
 
