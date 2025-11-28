@@ -181,7 +181,18 @@ function Events({ onBackToDashboard }) {
     setSubmitting(true);
 
     try {
-      console.log('📤 Submitting event suggestion:', eventFormData);
+      // Normalize the URL - add https:// if missing
+      let normalizedUrl = eventFormData.eventUrl.trim();
+      if (normalizedUrl && !normalizedUrl.match(/^https?:\/\//i)) {
+        normalizedUrl = 'https://' + normalizedUrl;
+      }
+
+      const submissionData = {
+        ...eventFormData,
+        eventUrl: normalizedUrl
+      };
+
+      console.log('📤 Submitting event suggestion:', submissionData);
 
       // Submit to serverless API endpoint
       const response = await fetch('/api/submitEvent', {
@@ -189,7 +200,7 @@ function Events({ onBackToDashboard }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(eventFormData)
+        body: JSON.stringify(submissionData)
       });
 
       if (!response.ok) {

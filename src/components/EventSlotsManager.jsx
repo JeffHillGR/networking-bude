@@ -42,7 +42,7 @@ function EventSlotsManager() {
     short_description: '',
     full_description: '',
     date: '',
-    time: '',
+    time: '8:00 AM - 10:00 AM',
     location_name: '',
     full_address: '',
     image_url: '',
@@ -1195,7 +1195,7 @@ function EventSlotsManager() {
                   value={event.time || ''}
                   onChange={(e) => handleInputChange(slotNumber, 'time', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-                  placeholder="e.g., 8:00 AM - 10:00 AM"
+                  placeholder='e.g., "7:30 PM" or "6:00 PM - 8:00 PM"'
                 />
               </div>
             </div>
