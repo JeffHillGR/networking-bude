@@ -792,12 +792,12 @@ function Events({ onBackToDashboard }) {
                     Event URL *
                   </label>
                   <input
-                    type="url"
+                    type="text"
                     required
                     value={eventFormData.eventUrl}
                     onChange={(e) => setEventFormData({...eventFormData, eventUrl: e.target.value})}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                    placeholder="https://example.com/event"
+                    placeholder="www.example.com or https://example.com/event"
                   />
                 </div>
               </div>
