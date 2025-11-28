@@ -8,10 +8,48 @@
  */
 Cypress.Commands.add('login', (email, password) => {
   cy.visit('/');
-  cy.get('input[type="email"]').type(email);
-  cy.get('input[type="password"]').type(password);
-  cy.get('button').contains(/sign in|log in/i).click();
-  cy.url().should('include', '/dashboard');
+
+  // Open the login modal by clicking "Already a member?" button
+  cy.contains(/already a member/i).first().click();
+
+  // Wait for modal to appear and fill in credentials
+  cy.get('input[type="email"]', { timeout: 5000 }).should('be.visible').clear().type(email);
+  cy.wait(100); // Small delay to ensure password field is ready
+  cy.get('input[type="password"]', { timeout: 5000 }).should('be.visible').clear().type(password, { force: true });
+
+  // Intercept the login request to wait for it
+  cy.intercept('POST', '**/auth/v1/token*').as('loginRequest');
+
+  // Submit the login form
+  cy.get('button[type="submit"]').contains(/login/i).click();
+
+  // Wait for login request to complete
+  cy.wait('@loginRequest').then((interception) => {
+    cy.log('Login request status:', interception.response.statusCode);
+    // Check if login was successful
+    if (interception.response.statusCode !== 200) {
+      cy.log('Login failed!');
+      cy.log('Response:', interception.response.body);
+    } else {
+      cy.log('Login request succeeded (200)');
+    }
+  });
+
+  // Check if modal is still visible (indicates login failed)
+  cy.get('body').then(($body) => {
+    if ($body.find('input[type="email"]').is(':visible')) {
+      cy.log('WARNING: Login modal still visible after login attempt');
+      // Check for error message
+      cy.get('body').invoke('text').then((text) => {
+        if (text.includes('Invalid') || text.includes('error')) {
+          cy.log('Error message found on page');
+        }
+      });
+    }
+  });
+
+  // Wait for successful navigation to dashboard
+  cy.url({ timeout: 15000 }).should('include', '/dashboard');
 });
 
 /**
@@ -19,8 +57,20 @@ Cypress.Commands.add('login', (email, password) => {
  * Usage: cy.logout()
  */
 Cypress.Commands.add('logout', () => {
-  cy.get('button').contains(/sign out|logout/i).click();
-  cy.url().should('eq', Cypress.config().baseUrl + '/');
+  // Click the user profile button at bottom of sidebar to open dropdown menu
+  cy.get('[class*="sidebar"], aside, nav').first().within(() => {
+    // Find the button that contains user photo/initials and name (has bg-gray-100 class)
+    cy.get('button.bg-gray-100').click();
+  });
+
+  // Wait a moment for menu animation
+  cy.wait(500);
+
+  // Click "Log Out" in the dropdown menu
+  cy.contains('Log Out', { timeout: 5000 }).should('be.visible').click();
+
+  // Verify navigation to home
+  cy.url({ timeout: 5000 }).should('eq', Cypress.config().baseUrl + '/');
 });
 
 /**
@@ -111,7 +161,11 @@ Cypress.Commands.add('waitForElement', (selector, timeout = 10000) => {
  * Usage: cy.isAuthenticated()
  */
 Cypress.Commands.add('isAuthenticated', () => {
-  cy.window().its('localStorage').invoke('getItem', 'supabase.auth.token').should('exist');
+  cy.window().its('localStorage').then(storage => {
+    // Look for Supabase auth token key (format: sb-<project-ref>-auth-token)
+    const authKey = Object.keys(storage).find(key => key.includes('auth-token'));
+    expect(authKey).to.exist;
+  });
 });
 
 /**

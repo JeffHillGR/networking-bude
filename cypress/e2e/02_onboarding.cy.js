@@ -17,7 +17,13 @@ describe('Onboarding Flow', () => {
   };
 
   beforeEach(() => {
+    // Clear any existing auth session
+    cy.clearLocalStorage();
+    cy.clearCookies();
+
     cy.visit('/');
+    // Wait for onboarding form to be visible
+    cy.contains(/First Name|Create.*Account/i, { timeout: 10000 }).should('be.visible');
   });
 
   describe('Personal Information Step', () => {
@@ -50,10 +56,10 @@ describe('Onboarding Flow', () => {
   describe('Professional Information Step', () => {
     beforeEach(() => {
       // Fill personal info first
-      cy.get('input[name="firstName"]').type(testUser.firstName);
-      cy.get('input[name="lastName"]').type(testUser.lastName);
-      cy.get('input[type="email"]').type(testUser.email);
-      cy.get('input[type="password"]').type(testUser.password);
+      cy.get('input[name="firstName"]', { timeout: 10000 }).should('be.visible').type(testUser.firstName);
+      cy.get('input[name="lastName"]').should('be.visible').type(testUser.lastName);
+      cy.get('input[type="email"]').should('be.visible').type(testUser.email);
+      cy.get('input[type="password"]').should('be.visible').type(testUser.password);
       cy.get('button').contains(/next|continue/i).click();
     });
 
@@ -86,31 +92,30 @@ describe('Onboarding Flow', () => {
   describe('Preferences & Interests Step', () => {
     beforeEach(() => {
       // Fill previous steps
-      cy.get('input[name="firstName"]').type(testUser.firstName);
-      cy.get('input[name="lastName"]').type(testUser.lastName);
-      cy.get('input[type="email"]').type(testUser.email);
-      cy.get('input[type="password"]').type(testUser.password);
+      cy.get('input[name="firstName"]', { timeout: 10000 }).should('be.visible').type(testUser.firstName);
+      cy.get('input[name="lastName"]').should('be.visible').type(testUser.lastName);
+      cy.get('input[type="email"]').should('be.visible').type(testUser.email);
+      cy.get('input[type="password"]').should('be.visible').type(testUser.password);
       cy.get('button').contains(/next|continue/i).click();
 
-      cy.get('input[name="jobTitle"]').type(testUser.jobTitle);
-      cy.get('input[name="company"]').type(testUser.company);
-      cy.get('select[name="industry"]').select(testUser.industry);
+      cy.get('input[name="jobTitle"]', { timeout: 10000 }).should('be.visible').type(testUser.jobTitle);
+      cy.get('input[name="company"]').should('be.visible').type(testUser.company);
+      cy.get('select[name="industry"]').should('be.visible').select(testUser.industry);
       cy.get('button').contains(/next|continue/i).click();
     });
 
     it('should display preferences fields', () => {
-      cy.contains(/gender|preferences/i).should('be.visible');
-      cy.contains(/year.*born|age/i).should('be.visible');
       cy.contains(/zip.*code|location/i).should('be.visible');
     });
 
-    it('should allow gender preference selection', () => {
-      // Select gender preference
+    it.skip('should allow gender preference selection', () => {
+      // Skipped - gender preference no longer collected
       cy.get('select[name="genderPreference"]').should('be.visible');
       cy.get('select[name="genderPreference"]').select('No preference');
     });
 
-    it('should allow age range selection', () => {
+    it.skip('should allow age range selection', () => {
+      // Skipped - age preference no longer collected
       cy.get('input[name="yearBorn"]').type(testUser.dob);
       cy.get('select[name="agePreference"]').select('No Preference');
     });

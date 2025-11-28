@@ -11,11 +11,14 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
   const [activeTab, setActiveTab] = useState(initialTab);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [showCancelAccountModal, setShowCancelAccountModal] = useState(false);
   const [cancelAccountReason, setCancelAccountReason] = useState('');
   const [showFeedbackModal, setShowFeedbackModal] = useState(autoOpenFeedback);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [photoUrl, setPhotoUrl] = useState(null);
   const [feedbackData, setFeedbackData] = useState({
     name: '',
@@ -33,6 +36,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
   const [contactError, setContactError] = useState('');
   const [eventsAttendedCount, setEventsAttendedCount] = useState(0);
   const [goingEvents, setGoingEvents] = useState([]);
+  const [interestedEvents, setInterestedEvents] = useState([]);
   const [showPrivacyTerms, setShowPrivacyTerms] = useState(false);
 
   // Load profile data from localStorage on mount
@@ -202,6 +206,42 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
         } else {
           setEventsAttendedCount(0);
           setGoingEvents([]);
+        }
+
+        // Get events user has shown interest in (liked/hearted)
+        const { data: likesData, error: likesError } = await supabase
+          .from('event_likes')
+          .select('event_id')
+          .eq('user_id', user.id);
+
+        if (likesError) {
+          console.error('Error loading event likes:', likesError);
+        } else if (likesData && likesData.length > 0) {
+          const likedEventIds = likesData.map(l => l.event_id).filter(id => id != null);
+
+          if (likedEventIds.length > 0) {
+            let query = supabase
+              .from('events')
+              .select('id, title, image_url, date');
+
+            if (likedEventIds.length === 1) {
+              query = query.eq('id', likedEventIds[0]);
+            } else {
+              query = query.in('id', likedEventIds);
+            }
+
+            const { data: likedEventsData, error: likedEventsError } = await query
+              .order('date', { ascending: true })
+              .limit(7);
+
+            if (likedEventsError) {
+              console.error('Error fetching liked events:', likedEventsError);
+            } else {
+              setInterestedEvents(likedEventsData || []);
+            }
+          }
+        } else {
+          setInterestedEvents([]);
         }
       } catch (err) {
         console.error('Error loading events attended:', err);
@@ -472,7 +512,16 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
     }, 3000);
   };
 
+  const showError = (message) => {
+    setErrorMessage(message);
+    setShowErrorMessage(true);
+    setTimeout(() => {
+      setShowErrorMessage(false);
+    }, 5000);
+  };
+
   const handleSaveProfile = async () => {
+    setSaving(true);
     try {
       // Split full name into first and last
       const names = (profile.fullName || '').split(' ');
@@ -516,20 +565,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
       }
 
       // Update Supabase database
-      if (user?.email) {
-        // First, get the user's database ID from their email
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('id')
-          .eq('email', user.email)
-          .single();
-
-        if (userError) {
-          console.error('Error finding user:', userError);
-          throw new Error('Could not find your user profile');
-        }
-
-        // Now update with the correct database user ID
+      if (user?.id) {
         const updateData = {
           first_name: firstName,
           last_name: lastName,
@@ -556,7 +592,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
         const { error } = await supabase
           .from('users')
           .update(updateData)
-          .eq('id', userData.id);
+          .eq('id', user.id);
 
         if (error) {
           console.error('Error updating Supabase:', error);
@@ -593,7 +629,9 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
       });
     } catch (error) {
       console.error('Error saving profile:', error);
-      alert('Error saving profile. Please try again.');
+      showError('Error saving profile. Please try again.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -935,6 +973,16 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
         </div>
       )}
 
+      {/* Error Message Toast */}
+      {showErrorMessage && (
+        <div className="fixed top-4 right-4 z-50 bg-red-600 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <span className="font-medium">{errorMessage}</span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-8">
         {/* Back to Dashboard Button */}
@@ -1017,6 +1065,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
                   <label className="block font-medium text-gray-900 mb-2">Full Name</label>
                   <input
                     type="text"
+                    name="fullName"
                     value={profile.fullName}
                     onChange={(e) => setProfile({...profile, fullName: e.target.value})}
                     className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
@@ -1027,6 +1076,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
                   <label className="block font-medium text-gray-900 mb-2">Email</label>
                   <input
                     type="email"
+                    name="email"
                     value={profile.email}
                     onChange={(e) => setProfile({...profile, email: e.target.value})}
                     className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
@@ -1037,6 +1087,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
                   <label className="block font-medium text-gray-900 mb-2">Job Title</label>
                   <input
                     type="text"
+                    name="jobTitle"
                     value={profile.jobTitle}
                     onChange={(e) => setProfile({...profile, jobTitle: e.target.value})}
                     className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
@@ -1047,6 +1098,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
                   <label className="block font-medium text-gray-900 mb-2">Company</label>
                   <input
                     type="text"
+                    name="company"
                     value={profile.company}
                     onChange={(e) => setProfile({...profile, company: e.target.value})}
                     className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
@@ -1057,6 +1109,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
                   <label className="block font-medium text-gray-900 mb-2">Zip Code</label>
                   <input
                     type="text"
+                    name="zipCode"
                     value={profile.zipCode}
                     onChange={(e) => setProfile({...profile, zipCode: e.target.value})}
                     className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
@@ -1271,9 +1324,10 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
             <div className="mt-8 flex justify-end">
               <button
                 onClick={handleSaveProfile}
-                className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 font-medium"
+                disabled={saving}
+                className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Save Changes
+                {saving ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
 
@@ -1302,10 +1356,38 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
                 </div>
               </div>
 
+              {/* Events User Has Shown Interest In */}
+              {interestedEvents.length > 0 && (
+                <div className="mt-6">
+                  <h4 className="font-semibold text-gray-900 mb-3">Events you've shown interest in</h4>
+                  <div className="flex flex-wrap gap-3">
+                    {interestedEvents.map((event) => (
+                      <button
+                        key={event.id}
+                        onClick={() => navigate(`/events/${event.id}`)}
+                        className="relative group cursor-pointer"
+                        title={event.title}
+                      >
+                        <div className="w-24 h-24 rounded-lg overflow-hidden border-2 border-gray-300 group-hover:border-[#009900] transition-all">
+                          <img
+                            src={event.image_url}
+                            alt={event.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                          />
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 text-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          {event.title.length > 20 ? event.title.substring(0, 20) + '...' : event.title}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Events Going To */}
               {goingEvents.length > 0 && (
                 <div className="mt-6">
-                  <h4 className="font-semibold text-gray-900 mb-3">Events You're Attending</h4>
+                  <h4 className="font-semibold text-gray-900 mb-3">Events you're going to</h4>
                   <div className="flex flex-wrap gap-3">
                     {goingEvents.map((event) => (
                       <button

@@ -47,7 +47,7 @@ function AdminPanel() {
           // Check if user has admin role
           const { data: userData, error: userError } = await supabase
             .from('users')
-            .select('is_admin, email')
+            .select('is_admin, admin_level, email')
             .eq('id', session.user.id)
             .single();
 
@@ -58,7 +58,14 @@ function AdminPanel() {
             return;
           }
 
-          if (userData && userData.is_admin === true) {
+          // Check admin_level first (new system), fallback to is_admin (legacy)
+          const hasAdminAccess = userData && (
+            userData.admin_level === 'admin' ||
+            userData.admin_level === 'super_admin' ||
+            userData.is_admin === true
+          );
+
+          if (hasAdminAccess) {
             setIsAdmin(true);
           } else {
             setErrorMessage(`Access Denied: ${userData?.email || 'Your account'} does not have admin permissions. Please contact the site administrator.`);
@@ -1848,6 +1855,31 @@ function ModerationTab({ onReportReviewed }) {
   const [loading, setLoading] = useState(true);
   const [showReviewed, setShowReviewed] = useState(false);
   const [reviewingId, setReviewingId] = useState(null);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [banningUserId, setBanningUserId] = useState(null);
+
+  // Check if current user is super admin
+  useEffect(() => {
+    const checkSuperAdmin = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          const { data: userData, error } = await supabase
+            .from('users')
+            .select('admin_level')
+            .eq('id', session.user.id)
+            .single();
+
+          if (!error && userData) {
+            setIsSuperAdmin(userData.admin_level === 'super_admin');
+          }
+        }
+      } catch (error) {
+        console.error('Error checking super admin status:', error);
+      }
+    };
+    checkSuperAdmin();
+  }, []);
 
   // Fetch reports
   useEffect(() => {
@@ -1905,6 +1937,48 @@ function ModerationTab({ onReportReviewed }) {
       alert('Failed to mark as reviewed');
     } finally {
       setReviewingId(null);
+    }
+  };
+
+  const handleBanUser = async (userId, userName) => {
+    // Confirm action
+    const reason = prompt(
+      `⚠️ PERMANENT BAN - This action cannot be undone!\n\n` +
+      `You are about to permanently ban: ${userName}\n\n` +
+      `Please enter the reason for this ban:`
+    );
+
+    if (!reason || reason.trim() === '') {
+      return; // User cancelled or didn't provide a reason
+    }
+
+    setBanningUserId(userId);
+    try {
+      // Call the Supabase RPC function to ban the user
+      const { data, error } = await supabase.rpc('ban_user', {
+        target_user_id: userId,
+        ban_reason_text: reason.trim()
+      });
+
+      if (error) throw error;
+
+      alert(`User ${userName} has been permanently banned.\n\nReason: ${reason}`);
+
+      // Refresh the reports list
+      fetchReports();
+    } catch (error) {
+      console.error('Error banning user:', error);
+      if (error.message.includes('Only super admins')) {
+        alert('Permission denied: Only super admins can ban users');
+      } else if (error.message.includes('Cannot ban admin')) {
+        alert('Cannot ban admin users');
+      } else if (error.message.includes('Cannot ban yourself')) {
+        alert('You cannot ban yourself');
+      } else {
+        alert('Failed to ban user: ' + error.message);
+      }
+    } finally {
+      setBanningUserId(null);
     }
   };
 
@@ -1984,15 +2058,27 @@ function ModerationTab({ onReportReviewed }) {
                       </p>
                     )}
                   </div>
-                  {!showReviewed && (
-                    <button
-                      onClick={() => handleMarkAsReviewed(report.id)}
-                      disabled={reviewingId === report.id}
-                      className="ml-4 px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {reviewingId === report.id ? 'Reviewing...' : 'Mark as Reviewed'}
-                    </button>
-                  )}
+                  <div className="ml-4 flex flex-col gap-2">
+                    {!showReviewed && (
+                      <button
+                        onClick={() => handleMarkAsReviewed(report.id)}
+                        disabled={reviewingId === report.id}
+                        className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {reviewingId === report.id ? 'Reviewing...' : 'Mark as Reviewed'}
+                      </button>
+                    )}
+                    {isSuperAdmin && report.reported_user?.id && (
+                      <button
+                        onClick={() => handleBanUser(report.reported_user_id, report.reported_user?.name || report.reported_user?.email)}
+                        disabled={banningUserId === report.reported_user_id}
+                        className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                        data-testid="ban-user-button"
+                      >
+                        {banningUserId === report.reported_user_id ? 'Banning...' : '🚫 Ban User'}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

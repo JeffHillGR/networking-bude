@@ -26,6 +26,7 @@ export default function BudEOnboarding() {
   const [contactSubmitting, setContactSubmitting] = useState(false);
   const [contactSuccess, setContactSuccess] = useState(false);
   const [contactError, setContactError] = useState('');
+  const [signupError, setSignupError] = useState('');
 
   // Carousel state for hero images
   const [heroImageIndex, setHeroImageIndex] = useState(0);
@@ -388,6 +389,7 @@ export default function BudEOnboarding() {
 
   const handleFinalSubmit = async () => {
     setIsSubmitting(true);
+    setSignupError(''); // Clear any previous errors
 
     try {
       // Create Supabase auth user and profile
@@ -397,19 +399,19 @@ export default function BudEOnboarding() {
         first_name: formData.firstName,
         last_name: formData.lastName,
         name: `${formData.firstName} ${formData.lastName}`,
-        title: formData.jobTitle,
-        company: formData.company,
-        industry: formData.industry,
+        title: formData.jobTitle || '',
+        company: formData.company || '',
+        industry: formData.industry || '',
         zip_code: formData.zipCode,
         location: formData.zipCode,
-        organizations_current: formData.organizations,
-        organizations_other: formData.organizationsOther,
-        organizations_interested: formData.organizationsToCheckOut,
-        organizations_to_check_out_other: formData.organizationsToCheckOutOther,
-        groups_belong_to: formData.groupsBelongTo,
-        looking_to_accomplish: formData.lookingToAccomplish,
-        professional_interests: formData.professionalInterests,
-        professional_interests_other: formData.professionalInterestsOther,
+        organizations_current: formData.organizations || [],
+        organizations_other: formData.organizationsOther || '',
+        organizations_interested: formData.organizationsToCheckOut || [],
+        organizations_to_check_out_other: formData.organizationsToCheckOutOther || '',
+        groups_belong_to: formData.groupsBelongTo || '',
+        looking_to_accomplish: formData.lookingToAccomplish ? [formData.lookingToAccomplish] : [],
+        professional_interests: formData.professionalInterests || [],
+        professional_interests_other: formData.professionalInterestsOther || '',
         personal_interests: formData.personalInterests || '',
         networking_goals: formData.networkingGoals,
         photo: null,  // Will be updated after upload
@@ -490,7 +492,22 @@ export default function BudEOnboarding() {
       }, 4000);
     } catch (error) {
       console.error('Error creating user:', error);
-      alert('Failed to create account. Please check your information and try again.');
+
+      // Check if it's a duplicate email error
+      // Supabase might return different error messages/codes for duplicate users
+      const errorMessage = error.message?.toLowerCase() || '';
+      const errorCode = error.code?.toLowerCase() || '';
+
+      if (errorMessage.includes('already') ||
+          errorMessage.includes('duplicate') ||
+          errorMessage.includes('exists') ||
+          errorCode.includes('23505') || // PostgreSQL unique violation
+          errorCode.includes('user_already_exists')) {
+        setSignupError('This email already exists. Please try logging in instead.');
+      } else {
+        setSignupError('Failed to create account. Please check your information and try again.');
+        alert('Failed to create account. Please check your information and try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -1408,6 +1425,10 @@ export default function BudEOnboarding() {
             </button>
             <button
               onClick={() => {
+                if (!formData.zipCode || formData.zipCode.length !== 5) {
+                  alert('Please enter a valid 5-digit zip code');
+                  return;
+                }
                 setStep(2);
                 window.scrollTo(0, 0);
               }}
@@ -1528,7 +1549,7 @@ const renderStep2 = () => (
           </div>
 
           <div>
-            <h2 className="text-xl font-bold mb-1.5">Bonus Question <span className="text-gray-500 font-normal">(Optional)</span>: I'm looking to...</h2>
+            <h2 className="text-xl font-bold mb-1.5">Bonus Question: I'm looking to...</h2>
             <p className="text-gray-600 mb-2 text-sm">Select one option that best describes what you're looking for</p>
             <select
               className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
@@ -1609,6 +1630,13 @@ const renderStep2 = () => (
             {isSubmitting ? 'Creating Account...' : 'Create My Account'}
           </button>
         </div>
+
+        {/* Signup Error Message */}
+        {signupError && (
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg text-center">
+            <p className="text-red-700 font-medium">{signupError}</p>
+          </div>
+        )}
 
         <p className="text-center text-sm text-gray-600 mt-6">
           By creating an account, you agree to our{' '}

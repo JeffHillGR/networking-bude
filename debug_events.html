@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Events</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Event Slot Debug</h1>
+    <button onclick="checkEvents()">Check Events</button>
+    <pre id="output"></pre>
+
+    <script type="module">
+        // Import from your existing supabase config
+        // You'll need to add your Supabase URL and anon key here
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        window.checkEvents = async function() {
+            const output = document.getElementById('output');
+            output.textContent = 'Loading...';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('events')
+                    .select('id, slot_number, title, is_featured')
+                    .order('slot_number', { ascending: true });
+
+                if (error) throw error;
+
+                output.textContent = JSON.stringify(data, null, 2);
+
+                // Check for issues
+                const issues = [];
+                const slotCounts = {};
+
+                data.forEach(event => {
+                    slotCounts[event.slot_number] = (slotCounts[event.slot_number] || 0) + 1;
+                });
+
+                Object.entries(slotCounts).forEach(([slot, count]) => {
+                    if (count > 1) {
+                        issues.push(`⚠️ Slot ${slot} has ${count} events (duplicate!)`);
+                    }
+                });
+
+                if (issues.length > 0) {
+                    output.textContent = issues.join('\n') + '\n\n' + output.textContent;
+                }
+            } catch (error) {
+                output.textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

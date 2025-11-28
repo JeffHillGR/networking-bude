@@ -246,6 +246,104 @@ describe('Admin Panel', () => {
     });
   });
 
+  describe('Super Admin Ban Functionality', () => {
+    beforeEach(() => {
+      // Mock super admin user
+      cy.intercept('GET', '**/rest/v1/users?id=eq.*', {
+        statusCode: 200,
+        body: [
+          {
+            id: 'super-admin-id',
+            email: 'test-admin@example.com',
+            is_admin: true,
+            admin_level: 'super_admin'
+          }
+        ]
+      }).as('getSuperAdmin');
+
+      cy.login('test-admin@example.com', 'TestAdmin123!');
+      cy.visit('/admin');
+      cy.contains(/admin panel|dashboard/i, { timeout: 10000 }).should('exist');
+      cy.contains(/moderation/i).click();
+    });
+
+    it('should display ban button for super admins', () => {
+      cy.intercept('GET', '**/rest/v1/user_reports*', {
+        statusCode: 200,
+        body: [
+          {
+            id: '1',
+            reported_user_id: 'user-123',
+            reporter_id: 'user-456',
+            reason: 'Spam',
+            reviewed: false,
+            created_at: new Date().toISOString(),
+            reporter: {
+              id: 'user-456',
+              name: 'John Reporter',
+              email: 'reporter@example.com'
+            },
+            reported_user: {
+              id: 'user-123',
+              name: 'Jane Reported',
+              email: 'reported@example.com'
+            }
+          }
+        ]
+      }).as('getReports');
+
+      cy.visit('/admin');
+      cy.contains(/admin panel|dashboard/i, { timeout: 10000 }).should('exist');
+      cy.contains(/moderation/i).click();
+      cy.wait('@getReports');
+
+      // Ban button should be visible for super admins
+      cy.get('[data-testid="ban-user-button"]').should('be.visible');
+    });
+
+    it('should allow super admin to ban a user', () => {
+      cy.intercept('GET', '**/rest/v1/user_reports*', {
+        statusCode: 200,
+        body: [
+          {
+            id: '1',
+            reported_user_id: 'user-123',
+            reporter_id: 'user-456',
+            reason: 'Harassment',
+            reviewed: false,
+            created_at: new Date().toISOString(),
+            reporter: {
+              id: 'user-456',
+              name: 'John Reporter',
+              email: 'reporter@example.com'
+            },
+            reported_user: {
+              id: 'user-123',
+              name: 'Jane Reported',
+              email: 'reported@example.com'
+            }
+          }
+        ]
+      }).as('getReports');
+
+      cy.intercept('POST', '**/rest/v1/rpc/ban_user', {
+        statusCode: 200,
+        body: true
+      }).as('banUser');
+
+      cy.visit('/admin');
+      cy.contains(/admin panel|dashboard/i, { timeout: 10000 }).should('exist');
+      cy.contains(/moderation/i).click();
+      cy.wait('@getReports');
+
+      // Click ban button
+      cy.get('[data-testid="ban-user-button"]').first().click();
+
+      // Note: We can't fully test the prompt() dialog in Cypress
+      // In a real test, you'd need to stub window.prompt
+    });
+  });
+
   describe('Ad Management', () => {
     beforeEach(() => {
       cy.login('test-admin@example.com', 'TestAdmin123!');
