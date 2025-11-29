@@ -546,16 +546,31 @@ function EventDetail() {
   // Show error if event not found
   if (!event) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Event Not Found</h2>
-          <p className="text-gray-600 mb-4">The event you're looking for doesn't exist.</p>
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-          >
-            Back to Dashboard
-          </button>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center max-w-md px-4">
+          <div className="mb-6">
+            <svg className="w-20 h-20 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">That Event Has Passed</h2>
+          <p className="text-gray-600 mb-6">
+            But here's our events listings page with upcoming networking opportunities!
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={() => navigate('/events')}
+              className="px-6 py-3 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors"
+            >
+              View Events
+            </button>
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+            >
+              Dashboard
+            </button>
+          </div>
         </div>
       </div>
     );
