@@ -29,28 +29,35 @@ function Dashboard() {
   const [activeTab, setActiveTab] = useState(tabFromUrl || location.state?.activeTab || 'dashboard');
   const [connections, setConnections] = useState([]);
 
+  // Sync activeTab from URL when browser back/forward is used
+  useEffect(() => {
+    const tabFromUrl = new URLSearchParams(location.search).get('tab');
+    const expectedTab = tabFromUrl || 'dashboard';
+    if (activeTab !== expectedTab) {
+      setActiveTab(expectedTab);
+    }
+  }, [location.search]);
+
   // Update URL when activeTab changes to persist tab state across refreshes
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const currentTab = params.get('tab');
+    const expectedUrlTab = activeTab === 'dashboard' ? null : activeTab;
 
-    if (activeTab === 'dashboard') {
-      // For dashboard, remove the tab param to keep URL clean
-      params.delete('tab');
-    } else {
-      // For other tabs, set the tab param
-      params.set('tab', activeTab);
+    if (currentTab !== expectedUrlTab) {
+      if (activeTab === 'dashboard') {
+        params.delete('tab');
+      } else {
+        params.set('tab', activeTab);
+      }
+
+      const newSearch = params.toString();
+      const newUrl = newSearch ? `${location.pathname}?${newSearch}` : location.pathname;
+
+      // Push new history entry so back button works between tabs
+      navigate(newUrl, { replace: false });
     }
-
-    const newSearch = params.toString();
-    const newUrl = newSearch ? `${location.pathname}?${newSearch}` : location.pathname;
-
-    // Only update if the URL actually changed
-    // Don't preserve location.state since URL params are now the source of truth
-    if (currentTab !== (activeTab === 'dashboard' ? null : activeTab)) {
-      navigate(newUrl, { replace: true });
-    }
-  }, [activeTab, navigate, location.pathname, location.search]);
+  }, [activeTab, navigate, location.pathname]);
   const [loadingConnections, setLoadingConnections] = useState(true);
   const [connectionLikedEvents, setConnectionLikedEvents] = useState({});
   const [connectionGoingEvents, setConnectionGoingEvents] = useState({});
@@ -679,15 +686,9 @@ const getGreeting = () => {
               {/* Potential Connections - Left Side */}
               <div className="flex flex-col relative group">
                 <div className="mb-4 text-center">
-                  <button
-                    onClick={() => {
-                      setActiveTab('connections');
-                      window.scrollTo({ top: 0, behavior: 'instant' });
-                    }}
-                    className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black mb-2 hover:bg-gray-50 transition-colors cursor-pointer"
-                  >
-                    <h3 className="font-bold text-black text-lg">All Potential Connections →</h3>
-                  </button>
+                  <div className="inline-block bg-white px-6 py-2 rounded-lg border-2 border-black mb-2 min-w-[280px]">
+                    <h3 className="font-bold text-black text-lg">Recommended Connections</h3>
+                  </div>
                   <p className="text-sm text-gray-600">People you might want to connect with <span className="font-bold">first</span></p>
                 </div>
                 <div className="space-y-4 flex-grow">
@@ -789,17 +790,26 @@ const getGreeting = () => {
                     })
                   )}
                 </div>
+                {/* View All Button */}
+                <div className="mt-4 text-center">
+                  <button
+                    onClick={() => {
+                      setActiveTab('connections');
+                      window.scrollTo({ top: 0, behavior: 'instant' });
+                    }}
+                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors min-w-[280px]"
+                  >
+                    View All Recommended Connections
+                  </button>
+                </div>
               </div>
 
               {/* Upcoming Events - Right Side */}
               <div className="flex flex-col">
                 <div className="mb-4 text-center">
-                  <button
-                    onClick={() => setActiveTab('events')}
-                    className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black mb-2 hover:bg-gray-50 transition-colors cursor-pointer"
-                  >
-                    <h3 className="font-bold text-black text-lg">All Upcoming Events →</h3>
-                  </button>
+                  <div className="inline-block bg-white px-6 py-2 rounded-lg border-2 border-black mb-2 min-w-[280px]">
+                    <h3 className="font-bold text-black text-lg">Upcoming Events</h3>
+                  </div>
                   <p className="text-sm text-gray-600">Then check out some events <span className="font-bold">together</span></p>
                 </div>
                 <div className="space-y-4 flex-grow">
@@ -850,6 +860,15 @@ const getGreeting = () => {
                 ))
                   )}
               </div>
+                {/* View All Button */}
+                <div className="mt-4 text-center">
+                  <button
+                    onClick={() => setActiveTab('events')}
+                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors min-w-[280px]"
+                  >
+                    View All Upcoming Events
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -857,7 +876,7 @@ const getGreeting = () => {
             <div>
               <div className="bg-white rounded-lg p-4 md:p-5 shadow-sm border border-gray-200">
                 <div className="mb-2 text-center">
-                  <div className="inline-block bg-white px-4 py-2 rounded-lg border-2 border-black">
+                  <div className="inline-block bg-white px-6 py-2 rounded-lg border-2 border-black min-w-[280px]">
                     <h3 className="font-bold text-black text-lg">Insights</h3>
                   </div>
                   <p className="text-xs text-gray-500 mt-0.5">Curated content to help you grow</p>
@@ -916,7 +935,7 @@ const getGreeting = () => {
                 <div className="mt-4 text-center">
                   <button
                     onClick={() => navigate('/resources-insights')}
-                    className="w-full bg-[#D0ED00] text-[#009900] font-bold py-3 px-6 rounded-lg border-2 border-black hover:bg-[#c4e000] transition-colors"
+                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors min-w-[280px]"
                   >
                     View All Insights
                   </button>
