@@ -357,7 +357,8 @@ function EventSlotsManager() {
 
       // Reload events to reflect changes
       await loadEvents();
-      alert(`Event moved from Slot ${slotNumber} to Slot ${slotNumber - 1}`);
+      // Update expanded slot to follow the moved event
+      setExpandedSlot(slotNumber - 1);
     } catch (error) {
       console.error('Error moving event:', error);
       alert('Failed to move event: ' + error.message);
@@ -471,7 +472,8 @@ function EventSlotsManager() {
 
       // Reload events to reflect changes
       await loadEvents();
-      alert(`Event moved from Slot ${slotNumber} to Slot ${slotNumber + 1}`);
+      // Update expanded slot to follow the moved event
+      setExpandedSlot(slotNumber + 1);
     } catch (error) {
       console.error('Error moving event:', error);
       alert('Failed to move event: ' + error.message);
