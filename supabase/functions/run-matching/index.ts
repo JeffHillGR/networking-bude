@@ -4,15 +4,17 @@
  * Mirrors src/lib/matchingAlgorithm.js exactly
  *
  * Scoring:
- * - Networking Goals (25 points)
- * - Personal Interests (20 points)
- * - Organizations (20 points) - 10 complementary + 10 same-field
- * - Looking To Accomplish (15 points)
- * - Professional Interests (15 points)
- * - Groups in Common (10 points)
- * - Industry (5 points)
+ * - Networking Goals (30 points)
+ * - Organizations (25 points) - 12.5 complementary + 12.5 same-field
+ * - Professional Interests (20 points)
+ * - Personal Interests (15 points)
+ * - Industry (10 points)
  *
- * Total: 110 points possible, capped at 100
+ * TEMPORARILY DISABLED (fields blank for most users - reinstate later):
+ * - Looking To Accomplish (0 points) - was 15
+ * - Groups in Common (0 points) - was 10
+ *
+ * Total: 100 points possible
  * Minimum threshold: 60/100
  */
 
@@ -121,10 +123,10 @@ function areIndustriesRelated(industry1: string, industry2: string): boolean {
 // ============= SCORING FUNCTIONS =============
 
 /**
- * Score Networking Goals (25 points max)
+ * Score Networking Goals (30 points max)
  */
 function scoreNetworkingGoals(goals1: string, goals2: string): { score: number; matches: string[] } {
-  const maxScore = 25;
+  const maxScore = 30;
   let score = 0;
   const matches: string[] = [];
 
@@ -205,9 +207,9 @@ function scoreNetworkingGoals(goals1: string, goals2: string): { score: number; 
 }
 
 /**
- * Score Organizations (20 points max)
- * - Complementary (10 pts): My attend <-> Your check out
- * - Same-field (10 pts): Both attend same OR both check out same
+ * Score Organizations (25 points max)
+ * - Complementary (12.5 pts): My attend <-> Your check out
+ * - Same-field (12.5 pts): Both attend same OR both check out same
  */
 function scoreOrganizations(user1Attend: string, user1WantToCheckOut: string, user2Attend: string, user2WantToCheckOut: string): { score: number; matches: string[] } {
   let score = 0;
@@ -222,13 +224,13 @@ function scoreOrganizations(user1Attend: string, user1WantToCheckOut: string, us
   const u2Attend = parseList(user2Attend);
   const u2CheckOut = parseList(user2WantToCheckOut);
 
-  // BUCKET 1: Complementary Match (10 points max)
+  // BUCKET 1: Complementary Match (12.5 points max)
   const complementary1 = findSharedItems(u1Attend, u2CheckOut);
   const complementary2 = findSharedItems(u1CheckOut, u2Attend);
   const allComplementary = [...complementary1, ...complementary2];
 
   if (allComplementary.length > 0) {
-    score += 10;
+    score += 12.5;
     if (complementary1.length > 0) {
       matches.push(`Introduction opportunity: ${complementary1.join(', ')}`);
     }
@@ -237,12 +239,12 @@ function scoreOrganizations(user1Attend: string, user1WantToCheckOut: string, us
     }
   }
 
-  // BUCKET 2: Same-Field Match (10 points max)
+  // BUCKET 2: Same-Field Match (12.5 points max)
   const sharedAttend = findSharedItems(u1Attend, u2Attend);
   const sharedCheckOut = findSharedItems(u1CheckOut, u2CheckOut);
 
   if (sharedAttend.length > 0 || sharedCheckOut.length > 0) {
-    score += 10;
+    score += 12.5;
     if (sharedAttend.length > 0) {
       matches.push(`Both attend: ${sharedAttend.join(', ')}`);
     }
@@ -252,13 +254,13 @@ function scoreOrganizations(user1Attend: string, user1WantToCheckOut: string, us
   }
 
   return {
-    score: Math.min(score, 20),
+    score: Math.min(score, 25),
     matches
   };
 }
 
 /**
- * Score Professional Interests (15 points max)
+ * Score Professional Interests (20 points max)
  */
 function scoreProfessionalInterests(interests1: string, interests2: string): { score: number; matches: string[] } {
   let score = 0;
@@ -272,18 +274,18 @@ function scoreProfessionalInterests(interests1: string, interests2: string): { s
 
   if (shared.length > 0) {
     const avgLength = (list1.length + list2.length) / 2;
-    score = (shared.length / avgLength) * 15;
+    score = (shared.length / avgLength) * 20;
     matches.push(...shared);
   }
 
   return {
-    score: Math.min(Math.round(score), 15),
+    score: Math.min(Math.round(score), 20),
     matches
   };
 }
 
 /**
- * Score Industry (5 points max)
+ * Score Industry (10 points max)
  */
 function scoreIndustry(industry1: string, industry2: string): { score: number; matches: string[] } {
   let score = 0;
@@ -292,12 +294,12 @@ function scoreIndustry(industry1: string, industry2: string): { score: number; m
   if (!industry1 || !industry2) return { score, matches };
 
   if (industry1.toLowerCase() === industry2.toLowerCase()) {
-    score = 5;
+    score = 10;
     matches.push(industry1);
   } else {
     const related = areIndustriesRelated(industry1, industry2);
     if (related) {
-      score = 3;
+      score = 6;
       matches.push(`Related: ${industry1} & ${industry2}`);
     }
   }
@@ -359,7 +361,8 @@ function scoreLookingTo(looking1: string[], looking2: string[]): { score: number
 }
 
 /**
- * Score Personal Interests/Hobbies (20 points max)
+ * Score Personal Interests/Hobbies (15 points max)
+ * Shared hobbies build rapport but weighted lower to avoid over-matching
  */
 function scorePersonalInterests(interests1: string, interests2: string): { score: number; matches: string[] } {
   let score = 0;
@@ -385,12 +388,13 @@ function scorePersonalInterests(interests1: string, interests2: string): { score
   );
 
   if (sharedHobbies.length > 0) {
-    score = sharedHobbies.length >= 2 ? 20 : 10;
+    // Scale: 1 hobby = 7pts, 2+ = 15pts (full points)
+    score = sharedHobbies.length >= 2 ? 15 : 7;
     matches.push(...sharedHobbies);
   }
 
   return {
-    score: Math.min(score, 20),
+    score: Math.min(score, 15),
     matches
   };
 }
@@ -442,17 +446,19 @@ function calculateCompatibility(user1: AlgorithmUser, user2: AlgorithmUser): { s
   matches.industry.details = industryScore.matches;
   totalScore += industryScore.score;
 
-  // 5. GROUPS IN COMMON (10 points)
-  const groupsScore = scoreGroups(user1.groupsBelongTo, user2.groupsBelongTo);
-  matches.groups.score = groupsScore.score;
-  matches.groups.details = groupsScore.matches;
-  totalScore += groupsScore.score;
+  // 5. GROUPS IN COMMON - TEMPORARILY DISABLED (blank for most users)
+  // TODO: Reinstate when users have filled in groups_belong_to field
+  // const groupsScore = scoreGroups(user1.groupsBelongTo, user2.groupsBelongTo);
+  // matches.groups.score = groupsScore.score;
+  // matches.groups.details = groupsScore.matches;
+  // totalScore += groupsScore.score;
 
-  // 6. "LOOKING TO" OVERLAP (15 points)
-  const lookingToScore = scoreLookingTo(user1.lookingToAccomplish, user2.lookingToAccomplish);
-  matches.lookingTo.score = lookingToScore.score;
-  matches.lookingTo.details = lookingToScore.matches;
-  totalScore += lookingToScore.score;
+  // 6. "LOOKING TO" OVERLAP - TEMPORARILY DISABLED (blank for most users)
+  // TODO: Reinstate when users have filled in looking_to_accomplish field
+  // const lookingToScore = scoreLookingTo(user1.lookingToAccomplish, user2.lookingToAccomplish);
+  // matches.lookingTo.score = lookingToScore.score;
+  // matches.lookingTo.details = lookingToScore.matches;
+  // totalScore += lookingToScore.score;
 
   // 7. PERSONAL INTERESTS/HOBBIES (20 points)
   const personalScore = scorePersonalInterests(

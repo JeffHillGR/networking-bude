@@ -2,21 +2,23 @@
  * BudE Matching Algorithm
  *
  * Calculates compatibility scores between users based on:
- * - Networking Goals (25 points)
- * - Personal Interests (20 points) - high completion rate, builds rapport
- * - Organizations (20 points) - split into:
- *   - Complementary match (10 points): My attend ↔ Your check out
- *   - Same-field match (10 points): Both attend same OR both check out same
- * - Looking To Accomplish (15 points)
- * - Professional Interests (15 points)
- * - Groups in Common (10 points)
- * - Industry (5 points)
+ * - Networking Goals (30 points)
+ * - Organizations (25 points) - split into:
+ *   - Complementary match (12.5 points): My attend ↔ Your check out
+ *   - Same-field match (12.5 points): Both attend same OR both check out same
+ * - Professional Interests (20 points)
+ * - Personal Interests (15 points) - builds rapport
+ * - Industry (10 points)
  *
- * Total: 110 points possible, capped at 100
+ * TEMPORARILY DISABLED (fields blank for most users - reinstate later):
+ * - Looking To Accomplish (0 points) - was 15
+ * - Groups in Common (0 points) - was 10
+ *
+ * Total: 100 points possible
  * Minimum threshold: 60/100 to be shown as a potential connection
  *
- * Updated Dec 2024: Rebalanced to favor personal interests and goals over
- * organizations/groups (which newcomers may not have filled out yet)
+ * Updated Dec 2024: Removed Groups & LookingTo scoring (blank fields),
+ * rebalanced remaining categories for better match distribution
  */
 
 import { supabase } from './supabase';
@@ -71,17 +73,19 @@ export function calculateCompatibility(user1, user2) {
   matches.industry.details = industryScore.matches;
   totalScore += industryScore.score;
 
-  // 5. GROUPS IN COMMON (12.5 points)
-  const groupsScore = scoreGroups(user1.groupsBelongTo, user2.groupsBelongTo);
-  matches.groups.score = groupsScore.score;
-  matches.groups.details = groupsScore.matches;
-  totalScore += groupsScore.score;
+  // 5. GROUPS IN COMMON - TEMPORARILY DISABLED (blank for most users)
+  // TODO: Reinstate when users have filled in groups_belong_to field
+  // const groupsScore = scoreGroups(user1.groupsBelongTo, user2.groupsBelongTo);
+  // matches.groups.score = groupsScore.score;
+  // matches.groups.details = groupsScore.matches;
+  // totalScore += groupsScore.score;
 
-  // 6. "LOOKING TO" OVERLAP (12.5 points)
-  const lookingToScore = scoreLookingTo(user1.lookingToAccomplish, user2.lookingToAccomplish);
-  matches.lookingTo.score = lookingToScore.score;
-  matches.lookingTo.details = lookingToScore.matches;
-  totalScore += lookingToScore.score;
+  // 6. "LOOKING TO" OVERLAP - TEMPORARILY DISABLED (blank for most users)
+  // TODO: Reinstate when users have filled in looking_to_accomplish field
+  // const lookingToScore = scoreLookingTo(user1.lookingToAccomplish, user2.lookingToAccomplish);
+  // matches.lookingTo.score = lookingToScore.score;
+  // matches.lookingTo.details = lookingToScore.matches;
+  // totalScore += lookingToScore.score;
 
   // 7. PERSONAL INTERESTS/HOBBIES (5 points)
   const personalScore = scorePersonalInterests(
@@ -100,10 +104,10 @@ export function calculateCompatibility(user1, user2) {
 }
 
 /**
- * Score Networking Goals (25 points max)
+ * Score Networking Goals (30 points max)
  */
 function scoreNetworkingGoals(goals1, goals2) {
-  const maxScore = 25;
+  const maxScore = 30;
   let score = 0;
   const matches = [];
 
@@ -185,13 +189,13 @@ function scoreNetworkingGoals(goals1, goals2) {
 }
 
 /**
- * Score Organizations (30 points max)
+ * Score Organizations (25 points max)
  *
- * BUCKET 1 (15 points): Complementary Match
+ * BUCKET 1 (12.5 points): Complementary Match
  *   - My "Orgs I attend" ↔ Your "Orgs I want to check out"
  *   - OR Your "Orgs I attend" ↔ My "Orgs I want to check out"
  *
- * BUCKET 2 (15 points): Same-Field Match
+ * BUCKET 2 (12.5 points): Same-Field Match
  *   - Both attend same orgs
  *   - OR both want to check out same orgs
  */
@@ -209,14 +213,14 @@ function scoreOrganizations(user1Attend, user1WantToCheckOut, user2Attend, user2
   const u2Attend = parseList(user2Attend);
   const u2CheckOut = parseList(user2WantToCheckOut);
 
-  // BUCKET 1: Complementary Match (10 points max)
+  // BUCKET 1: Complementary Match (12.5 points max)
   // User1 attends, User2 wants to check out (or vice versa)
   const complementary1 = findSharedItems(u1Attend, u2CheckOut);
   const complementary2 = findSharedItems(u1CheckOut, u2Attend);
   const allComplementary = [...complementary1, ...complementary2];
 
   if (allComplementary.length > 0) {
-    score += 10;
+    score += 12.5;
     if (complementary1.length > 0) {
       matches.push(`Introduction opportunity: ${complementary1.join(', ')}`);
     }
@@ -225,13 +229,13 @@ function scoreOrganizations(user1Attend, user1WantToCheckOut, user2Attend, user2
     }
   }
 
-  // BUCKET 2: Same-Field Match (10 points max)
+  // BUCKET 2: Same-Field Match (12.5 points max)
   // Both attend same OR both want to check out same
   const sharedAttend = findSharedItems(u1Attend, u2Attend);
   const sharedCheckOut = findSharedItems(u1CheckOut, u2CheckOut);
 
   if (sharedAttend.length > 0 || sharedCheckOut.length > 0) {
-    score += 10;
+    score += 12.5;
     if (sharedAttend.length > 0) {
       matches.push(`Both attend: ${sharedAttend.join(', ')}`);
     }
@@ -241,13 +245,13 @@ function scoreOrganizations(user1Attend, user1WantToCheckOut, user2Attend, user2
   }
 
   return {
-    score: Math.min(score, 20),
+    score: Math.min(score, 25),
     matches
   };
 }
 
 /**
- * Score Professional Interests (15 points max)
+ * Score Professional Interests (20 points max)
  */
 function scoreProfessionalInterests(interests1, interests2) {
   let score = 0;
@@ -262,18 +266,18 @@ function scoreProfessionalInterests(interests1, interests2) {
   if (shared.length > 0) {
     // Calculate score: (shared items / average list length) * max points
     const avgLength = (list1.length + list2.length) / 2;
-    score = (shared.length / avgLength) * 15;
+    score = (shared.length / avgLength) * 20;
     matches.push(...shared);
   }
 
   return {
-    score: Math.min(Math.round(score), 15),
+    score: Math.min(Math.round(score), 20),
     matches
   };
 }
 
 /**
- * Score Industry (5 points max)
+ * Score Industry (10 points max)
  */
 function scoreIndustry(industry1, industry2) {
   let score = 0;
@@ -283,13 +287,13 @@ function scoreIndustry(industry1, industry2) {
 
   // Exact match
   if (industry1.toLowerCase() === industry2.toLowerCase()) {
-    score = 5;
+    score = 10;
     matches.push(industry1);
   } else {
     // Partial match (related industries)
     const related = areIndustriesRelated(industry1, industry2);
     if (related) {
-      score = 3;
+      score = 6;
       matches.push(`Related: ${industry1} & ${industry2}`);
     }
   }
@@ -360,8 +364,8 @@ function scoreLookingTo(looking1, looking2) {
 }
 
 /**
- * Score Personal Interests/Hobbies (20 points max)
- * High weight because most users fill this out and shared hobbies build rapport
+ * Score Personal Interests/Hobbies (15 points max)
+ * Shared hobbies build rapport but weighted lower to avoid over-matching
  */
 function scorePersonalInterests(interests1, interests2) {
   let score = 0;
@@ -388,13 +392,13 @@ function scorePersonalInterests(interests1, interests2) {
   );
 
   if (sharedHobbies.length > 0) {
-    // Scale: 1 hobby = 10pts, 2+ = 20pts (full points)
-    score = sharedHobbies.length >= 2 ? 20 : 10;
+    // Scale: 1 hobby = 7pts, 2+ = 15pts (full points)
+    score = sharedHobbies.length >= 2 ? 15 : 7;
     matches.push(...sharedHobbies);
   }
 
   return {
-    score: Math.min(score, 20),
+    score: Math.min(score, 15),
     matches
   };
 }
