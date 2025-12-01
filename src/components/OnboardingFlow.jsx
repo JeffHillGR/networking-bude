@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { User, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 // Matching algorithm now runs server-side via Edge Function
 
 export default function BudEOnboarding() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { signUp, signIn, resetPassword, user } = useAuth();
   const [step, setStep] = useState(0);
+  const [loginRedirect, setLoginRedirect] = useState('/dashboard');
   const [showLandingHero, setShowLandingHero] = useState(true); // NEW: Show full-screen hero first
   const [justSignedUp, setJustSignedUp] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -56,6 +58,20 @@ export default function BudEOnboarding() {
       img.src = src;
     });
   }, []);
+
+  // Check URL params for auto-opening login modal with redirect
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const showLogin = params.get('login');
+    const redirect = params.get('redirect');
+
+    if (showLogin === 'true') {
+      setShowLoginModal(true);
+    }
+    if (redirect) {
+      setLoginRedirect(redirect);
+    }
+  }, [location.search]);
 
   // Auto-rotate carousel every 8 seconds (pause on hover)
   useEffect(() => {
@@ -225,8 +241,8 @@ export default function BudEOnboarding() {
     }
 
     if (data?.user) {
-      // Successfully logged in, navigate to dashboard
-      navigate('/dashboard');
+      // Successfully logged in, navigate to redirect URL or dashboard
+      navigate(loginRedirect);
     }
   };
 
@@ -602,7 +618,7 @@ export default function BudEOnboarding() {
               <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
-                    Trying to make "connections"
+                    Other social networking sites
                   </h1>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
                     giving you the blues?
