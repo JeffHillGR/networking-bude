@@ -207,9 +207,9 @@ function scoreNetworkingGoals(goals1: string, goals2: string): { score: number; 
 }
 
 /**
- * Score Organizations (25 points max)
- * - Complementary (12.5 pts): My attend <-> Your check out
- * - Same-field (12.5 pts): Both attend same OR both check out same
+ * Score Organizations (40 points max)
+ * - Complementary (20 pts): My attend <-> Your check out
+ * - Same-field (20 pts): Both attend same OR both check out same
  */
 function scoreOrganizations(user1Attend: string, user1WantToCheckOut: string, user2Attend: string, user2WantToCheckOut: string): { score: number; matches: string[] } {
   let score = 0;
@@ -224,13 +224,13 @@ function scoreOrganizations(user1Attend: string, user1WantToCheckOut: string, us
   const u2Attend = parseList(user2Attend);
   const u2CheckOut = parseList(user2WantToCheckOut);
 
-  // BUCKET 1: Complementary Match (12.5 points max)
+  // BUCKET 1: Complementary Match (20 points max)
   const complementary1 = findSharedItems(u1Attend, u2CheckOut);
   const complementary2 = findSharedItems(u1CheckOut, u2Attend);
   const allComplementary = [...complementary1, ...complementary2];
 
   if (allComplementary.length > 0) {
-    score += 12.5;
+    score += 20;
     if (complementary1.length > 0) {
       matches.push(`Introduction opportunity: ${complementary1.join(', ')}`);
     }
@@ -239,12 +239,12 @@ function scoreOrganizations(user1Attend: string, user1WantToCheckOut: string, us
     }
   }
 
-  // BUCKET 2: Same-Field Match (12.5 points max)
+  // BUCKET 2: Same-Field Match (20 points max)
   const sharedAttend = findSharedItems(u1Attend, u2Attend);
   const sharedCheckOut = findSharedItems(u1CheckOut, u2CheckOut);
 
   if (sharedAttend.length > 0 || sharedCheckOut.length > 0) {
-    score += 12.5;
+    score += 20;
     if (sharedAttend.length > 0) {
       matches.push(`Both attend: ${sharedAttend.join(', ')}`);
     }
@@ -254,13 +254,13 @@ function scoreOrganizations(user1Attend: string, user1WantToCheckOut: string, us
   }
 
   return {
-    score: Math.min(score, 25),
+    score: Math.min(score, 40),
     matches
   };
 }
 
 /**
- * Score Professional Interests (20 points max)
+ * Score Professional Interests (15 points max)
  */
 function scoreProfessionalInterests(interests1: string, interests2: string): { score: number; matches: string[] } {
   let score = 0;
@@ -274,18 +274,18 @@ function scoreProfessionalInterests(interests1: string, interests2: string): { s
 
   if (shared.length > 0) {
     const avgLength = (list1.length + list2.length) / 2;
-    score = (shared.length / avgLength) * 20;
+    score = (shared.length / avgLength) * 15;
     matches.push(...shared);
   }
 
   return {
-    score: Math.min(Math.round(score), 20),
+    score: Math.min(Math.round(score), 15),
     matches
   };
 }
 
 /**
- * Score Industry (10 points max)
+ * Score Industry (5 points max)
  */
 function scoreIndustry(industry1: string, industry2: string): { score: number; matches: string[] } {
   let score = 0;
@@ -294,12 +294,12 @@ function scoreIndustry(industry1: string, industry2: string): { score: number; m
   if (!industry1 || !industry2) return { score, matches };
 
   if (industry1.toLowerCase() === industry2.toLowerCase()) {
-    score = 10;
+    score = 5;
     matches.push(industry1);
   } else {
     const related = areIndustriesRelated(industry1, industry2);
     if (related) {
-      score = 6;
+      score = 3;
       matches.push(`Related: ${industry1} & ${industry2}`);
     }
   }
@@ -361,7 +361,7 @@ function scoreLookingTo(looking1: string[], looking2: string[]): { score: number
 }
 
 /**
- * Score Personal Interests/Hobbies (15 points max)
+ * Score Personal Interests/Hobbies (10 points max)
  * Shared hobbies build rapport but weighted lower to avoid over-matching
  */
 function scorePersonalInterests(interests1: string, interests2: string): { score: number; matches: string[] } {
@@ -388,13 +388,13 @@ function scorePersonalInterests(interests1: string, interests2: string): { score
   );
 
   if (sharedHobbies.length > 0) {
-    // Scale: 1 hobby = 7pts, 2+ = 15pts (full points)
-    score = sharedHobbies.length >= 2 ? 15 : 7;
+    // Scale: 1 hobby = 5pts, 2+ = 10pts (full points)
+    score = sharedHobbies.length >= 2 ? 10 : 5;
     matches.push(...sharedHobbies);
   }
 
   return {
-    score: Math.min(score, 15),
+    score: Math.min(score, 10),
     matches
   };
 }

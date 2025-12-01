@@ -117,9 +117,9 @@ function scoreNetworkingGoals(goals1, goals2) {
   const text2 = goals2.toLowerCase();
 
   // High priority keywords
-  const meaningfulConnectionsKeywords = ['meaningful connection'];
-  const growthKeywords = ['grow', 'growth', 'expand'];
-  const salesKeywords = ['find new clients', 'find clients', 'sell my services', 'sell services', 'generate leads', 'business development'];
+  const meaningfulConnectionsKeywords = ['meaningful connection', 'meaningful connections', 'genuine connection', 'genuine connections', 'authentic connection', 'authentic connections', 'real connection', 'real connections'];
+  const growthKeywords = ['grow', 'growth', 'expand', 'scale', 'scaling', 'build', 'building'];
+  const salesKeywords = ['find new clients', 'find clients', 'sell my services', 'sell services', 'generate leads', 'business development', 'referrals', 'referral', 'pipeline', 'prospecting', 'new business'];
 
   // Check for "meaningful connections" in both (BOOSTED - high priority)
   const user1HasMeaningful = meaningfulConnectionsKeywords.some(kw => text1.includes(kw));
@@ -189,13 +189,13 @@ function scoreNetworkingGoals(goals1, goals2) {
 }
 
 /**
- * Score Organizations (25 points max)
+ * Score Organizations (40 points max)
  *
- * BUCKET 1 (12.5 points): Complementary Match
+ * BUCKET 1 (20 points): Complementary Match
  *   - My "Orgs I attend" ↔ Your "Orgs I want to check out"
  *   - OR Your "Orgs I attend" ↔ My "Orgs I want to check out"
  *
- * BUCKET 2 (12.5 points): Same-Field Match
+ * BUCKET 2 (20 points): Same-Field Match
  *   - Both attend same orgs
  *   - OR both want to check out same orgs
  */
@@ -213,14 +213,14 @@ function scoreOrganizations(user1Attend, user1WantToCheckOut, user2Attend, user2
   const u2Attend = parseList(user2Attend);
   const u2CheckOut = parseList(user2WantToCheckOut);
 
-  // BUCKET 1: Complementary Match (12.5 points max)
+  // BUCKET 1: Complementary Match (20 points max)
   // User1 attends, User2 wants to check out (or vice versa)
   const complementary1 = findSharedItems(u1Attend, u2CheckOut);
   const complementary2 = findSharedItems(u1CheckOut, u2Attend);
   const allComplementary = [...complementary1, ...complementary2];
 
   if (allComplementary.length > 0) {
-    score += 12.5;
+    score += 20;
     if (complementary1.length > 0) {
       matches.push(`Introduction opportunity: ${complementary1.join(', ')}`);
     }
@@ -229,13 +229,13 @@ function scoreOrganizations(user1Attend, user1WantToCheckOut, user2Attend, user2
     }
   }
 
-  // BUCKET 2: Same-Field Match (12.5 points max)
+  // BUCKET 2: Same-Field Match (20 points max)
   // Both attend same OR both want to check out same
   const sharedAttend = findSharedItems(u1Attend, u2Attend);
   const sharedCheckOut = findSharedItems(u1CheckOut, u2CheckOut);
 
   if (sharedAttend.length > 0 || sharedCheckOut.length > 0) {
-    score += 12.5;
+    score += 20;
     if (sharedAttend.length > 0) {
       matches.push(`Both attend: ${sharedAttend.join(', ')}`);
     }
@@ -245,13 +245,13 @@ function scoreOrganizations(user1Attend, user1WantToCheckOut, user2Attend, user2
   }
 
   return {
-    score: Math.min(score, 25),
+    score: Math.min(score, 40),
     matches
   };
 }
 
 /**
- * Score Professional Interests (20 points max)
+ * Score Professional Interests (15 points max)
  */
 function scoreProfessionalInterests(interests1, interests2) {
   let score = 0;
@@ -266,18 +266,18 @@ function scoreProfessionalInterests(interests1, interests2) {
   if (shared.length > 0) {
     // Calculate score: (shared items / average list length) * max points
     const avgLength = (list1.length + list2.length) / 2;
-    score = (shared.length / avgLength) * 20;
+    score = (shared.length / avgLength) * 15;
     matches.push(...shared);
   }
 
   return {
-    score: Math.min(Math.round(score), 20),
+    score: Math.min(Math.round(score), 15),
     matches
   };
 }
 
 /**
- * Score Industry (10 points max)
+ * Score Industry (5 points max)
  */
 function scoreIndustry(industry1, industry2) {
   let score = 0;
@@ -287,13 +287,13 @@ function scoreIndustry(industry1, industry2) {
 
   // Exact match
   if (industry1.toLowerCase() === industry2.toLowerCase()) {
-    score = 10;
+    score = 5;
     matches.push(industry1);
   } else {
     // Partial match (related industries)
     const related = areIndustriesRelated(industry1, industry2);
     if (related) {
-      score = 6;
+      score = 3;
       matches.push(`Related: ${industry1} & ${industry2}`);
     }
   }
@@ -364,7 +364,7 @@ function scoreLookingTo(looking1, looking2) {
 }
 
 /**
- * Score Personal Interests/Hobbies (15 points max)
+ * Score Personal Interests/Hobbies (10 points max)
  * Shared hobbies build rapport but weighted lower to avoid over-matching
  */
 function scorePersonalInterests(interests1, interests2) {
@@ -392,13 +392,13 @@ function scorePersonalInterests(interests1, interests2) {
   );
 
   if (sharedHobbies.length > 0) {
-    // Scale: 1 hobby = 7pts, 2+ = 15pts (full points)
-    score = sharedHobbies.length >= 2 ? 15 : 7;
+    // Scale: 1 hobby = 5pts, 2+ = 10pts (full points)
+    score = sharedHobbies.length >= 2 ? 10 : 5;
     matches.push(...sharedHobbies);
   }
 
   return {
-    score: Math.min(score, 15),
+    score: Math.min(score, 10),
     matches
   };
 }
