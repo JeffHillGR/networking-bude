@@ -25,7 +25,7 @@ Rebalanced scoring to favor fields that newcomers fill out (personal interests, 
 **New Total:** 110 (capped at 100)
 
 ## Threshold
-Kept at **60%** minimum to show as potential connection.
+Lowered to **55%** minimum to show as potential connection (was 60%).
 
 ## Additional Changes
 - Expanded hobby keywords list for personal interests matching
@@ -36,7 +36,7 @@ Kept at **60%** minimum to show as potential connection.
 - `src/lib/matchingAlgorithm.js`
 
 ## Next Steps
-1. Push changes to trigger Vercel deploy
-2. Re-run matching algorithm (triggered by profile update or edge function)
-3. Check how many users now have matches
-4. Adjust threshold to 55% if still too many with zero matches
+1. ~~Push changes to trigger Vercel deploy~~ ✓
+2. ~~Re-run matching algorithm (triggered by profile update)~~ ✓
+3. ~~Check how many users now have matches~~ - went from 90 to 94 records
+4. ~~Adjust threshold to 55%~~ ✓ - lowered from 60% to help remaining 18 users with 0 matches
