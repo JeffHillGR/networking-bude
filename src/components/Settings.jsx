@@ -1321,15 +1321,8 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
               </div>
             </div>
 
-            <div className="mt-8 flex justify-end">
-              <button
-                onClick={handleSaveProfile}
-                disabled={saving}
-                className="bg-black text-white px-8 py-3 rounded-lg hover:bg-gray-800 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {saving ? 'Saving...' : 'Save Changes'}
-              </button>
-            </div>
+            {/* Spacer for fixed button */}
+            <div className="h-20"></div>
 
             {/* Profile Stats */}
             <div className="border-t border-gray-200 pt-6 mt-8">
@@ -2145,6 +2138,21 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Fixed Save Changes Button - Only on Profile Tab */}
+      {activeTab === 'profile' && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] z-40 p-4">
+          <div className="max-w-2xl mx-auto flex justify-center">
+            <button
+              onClick={handleSaveProfile}
+              disabled={saving}
+              className="bg-[#009900] text-white px-12 py-4 rounded-xl hover:bg-[#007700] font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed border-[3px] border-[#D0ED00] shadow-lg transition-all hover:scale-105"
+            >
+              {saving ? 'Saving...' : 'Save Changes'}
+            </button>
           </div>
         </div>
       )}

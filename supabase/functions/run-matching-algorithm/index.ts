@@ -143,10 +143,10 @@ function isAgeInRange(age: number, agePreference: string): boolean {
 // ============= SCORING FUNCTIONS =============
 
 /**
- * Score Networking Goals (35 points max)
+ * Score Networking Goals (25 points max)
  */
 function scoreNetworkingGoals(goals1: string, goals2: string): { score: number; matches: string[] } {
-  const maxScore = 35;
+  const maxScore = 25;
   let score = 0;
   const matches: string[] = [];
 
@@ -228,13 +228,13 @@ function scoreNetworkingGoals(goals1: string, goals2: string): { score: number; 
 }
 
 /**
- * Score Organizations (40 points max)
+ * Score Organizations (20 points max)
  *
- * BUCKET 1 (20 points): Complementary Match
+ * BUCKET 1 (10 points): Complementary Match
  *   - My "Orgs I attend" ↔ Your "Orgs I want to check out"
  *   - OR Your "Orgs I attend" ↔ My "Orgs I want to check out"
  *
- * BUCKET 2 (20 points): Same-Field Match
+ * BUCKET 2 (10 points): Same-Field Match
  *   - Both attend same orgs
  *   - OR both want to check out same orgs
  */
@@ -252,14 +252,14 @@ function scoreOrganizations(user1Attend: string, user1WantToCheckOut: string, us
   const u2Attend = parseList(user2Attend);
   const u2CheckOut = parseList(user2WantToCheckOut);
 
-  // BUCKET 1: Complementary Match (20 points max)
+  // BUCKET 1: Complementary Match (10 points max)
   // User1 attends, User2 wants to check out (or vice versa)
   const complementary1 = findSharedItems(u1Attend, u2CheckOut);
   const complementary2 = findSharedItems(u1CheckOut, u2Attend);
   const allComplementary = [...complementary1, ...complementary2];
 
   if (allComplementary.length > 0) {
-    score += 20;
+    score += 10;
     if (complementary1.length > 0) {
       matches.push(`Introduction opportunity: ${complementary1.join(', ')}`);
     }
@@ -268,13 +268,13 @@ function scoreOrganizations(user1Attend: string, user1WantToCheckOut: string, us
     }
   }
 
-  // BUCKET 2: Same-Field Match (20 points max)
+  // BUCKET 2: Same-Field Match (10 points max)
   // Both attend same OR both want to check out same
   const sharedAttend = findSharedItems(u1Attend, u2Attend);
   const sharedCheckOut = findSharedItems(u1CheckOut, u2CheckOut);
 
   if (sharedAttend.length > 0 || sharedCheckOut.length > 0) {
-    score += 20;
+    score += 10;
     if (sharedAttend.length > 0) {
       matches.push(`Both attend: ${sharedAttend.join(', ')}`);
     }
@@ -284,7 +284,7 @@ function scoreOrganizations(user1Attend: string, user1WantToCheckOut: string, us
   }
 
   return {
-    score: Math.min(score, 40),
+    score: Math.min(score, 20),
     matches
   };
 }
@@ -404,7 +404,8 @@ function scoreAgePreference(user1: AlgorithmUser, user2: AlgorithmUser): { score
 }
 
 /**
- * Score Personal Interests/Hobbies (5 points max)
+ * Score Personal Interests/Hobbies (20 points max)
+ * High weight because most users fill this out and shared hobbies build rapport
  */
 function scorePersonalInterests(interests1: string, interests2: string): { score: number; matches: string[] } {
   let score = 0;
@@ -415,12 +416,15 @@ function scorePersonalInterests(interests1: string, interests2: string): { score
   const text1 = interests1.toLowerCase();
   const text2 = interests2.toLowerCase();
 
-  // Common hobby keywords to check
+  // Expanded hobby keywords to check
   const hobbyKeywords = [
     'pickleball', 'hiking', 'running', 'biking', 'cycling', 'golf',
     'tennis', 'fitness', 'yoga', 'cooking', 'reading', 'travel',
     'photography', 'music', 'art', 'gaming', 'sports', 'skiing',
-    'snowboarding', 'swimming', 'kayaking', 'camping', 'fishing'
+    'snowboarding', 'swimming', 'kayaking', 'camping', 'fishing',
+    'gardening', 'crafts', 'wine', 'beer', 'coffee', 'foodie',
+    'movies', 'theater', 'concerts', 'volunteering', 'family',
+    'dogs', 'pets', 'cats', 'outdoors', 'nature', 'beach'
   ];
 
   const sharedHobbies = hobbyKeywords.filter(hobby =>
@@ -428,12 +432,13 @@ function scorePersonalInterests(interests1: string, interests2: string): { score
   );
 
   if (sharedHobbies.length > 0) {
-    score = Math.min(sharedHobbies.length * 2, 5);
+    // Scale: 1 hobby = 10pts, 2+ = 20pts (full points)
+    score = sharedHobbies.length >= 2 ? 20 : 10;
     matches.push(...sharedHobbies);
   }
 
   return {
-    score: Math.min(score, 5),
+    score: Math.min(score, 20),
     matches
   };
 }
@@ -568,7 +573,7 @@ Deno.serve(async (req) => {
     // Calculate compatibility between all users
     let matchesCreated = 0;
     let totalPairsEvaluated = 0;
-    const matchThreshold = 65; // Only create matches above 65%
+    const matchThreshold = 55; // Only create matches above 55%
 
     console.log(`📊 Evaluating ${users.length} users for matches...`);
 
