@@ -686,7 +686,7 @@ const getGreeting = () => {
               {/* Potential Connections - Left Side */}
               <div className="flex flex-col relative group">
                 <div className="mb-4 text-center">
-                  <div className="inline-block bg-white px-6 py-2 rounded-lg border-2 border-black mb-2 min-w-[280px]">
+                  <div className="inline-block bg-white px-6 py-2 rounded-lg border-2 border-black mb-2 min-w-[340px]">
                     <h3 className="font-bold text-black text-lg">Recommended Connections</h3>
                   </div>
                   <p className="text-sm text-gray-600">People you might want to connect with <span className="font-bold">first</span></p>
@@ -797,7 +797,7 @@ const getGreeting = () => {
                       setActiveTab('connections');
                       window.scrollTo({ top: 0, behavior: 'instant' });
                     }}
-                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors min-w-[280px]"
+                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors min-w-[340px]"
                   >
                     View All Recommended Connections
                   </button>
@@ -807,7 +807,7 @@ const getGreeting = () => {
               {/* Upcoming Events - Right Side */}
               <div className="flex flex-col">
                 <div className="mb-4 text-center">
-                  <div className="inline-block bg-white px-6 py-2 rounded-lg border-2 border-black mb-2 min-w-[280px]">
+                  <div className="inline-block bg-white px-6 py-2 rounded-lg border-2 border-black mb-2 min-w-[340px]">
                     <h3 className="font-bold text-black text-lg">Upcoming Events</h3>
                   </div>
                   <p className="text-sm text-gray-600">Then check out some events <span className="font-bold">together</span></p>
@@ -864,7 +864,7 @@ const getGreeting = () => {
                 <div className="mt-4 text-center">
                   <button
                     onClick={() => setActiveTab('events')}
-                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors min-w-[280px]"
+                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors min-w-[340px]"
                   >
                     View All Upcoming Events
                   </button>
@@ -876,7 +876,7 @@ const getGreeting = () => {
             <div>
               <div className="bg-white rounded-lg p-4 md:p-5 shadow-sm border border-gray-200">
                 <div className="mb-2 text-center">
-                  <div className="inline-block bg-white px-6 py-2 rounded-lg border-2 border-black min-w-[280px]">
+                  <div className="inline-block bg-white px-6 py-2 rounded-lg border-2 border-black min-w-[340px]">
                     <h3 className="font-bold text-black text-lg">Insights</h3>
                   </div>
                   <p className="text-xs text-gray-500 mt-0.5">Curated content to help you grow</p>
@@ -935,7 +935,7 @@ const getGreeting = () => {
                 <div className="mt-4 text-center">
                   <button
                     onClick={() => navigate('/resources-insights')}
-                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors min-w-[280px]"
+                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors min-w-[340px]"
                   >
                     View All Insights
                   </button>

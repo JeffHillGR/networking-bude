@@ -3,17 +3,20 @@
  *
  * Calculates compatibility scores between users based on:
  * - Networking Goals (25 points)
- * - Organizations (30 points) - split into:
- *   - Complementary match (15 points): My attend ↔ Your check out
- *   - Same-field match (15 points): Both attend same OR both check out same
+ * - Personal Interests (20 points) - high completion rate, builds rapport
+ * - Organizations (20 points) - split into:
+ *   - Complementary match (10 points): My attend ↔ Your check out
+ *   - Same-field match (10 points): Both attend same OR both check out same
+ * - Looking To Accomplish (15 points)
  * - Professional Interests (15 points)
+ * - Groups in Common (10 points)
  * - Industry (5 points)
- * - Groups in Common (12.5 points)
- * - "Looking To" Overlap (12.5 points)
- * - Personal Interests (5 points)
  *
- * Total: 105 points possible, capped at 100
- * Minimum threshold: 60/100 to be shown as a potential connection (temporarily lowered from 70)
+ * Total: 110 points possible, capped at 100
+ * Minimum threshold: 60/100 to be shown as a potential connection
+ *
+ * Updated Dec 2024: Rebalanced to favor personal interests and goals over
+ * organizations/groups (which newcomers may not have filled out yet)
  */
 
 import { supabase } from './supabase';
@@ -206,14 +209,14 @@ function scoreOrganizations(user1Attend, user1WantToCheckOut, user2Attend, user2
   const u2Attend = parseList(user2Attend);
   const u2CheckOut = parseList(user2WantToCheckOut);
 
-  // BUCKET 1: Complementary Match (15 points max)
+  // BUCKET 1: Complementary Match (10 points max)
   // User1 attends, User2 wants to check out (or vice versa)
   const complementary1 = findSharedItems(u1Attend, u2CheckOut);
   const complementary2 = findSharedItems(u1CheckOut, u2Attend);
   const allComplementary = [...complementary1, ...complementary2];
 
   if (allComplementary.length > 0) {
-    score += 15;
+    score += 10;
     if (complementary1.length > 0) {
       matches.push(`Introduction opportunity: ${complementary1.join(', ')}`);
     }
@@ -222,13 +225,13 @@ function scoreOrganizations(user1Attend, user1WantToCheckOut, user2Attend, user2
     }
   }
 
-  // BUCKET 2: Same-Field Match (15 points max)
+  // BUCKET 2: Same-Field Match (10 points max)
   // Both attend same OR both want to check out same
   const sharedAttend = findSharedItems(u1Attend, u2Attend);
   const sharedCheckOut = findSharedItems(u1CheckOut, u2CheckOut);
 
   if (sharedAttend.length > 0 || sharedCheckOut.length > 0) {
-    score += 15;
+    score += 10;
     if (sharedAttend.length > 0) {
       matches.push(`Both attend: ${sharedAttend.join(', ')}`);
     }
@@ -238,7 +241,7 @@ function scoreOrganizations(user1Attend, user1WantToCheckOut, user2Attend, user2
   }
 
   return {
-    score: Math.min(score, 30),
+    score: Math.min(score, 20),
     matches
   };
 }
@@ -295,7 +298,7 @@ function scoreIndustry(industry1, industry2) {
 }
 
 /**
- * Score Groups in Common (12.5 points max)
+ * Score Groups in Common (10 points max)
  */
 function scoreGroups(groups1, groups2) {
   let score = 0;
@@ -324,7 +327,7 @@ function scoreGroups(groups1, groups2) {
 
   if (sharedGroups.length > 0) {
     // Give full points if any groups match
-    score = 12.5;
+    score = 10;
     matches.push(`Shared groups: ${sharedGroups.join(', ')}`);
   }
 
@@ -332,7 +335,7 @@ function scoreGroups(groups1, groups2) {
 }
 
 /**
- * Score "Looking To" Overlap (12.5 points max)
+ * Score "Looking To" Overlap (15 points max)
  */
 function scoreLookingTo(looking1, looking2) {
   let score = 0;
@@ -349,7 +352,7 @@ function scoreLookingTo(looking1, looking2) {
 
   if (sharedGoals.length > 0) {
     // Give full points if any goals match
-    score = 12.5;
+    score = 15;
     matches.push(`Shared goals: ${sharedGoals.join(', ')}`);
   }
 
@@ -357,7 +360,8 @@ function scoreLookingTo(looking1, looking2) {
 }
 
 /**
- * Score Personal Interests/Hobbies (5 points max)
+ * Score Personal Interests/Hobbies (20 points max)
+ * High weight because most users fill this out and shared hobbies build rapport
  */
 function scorePersonalInterests(interests1, interests2) {
   let score = 0;
@@ -373,7 +377,10 @@ function scorePersonalInterests(interests1, interests2) {
     'pickleball', 'hiking', 'running', 'biking', 'cycling', 'golf',
     'tennis', 'fitness', 'yoga', 'cooking', 'reading', 'travel',
     'photography', 'music', 'art', 'gaming', 'sports', 'skiing',
-    'snowboarding', 'swimming', 'kayaking', 'camping', 'fishing'
+    'snowboarding', 'swimming', 'kayaking', 'camping', 'fishing',
+    'gardening', 'crafts', 'wine', 'beer', 'coffee', 'foodie',
+    'movies', 'theater', 'concerts', 'volunteering', 'family',
+    'dogs', 'pets', 'cats', 'outdoors', 'nature', 'beach'
   ];
 
   const sharedHobbies = hobbyKeywords.filter(hobby =>
@@ -381,12 +388,13 @@ function scorePersonalInterests(interests1, interests2) {
   );
 
   if (sharedHobbies.length > 0) {
-    score = Math.min(sharedHobbies.length * 2, 5);
+    // Scale: 1 hobby = 10pts, 2+ = 20pts (full points)
+    score = sharedHobbies.length >= 2 ? 20 : 10;
     matches.push(...sharedHobbies);
   }
 
   return {
-    score: Math.min(score, 5),
+    score: Math.min(score, 20),
     matches
   };
 }
