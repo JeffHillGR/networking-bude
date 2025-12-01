@@ -41,7 +41,14 @@ export const AuthProvider = ({ children }) => {
 
       if (authError) throw authError;
 
-      if (authData.user && authData.session) {
+      console.log('🔐 Auth signup response:', {
+        hasUser: !!authData.user,
+        hasSession: !!authData.session,
+        userId: authData.user?.id,
+        email: authData.user?.email
+      });
+
+      if (authData.user) {
         // Wait a bit for session to be fully established
         await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -51,7 +58,7 @@ export const AuthProvider = ({ children }) => {
           ...userData
         });
 
-        // Insert user profile data using the session
+        // Insert user profile data
         const { data: insertedData, error: profileError } = await supabase
           .from('users')
           .insert([{
@@ -70,6 +77,8 @@ export const AuthProvider = ({ children }) => {
         }
 
         console.log('✅ Profile inserted successfully:', insertedData);
+      } else {
+        console.error('❌ No user returned from auth signup - this should not happen');
       }
 
       return { data: authData, error: null };
