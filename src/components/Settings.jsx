@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { User, Shield, Bell, Lock, Upload, X, ArrowLeft, Calendar, CheckCircle, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-// Matching algorithm now runs server-side via Edge Function
 
 function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDashboard }) {
   const { user } = useAuth();
@@ -615,8 +614,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
       }
 
       // Trigger matching algorithm after profile update (don't wait for it)
-      // Call server-side Edge Function which has permission to create matches
-      fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/run-matching-algorithm`, {
+      fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/run-matching`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,

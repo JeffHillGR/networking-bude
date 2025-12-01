@@ -25,7 +25,7 @@ Rebalanced scoring to favor fields that newcomers fill out (personal interests, 
 **New Total:** 110 (capped at 100)
 
 ## Threshold
-Lowered to **55%** minimum to show as potential connection (was 60%).
+Set to **60%** minimum to show as potential connection.
 
 ## Additional Changes
 - Expanded hobby keywords list for personal interests matching

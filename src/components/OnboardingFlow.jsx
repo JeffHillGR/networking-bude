@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { User, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
-// Matching algorithm now runs server-side via Edge Function
 
 export default function BudEOnboarding() {
   const navigate = useNavigate();
@@ -489,8 +488,7 @@ export default function BudEOnboarding() {
       setShowSuccessPopup(true);
 
       // Trigger matching algorithm for the new user (don't wait for it)
-      // Call server-side Edge Function which has permission to create matches
-      fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/run-matching-algorithm`, {
+      fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/run-matching`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
