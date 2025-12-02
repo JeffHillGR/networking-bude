@@ -60,7 +60,7 @@ function Events({ onBackToDashboard }) {
     setTimeout(() => window.scrollTo(0, 0), 0);
 
     // Setup mock ads for demo (TEMPORARY - remove when real ads are live)
-    // setupMockAds(); // Commented out to allow custom ads to persist
+    setupMockAds();
 
     // Load ads from localStorage
     setAds({

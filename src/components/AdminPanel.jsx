@@ -185,10 +185,11 @@ function AdminPanel() {
 
   const saveAd = (slot) => {
     const ad = ads[slot];
-    if (!ad || !ad.image || !ad.url) {
-      alert('Please add both an image and URL before saving.');
+    if (!ad || !ad.image) {
+      alert('Please add an image before saving.');
       return;
     }
+    // URL is optional - if empty, clicking the ad will open the inquiry modal
     localStorage.setItem(`ad_${slot}`, JSON.stringify(ad));
     alert(`Ad saved successfully!`);
   };
