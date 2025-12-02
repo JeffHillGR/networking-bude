@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Calendar, Users, ExternalLink, X, TrendingUp, ArrowLeft, Share2, Heart, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
-import { setupMockAds } from '../lib/setupMockAds.js';
 
 function Events({ onBackToDashboard }) {
   const navigate = useNavigate();
@@ -59,15 +58,29 @@ function Events({ onBackToDashboard }) {
     // Scroll to top when component loads (use setTimeout to avoid blocking)
     setTimeout(() => window.scrollTo(0, 0), 0);
 
-    // Setup mock ads for demo (TEMPORARY - remove when real ads are live)
-    setupMockAds();
+    // Load ads from Supabase
+    const loadAds = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('event_ads')
+          .select('*');
 
-    // Load ads from localStorage
-    setAds({
-      eventsSidebar1: JSON.parse(localStorage.getItem('ad_eventsSidebar1') || 'null'),
-      eventsSidebar2: JSON.parse(localStorage.getItem('ad_eventsSidebar2') || 'null'),
-      eventsBottom: JSON.parse(localStorage.getItem('ad_eventsBottom') || 'null')
-    });
+        if (error) throw error;
+
+        // Convert array to object keyed by id
+        const adsObj = {};
+        data?.forEach(ad => {
+          if (ad.image) { // Only include ads that have images
+            adsObj[ad.id] = ad;
+          }
+        });
+        setAds(adsObj);
+      } catch (error) {
+        console.error('Error loading ads:', error);
+      }
+    };
+
+    loadAds();
   }, []);
 
   // Load events from Supabase

@@ -1,0 +1,53 @@
+<svg width="728" height="160" xmlns="http://www.w3.org/2000/svg">
+  <!-- Modern background -->
+  <defs>
+    <linearGradient id="expoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1e40af;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="728" height="160" fill="url(#expoGrad)"/>
+
+  <!-- Abstract networking illustration - connected nodes -->
+  <circle cx="100" cy="60" r="8" fill="#d0ed00"/>
+  <circle cx="140" cy="60" r="8" fill="#d0ed00"/>
+  <circle cx="120" cy="100" r="8" fill="#d0ed00"/>
+  <circle cx="80" cy="100" r="8" fill="#d0ed00"/>
+  <circle cx="160" cy="100" r="8" fill="#d0ed00"/>
+
+  <!-- Connection lines -->
+  <line x1="100" y1="60" x2="140" y2="60" stroke="#d0ed00" stroke-width="2" opacity="0.5"/>
+  <line x1="100" y1="60" x2="120" y2="100" stroke="#d0ed00" stroke-width="2" opacity="0.5"/>
+  <line x1="100" y1="60" x2="80" y2="100" stroke="#d0ed00" stroke-width="2" opacity="0.5"/>
+  <line x1="140" y1="60" x2="120" y2="100" stroke="#d0ed00" stroke-width="2" opacity="0.5"/>
+  <line x1="140" y1="60" x2="160" y2="100" stroke="#d0ed00" stroke-width="2" opacity="0.5"/>
+  <line x1="120" y1="100" x2="80" y2="100" stroke="#d0ed00" stroke-width="2" opacity="0.5"/>
+  <line x1="120" y1="100" x2="160" y2="100" stroke="#d0ed00" stroke-width="2" opacity="0.5"/>
+
+  <!-- Decorative circles -->
+  <circle cx="650" cy="80" r="70" fill="#60a5fa" opacity="0.1"/>
+  <circle cx="680" cy="50" r="45" fill="#60a5fa" opacity="0.1"/>
+
+  <!-- Main content -->
+  <text x="200" y="50" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="700" fill="white">
+    West Michigan Business Expo
+  </text>
+  <text x="200" y="80" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="500" fill="#d0ed00">
+    Connect with 200+ Local Businesses
+  </text>
+  <text x="200" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="rgba(255,255,255,0.9)">
+    May 8-9, 2025  |  DeVos Place  |  Free Admission
+  </text>
+  <text x="200" y="135" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="rgba(255,255,255,0.85)">
+    Workshops  •  Networking  •  Live Demos
+  </text>
+
+  <!-- CTA Button -->
+  <rect x="585" y="55" width="130" height="50" fill="#d0ed00" rx="25"/>
+  <text x="650" y="85" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#1e40af" text-anchor="middle">
+    Learn More
+  </text>
+
+  <!-- Sample Label -->
+  <text x="710" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="8" fill="white" opacity="0.4" text-anchor="end">SAMPLE AD</text>
+</svg>

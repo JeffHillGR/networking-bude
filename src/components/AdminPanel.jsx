@@ -26,14 +26,37 @@ function AdminPanel() {
   const [errorMessage, setErrorMessage] = useState('');
   const [unreviewedReportsCount, setUnreviewedReportsCount] = useState(0);
   const [ads, setAds] = useState({
-    eventsSidebar1: JSON.parse(localStorage.getItem('ad_eventsSidebar1') || 'null'),
-    eventsSidebar2: JSON.parse(localStorage.getItem('ad_eventsSidebar2') || 'null'),
-    eventsBottom: JSON.parse(localStorage.getItem('ad_eventsBottom') || 'null'),
-    eventDetailBanner: JSON.parse(localStorage.getItem('ad_eventDetailBanner') || 'null'),
-    dashboardBottom1: JSON.parse(localStorage.getItem('ad_dashboardBottom1') || 'null'),
-    dashboardBottom2: JSON.parse(localStorage.getItem('ad_dashboardBottom2') || 'null'),
-    dashboardBottom3: JSON.parse(localStorage.getItem('ad_dashboardBottom3') || 'null')
+    eventsSidebar1: null,
+    eventsSidebar2: null,
+    eventsBottom: null
   });
+  const [adsLoading, setAdsLoading] = useState(true);
+
+  // Load ads from Supabase on mount
+  useEffect(() => {
+    const loadAds = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('event_ads')
+          .select('*');
+
+        if (error) throw error;
+
+        // Convert array to object keyed by id
+        const adsObj = {};
+        data?.forEach(ad => {
+          adsObj[ad.id] = ad;
+        });
+        setAds(adsObj);
+      } catch (error) {
+        console.error('Error loading ads:', error);
+      } finally {
+        setAdsLoading(false);
+      }
+    };
+
+    loadAds();
+  }, []);
 
   // Check if user is authenticated AND has admin role
   useEffect(() => {
@@ -156,21 +179,39 @@ function AdminPanel() {
     setErrorMessage('');
   };
 
-  const handleImageUpload = (slot, file) => {
+  const handleImageUpload = async (slot, file) => {
     if (!file) return;
 
-    // Check file size
-    if (file.size > MAX_FILE_SIZE) {
-      alert(`File too large! Please select an image smaller than ${formatFileSize(MAX_FILE_SIZE)}.\n\nYour file size: ${formatFileSize(file.size)}`);
+    // Check file size (5MB limit for storage)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert(`File too large! Please select an image smaller than 5MB.\n\nYour file size: ${formatFileSize(file.size)}`);
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const newAd = { ...ads[slot], image: reader.result };
+    try {
+      // Generate unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${slot}-${Date.now()}.${fileExt}`;
+
+      // Upload to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('event-ads')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('event-ads')
+        .getPublicUrl(fileName);
+
+      const newAd = { ...ads[slot], image: urlData.publicUrl };
       setAds({ ...ads, [slot]: newAd });
-    };
-    reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Failed to upload image. Please try again.');
+    }
   };
 
   const handleUrlChange = (slot, url) => {
@@ -183,20 +224,66 @@ function AdminPanel() {
     setAds({ ...ads, [slot]: newAd });
   };
 
-  const saveAd = (slot) => {
+  const handleZipCodeChange = (slot, zip_code) => {
+    const newAd = { ...ads[slot], zip_code };
+    setAds({ ...ads, [slot]: newAd });
+  };
+
+  const handleRadiusChange = (slot, radius) => {
+    const newAd = { ...ads[slot], radius };
+    setAds({ ...ads, [slot]: newAd });
+  };
+
+  const saveAd = async (slot) => {
     const ad = ads[slot];
     if (!ad || !ad.image) {
       alert('Please add an image before saving.');
       return;
     }
-    // URL is optional - if empty, clicking the ad will open the inquiry modal
-    localStorage.setItem(`ad_${slot}`, JSON.stringify(ad));
-    alert(`Ad saved successfully!`);
+
+    try {
+      // Save to Supabase
+      const { error } = await supabase
+        .from('event_ads')
+        .update({
+          image: ad.image,
+          url: ad.url || '',
+          tags: ad.tags || '',
+          zip_code: ad.zip_code || '',
+          radius: ad.radius || '50',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', slot);
+
+      if (error) throw error;
+      alert('Ad saved successfully!');
+    } catch (error) {
+      console.error('Error saving ad:', error);
+      alert('Failed to save ad. Please try again.');
+    }
   };
 
-  const removeAd = (slot) => {
-    localStorage.removeItem(`ad_${slot}`);
-    setAds({ ...ads, [slot]: null });
+  const removeAd = async (slot) => {
+    try {
+      // Clear the ad data in Supabase (keep the row, just clear fields)
+      const { error } = await supabase
+        .from('event_ads')
+        .update({
+          image: '',
+          url: '',
+          tags: '',
+          zip_code: '',
+          radius: '50',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', slot);
+
+      if (error) throw error;
+      setAds({ ...ads, [slot]: { id: slot, image: '', url: '', tags: '', zip_code: '', radius: '50' } });
+    } catch (error) {
+      console.error('Error removing ad:', error);
+      alert('Failed to remove ad. Please try again.');
+    }
   };
 
   if (loading) {
@@ -365,6 +452,8 @@ function AdminPanel() {
             handleImageUpload={handleImageUpload}
             handleUrlChange={handleUrlChange}
             handleTagsChange={handleTagsChange}
+            handleZipCodeChange={handleZipCodeChange}
+            handleRadiusChange={handleRadiusChange}
             saveAd={saveAd}
             removeAd={removeAd}
           />
@@ -1069,7 +1158,7 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
   );
 }
 
-function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, handleTagsChange, saveAd, removeAd }) {
+function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, handleTagsChange, handleZipCodeChange, handleRadiusChange, saveAd, removeAd }) {
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6">Events Page Content and Ads</h2>
@@ -1090,6 +1179,8 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, handleTagsChang
               onImageUpload={handleImageUpload}
               onUrlChange={handleUrlChange}
               onTagsChange={handleTagsChange}
+              onZipCodeChange={handleZipCodeChange}
+              onRadiusChange={handleRadiusChange}
               onSave={saveAd}
               onRemove={removeAd}
               dimensions="728x160px"
@@ -1108,6 +1199,8 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, handleTagsChang
             onImageUpload={handleImageUpload}
             onUrlChange={handleUrlChange}
             onTagsChange={handleTagsChange}
+            onZipCodeChange={handleZipCodeChange}
+            onRadiusChange={handleRadiusChange}
             onSave={saveAd}
             onRemove={removeAd}
             dimensions="160x600px"
@@ -1122,6 +1215,8 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, handleTagsChang
             onImageUpload={handleImageUpload}
             onUrlChange={handleUrlChange}
             onTagsChange={handleTagsChange}
+            onZipCodeChange={handleZipCodeChange}
+            onRadiusChange={handleRadiusChange}
             onSave={saveAd}
             onRemove={removeAd}
             dimensions="160x600px"
@@ -2090,7 +2185,7 @@ function ModerationTab({ onReportReviewed }) {
   );
 }
 
-function InlineAdEditor({ title, slot, ad, onImageUpload, onUrlChange, onTagsChange, onSave, onRemove, dimensions, description, aspectRatio = "160/600" }) {
+function InlineAdEditor({ title, slot, ad, onImageUpload, onUrlChange, onTagsChange, onZipCodeChange, onRadiusChange, onSave, onRemove, dimensions, description, aspectRatio = "160/600" }) {
   return (
     <div className="bg-white rounded-lg shadow-sm p-4 border-2 border-gray-300">
       <div className="mb-3">
@@ -2134,19 +2229,20 @@ function InlineAdEditor({ title, slot, ad, onImageUpload, onUrlChange, onTagsCha
       </div>
 
       <div className="mb-3">
-  <label className="block text-xs font-medium mb-2">Click-through URL</label>
-  <div className="flex gap-2">
-    <Link2 className="w-4 h-4 text-gray-400 mt-2 flex-shrink-0" />
-    <input
-      type="url"
-      value={ad?.url || ''}
-      onChange={(e) => onUrlChange(slot, e.target.value)}
-      placeholder="https://example.com"
-      className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg min-w-0"
-      style={{ textOverflow: 'ellipsis' }}
-    />
-  </div>
-</div>
+        <label className="block text-xs font-medium mb-2">Click-through URL (optional)</label>
+        <div className="flex gap-2">
+          <Link2 className="w-4 h-4 text-gray-400 mt-2 flex-shrink-0" />
+          <input
+            type="url"
+            value={ad?.url || ''}
+            onChange={(e) => onUrlChange(slot, e.target.value)}
+            placeholder="Leave empty to show inquiry form"
+            className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg min-w-0"
+            style={{ textOverflow: 'ellipsis' }}
+          />
+        </div>
+        <p className="text-xs text-gray-500 mt-1">If empty, clicking ad opens inquiry form</p>
+      </div>
 
       {/* Tags Input */}
       <div className="mb-3">
@@ -2161,22 +2257,25 @@ function InlineAdEditor({ title, slot, ad, onImageUpload, onUrlChange, onTagsCha
         <p className="text-xs text-gray-500 mt-1">Ad will show on events matching these tags</p>
       </div>
 
-      {/* Zip Code Input - DEMO ONLY */}
+      {/* Zip Code Input */}
       <div className="mb-3">
         <label className="block text-xs font-medium mb-2">Organization Zip Code (for targeting)</label>
         <input
           type="text"
+          value={ad?.zip_code || ''}
+          onChange={(e) => onZipCodeChange(slot, e.target.value)}
           placeholder="49503"
           maxLength="5"
           className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg"
         />
       </div>
 
-      {/* Radius Selector - DEMO ONLY */}
+      {/* Radius Selector */}
       <div className="mb-3">
         <label className="block text-xs font-medium mb-2">Target Radius</label>
         <select
-          defaultValue="50"
+          value={ad?.radius || '50'}
+          onChange={(e) => onRadiusChange(slot, e.target.value)}
           className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg"
         >
           <option value="25">25 miles</option>
