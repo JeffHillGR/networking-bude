@@ -275,7 +275,7 @@ function NotificationBell({ onNavigate, showDropdown, setShowDropdown }) {
         {unreadCount > 0 && (
           <span
             data-testid="notification-badge"
-            className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"
+            className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center"
           >
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>

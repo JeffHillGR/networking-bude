@@ -343,7 +343,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
               </div>
 
               {/* Notification Bell */}
-              <div className="mt-3 w-full flex items-center gap-3 px-3 py-2">
+              <div className="mt-3 w-full flex items-center gap-3 px-3 py-2 pl-4">
                 <NotificationBell
                   showDropdown={showNotifications}
                   setShowDropdown={setShowNotifications}
