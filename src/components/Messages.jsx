@@ -506,19 +506,25 @@ function Messages({ onBackToDashboard, autoSelectUserId }) {
   return (
     <div className="h-screen flex flex-col bg-gray-50 relative">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-8 flex-shrink-0">
-        <button
-          onClick={onBackToDashboard}
-          className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 md:mb-6 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back to Dashboard</span>
-        </button>
-        <div className="text-center">
-          <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
-            <h1 className="text-3xl font-bold text-black">Messages</h1>
+      <div className="bg-white border-b border-gray-200 px-6 py-6 flex-shrink-0">
+        <div className="flex items-start justify-between">
+          {/* Back to Dashboard Button */}
+          <button
+            onClick={onBackToDashboard}
+            className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium transition-colors pt-2"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back to Dashboard</span>
+          </button>
+          {/* Title */}
+          <div className="text-center flex-1">
+            <div className="inline-block bg-white px-6 py-3 rounded-lg border-2 border-black">
+              <h1 className="text-3xl font-bold text-black">Messages</h1>
+            </div>
+            <p className="text-gray-600 text-sm mt-2">Connect and chat with your BudE connections</p>
           </div>
-          <p className="text-gray-600 mt-2">Connect and chat with your BudE connections</p>
+          {/* Spacer for balance */}
+          <div className="w-[140px]"></div>
         </div>
       </div>
 

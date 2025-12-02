@@ -982,20 +982,25 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
       )}
 
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-8">
-        {/* Back to Dashboard Button */}
-        <button
-          onClick={onBackToDashboard}
-          className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 md:mb-6 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back to Dashboard</span>
-        </button>
-        <div className="text-center">
-          <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
-            <h1 className="text-3xl font-bold text-black">Profile and Settings</h1>
+      <div className="bg-white border-b border-gray-200 px-6 py-6">
+        <div className="flex items-start justify-between">
+          {/* Back to Dashboard Button */}
+          <button
+            onClick={onBackToDashboard}
+            className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium transition-colors pt-2"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span>Back to Dashboard</span>
+          </button>
+          {/* Title */}
+          <div className="text-center flex-1">
+            <div className="inline-block bg-white px-6 py-3 rounded-lg border-2 border-black">
+              <h1 className="text-3xl font-bold text-black">Profile and Settings</h1>
+            </div>
+            <p className="text-gray-600 text-sm mt-2">Manage your profile, privacy, and account preferences</p>
           </div>
-          <p className="text-gray-600 mt-2">Manage your profile, privacy, and account preferences</p>
+          {/* Spacer for balance */}
+          <div className="w-[140px]"></div>
         </div>
       </div>
 
@@ -2142,16 +2147,14 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
 
       {/* Fixed Save Changes Button - Only on Profile Tab */}
       {activeTab === 'profile' && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] z-40 p-4">
-          <div className="max-w-2xl mx-auto flex justify-center">
-            <button
-              onClick={handleSaveProfile}
-              disabled={saving}
-              className="bg-[#009900] text-white px-12 py-4 rounded-xl hover:bg-[#007700] font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed border-[3px] border-[#D0ED00] shadow-lg transition-all hover:scale-105"
-            >
-              {saving ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-[calc(50%+8rem)] z-40">
+          <button
+            onClick={handleSaveProfile}
+            disabled={saving}
+            className="bg-[#009900] text-white px-8 py-3 rounded-lg hover:bg-[#007700] font-bold disabled:opacity-50 disabled:cursor-not-allowed border-[3px] border-[#D0ED00] shadow-lg transition-all hover:scale-105"
+          >
+            {saving ? 'Saving...' : 'Save Changes'}
+          </button>
         </div>
       )}
     </div>

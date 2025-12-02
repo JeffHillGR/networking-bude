@@ -252,21 +252,22 @@ function Events({ onBackToDashboard }) {
   if (loadingEvents) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <div className="bg-white border-b border-gray-200 px-6 py-8">
-          <div className="max-w-7xl mx-auto">
+        <div className="bg-white border-b border-gray-200 px-6 py-6">
+          <div className="max-w-7xl mx-auto flex items-start justify-between">
             <button
               onClick={onBackToDashboard}
-              className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 md:mb-6 transition-colors"
+              className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium transition-colors pt-2"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>Back to Dashboard</span>
             </button>
-            <div className="text-center">
-              <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
+            <div className="text-center flex-1">
+              <div className="inline-block bg-white px-6 py-3 rounded-lg border-2 border-black">
                 <h1 className="text-3xl font-bold text-black">Networking Events</h1>
               </div>
-              <p className="text-gray-600 mt-2">These are real events. Check them out!</p>
+              <p className="text-gray-600 text-sm mt-2">These are real events. Check them out!</p>
             </div>
+            <div className="w-[140px]"></div>
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8">
@@ -290,22 +291,25 @@ function Events({ onBackToDashboard }) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-8">
-        <div className="max-w-7xl mx-auto">
+      <div className="bg-white border-b border-gray-200 px-6 py-6">
+        <div className="max-w-7xl mx-auto flex items-start justify-between">
           {/* Back to Dashboard Button */}
           <button
             onClick={onBackToDashboard}
-            className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 md:mb-6 transition-colors"
+            className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium transition-colors pt-2"
           >
             <ArrowLeft className="w-5 h-5" />
             <span>Back to Dashboard</span>
           </button>
-          <div className="text-center">
-            <div className="inline-block bg-white px-6 py-3 rounded-lg mb-3 border-2 border-black">
+          {/* Title */}
+          <div className="text-center flex-1">
+            <div className="inline-block bg-white px-6 py-3 rounded-lg border-2 border-black">
               <h1 className="text-3xl font-bold text-black">Networking Events</h1>
             </div>
-            <p className="text-gray-600 mt-2">These are real events. Check them out!</p>
+            <p className="text-gray-600 text-sm mt-2">These are real events. Check them out!</p>
           </div>
+          {/* Spacer for balance */}
+          <div className="w-[140px]"></div>
         </div>
       </div>
 
