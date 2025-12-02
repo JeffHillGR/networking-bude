@@ -33,9 +33,12 @@ export const AuthProvider = ({ children }) => {
 
   const signUp = async (email, password, userData) => {
     try {
+      // Normalize email to lowercase to prevent case mismatch issues
+      const normalizedEmail = email.toLowerCase().trim();
+
       // Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
+        email: normalizedEmail,
         password,
       });
 
@@ -54,7 +57,7 @@ export const AuthProvider = ({ children }) => {
 
         console.log('🔍 Attempting to insert user profile with data:', {
           id: authData.user.id,
-          email: email,
+          email: normalizedEmail,
           ...userData
         });
 
@@ -63,7 +66,7 @@ export const AuthProvider = ({ children }) => {
           .from('users')
           .insert([{
             id: authData.user.id,
-            email: email,
+            email: normalizedEmail,
             ...userData,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
@@ -90,8 +93,11 @@ export const AuthProvider = ({ children }) => {
 
   const signIn = async (email, password) => {
     try {
+      // Normalize email to lowercase
+      const normalizedEmail = email.toLowerCase().trim();
+
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: normalizedEmail,
         password,
       });
 
@@ -121,7 +127,10 @@ export const AuthProvider = ({ children }) => {
 
   const resetPassword = async (email) => {
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      // Normalize email to lowercase
+      const normalizedEmail = email.toLowerCase().trim();
+
+      const { error } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
         redirectTo: `${window.location.origin}/reset-password`,
       });
 
