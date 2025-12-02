@@ -20,11 +20,14 @@ function Messages({ onBackToDashboard, autoSelectUserId }) {
   const [reportReason, setReportReason] = useState('');
   const [reportSubmitting, setReportSubmitting] = useState(false);
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
   const [conversationsLoaded, setConversationsLoaded] = useState(false);
 
-  // Scroll to bottom of messages
+  // Scroll to bottom of messages container (not the whole page)
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   };
 
   // Load conversations from database
@@ -693,7 +696,7 @@ function Messages({ onBackToDashboard, autoSelectUserId }) {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-6">
               <div className="max-w-3xl mx-auto space-y-4">
                 {filteredMessages.length === 0 && !searchQuery ? (
                   <div className="text-center text-sm text-gray-500 mb-8">

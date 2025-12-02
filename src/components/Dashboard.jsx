@@ -1118,6 +1118,7 @@ default:
                 className="h-16 w-auto"
               />
               <NotificationBell
+                size="lg"
                 onNavigate={(tab, userId) => {
                   setActiveTab(tab);
                   if (userId) {

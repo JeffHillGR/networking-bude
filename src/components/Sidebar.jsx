@@ -343,19 +343,26 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
               </div>
 
               {/* Notification Bell */}
-              <div className="mt-3 w-full flex items-center gap-3 px-3 py-2 pl-4">
-                <NotificationBell
-                  showDropdown={showNotifications}
-                  setShowDropdown={setShowNotifications}
-                  onNavigate={(tab, userId) => {
-                    setActiveTab(tab);
-                    if (userId && setSelectedConnectionId) {
-                      setSelectedConnectionId(userId);
-                    }
-                    window.scrollTo({ top: 0, behavior: 'instant' });
-                  }}
-                />
-                <span className="font-medium text-sm">Notifications</span>
+              <div className="w-full flex items-center gap-2 px-3 py-1.5">
+                <div className="w-4 h-4 flex items-center justify-center">
+                  <NotificationBell
+                    showDropdown={showNotifications}
+                    setShowDropdown={setShowNotifications}
+                    onNavigate={(tab, userId) => {
+                      setActiveTab(tab);
+                      if (userId && setSelectedConnectionId) {
+                        setSelectedConnectionId(userId);
+                      }
+                      window.scrollTo({ top: 0, behavior: 'instant' });
+                    }}
+                  />
+                </div>
+                <button
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="flex-1 text-left text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                >
+                  Notifications
+                </button>
               </div>
             </nav>
           </div>
