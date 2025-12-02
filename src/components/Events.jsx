@@ -642,8 +642,8 @@ function Events({ onBackToDashboard }) {
           </div>
 
           {/* Sidebar Ads */}
-          <div className="hidden lg:block w-44 flex-shrink-0">
-            <div className="sticky top-6 space-y-6">
+          <div className="hidden lg:block w-44 flex-shrink-0 pl-6 border-l border-gray-200">
+            <div className="sticky top-[22rem] space-y-6">
               {/* Sidebar Ad 1 */}
               {ads.eventsSidebar1?.image && ads.eventsSidebar1?.url ? (
                 <a

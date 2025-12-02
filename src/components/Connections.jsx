@@ -644,6 +644,63 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
       // Check if connection became mutual
       if (connectionResult === 'connected') {
+        // Create conversation and optionally send first message
+        try {
+          const convoUserId1 = currentUserId < person.id ? currentUserId : person.id;
+          const convoUserId2 = currentUserId < person.id ? person.id : currentUserId;
+
+          // Check if conversation already exists
+          const { data: existingConvs } = await supabase
+            .from('conversations')
+            .select('id')
+            .eq('user1_id', convoUserId1)
+            .eq('user2_id', convoUserId2)
+            .limit(1);
+
+          let conversationId;
+
+          // Create conversation if it doesn't exist
+          if (!existingConvs || existingConvs.length === 0) {
+            const { data: newConvo, error: convoError } = await supabase
+              .from('conversations')
+              .insert({
+                user1_id: convoUserId1,
+                user2_id: convoUserId2
+              })
+              .select('id')
+              .single();
+
+            if (convoError) throw convoError;
+            conversationId = newConvo.id;
+          } else {
+            conversationId = existingConvs[0].id;
+          }
+
+          // If there's a connection message, save it as the first message in the conversation
+          if (connectionMessage && connectionMessage.trim() && conversationId) {
+            await supabase
+              .from('messages')
+              .insert({
+                conversation_id: conversationId,
+                sender_id: currentUserId,
+                recipient_id: person.id,
+                content: connectionMessage.trim()
+              });
+
+            // Update conversation with last message
+            await supabase
+              .from('conversations')
+              .update({
+                last_message: connectionMessage.trim(),
+                last_message_at: new Date().toISOString()
+              })
+              .eq('id', conversationId);
+          }
+        } catch (convoError) {
+          console.error('Error creating conversation for new connection:', convoError);
+          // Don't fail the connection if conversation creation fails
+        }
+
         // Mutual connection! Remove from pending and add to saved
         setPendingConnections(prev => prev.filter(c => c.id !== person.id));
         setSavedConnections(prev => [...prev, {
