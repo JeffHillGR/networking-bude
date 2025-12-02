@@ -590,12 +590,111 @@ Deno.serve(async (req) => {
       }
     }
 
-    console.log(`✅ Matching completed:`);
+    console.log(`✅ Main matching completed:`);
     console.log(`   - Pairs evaluated: ${totalPairsEvaluated}`);
-    console.log(`   - Total matches created: ${matchesCreated}`);
+    console.log(`   - Matches created: ${matchesCreated}`);
+
+    // ============= SAFETY NET =============
+    // Find users with 0 matches and give them their best available match
+    console.log('\n🛡️ Running safety net for users with 0 matches...');
+
+    // Get all users who have NO matches in connection_flow
+    const { data: usersWithMatches, error: matchCheckError } = await supabaseAdmin
+      .from('connection_flow')
+      .select('user_id')
+      .eq('status', 'recommended');
+
+    if (matchCheckError) {
+      console.error('Error checking matches:', matchCheckError);
+    }
+
+    const usersWithMatchIds = new Set(usersWithMatches?.map((m: { user_id: string }) => m.user_id) || []);
+    const usersWithoutMatches = users.filter((u: User) => !usersWithMatchIds.has(u.id));
+
+    console.log(`   - Users without matches: ${usersWithoutMatches.length}`);
+
+    let safetyNetMatchesCreated = 0;
+
+    for (const unmatchedUser of usersWithoutMatches) {
+      const unmatchedAlgoUser = algorithmUsers.find((u: AlgorithmUser) => u.id === unmatchedUser.id);
+      if (!unmatchedAlgoUser) continue;
+
+      // Find best match for this user (highest score, even if below 60%)
+      let bestMatch: { userId: string; score: number; reasons: string[] } | null = null;
+
+      for (const candidateUser of users) {
+        if (candidateUser.id === unmatchedUser.id) continue;
+
+        const candidateAlgoUser = algorithmUsers.find((u: AlgorithmUser) => u.id === candidateUser.id);
+        if (!candidateAlgoUser) continue;
+
+        const result = calculateCompatibility(unmatchedAlgoUser, candidateAlgoUser);
+
+        if (!bestMatch || result.score > bestMatch.score) {
+          const reasons: string[] = [];
+          Object.keys(result.matches).forEach(category => {
+            if (result.matches[category].details && result.matches[category].details.length > 0) {
+              reasons.push(...result.matches[category].details);
+            }
+          });
+
+          bestMatch = {
+            userId: candidateUser.id,
+            score: result.score,
+            reasons: reasons.length > 0 ? reasons : ['Expand your network']
+          };
+        }
+      }
+
+      if (bestMatch && bestMatch.score > 0) {
+        console.log(`  🛡️ Safety net: ${unmatchedAlgoUser.firstName} → best match at ${bestMatch.score}%`);
+
+        // Create the safety net match (both directions)
+        const { error: errorA } = await supabaseAdmin
+          .from('connection_flow')
+          .insert({
+            user_id: unmatchedUser.id,
+            matched_user_id: bestMatch.userId,
+            compatibility_score: bestMatch.score,
+            match_reasons: bestMatch.reasons,
+            status: 'recommended',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+
+        const { error: errorB } = await supabaseAdmin
+          .from('connection_flow')
+          .insert({
+            user_id: bestMatch.userId,
+            matched_user_id: unmatchedUser.id,
+            compatibility_score: bestMatch.score,
+            match_reasons: bestMatch.reasons,
+            status: 'recommended',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+
+        if (!errorA) safetyNetMatchesCreated++;
+        if (!errorB) safetyNetMatchesCreated++;
+
+        if (errorA) console.error('Safety net error A:', errorA);
+        if (errorB) console.error('Safety net error B:', errorB);
+      }
+    }
+
+    console.log(`\n✅ FINAL RESULTS:`);
+    console.log(`   - Regular matches: ${matchesCreated}`);
+    console.log(`   - Safety net matches: ${safetyNetMatchesCreated}`);
+    console.log(`   - Total matches created: ${matchesCreated + safetyNetMatchesCreated}`);
 
     return new Response(
-      JSON.stringify({ success: true, matchesCreated, totalPairsEvaluated }),
+      JSON.stringify({
+        success: true,
+        matchesCreated: matchesCreated + safetyNetMatchesCreated,
+        regularMatches: matchesCreated,
+        safetyNetMatches: safetyNetMatchesCreated,
+        totalPairsEvaluated
+      }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 

@@ -848,9 +848,9 @@ function EventSlotsManager() {
             if (eventData.location.address) {
               const addr = eventData.location.address;
               if (typeof addr === 'string') {
-                scrapedData.location_address = addr;
+                scrapedData.full_address = addr;
               } else if (addr.streetAddress || addr.addressLocality) {
-                scrapedData.location_address = [addr.streetAddress, addr.addressLocality, addr.addressRegion].filter(Boolean).join(', ');
+                scrapedData.full_address = [addr.streetAddress, addr.addressLocality, addr.addressRegion].filter(Boolean).join(', ');
               }
             }
           }
