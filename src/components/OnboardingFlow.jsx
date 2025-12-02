@@ -518,9 +518,13 @@ export default function BudEOnboarding() {
           errorCode.includes('23505') || // PostgreSQL unique violation
           errorCode.includes('user_already_exists')) {
         setSignupError('This email already exists. Please try logging in instead.');
+      } else if (error.message === 'PROFILE_INCOMPLETE' ||
+                 errorMessage.includes('profile_incomplete') ||
+                 errorMessage.includes('not-null') ||
+                 errorMessage.includes('check constraint')) {
+        setSignupError('Oops! Something went wrong saving your profile. Please wait a moment and try again. If the problem persists, contact us at grjeff@gmail.com');
       } else {
-        setSignupError('Failed to create account. Please check your information and try again.');
-        alert('Failed to create account. Please check your information and try again.');
+        setSignupError('Something went wrong. Please wait a moment and try again. If the problem persists, contact us at grjeff@gmail.com');
       }
     } finally {
       setIsSubmitting(false);

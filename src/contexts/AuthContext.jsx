@@ -76,6 +76,16 @@ export const AuthProvider = ({ children }) => {
         if (profileError) {
           console.error('❌ Profile insert error:', profileError);
           console.error('❌ Error details:', JSON.stringify(profileError, null, 2));
+
+          // Check if it's a constraint violation (incomplete data)
+          const errorMessage = profileError.message?.toLowerCase() || '';
+          const errorCode = profileError.code || '';
+
+          if (errorCode === '23502' || errorCode === '23514' ||
+              errorMessage.includes('not-null') || errorMessage.includes('check constraint')) {
+            throw new Error('PROFILE_INCOMPLETE');
+          }
+
           throw profileError;
         }
 
