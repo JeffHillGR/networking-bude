@@ -56,8 +56,8 @@ function Events({ onBackToDashboard }) {
   });
 
   useEffect(() => {
-    // Scroll to top when component loads
-    window.scrollTo(0, 0);
+    // Scroll to top when component loads (use setTimeout to avoid blocking)
+    setTimeout(() => window.scrollTo(0, 0), 0);
 
     // Setup mock ads for demo (TEMPORARY - remove when real ads are live)
     // setupMockAds(); // Commented out to allow custom ads to persist
@@ -256,7 +256,7 @@ function Events({ onBackToDashboard }) {
             </div>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="bg-white rounded-lg overflow-hidden shadow-sm animate-pulse">
@@ -296,7 +296,7 @@ function Events({ onBackToDashboard }) {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8">
         {/* Search and Filters - Coming Soon */}
         {/* <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -466,11 +466,11 @@ function Events({ onBackToDashboard }) {
                       trackEngagement(); // Count viewing event as engagement
                       navigate(`/events/${event.id}`);
                     }}
-                    className={`bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer relative animate-fade-in h-[240px] ${event.isWildcard ? 'border-2 border-[#D0ED00]' : event.isTrending ? 'border-2 border-green-200' : 'border border-black'}`}
+                    className={`bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer relative animate-fade-in min-h-[240px] md:h-[240px] ${event.isWildcard ? 'border-2 border-[#D0ED00]' : event.isTrending ? 'border-2 border-green-200' : 'border border-black'}`}
                     style={{ animationDelay: `${index * 80}ms`, animationFillMode: 'backwards' }}
                   >
-                    <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                      <img src={event.image} alt={event.title} className="w-full md:w-48 h-48 md:h-32 object-contain rounded-lg flex-shrink-0 bg-white" />
+                    <div className="flex flex-col md:flex-row gap-4 md:gap-6 h-full">
+                      <img src={event.image} alt={event.title} className="w-full md:w-48 h-32 md:h-32 object-contain rounded-lg flex-shrink-0 bg-white" />
                       <div className="flex-1 min-w-0">
                         {event.isWildcard && (
                           <div className="mb-2 p-2 bg-gradient-to-r from-green-50 to-lime-50 border-l-4 border-[#D0ED00] rounded">
@@ -580,8 +580,8 @@ function Events({ onBackToDashboard }) {
               </button>
             </div>
 
-            {/* Bottom Banner Ad */}
-            <div className="mt-12">
+            {/* Bottom Banner Ad - Hidden on mobile due to space constraints */}
+            <div className="hidden md:block mt-8 md:mt-12 pb-4">
               {ads.eventsBottom?.image && ads.eventsBottom?.url ? (
                 <a
                   href={ads.eventsBottom.url}
