@@ -38,7 +38,7 @@ function App() {
         />
         <Route
           path="/events/:eventId"
-          element={user ? <EventDetail /> : <Navigate to="/" />}
+          element={<EventDetail />}
         />
         <Route
           path="/resources-insights"
