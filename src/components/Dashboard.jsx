@@ -686,10 +686,10 @@ const getGreeting = () => {
               {/* Potential Connections - Left Side */}
               <div className="flex flex-col relative group">
                 <div className="mb-4 text-center">
-                  <div className="inline-block bg-white px-6 py-2 rounded-lg border-2 border-black mb-2 min-w-[340px]">
-                    <h3 className="font-bold text-black text-lg">Recommended Connections</h3>
+                  <div className="inline-block bg-white px-4 md:px-6 py-2 rounded-lg border-2 border-black mb-2 md:min-w-[340px]">
+                    <h3 className="font-bold text-black text-base md:text-lg">Recommended Connections</h3>
                   </div>
-                  <p className="text-sm text-gray-600">People you might want to connect with <span className="font-bold">first</span></p>
+                  <p className="text-xs md:text-sm text-gray-600">People you might want to connect with <span className="font-bold">first</span></p>
                 </div>
                 <div className="space-y-4 flex-grow">
                   {/* Show loading state, then real connections, then placeholders */}
@@ -797,7 +797,7 @@ const getGreeting = () => {
                       setActiveTab('connections');
                       window.scrollTo({ top: 0, behavior: 'instant' });
                     }}
-                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors min-w-[340px]"
+                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors md:min-w-[340px]"
                   >
                     View All Recommended Connections
                   </button>
@@ -807,10 +807,10 @@ const getGreeting = () => {
               {/* Upcoming Events - Right Side */}
               <div className="flex flex-col">
                 <div className="mb-4 text-center">
-                  <div className="inline-block bg-white px-6 py-2 rounded-lg border-2 border-black mb-2 min-w-[340px]">
-                    <h3 className="font-bold text-black text-lg">Upcoming Events</h3>
+                  <div className="inline-block bg-white px-4 md:px-6 py-2 rounded-lg border-2 border-black mb-2 md:min-w-[340px]">
+                    <h3 className="font-bold text-black text-base md:text-lg">Upcoming Events</h3>
                   </div>
-                  <p className="text-sm text-gray-600">Then check out some events <span className="font-bold">together</span></p>
+                  <p className="text-xs md:text-sm text-gray-600">Then check out some events <span className="font-bold">together</span></p>
                 </div>
                 <div className="space-y-4 flex-grow">
                   {(loadingConnections || loadingEvents) ? (
@@ -864,7 +864,7 @@ const getGreeting = () => {
                 <div className="mt-4 text-center">
                   <button
                     onClick={() => setActiveTab('events')}
-                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors min-w-[340px]"
+                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors md:min-w-[340px]"
                   >
                     View All Upcoming Events
                   </button>
@@ -876,8 +876,8 @@ const getGreeting = () => {
             <div>
               <div className="bg-white rounded-lg p-4 md:p-5 shadow-sm border border-gray-200">
                 <div className="mb-2 text-center">
-                  <div className="inline-block bg-white px-6 py-2 rounded-lg border-2 border-black min-w-[340px]">
-                    <h3 className="font-bold text-black text-lg">Insights</h3>
+                  <div className="inline-block bg-white px-4 md:px-6 py-2 rounded-lg border-2 border-black md:min-w-[340px]">
+                    <h3 className="font-bold text-black text-base md:text-lg">Insights</h3>
                   </div>
                   <p className="text-xs text-gray-500 mt-0.5">Curated content to help you grow</p>
                 </div>
@@ -899,19 +899,19 @@ const getGreeting = () => {
                       <img
                         src={content.image}
                         alt={content.title}
-                        className="w-32 h-32 md:w-36 md:h-36 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm"
+                        className="w-32 h-32 md:w-36 md:h-36 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm self-center md:self-start"
                       />
 
                       {/* Content */}
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 min-w-0 text-center md:text-left">
                         <h4 className="font-bold text-gray-900 mb-2 text-lg leading-tight">{content.title}</h4>
                         {content.author && (
                           <p className="text-xs text-gray-500 italic mb-2">By {content.author}</p>
                         )}
                         <p className="text-sm text-gray-600 mb-2 line-clamp-2 leading-relaxed">{content.description}</p>
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 items-center md:items-start">
                           {content.tags && (
-                            <div className="flex gap-2 flex-wrap">
+                            <div className="flex gap-2 flex-wrap justify-center md:justify-start">
                               {content.tags.split(',').slice(0, 2).map((tag, i) => (
                                 <span key={i} className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded">
                                   {tag.trim()}
@@ -935,7 +935,7 @@ const getGreeting = () => {
                 <div className="mt-4 text-center">
                   <button
                     onClick={() => navigate('/resources-insights')}
-                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors min-w-[340px]"
+                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors md:min-w-[340px]"
                   >
                     View All Insights
                   </button>
@@ -1607,7 +1607,7 @@ default:
                     </svg>
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Contact Us</h3>
-                  <p className="text-gray-600">Have a question or feedback? We'd love to hear from you!</p>
+                  <p className="text-gray-600">Have a question or feedback?<br />We'd love to hear from you!</p>
                 </div>
                 <form onSubmit={handleSubmitContact} className="space-y-4">
                   <div>

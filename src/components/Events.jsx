@@ -260,8 +260,7 @@ function Events({ onBackToDashboard }) {
                 className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium transition-colors"
               >
                 <ArrowLeft className="w-5 h-5" />
-                <span className="hidden md:inline">Back to Dashboard</span>
-                <span className="md:hidden">Back</span>
+                <span>Back to Dashboard</span>
               </button>
               <div className="text-center flex-1">
                 <div className="inline-block bg-white px-4 md:px-6 py-2 md:py-3 rounded-lg border-2 border-black">
@@ -304,8 +303,7 @@ function Events({ onBackToDashboard }) {
               className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span className="hidden md:inline">Back to Dashboard</span>
-              <span className="md:hidden">Back</span>
+              <span>Back to Dashboard</span>
             </button>
             {/* Title */}
             <div className="text-center flex-1">

@@ -649,24 +649,34 @@ function EventDetail() {
         }} />
 
         <div className="flex-1">
-          <div className="bg-white border-b border-gray-200">
-          <div className="px-4 py-4">
-            <button
-              onClick={() => {
-                if (!user && sessionStorage.getItem('hasViewedPublicContent')) {
-                  setShowSignupPrompt(true);
-                } else {
-                  navigate('/dashboard', { state: { activeTab: 'events' } });
-                }
-              }}
-              className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium mb-4 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span>Back to All Events</span>
-            </button>
-            <h1 className="text-2xl font-bold text-gray-900">Event Details</h1>
+          <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-4 md:py-6">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-0">
+                {/* Back to Events Button */}
+                <button
+                  onClick={() => {
+                    if (!user && sessionStorage.getItem('hasViewedPublicContent')) {
+                      setShowSignupPrompt(true);
+                    } else {
+                      navigate('/dashboard', { state: { activeTab: 'events' } });
+                    }
+                  }}
+                  className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                  <span>Back to All Events</span>
+                </button>
+                {/* Title */}
+                <div className="text-center flex-1">
+                  <div className="inline-block bg-white px-4 md:px-6 py-2 md:py-3 rounded-lg border-2 border-black">
+                    <h1 className="text-xl md:text-3xl font-bold text-black">Event Details</h1>
+                  </div>
+                </div>
+                {/* Spacer for balance - hidden on mobile */}
+                <div className="hidden md:block w-[140px]"></div>
+              </div>
+            </div>
           </div>
-        </div>
 
         <div className="px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
