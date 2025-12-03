@@ -29,6 +29,33 @@ function EventDetail() {
   const [showGoingDisclaimer, setShowGoingDisclaimer] = useState(false);
   const [interestedConnections, setInterestedConnections] = useState([]);
   const [showInterestedList, setShowInterestedList] = useState(false);
+  const [bottomBannerAd, setBottomBannerAd] = useState(null);
+
+  // Load bottom banner ad from Supabase
+  useEffect(() => {
+    const loadBottomAd = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('event_ads')
+          .select('*')
+          .eq('id', 'eventDetailBottom')
+          .single();
+
+        if (error && error.code !== 'PGRST116') { // Ignore "not found" error
+          console.error('Error loading bottom ad:', error);
+          return;
+        }
+
+        if (data?.image) {
+          setBottomBannerAd(data);
+        }
+      } catch (error) {
+        console.error('Error loading bottom ad:', error);
+      }
+    };
+
+    loadBottomAd();
+  }, []);
 
   // Track user engagement when viewing event details
   useEffect(() => {
@@ -908,11 +935,10 @@ function EventDetail() {
 
         {/* Bottom Banner Ad Section */}
         {(() => {
-          const bannerAd = JSON.parse(localStorage.getItem('ad_eventDetailBottom') || 'null');
-          if (bannerAd?.image) {
+          if (bottomBannerAd?.image) {
             // Check if ad tags match event tags (if tags exist)
-            if (bannerAd.tags) {
-              const adTags = bannerAd.tags.split(',').map(t => t.trim().toLowerCase());
+            if (bottomBannerAd.tags) {
+              const adTags = bottomBannerAd.tags.split(',').map(t => t.trim().toLowerCase());
               const eventTags = event.tags.map(t => t.toLowerCase());
               const hasMatchingTag = adTags.some(adTag => eventTags.includes(adTag));
 
@@ -923,17 +949,17 @@ function EventDetail() {
             }
 
             // If ad has URL, link to it. Otherwise, trigger inquiry modal
-            if (bannerAd.url) {
+            if (bottomBannerAd.url) {
               return (
                 <div className="mt-8 flex justify-center">
                   <a
-                    href={bannerAd.url}
+                    href={bottomBannerAd.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block"
                   >
                     <img
-                      src={bannerAd.image}
+                      src={bottomBannerAd.image}
                       alt="Sponsored"
                       className="w-full max-w-[728px] h-auto rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
                       style={{ aspectRatio: '728/160' }}
@@ -949,7 +975,7 @@ function EventDetail() {
                     className="block cursor-pointer"
                   >
                     <img
-                      src={bannerAd.image}
+                      src={bottomBannerAd.image}
                       alt="Sponsored"
                       className="w-full max-w-[728px] h-auto rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
                       style={{ aspectRatio: '728/160' }}
