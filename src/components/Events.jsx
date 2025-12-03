@@ -388,16 +388,16 @@ function Events({ onBackToDashboard }) {
                       trackEngagement(); // Count viewing event as engagement
                       navigate(`/events/${event.id}`);
                     }}
-                    className={`bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer animate-fade-in ${event.isWildcard ? 'border-4 border-[#D0ED00]' : 'border border-black'}`}
+                    className={`bg-white rounded-lg shadow-sm overflow-visible hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer animate-fade-in relative ${event.isWildcard ? 'border-2 border-[#D0ED00]' : 'border border-black'}`}
                     style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}
                   >
-                    <div className="relative h-48 bg-white">
+                    {event.isWildcard && (
+                      <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#009900] to-[#D0ED00] text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg z-10 border-2 border-[#D0ED00] whitespace-nowrap">
+                        🃏 Wildcard Pick of the Week
+                      </div>
+                    )}
+                    <div className="relative h-48 bg-white rounded-t-lg overflow-hidden">
                       <img src={event.image} alt={event.title} className="w-full h-full object-contain" />
-                      {event.isWildcard && (
-                        <div className="absolute top-4 right-4 bg-gradient-to-r from-[#009900] to-[#D0ED00] text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg">
-                          🃏 Wildcard Pick
-                        </div>
-                      )}
                       {event.soldOut && (
                         <div className="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg">
                           SOLD OUT
@@ -408,7 +408,7 @@ function Events({ onBackToDashboard }) {
                       {event.isWildcard && (
                         <div className="mb-3 p-3 bg-gradient-to-r from-green-50 to-lime-50 border-l-4 border-[#D0ED00] rounded">
                           <p className="text-sm text-gray-700 italic">
-                            In case you don't feel like professional networking this week
+                            Events that aren't necessarily "professional networking."
                           </p>
                         </div>
                       )}
@@ -497,7 +497,7 @@ function Events({ onBackToDashboard }) {
                         {event.isWildcard && (
                           <div className="mb-2 p-2 bg-gradient-to-r from-green-50 to-lime-50 border-l-4 border-[#D0ED00] rounded">
                             <p className="text-xs md:text-sm text-gray-700 italic flex items-center gap-2">
-                              🃏 <span className="font-bold">Wildcard Pick:</span> In case you don't feel like professional networking this week
+                              🃏 <span className="font-bold">Wildcard Pick of the Week:</span> Events that aren't necessarily "professional networking."
                             </p>
                           </div>
                         )}
