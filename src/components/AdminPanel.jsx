@@ -254,13 +254,13 @@ function AdminPanel() {
           zip_code: ad.zip_code || '',
           radius: ad.radius || '50',
           updated_at: new Date().toISOString()
-        });
+        }, { onConflict: 'id' });
 
       if (error) throw error;
       alert('Ad saved successfully!');
     } catch (error) {
       console.error('Error saving ad:', error);
-      alert('Failed to save ad. Please try again.');
+      alert(`Failed to save ad: ${error.message || 'Unknown error'}`);
     }
   };
 
