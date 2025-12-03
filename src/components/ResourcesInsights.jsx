@@ -11,6 +11,50 @@ function ResourcesInsights({ onBackToDashboard }) {
   const [isLoading, setIsLoading] = useState(true);
   const [showShareModal, setShowShareModal] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [bottomBannerAd, setBottomBannerAd] = useState(null);
+  const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
+  const [adInquirySubmitted, setAdInquirySubmitted] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+
+  // Format phone number as user types: (XXX) XXX-XXXX
+  const formatPhoneNumber = (value) => {
+    const cleaned = value.replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
+    if (match) {
+      const parts = [];
+      if (match[1]) parts.push('(', match[1]);
+      if (match[2]) parts.push(') ', match[2]);
+      if (match[3]) parts.push('-', match[3]);
+      return parts.join('');
+    }
+    return value;
+  };
+
+  // Load bottom banner ad from Supabase
+  useEffect(() => {
+    const loadBottomAd = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('insight_ads')
+          .select('*')
+          .eq('id', 'insightsBottom')
+          .single();
+
+        if (error && error.code !== 'PGRST116') { // Ignore "not found" error
+          console.error('Error loading bottom ad:', error);
+          return;
+        }
+
+        if (data?.image) {
+          setBottomBannerAd(data);
+        }
+      } catch (error) {
+        console.error('Error loading bottom ad:', error);
+      }
+    };
+
+    loadBottomAd();
+  }, []);
 
   // Load featured content from Supabase on mount
   useEffect(() => {
@@ -257,6 +301,69 @@ function ResourcesInsights({ onBackToDashboard }) {
                     </div>
                   </div>
                 )}
+
+                {/* Bottom Banner Ad Section */}
+                {(() => {
+                  if (bottomBannerAd?.image) {
+                    // If ad has URL, link to it. Otherwise, trigger inquiry modal
+                    if (bottomBannerAd.url) {
+                      return (
+                        <div className="mt-12 flex justify-center">
+                          <a
+                            href={bottomBannerAd.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block"
+                          >
+                            <img
+                              src={bottomBannerAd.image}
+                              alt="Sponsored"
+                              className="w-full max-w-[728px] h-auto rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+                              style={{ aspectRatio: '728/160' }}
+                            />
+                          </a>
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div className="mt-12 flex justify-center">
+                          <div
+                            onClick={() => setShowAdInquiryModal(true)}
+                            className="block cursor-pointer"
+                          >
+                            <img
+                              src={bottomBannerAd.image}
+                              alt="Sponsored"
+                              className="w-full max-w-[728px] h-auto rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+                              style={{ aspectRatio: '728/160' }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    }
+                  }
+
+                  // Show placeholder if no ad
+                  return (
+                    <div className="mt-12 flex justify-center">
+                      <div
+                        onClick={() => setShowAdInquiryModal(true)}
+                        className="w-full max-w-[728px] rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
+                        style={{ aspectRatio: '728/160' }}
+                      >
+                        <div
+                          className="absolute inset-0 bg-cover opacity-30"
+                          style={{
+                            backgroundImage: 'url(My-phone-blurry-tall-2.jpg)',
+                            backgroundPosition: 'center 90%'
+                          }}
+                        />
+                        <div className="text-center relative z-10">
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </>
             )}
       </div>
@@ -443,6 +550,171 @@ function ResourcesInsights({ onBackToDashboard }) {
             >
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Ad Inquiry Modal */}
+      {showAdInquiryModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => !adInquirySubmitted && setShowAdInquiryModal(false)}>
+          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full max-h-[85vh] overflow-y-auto p-4 relative border-4 border-[#D0ED00]" onClick={(e) => e.stopPropagation()}>
+            {adInquirySubmitted ? (
+              // Success Message
+              <div className="text-center py-12">
+                <div className="mb-6">
+                  <svg className="w-20 h-20 mx-auto text-[#009900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Thank You!</h2>
+                <p className="text-lg text-gray-600 mb-2">Your inquiry has been submitted successfully.</p>
+                <p className="text-gray-500">We'll be in touch soon!</p>
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={() => setShowAdInquiryModal(false)}
+                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                >
+                  ×
+                </button>
+                <div>
+                  <div className="mb-4">
+                    <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto">
+                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">Advertise with BudE</h3>
+                  <p className="text-gray-600 text-sm mb-4 text-center">
+                    Interested in advertising? Fill out this quick form and we'll get back to you soon!
+                  </p>
+                  <form
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      const formData = new FormData(e.target);
+
+                      try {
+                        const response = await fetch('/api/submitAdInquiry', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            name: formData.get('name'),
+                            email: formData.get('email'),
+                            company: formData.get('company'),
+                            phone: phoneNumber,
+                            adType: formData.get('adType'),
+                            message: formData.get('message')
+                          })
+                        });
+
+                        if (!response.ok) {
+                          throw new Error('Failed to submit inquiry');
+                        }
+
+                        // Show success message in modal
+                        setAdInquirySubmitted(true);
+                        e.target.reset();
+                        setPhoneNumber('');
+
+                        // Close modal after 3 seconds
+                        setTimeout(() => {
+                          setAdInquirySubmitted(false);
+                          setShowAdInquiryModal(false);
+                        }, 3000);
+                      } catch (error) {
+                        console.error('Error:', error);
+                        alert('There was an error submitting your inquiry. Please email grjeff@gmail.com directly.');
+                      }
+                    }}
+                    className="space-y-3"
+                  >
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Name *</label>
+                      <input
+                        type="text"
+                        name="name"
+                        required
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Email *</label>
+                      <input
+                        type="email"
+                        name="email"
+                        required
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Company</label>
+                      <input
+                        type="text"
+                        name="company"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Phone</label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(formatPhoneNumber(e.target.value))}
+                        placeholder="(555) 123-4567"
+                        maxLength="14"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Ad Type of Interest</label>
+                      <select
+                        name="adType"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      >
+                        <option value="">Select one...</option>
+                        <option value="Dashboard Banner">Dashboard Banner</option>
+                        <option value="Events Page Sidebar">Events Page Sidebar</option>
+                        <option value="Events Page Banner">Events Page Banner</option>
+                        <option value="Event Detail Banner">Event Detail Banner</option>
+                        <option value="Insights Page Banner">Insights Page Banner</option>
+                        <option value="Sponsored Event">Sponsored Event</option>
+                        <option value="Sponsored Content">Sponsored Content</option>
+                        <option value="Multiple Placements">Multiple Placements</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Message</label>
+                      <textarea
+                        name="message"
+                        rows="2"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                        placeholder="Tell us about your advertising goals..."
+                      ></textarea>
+                    </div>
+                    <div className="flex gap-3 pt-2">
+                      <button
+                        type="submit"
+                        className="flex-1 bg-[#009900] text-white py-3 rounded-lg font-medium hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
+                      >
+                        Submit Inquiry
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowAdInquiryModal(false)}
+                        className="px-6 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

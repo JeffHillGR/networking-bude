@@ -29,7 +29,8 @@ function AdminPanel() {
     eventsSidebar1: null,
     eventsSidebar2: null,
     eventsBottom: null,
-    eventDetailBottom: null
+    eventDetailBottom: null,
+    insightsBottom: null
   });
   const [adsLoading, setAdsLoading] = useState(true);
 
@@ -243,9 +244,12 @@ function AdminPanel() {
     }
 
     try {
+      // Determine which table to use based on slot name
+      const tableName = slot.startsWith('insights') ? 'insight_ads' : 'event_ads';
+
       // Save to Supabase using upsert to create row if it doesn't exist
       const { error } = await supabase
-        .from('event_ads')
+        .from(tableName)
         .upsert({
           id: slot,
           image: ad.image,
@@ -266,9 +270,12 @@ function AdminPanel() {
 
   const removeAd = async (slot) => {
     try {
+      // Determine which table to use based on slot name
+      const tableName = slot.startsWith('insights') ? 'insight_ads' : 'event_ads';
+
       // Clear the ad data in Supabase (keep the row, just clear fields)
       const { error } = await supabase
-        .from('event_ads')
+        .from(tableName)
         .update({
           image: '',
           url: '',
@@ -459,7 +466,18 @@ function AdminPanel() {
             removeAd={removeAd}
           />
         )}
-        {activeTab === 'resources' && <ResourcesInsightsTab />}
+        {activeTab === 'resources' && (
+          <ResourcesInsightsTab
+            ads={ads}
+            handleImageUpload={handleImageUpload}
+            handleUrlChange={handleUrlChange}
+            handleTagsChange={handleTagsChange}
+            handleZipCodeChange={handleZipCodeChange}
+            handleRadiusChange={handleRadiusChange}
+            saveAd={saveAd}
+            removeAd={removeAd}
+          />
+        )}
         {activeTab === 'moderation' && <ModerationTab onReportReviewed={() => setUnreviewedReportsCount(prev => Math.max(0, prev - 1))} />}
       </div>
     </div>
@@ -1251,7 +1269,7 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, handleTagsChang
   );
 }
 
-function ResourcesInsightsTab() {
+function ResourcesInsightsTab({ ads, handleImageUpload: handleAdImageUpload, handleUrlChange, handleTagsChange, handleZipCodeChange, handleRadiusChange, saveAd, removeAd }) {
   const [contentSlots, setContentSlots] = useState({});
   const [loading, setLoading] = useState(true);
   const [expandedSlot, setExpandedSlot] = useState(null);
@@ -1309,7 +1327,7 @@ function ResourcesInsightsTab() {
     }));
   };
 
-  const handleImageUpload = (slotNumber, file) => {
+  const handleContentImageUpload = (slotNumber, file) => {
     if (!file) return;
 
     // Check file size
@@ -1847,7 +1865,7 @@ function ResourcesInsightsTab() {
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => handleImageUpload(slotNumber, e.target.files[0])}
+                    onChange={(e) => handleContentImageUpload(slotNumber, e.target.files[0])}
                     className="hidden"
                   />
                 </label>
@@ -1964,6 +1982,26 @@ function ResourcesInsightsTab() {
       </div>
 
       {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(slotNumber => renderInsightSlot(slotNumber))}
+
+      {/* Insights Bottom Banner Ad */}
+      <div className="mt-8 pt-6 border-t border-gray-200">
+        <h3 className="text-lg font-bold mb-4">Insights Page - Bottom Banner Ad</h3>
+        <InlineAdEditor
+          title=""
+          slot="insightsBottom"
+          ad={ads?.insightsBottom}
+          onImageUpload={handleAdImageUpload}
+          onUrlChange={handleUrlChange}
+          onTagsChange={handleTagsChange}
+          onZipCodeChange={handleZipCodeChange}
+          onRadiusChange={handleRadiusChange}
+          onSave={saveAd}
+          onRemove={removeAd}
+          aspectRatio="728/160"
+          dimensions="728x160"
+          description="Bottom banner ad displayed at the bottom of the Insights page"
+        />
+      </div>
     </div>
   );
 }
