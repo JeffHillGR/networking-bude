@@ -754,7 +754,7 @@ const getGreeting = () => {
                           setActiveTab('connections');
                           window.scrollTo({ top: 0, behavior: 'instant' });
                         }}
-                        className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px] cursor-pointer hover:shadow-md hover:border-[#009900] transition-all animate-fade-in"
+                        className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 min-h-[136px] cursor-pointer hover:shadow-md hover:border-[#009900] hover:-translate-y-0.5 transition-all duration-200 animate-fade-in"
                         style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}
                       >
                         <div className="flex gap-3 md:gap-4">
@@ -818,9 +818,9 @@ const getGreeting = () => {
                     [0, 1, 2].map((index) => (
                       <div
                         key={`loading-event-${index}`}
-                        className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex min-h-[160px] animate-pulse"
+                        className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex min-h-[136px] animate-pulse"
                       >
-                        <div className="w-40 h-40 bg-gray-200 flex-shrink-0" />
+                        <div className="w-40 h-full bg-gray-200 flex-shrink-0" />
                         <div className="p-3 flex-1 min-w-0">
                           <div className="h-4 bg-gray-200 rounded w-20 mb-2" />
                           <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
@@ -834,14 +834,14 @@ const getGreeting = () => {
                   <div
                     key={index}
                     onClick={() => navigate(`/events/${event.id}`)}
-                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200 flex min-h-[160px] animate-fade-in"
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200 flex min-h-[136px] animate-fade-in"
                     style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}
                   >
                     {event.image && (
                       <img
                         src={event.image}
                         alt={event.title}
-                        className="w-40 h-40 object-cover flex-shrink-0"
+                        className="w-40 object-cover flex-shrink-0"
                       />
                     )}
                     <div className="p-3 flex-1 min-w-0">
