@@ -1170,8 +1170,8 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, handleTagsChang
             <EventSlotsManager />
           </div>
 
-          {/* Bottom Banner Ad - pushed to bottom */}
-          <div className="mt-auto">
+          {/* Bottom Banner Ads - pushed to bottom */}
+          <div className="mt-auto space-y-4">
             <InlineAdEditor
               title="Events - Bottom Banner"
               slot="eventsBottom"
@@ -1185,6 +1185,21 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, handleTagsChang
               onRemove={removeAd}
               dimensions="728x160px"
               description="Full width banner below Events list"
+              aspectRatio="728/160"
+            />
+            <InlineAdEditor
+              title="Event Details - Bottom Banner"
+              slot="eventDetailBottom"
+              ad={ads.eventDetailBottom}
+              onImageUpload={handleImageUpload}
+              onUrlChange={handleUrlChange}
+              onTagsChange={handleTagsChange}
+              onZipCodeChange={handleZipCodeChange}
+              onRadiusChange={handleRadiusChange}
+              onSave={saveAd}
+              onRemove={removeAd}
+              dimensions="728x160px"
+              description="Full width banner at bottom of individual event pages"
               aspectRatio="728/160"
             />
           </div>

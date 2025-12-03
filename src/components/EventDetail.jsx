@@ -906,9 +906,9 @@ function EventDetail() {
           </div>
         </div>
 
-        {/* Banner Ad Section */}
+        {/* Bottom Banner Ad Section */}
         {(() => {
-          const bannerAd = JSON.parse(localStorage.getItem('ad_eventDetailBanner') || 'null');
+          const bannerAd = JSON.parse(localStorage.getItem('ad_eventDetailBottom') || 'null');
           if (bannerAd?.image) {
             // Check if ad tags match event tags (if tags exist)
             if (bannerAd.tags) {
