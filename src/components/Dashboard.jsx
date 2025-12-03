@@ -841,7 +841,7 @@ const getGreeting = () => {
                       <img
                         src={event.image}
                         alt={event.title}
-                        className="w-40 object-cover flex-shrink-0"
+                        className="w-40 object-contain flex-shrink-0 bg-gray-100"
                       />
                     )}
                     <div className="p-3 flex-1 min-w-0">
