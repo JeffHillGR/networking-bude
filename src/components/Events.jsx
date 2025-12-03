@@ -252,22 +252,25 @@ function Events({ onBackToDashboard }) {
   if (loadingEvents) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <div className="bg-white border-b border-gray-200 px-6 py-6">
-          <div className="max-w-7xl mx-auto flex items-start justify-between">
-            <button
-              onClick={onBackToDashboard}
-              className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium transition-colors pt-2"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span>Back to Dashboard</span>
-            </button>
-            <div className="text-center flex-1">
-              <div className="inline-block bg-white px-6 py-3 rounded-lg border-2 border-black">
-                <h1 className="text-3xl font-bold text-black">Networking Events</h1>
+        <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-4 md:py-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-0">
+              <button
+                onClick={onBackToDashboard}
+                className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span className="hidden md:inline">Back to Dashboard</span>
+                <span className="md:hidden">Back</span>
+              </button>
+              <div className="text-center flex-1">
+                <div className="inline-block bg-white px-4 md:px-6 py-2 md:py-3 rounded-lg border-2 border-black">
+                  <h1 className="text-xl md:text-3xl font-bold text-black">Networking Events</h1>
+                </div>
+                <p className="text-gray-600 text-xs md:text-sm mt-2">These are real events. Check them out!</p>
               </div>
-              <p className="text-gray-600 text-sm mt-2">These are real events. Check them out!</p>
+              <div className="hidden md:block w-[140px]"></div>
             </div>
-            <div className="w-[140px]"></div>
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8">
@@ -291,25 +294,29 @@ function Events({ onBackToDashboard }) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-6">
-        <div className="max-w-7xl mx-auto flex items-start justify-between">
-          {/* Back to Dashboard Button */}
-          <button
-            onClick={onBackToDashboard}
-            className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium transition-colors pt-2"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back to Dashboard</span>
-          </button>
-          {/* Title */}
-          <div className="text-center flex-1">
-            <div className="inline-block bg-white px-6 py-3 rounded-lg border-2 border-black">
-              <h1 className="text-3xl font-bold text-black">Networking Events</h1>
+      <div className="bg-white border-b border-gray-200 px-4 md:px-6 py-4 md:py-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Mobile: stacked layout */}
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-0">
+            {/* Back to Dashboard Button */}
+            <button
+              onClick={onBackToDashboard}
+              className="flex items-center gap-2 text-[#009900] hover:text-[#007700] font-medium transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span className="hidden md:inline">Back to Dashboard</span>
+              <span className="md:hidden">Back</span>
+            </button>
+            {/* Title */}
+            <div className="text-center flex-1">
+              <div className="inline-block bg-white px-4 md:px-6 py-2 md:py-3 rounded-lg border-2 border-black">
+                <h1 className="text-xl md:text-3xl font-bold text-black">Networking Events</h1>
+              </div>
+              <p className="text-gray-600 text-xs md:text-sm mt-2">These are real events. Check them out!</p>
             </div>
-            <p className="text-gray-600 text-sm mt-2">These are real events. Check them out!</p>
+            {/* Spacer for balance - hidden on mobile */}
+            <div className="hidden md:block w-[140px]"></div>
           </div>
-          {/* Spacer for balance */}
-          <div className="w-[140px]"></div>
         </div>
       </div>
 
