@@ -1171,37 +1171,42 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, handleTagsChang
           </div>
 
           {/* Bottom Banner Ads - pushed to bottom */}
-          <div className="mt-auto space-y-4">
-            <InlineAdEditor
-              title="Events - Bottom Banner"
-              slot="eventsBottom"
-              ad={ads.eventsBottom}
-              onImageUpload={handleImageUpload}
-              onUrlChange={handleUrlChange}
-              onTagsChange={handleTagsChange}
-              onZipCodeChange={handleZipCodeChange}
-              onRadiusChange={handleRadiusChange}
-              onSave={saveAd}
-              onRemove={removeAd}
-              dimensions="728x160px"
-              description="Full width banner below Events list"
-              aspectRatio="728/160"
-            />
-            <InlineAdEditor
-              title="Event Details - Bottom Banner"
-              slot="eventDetailBottom"
-              ad={ads.eventDetailBottom}
-              onImageUpload={handleImageUpload}
-              onUrlChange={handleUrlChange}
-              onTagsChange={handleTagsChange}
-              onZipCodeChange={handleZipCodeChange}
-              onRadiusChange={handleRadiusChange}
-              onSave={saveAd}
-              onRemove={removeAd}
-              dimensions="728x160px"
-              description="Full width banner at bottom of individual event pages"
-              aspectRatio="728/160"
-            />
+          <div className="mt-auto">
+            <div className="bg-gradient-to-r from-green-50 to-lime-50 border-2 border-[#009900] rounded-xl p-6 space-y-6">
+              <h3 className="text-lg font-bold text-[#009900] flex items-center gap-2">
+                <span className="text-2xl">📢</span> Bottom Banner Ads
+              </h3>
+              <InlineAdEditor
+                title="Events Page - Bottom Banner"
+                slot="eventsBottom"
+                ad={ads.eventsBottom}
+                onImageUpload={handleImageUpload}
+                onUrlChange={handleUrlChange}
+                onTagsChange={handleTagsChange}
+                onZipCodeChange={handleZipCodeChange}
+                onRadiusChange={handleRadiusChange}
+                onSave={saveAd}
+                onRemove={removeAd}
+                dimensions="728x160px"
+                description="Full width banner below Events list"
+                aspectRatio="728/160"
+              />
+              <InlineAdEditor
+                title="Event Details Page - Bottom Banner"
+                slot="eventDetailBottom"
+                ad={ads.eventDetailBottom}
+                onImageUpload={handleImageUpload}
+                onUrlChange={handleUrlChange}
+                onTagsChange={handleTagsChange}
+                onZipCodeChange={handleZipCodeChange}
+                onRadiusChange={handleRadiusChange}
+                onSave={saveAd}
+                onRemove={removeAd}
+                dimensions="728x160px"
+                description="Full width banner at bottom of individual event pages"
+                aspectRatio="728/160"
+              />
+            </div>
           </div>
         </div>
 
