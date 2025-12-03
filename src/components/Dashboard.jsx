@@ -1091,7 +1091,7 @@ default:
         Welcome to Networking BudE
       </span>
     </div>
-    <div className="md:flex">
+    <div className="md:flex overflow-visible">
 
     <Sidebar
       activeTab={activeTab}

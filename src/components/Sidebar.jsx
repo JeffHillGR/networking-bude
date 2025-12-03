@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Home, Calendar, Users, MessageCircle, User, CreditCard, Archive, Activity, BookOpen, Lightbulb, ChevronDown } from 'lucide-react';
+import { Home, Calendar, Users, MessageCircle, User, CreditCard, Archive, Activity, BookOpen, Lightbulb, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { supabase } from '../lib/supabase.js';
 import NotificationBell from './NotificationBell.jsx';
@@ -19,7 +19,16 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
   const [photoUrl, setPhotoUrl] = useState(localStorage.getItem('userPhotoUrl') || null);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const saved = localStorage.getItem('sidebarCollapsed');
+    return saved === 'true';
+  });
   const dropdownRef = useRef(null);
+
+  // Save collapsed state to localStorage
+  useEffect(() => {
+    localStorage.setItem('sidebarCollapsed', isCollapsed.toString());
+  }, [isCollapsed]);
 
   // Fetch user data from Supabase on mount
   useEffect(() => {
@@ -219,24 +228,33 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
   ];
 
   return (
-    <aside className="hidden md:block w-64 bg-white border-r border-gray-200 flex-shrink-0">
+    <aside className={`hidden md:block bg-white border-r border-gray-200 flex-shrink-0 transition-all duration-300 relative ${isCollapsed ? 'w-16' : 'w-52'}`}>
       <div className="flex flex-col h-screen">
         {/* Scrollable navigation section */}
         <div className="flex-1 overflow-y-auto">
-          <div className="p-4">
+          <div className={`${isCollapsed ? 'p-2' : 'p-4'}`}>
             {/* Logo */}
             <button
               onClick={() => {
                 trackEngagement();
                 setActiveTab('dashboard');
               }}
-              className="w-full flex items-center justify-center mb-4 cursor-pointer hover:opacity-80 transition-opacity"
+              className={`w-full flex items-center justify-center mb-4 cursor-pointer hover:opacity-80 transition-opacity ${isCollapsed ? 'px-1' : ''}`}
             >
               <img
-                src="/BudE-Color-Logo-Rev.png"
+                src={isCollapsed ? "/BudE-favicon.png" : "/BudE-Color-Logo-Rev.png"}
                 alt="BudE Logo"
-                className="w-full h-auto"
+                className={isCollapsed ? "w-10 h-10" : "w-full h-auto"}
               />
+            </button>
+
+            {/* Collapse Toggle Button */}
+            <button
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-end'} mb-4 p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-[#009900] transition-colors`}
+              title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              {isCollapsed ? <ChevronRight className="w-6 h-6" /> : <ChevronLeft className="w-6 h-6" />}
             </button>
 
             {/* Navigation */}
@@ -248,14 +266,15 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
                     trackEngagement();
                     setActiveTab(item.id);
                   }}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-colors ${
+                  className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg font-medium transition-colors ${
                     activeTab === item.id
                      ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
                       : 'text-gray-700 hover:bg-gray-100'
                   }`}
+                  title={isCollapsed ? item.label : undefined}
                 >
-                  <item.icon className="w-5 h-5" />
-                  <span className="font-medium text-sm">{item.label}</span>
+                  <item.icon className="w-5 h-5 flex-shrink-0" />
+                  {!isCollapsed && <span className="font-medium text-sm">{item.label}</span>}
                 </button>
               ))}
 
@@ -265,86 +284,89 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
                   trackEngagement();
                   setActiveTab('resources');
                 }}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg font-medium transition-colors ${
+                className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg font-medium transition-colors ${
                   activeTab === 'resources'
                     ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
+                title={isCollapsed ? 'Insights' : undefined}
               >
-                <BookOpen className="w-5 h-5" />
-                <span className="font-medium text-sm">Insights</span>
+                <BookOpen className="w-5 h-5 flex-shrink-0" />
+                {!isCollapsed && <span className="font-medium text-sm">Insights</span>}
               </button>
 
-              {/* My Activity Section */}
-              <div className="border-t border-gray-200 my-3 pt-3">
-                {/* My Activity */}
-                <button
-                  onClick={() => setShowActivity(!showActivity)}
-                  className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors text-gray-700 hover:bg-gray-100"
-                >
-                  <Activity className="w-4 h-4" />
-                  <span className="flex-1 text-left text-sm font-medium">My Activity</span>
-                  <span className="text-xs">{showActivity ? '▼' : '▶'}</span>
-                </button>
+              {/* My Activity Section - Hidden when collapsed */}
+              {!isCollapsed && (
+                <div className="border-t border-gray-200 my-3 pt-3">
+                  {/* My Activity */}
+                  <button
+                    onClick={() => setShowActivity(!showActivity)}
+                    className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors text-gray-700 hover:bg-gray-100"
+                  >
+                    <Activity className="w-4 h-4" />
+                    <span className="flex-1 text-left text-sm font-medium">My Activity</span>
+                    <span className="text-xs">{showActivity ? '▼' : '▶'}</span>
+                  </button>
 
-                {showActivity && (
-                  <div className="ml-4 mt-2 space-y-3 px-3 py-2 bg-gray-50 rounded-lg">
-                    {/* Events Interested In */}
-                    <div>
-                      <div className="flex items-center justify-between text-xs mb-2">
-                        <span className="text-gray-600 font-medium">Events Interested In</span>
-                        <span className="font-bold text-[#009900]">{interestedEvents.length}</span>
-                      </div>
-                      {interestedEvents.length > 0 && (
-                        <div className="flex gap-1 flex-wrap">
-                          {interestedEvents.slice(0, 4).map((event) => (
-                            <div
-                              key={event.id}
-                              className="w-10 h-10 rounded overflow-hidden border border-gray-300"
-                              title={event.title}
-                            >
-                              <img
-                                src={event.image_url}
-                                alt={event.title}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ))}
+                  {showActivity && (
+                    <div className="ml-4 mt-2 space-y-3 px-3 py-2 bg-gray-50 rounded-lg">
+                      {/* Events Interested In */}
+                      <div>
+                        <div className="flex items-center justify-between text-xs mb-2">
+                          <span className="text-gray-600 font-medium">Events Interested In</span>
+                          <span className="font-bold text-[#009900]">{interestedEvents.length}</span>
                         </div>
-                      )}
-                    </div>
+                        {interestedEvents.length > 0 && (
+                          <div className="flex gap-1 flex-wrap">
+                            {interestedEvents.slice(0, 4).map((event) => (
+                              <div
+                                key={event.id}
+                                className="w-10 h-10 rounded overflow-hidden border border-gray-300"
+                                title={event.title}
+                              >
+                                <img
+                                  src={event.image_url}
+                                  alt={event.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
 
-                    {/* Events Going To */}
-                    <div>
-                      <div className="flex items-center justify-between text-xs mb-2">
-                        <span className="text-gray-600 font-medium">Events Going To</span>
-                        <span className="font-bold text-[#009900]">{goingEvents.length}</span>
-                      </div>
-                      {goingEvents.length > 0 && (
-                        <div className="flex gap-1 flex-wrap">
-                          {goingEvents.slice(0, 4).map((event) => (
-                            <div
-                              key={event.id}
-                              className="w-10 h-10 rounded overflow-hidden border border-gray-300"
-                              title={event.title}
-                            >
-                              <img
-                                src={event.image_url}
-                                alt={event.title}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ))}
+                      {/* Events Going To */}
+                      <div>
+                        <div className="flex items-center justify-between text-xs mb-2">
+                          <span className="text-gray-600 font-medium">Events Going To</span>
+                          <span className="font-bold text-[#009900]">{goingEvents.length}</span>
                         </div>
-                      )}
+                        {goingEvents.length > 0 && (
+                          <div className="flex gap-1 flex-wrap">
+                            {goingEvents.slice(0, 4).map((event) => (
+                              <div
+                                key={event.id}
+                                className="w-10 h-10 rounded overflow-hidden border border-gray-300"
+                                title={event.title}
+                              >
+                                <img
+                                  src={event.image_url}
+                                  alt={event.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
 
               {/* Notification Bell */}
-              <div className="w-full flex items-center gap-2 px-3 py-1.5">
-                <div className="w-4 h-4 flex items-center justify-center">
+              <div className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-2'} px-3 py-1.5`}>
+                <div className={`${isCollapsed ? '' : 'w-4 h-4'} flex items-center justify-center`}>
                   <NotificationBell
                     showDropdown={showNotifications}
                     setShowDropdown={setShowNotifications}
@@ -357,46 +379,55 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
                     }}
                   />
                 </div>
-                <button
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className="flex-1 text-left text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
-                >
-                  Notifications
-                </button>
+                {!isCollapsed && (
+                  <button
+                    onClick={() => setShowNotifications(!showNotifications)}
+                    className="flex-1 text-left text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                  >
+                    Notifications
+                  </button>
+                )}
               </div>
             </nav>
           </div>
         </div>
 
         {/* Fixed user profile section at bottom */}
-        <div className="border-t border-gray-200 p-4 flex-shrink-0 relative" ref={dropdownRef}>
+        <div className={`border-t border-gray-200 ${isCollapsed ? 'px-2 py-1' : 'p-4'} flex-shrink-0 relative`} ref={dropdownRef}>
           {/* Clickable Profile Section */}
           <button
             onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-            className="w-full flex items-center gap-2 p-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors mb-2"
+            className={`w-full flex ${isCollapsed ? 'flex-col items-center justify-center py-1.5' : 'items-center gap-2 p-2'} bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors ${isCollapsed ? 'mb-1' : 'mb-2'}`}
+            title={isCollapsed ? fullName : undefined}
           >
             {photoUrl ? (
               <img
                 src={photoUrl}
                 alt={fullName}
-                className="w-8 h-8 rounded-full object-cover border-2 border-black"
+                className={`${isCollapsed ? 'w-10 h-10' : 'w-8 h-8'} rounded-full object-cover border-2 border-black flex-shrink-0`}
               />
             ) : (
-              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center border-2 border-black">
-                <span className="text-[#009900] font-bold text-xs">
+              <div className={`${isCollapsed ? 'w-10 h-10' : 'w-8 h-8'} bg-white rounded-full flex items-center justify-center border-2 border-black flex-shrink-0`}>
+                <span className={`text-[#009900] font-bold ${isCollapsed ? 'text-sm' : 'text-xs'}`}>
                   {firstName.charAt(0).toUpperCase()}{lastName.charAt(0).toUpperCase()}
                 </span>
               </div>
             )}
-            <div className="flex-1 min-w-0 text-left">
-              <p className="font-medium text-gray-900 truncate text-sm">{fullName}</p>
-            </div>
-            <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${showProfileDropdown ? 'rotate-180' : ''}`} />
+            {isCollapsed ? (
+              <span className="text-xs font-medium text-gray-900 mt-1.5 truncate max-w-full">{firstName}</span>
+            ) : (
+              <>
+                <div className="flex-1 min-w-0 text-left">
+                  <p className="font-medium text-gray-900 truncate text-sm">{fullName}</p>
+                </div>
+                <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform flex-shrink-0 ${showProfileDropdown ? 'rotate-180' : ''}`} />
+              </>
+            )}
           </button>
 
           {/* Dropdown Menu */}
           {showProfileDropdown && (
-            <div className="absolute bottom-full left-4 right-4 mb-2 bg-white border-2 border-gray-200 rounded-lg shadow-xl z-50">
+            <div className={`absolute bottom-full ${isCollapsed ? 'left-2 right-2' : 'left-4 right-4'} mb-2 bg-white border-2 border-gray-200 rounded-lg shadow-xl z-50 ${isCollapsed ? 'min-w-[200px]' : ''}`}>
               <div className="py-2">
                 <button
                   onClick={() => {
@@ -459,7 +490,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
             </div>
           )}
 
-          <p className="text-xs text-gray-900 text-center">© 2025 The BudE System™</p>
+          {!isCollapsed && <p className="text-xs text-gray-900 text-center">© 2025 The BudE System™</p>}
         </div>
       </div>
     </aside>
