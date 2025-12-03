@@ -28,7 +28,8 @@ function AdminPanel() {
   const [ads, setAds] = useState({
     eventsSidebar1: null,
     eventsSidebar2: null,
-    eventsBottom: null
+    eventsBottom: null,
+    eventDetailBottom: null
   });
   const [adsLoading, setAdsLoading] = useState(true);
 
@@ -242,18 +243,18 @@ function AdminPanel() {
     }
 
     try {
-      // Save to Supabase
+      // Save to Supabase using upsert to create row if it doesn't exist
       const { error } = await supabase
         .from('event_ads')
-        .update({
+        .upsert({
+          id: slot,
           image: ad.image,
           url: ad.url || '',
           tags: ad.tags || '',
           zip_code: ad.zip_code || '',
           radius: ad.radius || '50',
           updated_at: new Date().toISOString()
-        })
-        .eq('id', slot);
+        });
 
       if (error) throw error;
       alert('Ad saved successfully!');
