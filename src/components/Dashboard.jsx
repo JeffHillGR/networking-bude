@@ -1113,7 +1113,7 @@ default:
                 <Menu className="w-6 h-6" />
               </button>
               <img
-                src="BudE-Color-Logo-Rev.png"
+                src="/BudE-Color-Logo-Rev.png"
                 alt="BudE Logo"
                 className="h-16 w-auto"
               />

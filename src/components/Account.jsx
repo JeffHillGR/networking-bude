@@ -155,7 +155,7 @@ function Account({ onBackToDashboard }) {
             {/* Coming Soon Overlay */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <img
-                src="BudE-favicon.png"
+                src="/BudE-favicon.png"
                 alt="BudE"
                 className="w-24 h-24 mb-4"
               />
@@ -211,14 +211,14 @@ function Account({ onBackToDashboard }) {
                    {plan.id === 'free' && <Users className="w-12 h-12 mx-auto mb-4 text-gray-600" />}
 {plan.id === 'bude' && (
   <img
-    src="BudE-favicon.png"
+    src="/BudE-favicon.png"
     alt="BudE Plan"
     className="w-20 h-20 mx-auto mb-4"
   />
 )}
 {plan.id === 'bude-plus' && (
   <img
-    src="BudE-plus-favicon.png"
+    src="/BudE-plus-favicon.png"
     alt="BudE Plus"
     className="w-20 h-20 mx-auto mb-4"
   />
@@ -345,7 +345,7 @@ function Account({ onBackToDashboard }) {
             {/* Coming Soon Overlay */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <img
-                src="BudE-favicon.png"
+                src="/BudE-favicon.png"
                 alt="BudE"
                 className="w-24 h-24 mb-4"
               />
@@ -379,7 +379,7 @@ function Account({ onBackToDashboard }) {
             {/* Coming Soon Overlay */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <img
-                src="BudE-favicon.png"
+                src="/BudE-favicon.png"
                 alt="BudE"
                 className="w-24 h-24 mb-4"
               />

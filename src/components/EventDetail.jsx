@@ -1316,7 +1316,7 @@ function EventDetail() {
             </button>
             <div className="flex items-center justify-center gap-6 mb-6">
               <img
-                src="scientist-chalkboard.jpg"
+                src="/scientist-chalkboard.jpg"
                 alt="Scientist at work"
                 className="h-24 md:h-32 w-auto flex-shrink-0 rounded-lg object-cover shadow-lg"
               />

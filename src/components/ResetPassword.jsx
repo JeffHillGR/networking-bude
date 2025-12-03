@@ -91,7 +91,7 @@ function ResetPassword() {
       <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
         <div className="text-center mb-8">
           <img
-            src="BudE-Color-Logo-Rev.png"
+            src="/BudE-Color-Logo-Rev.png"
             alt="BudE Logo"
             className="h-24 mx-auto mb-4"
           />

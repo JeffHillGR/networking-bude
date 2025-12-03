@@ -233,7 +233,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
               className="w-full flex items-center justify-center mb-4 cursor-pointer hover:opacity-80 transition-opacity"
             >
               <img
-                src="BudE-Color-Logo-Rev.png"
+                src="/BudE-Color-Logo-Rev.png"
                 alt="BudE Logo"
                 className="w-full h-auto"
               />
