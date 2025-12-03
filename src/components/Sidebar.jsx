@@ -24,6 +24,8 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
     return saved === 'true';
   });
   const dropdownRef = useRef(null);
+  const activityRef = useRef(null);
+  const notificationsRef = useRef(null);
 
   // Save collapsed state to localStorage
   useEffect(() => {
@@ -209,11 +211,17 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
     };
   }, [user]);
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowProfileDropdown(false);
+      }
+      if (activityRef.current && !activityRef.current.contains(event.target)) {
+        setShowActivity(false);
+      }
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
+        setShowNotifications(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -295,25 +303,44 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
                 {!isCollapsed && <span className="font-medium text-sm">Insights</span>}
               </button>
 
-              {/* My Activity Section - Hidden when collapsed */}
-              {!isCollapsed && (
-                <div className="border-t border-gray-200 my-3 pt-3">
-                  {/* My Activity */}
+              {/* My Activity Section */}
+              <div ref={activityRef} className={`relative w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors`}>
+                <button
+                  onClick={() => {
+                    setShowActivity(!showActivity);
+                    setShowNotifications(false);
+                  }}
+                  className="text-gray-600 hover:text-gray-900 transition-colors inline-flex items-center"
+                  title="My Activity"
+                >
+                  <Activity className="w-4 h-4" />
+                </button>
+                {!isCollapsed && (
                   <button
-                    onClick={() => setShowActivity(!showActivity)}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors text-gray-700 hover:bg-gray-100"
+                    onClick={() => {
+                      setShowActivity(!showActivity);
+                      setShowNotifications(false);
+                    }}
+                    className="flex-1 text-left text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
                   >
-                    <Activity className="w-4 h-4" />
-                    <span className="flex-1 text-left text-sm font-medium">My Activity</span>
-                    <span className="text-xs">{showActivity ? '▼' : '▶'}</span>
+                    My Activity
                   </button>
+                )}
 
-                  {showActivity && (
-                    <div className="ml-4 mt-2 space-y-3 px-3 py-2 bg-gray-50 rounded-lg">
+                {/* Activity Dropdown */}
+                {showActivity && (
+                  <div className="absolute top-full left-0 mt-1 w-40 max-h-[200px] bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden flex flex-col z-[100]">
+                    {/* Header */}
+                    <div className="border-b border-gray-200 bg-gray-50 flex items-center justify-between flex-shrink-0 px-2 py-1.5">
+                      <h3 className="font-semibold text-gray-900 text-xs">My Activity</h3>
+                    </div>
+
+                    {/* Content */}
+                    <div className="overflow-y-auto flex-1 p-2 space-y-3">
                       {/* Events Interested In */}
                       <div>
-                        <div className="flex items-center justify-between text-xs mb-2">
-                          <span className="text-gray-600 font-medium">Events Interested In</span>
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className="text-gray-600 font-medium">Interested In</span>
                           <span className="font-bold text-[#009900]">{interestedEvents.length}</span>
                         </div>
                         {interestedEvents.length > 0 && (
@@ -321,7 +348,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
                             {interestedEvents.slice(0, 4).map((event) => (
                               <div
                                 key={event.id}
-                                className="w-10 h-10 rounded overflow-hidden border border-gray-300"
+                                className="w-8 h-8 rounded overflow-hidden border border-gray-300"
                                 title={event.title}
                               >
                                 <img
@@ -337,8 +364,8 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
 
                       {/* Events Going To */}
                       <div>
-                        <div className="flex items-center justify-between text-xs mb-2">
-                          <span className="text-gray-600 font-medium">Events Going To</span>
+                        <div className="flex items-center justify-between text-xs mb-1">
+                          <span className="text-gray-600 font-medium">Going To</span>
                           <span className="font-bold text-[#009900]">{goingEvents.length}</span>
                         </div>
                         {goingEvents.length > 0 && (
@@ -346,7 +373,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
                             {goingEvents.slice(0, 4).map((event) => (
                               <div
                                 key={event.id}
-                                className="w-10 h-10 rounded overflow-hidden border border-gray-300"
+                                className="w-8 h-8 rounded overflow-hidden border border-gray-300"
                                 title={event.title}
                               >
                                 <img
@@ -360,41 +387,46 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
                         )}
                       </div>
                     </div>
-                  )}
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
 
               {/* Notification Bell */}
-              <div className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-2'} px-3 py-1.5`}>
-                <div className={`${isCollapsed ? '' : 'w-4 h-4'} flex items-center justify-center`}>
-                  <NotificationBell
-                    showDropdown={showNotifications}
-                    setShowDropdown={setShowNotifications}
-                    onNavigate={(tab, userId) => {
-                      setActiveTab(tab);
-                      if (userId && setSelectedConnectionId) {
-                        setSelectedConnectionId(userId);
-                      }
-                      window.scrollTo({ top: 0, behavior: 'instant' });
-                    }}
-                  />
-                </div>
+              <div ref={notificationsRef} className={`relative w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors`}>
+                <NotificationBell
+                  showDropdown={showNotifications}
+                  setShowDropdown={(val) => {
+                    setShowNotifications(val);
+                    if (val) setShowActivity(false);
+                  }}
+                  dropdownPosition="sidebar"
+                  onNavigate={(tab, userId) => {
+                    setActiveTab(tab);
+                    if (userId && setSelectedConnectionId) {
+                      setSelectedConnectionId(userId);
+                    }
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                  }}
+                />
                 {!isCollapsed && (
                   <button
-                    onClick={() => setShowNotifications(!showNotifications)}
+                    onClick={() => {
+                      setShowNotifications(!showNotifications);
+                      setShowActivity(false);
+                    }}
                     className="flex-1 text-left text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
                   >
                     Notifications
                   </button>
                 )}
               </div>
+
             </nav>
           </div>
         </div>
 
-        {/* Fixed user profile section at bottom */}
+        {/* User Profile Section - fixed at bottom */}
         <div className={`border-t border-gray-200 ${isCollapsed ? 'px-2 py-1' : 'p-4'} flex-shrink-0 relative`} ref={dropdownRef}>
-          {/* Clickable Profile Section */}
           <button
             onClick={() => setShowProfileDropdown(!showProfileDropdown)}
             className={`w-full flex ${isCollapsed ? 'flex-col items-center justify-center py-1.5' : 'items-center gap-2 p-2'} bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors ${isCollapsed ? 'mb-1' : 'mb-2'}`}
@@ -425,18 +457,18 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
             )}
           </button>
 
-          {/* Dropdown Menu */}
+          {/* Dropdown Menu - opens upward */}
           {showProfileDropdown && (
-            <div className={`absolute bottom-full ${isCollapsed ? 'left-2 right-2' : 'left-4 right-4'} mb-2 bg-white border-2 border-gray-200 rounded-lg shadow-xl z-50 ${isCollapsed ? 'min-w-[200px]' : ''}`}>
-              <div className="py-2">
+            <div className={`absolute bottom-full ${isCollapsed ? 'left-2 right-2' : 'left-4 right-4'} mb-2 bg-white border-2 border-gray-200 rounded-lg shadow-xl z-50 ${isCollapsed ? 'min-w-[160px]' : ''}`}>
+              <div className="py-1">
                 <button
                   onClick={() => {
                     setActiveTab('settings');
                     setShowProfileDropdown(false);
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100 transition-colors"
                 >
-                  <User className="w-4 h-4" />
+                  <User className="w-3 h-3" />
                   <span>Profile & Settings</span>
                 </button>
                 <button
@@ -444,9 +476,9 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
                     setActiveTab('payment');
                     setShowProfileDropdown(false);
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100 transition-colors"
                 >
-                  <CreditCard className="w-4 h-4" />
+                  <CreditCard className="w-3 h-3" />
                   <span>Account & Billing</span>
                 </button>
                 <button
@@ -454,9 +486,9 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
                     setActiveTab('privacy');
                     setShowProfileDropdown(false);
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100 transition-colors"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                   <span>Privacy & Security</span>
@@ -466,9 +498,9 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
                     onContactUsClick();
                     setShowProfileDropdown(false);
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-100 transition-colors"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                   <span>Contact Us</span>
@@ -479,9 +511,9 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
                     await signOut();
                     window.location.href = '/';
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[#009900] font-semibold hover:bg-gray-100 transition-colors"
+                  className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[#009900] font-semibold hover:bg-gray-100 transition-colors"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
                   <span>Log Out</span>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, CreditCard, Shield, CheckCircle, X } from 'lucide-react';
+import { ArrowLeft, CreditCard, Shield, CheckCircle, X, Users } from 'lucide-react';
 
 function Account({ onBackToDashboard }) {
   const [activeTab, setActiveTab] = useState('overview');

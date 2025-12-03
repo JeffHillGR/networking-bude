@@ -3,7 +3,7 @@ import { Bell, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
-function NotificationBell({ onNavigate, showDropdown, setShowDropdown, size = 'sm' }) {
+function NotificationBell({ onNavigate, showDropdown, setShowDropdown, size = 'sm', dropdownPosition = 'default' }) {
   const { user } = useAuth();
   const [internalShowDropdown, setInternalShowDropdown] = useState(false);
 
@@ -15,8 +15,11 @@ function NotificationBell({ onNavigate, showDropdown, setShowDropdown, size = 's
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
 
-  // Close dropdown when clicking outside
+  // Close dropdown when clicking outside (only when using internal state)
   useEffect(() => {
+    // Skip if using external state - parent component handles click-outside
+    if (showDropdown !== undefined) return;
+
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
@@ -25,7 +28,7 @@ function NotificationBell({ onNavigate, showDropdown, setShowDropdown, size = 's
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [setIsOpen]);
+  }, [setIsOpen, showDropdown]);
 
   // Load notifications from database
   useEffect(() => {
@@ -290,11 +293,15 @@ function NotificationBell({ onNavigate, showDropdown, setShowDropdown, size = 's
       {isOpen && (
         <div
           data-testid="notification-dropdown"
-          className="absolute right-0 md:left-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-[240px] overflow-hidden flex flex-col"
+          className={`absolute bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden flex flex-col ${
+            dropdownPosition === 'sidebar'
+              ? 'top-full left-0 mt-1 w-40 max-h-[200px] z-[100]'
+              : 'right-0 md:left-0 mt-2 w-56 max-h-[240px] z-50'
+          }`}
         >
           {/* Header */}
-          <div className="px-3 py-2 border-b border-gray-200 bg-gray-50 flex items-center justify-between flex-shrink-0">
-            <h3 className="font-semibold text-gray-900 text-sm">Notifications</h3>
+          <div className={`border-b border-gray-200 bg-gray-50 flex items-center justify-between flex-shrink-0 ${dropdownPosition === 'sidebar' ? 'px-2 py-1.5' : 'px-3 py-2'}`}>
+            <h3 className={`font-semibold text-gray-900 ${dropdownPosition === 'sidebar' ? 'text-xs' : 'text-sm'}`}>Notifications</h3>
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
