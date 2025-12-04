@@ -271,88 +271,47 @@ function EventSlotsManager() {
       console.log('Moving up from slot', slotNumber);
 
       if (prevEvent) {
-        // Both slots have events - swap them by deleting and reinserting
+        // Both slots have events - swap their slot_numbers using a temp value
         console.log('Swapping two events');
 
-        // Step 1: Fetch both complete event records
-        const { data: currentData, error: fetchError1 } = await supabase
+        // Use a temporary slot number to avoid unique constraint violation
+        const tempSlot = -1;
+
+        // Step 1: Move current event to temp slot
+        const { error: error1 } = await supabase
           .from('events')
-          .select('*')
-          .eq('slot_number', slotNumber)
-          .single();
+          .update({ slot_number: tempSlot })
+          .eq('slot_number', slotNumber);
 
-        if (fetchError1) throw fetchError1;
+        if (error1) throw error1;
 
-        const { data: prevData, error: fetchError2 } = await supabase
+        // Step 2: Move prev event to current slot
+        const { error: error2 } = await supabase
           .from('events')
-          .select('*')
-          .eq('slot_number', slotNumber - 1)
-          .single();
+          .update({ slot_number: slotNumber, is_featured: slotNumber <= 4 })
+          .eq('slot_number', slotNumber - 1);
 
-        if (fetchError2) throw fetchError2;
+        if (error2) throw error2;
 
-        console.log('Fetched both events, now deleting...');
-
-        // Step 2: Delete both events
-        const { error: deleteError } = await supabase
+        // Step 3: Move current event (from temp) to prev slot
+        const { error: error3 } = await supabase
           .from('events')
-          .delete()
-          .in('slot_number', [slotNumber, slotNumber - 1]);
+          .update({ slot_number: slotNumber - 1, is_featured: (slotNumber - 1) <= 4 })
+          .eq('slot_number', tempSlot);
 
-        if (deleteError) {
-          console.error('Error deleting events:', deleteError);
-          throw deleteError;
-        }
-
-        console.log('Deleted both events, now reinserting with swapped slot numbers...');
-
-        // Step 3: Reinsert with swapped slot numbers (remove id and timestamps)
-        // Also update is_featured based on new slot position
-        const { id: currentId, created_at: currentCreated, updated_at: currentUpdated, ...currentEventData } = currentData;
-        const { id: prevId, created_at: prevCreated, updated_at: prevUpdated, ...prevEventData } = prevData;
-
-        const { error: insertError } = await supabase
-          .from('events')
-          .insert([
-            { ...currentEventData, slot_number: slotNumber - 1, is_featured: (slotNumber - 1) <= 4 },
-            { ...prevEventData, slot_number: slotNumber, is_featured: slotNumber <= 4 }
-          ]);
-
-        if (insertError) {
-          console.error('Error reinserting events:', insertError);
-          throw insertError;
-        }
+        if (error3) throw error3;
 
         console.log('Successfully swapped events');
       } else {
-        // Only current slot has event - just move it up
+        // Only current slot has event - just update its slot_number
         console.log(`Moving slot ${slotNumber} to ${slotNumber - 1}`);
 
-        // Fetch the complete event
-        const { data: eventData, error: fetchError } = await supabase
+        const { error } = await supabase
           .from('events')
-          .select('*')
-          .eq('slot_number', slotNumber)
-          .single();
-
-        if (fetchError) throw fetchError;
-
-        // Delete the old one
-        const { error: deleteError } = await supabase
-          .from('events')
-          .delete()
+          .update({ slot_number: slotNumber - 1, is_featured: (slotNumber - 1) <= 4 })
           .eq('slot_number', slotNumber);
 
-        if (deleteError) throw deleteError;
-
-        // Reinsert with new slot number (remove id and timestamps)
-        // Also update is_featured based on new slot position
-        const { id, created_at, updated_at, ...cleanEventData } = eventData;
-        const { error: insertError } = await supabase
-          .from('events')
-          .insert({ ...cleanEventData, slot_number: slotNumber - 1, is_featured: (slotNumber - 1) <= 4 });
-
-        if (insertError) throw insertError;
+        if (error) throw error;
       }
 
       // Reload events to reflect changes
@@ -386,88 +345,47 @@ function EventSlotsManager() {
       console.log('Moving down from slot', slotNumber);
 
       if (nextEvent) {
-        // Both slots have events - swap them by deleting and reinserting
+        // Both slots have events - swap their slot_numbers using a temp value
         console.log('Swapping two events');
 
-        // Step 1: Fetch both complete event records
-        const { data: currentData, error: fetchError1 } = await supabase
+        // Use a temporary slot number to avoid unique constraint violation
+        const tempSlot = -1;
+
+        // Step 1: Move current event to temp slot
+        const { error: error1 } = await supabase
           .from('events')
-          .select('*')
-          .eq('slot_number', slotNumber)
-          .single();
+          .update({ slot_number: tempSlot })
+          .eq('slot_number', slotNumber);
 
-        if (fetchError1) throw fetchError1;
+        if (error1) throw error1;
 
-        const { data: nextData, error: fetchError2 } = await supabase
+        // Step 2: Move next event to current slot
+        const { error: error2 } = await supabase
           .from('events')
-          .select('*')
-          .eq('slot_number', slotNumber + 1)
-          .single();
+          .update({ slot_number: slotNumber, is_featured: slotNumber <= 4 })
+          .eq('slot_number', slotNumber + 1);
 
-        if (fetchError2) throw fetchError2;
+        if (error2) throw error2;
 
-        console.log('Fetched both events, now deleting...');
-
-        // Step 2: Delete both events
-        const { error: deleteError } = await supabase
+        // Step 3: Move current event (from temp) to next slot
+        const { error: error3 } = await supabase
           .from('events')
-          .delete()
-          .in('slot_number', [slotNumber, slotNumber + 1]);
+          .update({ slot_number: slotNumber + 1, is_featured: (slotNumber + 1) <= 4 })
+          .eq('slot_number', tempSlot);
 
-        if (deleteError) {
-          console.error('Error deleting events:', deleteError);
-          throw deleteError;
-        }
-
-        console.log('Deleted both events, now reinserting with swapped slot numbers...');
-
-        // Step 3: Reinsert with swapped slot numbers (remove id and timestamps)
-        // Also update is_featured based on new slot position
-        const { id: currentId, created_at: currentCreated, updated_at: currentUpdated, ...currentEventData } = currentData;
-        const { id: nextId, created_at: nextCreated, updated_at: nextUpdated, ...nextEventData } = nextData;
-
-        const { error: insertError } = await supabase
-          .from('events')
-          .insert([
-            { ...currentEventData, slot_number: slotNumber + 1, is_featured: (slotNumber + 1) <= 4 },
-            { ...nextEventData, slot_number: slotNumber, is_featured: slotNumber <= 4 }
-          ]);
-
-        if (insertError) {
-          console.error('Error reinserting events:', insertError);
-          throw insertError;
-        }
+        if (error3) throw error3;
 
         console.log('Successfully swapped events');
       } else {
-        // Only current slot has event - just move it down
+        // Only current slot has event - just update its slot_number
         console.log(`Moving slot ${slotNumber} to ${slotNumber + 1}`);
 
-        // Fetch the complete event
-        const { data: eventData, error: fetchError } = await supabase
+        const { error } = await supabase
           .from('events')
-          .select('*')
-          .eq('slot_number', slotNumber)
-          .single();
-
-        if (fetchError) throw fetchError;
-
-        // Delete the old one
-        const { error: deleteError } = await supabase
-          .from('events')
-          .delete()
+          .update({ slot_number: slotNumber + 1, is_featured: (slotNumber + 1) <= 4 })
           .eq('slot_number', slotNumber);
 
-        if (deleteError) throw deleteError;
-
-        // Reinsert with new slot number (remove id and timestamps)
-        // Also update is_featured based on new slot position
-        const { id, created_at, updated_at, ...cleanEventData } = eventData;
-        const { error: insertError } = await supabase
-          .from('events')
-          .insert({ ...cleanEventData, slot_number: slotNumber + 1, is_featured: (slotNumber + 1) <= 4 });
-
-        if (insertError) throw insertError;
+        if (error) throw error;
       }
 
       // Reload events to reflect changes
