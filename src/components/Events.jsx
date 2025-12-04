@@ -452,6 +452,12 @@ function Events({ onBackToDashboard }) {
                             )}
                           </div>
                         )}
+                        <div className="flex justify-end mt-4">
+                          <span className="text-[#009900] font-medium flex items-center gap-1">
+                            View Details
+                            <ExternalLink className="h-4 w-4" />
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
