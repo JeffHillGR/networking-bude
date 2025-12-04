@@ -38,15 +38,26 @@ function AdminPanel() {
   useEffect(() => {
     const loadAds = async () => {
       try {
-        const { data, error } = await supabase
+        // Load event ads
+        const { data: eventAdsData, error: eventAdsError } = await supabase
           .from('event_ads')
           .select('*');
 
-        if (error) throw error;
+        if (eventAdsError) throw eventAdsError;
 
-        // Convert array to object keyed by id
+        // Load insight ads
+        const { data: insightAdsData, error: insightAdsError } = await supabase
+          .from('insight_ads')
+          .select('*');
+
+        if (insightAdsError) throw insightAdsError;
+
+        // Convert arrays to object keyed by id
         const adsObj = {};
-        data?.forEach(ad => {
+        eventAdsData?.forEach(ad => {
+          adsObj[ad.id] = ad;
+        });
+        insightAdsData?.forEach(ad => {
           adsObj[ad.id] = ad;
         });
         setAds(adsObj);
