@@ -111,6 +111,20 @@ const formatPhoneNumber = (value) => {
   return value;
 };
 
+// Format date string to "Wednesday, December 18, 2025" format
+const formatEventDate = (dateString) => {
+  if (!dateString) return '';
+  // Handle ISO format (YYYY-MM-DD) from date picker
+  const date = new Date(dateString + 'T00:00:00');
+  if (isNaN(date.getTime())) return dateString; // Return original if parsing fails
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  });
+};
+
 // Handle feedback form submission
 const handleSubmitFeedback = async (e) => {
   e.preventDefault();
@@ -852,7 +866,7 @@ const getGreeting = () => {
                       </div>
                       <div className="space-y-0.5 text-xs text-gray-600">
                         <p className="font-semibold text-gray-700 truncate">{event.organizerName || 'Event Organizer'}</p>
-                        <p>{event.date} • {event.time}</p>
+                        <p>{formatEventDate(event.date)} • {event.time}</p>
                         <p className="truncate">{event.fullAddress || event.location}</p>
                       </div>
                     </div>

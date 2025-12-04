@@ -462,7 +462,8 @@ function EventSlotsManager() {
         if (eventData.startDate) {
           try {
             const startDate = new Date(eventData.startDate);
-            scrapedData.date = startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+            // Use ISO format (YYYY-MM-DD) for date picker compatibility
+            scrapedData.date = startDate.toISOString().split('T')[0];
             scrapedData.time = startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
             scrapedData.dateObj = startDate; // Keep for sorting
           } catch (e) {
@@ -750,7 +751,8 @@ function EventSlotsManager() {
         if (eventData.startDate) {
           try {
             const startDate = new Date(eventData.startDate);
-            scrapedData.date = startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+            // Use ISO format (YYYY-MM-DD) for date picker compatibility
+            scrapedData.date = startDate.toISOString().split('T')[0];
             scrapedData.time = startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
           } catch (e) {
             console.warn('Failed to parse event date');
@@ -1101,11 +1103,10 @@ function EventSlotsManager() {
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Date *</label>
                 <input
-                  type="text"
+                  type="date"
                   value={event.date || ''}
                   onChange={(e) => handleInputChange(slotNumber, 'date', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
-                  placeholder="e.g., Thursday, September 19, 2025"
                 />
               </div>
               <div>

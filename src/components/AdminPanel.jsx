@@ -21,7 +21,9 @@ function AdminPanel() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('adminActiveTab') || 'dashboard';
+  });
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [unreviewedReportsCount, setUnreviewedReportsCount] = useState(0);
@@ -70,6 +72,11 @@ function AdminPanel() {
 
     loadAds();
   }, []);
+
+  // Persist active tab to localStorage
+  useEffect(() => {
+    localStorage.setItem('adminActiveTab', activeTab);
+  }, [activeTab]);
 
   // Check if user is authenticated AND has admin role
   useEffect(() => {

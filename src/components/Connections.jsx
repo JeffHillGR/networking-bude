@@ -21,6 +21,20 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
   const [sessionDecisionCount, setSessionDecisionCount] = useState(0); // Track decisions THIS session (max 10)
   const [hasAnyMatchesInDB, setHasAnyMatchesInDB] = useState(true); // Did DB return ANY rows at all?
 
+  // Format date string to "Wednesday, December 18, 2025" format
+  const formatEventDate = (dateString) => {
+    if (!dateString) return '';
+    // Handle ISO format (YYYY-MM-DD) from date picker
+    const date = new Date(dateString + 'T00:00:00');
+    if (isNaN(date.getTime())) return dateString; // Return original if parsing fails
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
   // Helper function to get match categories summary
   const getMatchCategories = (matchReasons) => {
     if (!matchReasons || matchReasons.length === 0) {
@@ -1241,7 +1255,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                             )}
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-gray-900 truncate">{event.title}</p>
-                              <p className="text-xs text-gray-500">{event.date}</p>
+                              <p className="text-xs text-gray-500">{formatEventDate(event.date)}</p>
                             </div>
                           </div>
                         ))}
@@ -1649,7 +1663,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                           )}
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-900 truncate">{event.title}</p>
-                            <p className="text-xs text-gray-500">{event.date}</p>
+                            <p className="text-xs text-gray-500">{formatEventDate(event.date)}</p>
                           </div>
                         </div>
                       ))}

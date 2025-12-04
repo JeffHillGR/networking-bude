@@ -48,6 +48,20 @@ function Events({ onBackToDashboard }) {
     }
     return value;
   };
+
+  // Format date string to "Wednesday, December 18, 2025" format
+  const formatEventDate = (dateString) => {
+    if (!dateString) return '';
+    // Handle ISO format (YYYY-MM-DD) from date picker
+    const date = new Date(dateString + 'T00:00:00');
+    if (isNaN(date.getTime())) return dateString; // Return original if parsing fails
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
   const [ads, setAds] = useState({
     eventsSidebar1: null,
     eventsSidebar2: null,
@@ -178,16 +192,6 @@ function Events({ onBackToDashboard }) {
     title: e.title,
     isWildcard: e.isWildcard
   })));
-
-  // Helper function to parse date strings for sorting
-  const parseEventDate = (dateString) => {
-    // Handle different date formats
-    if (dateString.includes('/')) {
-      const [month, day, year] = dateString.split('/');
-      return new Date(year, month - 1, day);
-    }
-    return new Date(dateString);
-  };
 
   const handleSubmitEvent = async (e) => {
     e.preventDefault();
@@ -422,7 +426,7 @@ function Events({ onBackToDashboard }) {
                       <div className="space-y-2 text-sm text-gray-600 mb-4">
                         <div className="flex items-center gap-2">
                           <Calendar className="h-4 w-4" />
-                          <span>{event.date} • {event.time}</span>
+                          <span>{formatEventDate(event.date)} • {event.time}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <MapPin className="h-4 w-4" />
@@ -480,7 +484,7 @@ function Events({ onBackToDashboard }) {
             <div>
               <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6">More Events</h2>
               <div className="space-y-4">
-                {[...moreEvents].sort((a, b) => parseEventDate(a.date) - parseEventDate(b.date)).map((event, index) => (
+                {moreEvents.map((event, index) => (
                   <div
                     key={event.id}
                     data-testid="event-card"
@@ -528,7 +532,7 @@ function Events({ onBackToDashboard }) {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-8 gap-y-1 text-xs md:text-sm text-gray-600 mt-3 md:mt-4">
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4 flex-shrink-0" />
-                            <span className="truncate">{event.date}</span>
+                            <span className="truncate">{formatEventDate(event.date)}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <MapPin className="h-4 w-4 flex-shrink-0" />
