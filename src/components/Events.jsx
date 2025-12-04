@@ -400,8 +400,8 @@ function Events({ onBackToDashboard }) {
                         🃏 Wildcard Pick of the Week
                       </div>
                     )}
-                    <div className="relative h-48 bg-white rounded-t-lg overflow-hidden">
-                      <img src={event.image} alt={event.title} className="w-full h-full object-contain" />
+                    <div className="relative h-48 bg-gray-50 rounded-t-lg overflow-hidden flex items-center justify-center p-4">
+                      <img src={event.image} alt={event.title} className="max-w-full max-h-full object-contain" />
                       {event.soldOut && (
                         <div className="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg">
                           SOLD OUT
@@ -475,7 +475,9 @@ function Events({ onBackToDashboard }) {
                     style={{ animationDelay: `${index * 80}ms`, animationFillMode: 'backwards' }}
                   >
                     <div className="flex flex-col md:flex-row gap-4 md:gap-6 h-full">
-                      <img src={event.image} alt={event.title} className="w-full md:w-48 h-32 md:h-32 object-contain rounded-lg flex-shrink-0 bg-white" />
+                      <div className="w-full md:w-48 h-32 md:h-32 rounded-lg flex-shrink-0 bg-gray-50 flex items-center justify-center p-3">
+                        <img src={event.image} alt={event.title} className="max-w-full max-h-full object-contain" />
+                      </div>
                       <div className="flex-1 min-w-0">
                         {event.isWildcard && (
                           <div className="mb-2 p-2 bg-gradient-to-r from-green-50 to-lime-50 border-l-4 border-[#D0ED00] rounded">
