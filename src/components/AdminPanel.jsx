@@ -1249,7 +1249,7 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, handleTagsChang
         </div>
 
         {/* Sidebar with Ads */}
-        <div className="w-44 space-y-6">
+        <div className="w-[300px] space-y-6">
           <InlineAdEditor
             title="Events - Sidebar Ad 1"
             slot="eventsSidebar1"
@@ -1261,9 +1261,9 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, handleTagsChang
             onRadiusChange={handleRadiusChange}
             onSave={saveAd}
             onRemove={removeAd}
-            dimensions="160x600px"
-            description="Appears in right sidebar, top position"
-            aspectRatio="160/600"
+            dimensions="300x600px"
+            description="Appears in right sidebar. Tip: Use a 300x600 'half page' ad for best results."
+            aspectRatio="300/600"
           />
 
           <InlineAdEditor
@@ -1277,9 +1277,9 @@ function EventsAdsTab({ ads, handleImageUpload, handleUrlChange, handleTagsChang
             onRadiusChange={handleRadiusChange}
             onSave={saveAd}
             onRemove={removeAd}
-            dimensions="160x600px"
-            description="Appears in right sidebar, lower position"
-            aspectRatio="160/600"
+            dimensions="300x600px"
+            description="Appears in right sidebar. Tip: Use a 300x600 'half page' ad for best results."
+            aspectRatio="300/600"
           />
         </div>
       </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Calendar, Users, ExternalLink, X, TrendingUp, ArrowLeft, Share2, Heart, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
+import EventCalendar from './EventCalendar';
 
 function Events({ onBackToDashboard }) {
   const navigate = useNavigate();
@@ -416,8 +417,8 @@ function Events({ onBackToDashboard }) {
                           </p>
                         </div>
                       )}
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>
-                      <p className="text-gray-600 mb-4">{event.description}</p>
+                      <h3 className="text-lg font-bold text-gray-900 mb-2">{event.title}</h3>
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">{event.description}</p>
                       <div className="mb-3">
                         <span className="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
                           {event.organizerName || 'Event Organizer'}
@@ -463,6 +464,14 @@ function Events({ onBackToDashboard }) {
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Mobile Calendar - Between Featured and More Events */}
+            <div className="lg:hidden mb-8">
+              <EventCalendar
+                events={allEvents.map(e => ({ date: e.date, title: e.title, id: e.id }))}
+                onDateClick={(events) => events.length === 1 && navigate(`/events/${events[0].id}`)}
+              />
             </div>
 
             {/* More Events */}
@@ -618,9 +627,15 @@ function Events({ onBackToDashboard }) {
             </div>
           </div>
 
-          {/* Sidebar Ads */}
-          <div className="hidden lg:block w-44 flex-shrink-0 pl-6 border-l border-gray-200">
-            <div className="sticky top-[22rem] space-y-6">
+          {/* Sidebar with Calendar and Ads */}
+          <div className="hidden lg:block w-[300px] flex-shrink-0 pl-6 pt-[54px] border-l border-gray-200">
+            <div className="sticky top-24 space-y-6">
+              {/* Event Calendar */}
+              <EventCalendar
+                events={allEvents.map(e => ({ date: e.date, title: e.title, id: e.id }))}
+                onDateClick={(events) => events.length === 1 && navigate(`/events/${events[0].id}`)}
+              />
+
               {/* Sidebar Ad 1 */}
               {ads.eventsSidebar1?.image && ads.eventsSidebar1?.url ? (
                 <a
@@ -633,7 +648,7 @@ function Events({ onBackToDashboard }) {
                     src={ads.eventsSidebar1.image}
                     alt="Advertisement"
                     className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                    style={{ aspectRatio: '160/600' }}
+                    style={{ aspectRatio: '300/600' }}
                   />
                 </a>
               ) : ads.eventsSidebar1?.image ? (
@@ -645,14 +660,14 @@ function Events({ onBackToDashboard }) {
                     src={ads.eventsSidebar1.image}
                     alt="Advertisement"
                     className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                    style={{ aspectRatio: '160/600' }}
+                    style={{ aspectRatio: '300/600' }}
                   />
                 </div>
               ) : (
                 <div
                   onClick={() => setShowAdInquiryModal(true)}
                   className="rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
-                  style={{ aspectRatio: '160/600' }}
+                  style={{ aspectRatio: '300/600' }}
                 >
                   <div
                     className="absolute inset-0 bg-cover opacity-30"
@@ -678,7 +693,7 @@ function Events({ onBackToDashboard }) {
                     src={ads.eventsSidebar2.image}
                     alt="Advertisement"
                     className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                    style={{ aspectRatio: '160/600' }}
+                    style={{ aspectRatio: '300/600' }}
                   />
                 </a>
               ) : ads.eventsSidebar2?.image ? (
@@ -690,14 +705,14 @@ function Events({ onBackToDashboard }) {
                     src={ads.eventsSidebar2.image}
                     alt="Advertisement"
                     className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                    style={{ aspectRatio: '160/600' }}
+                    style={{ aspectRatio: '300/600' }}
                   />
                 </div>
               ) : (
                 <div
                   onClick={() => setShowAdInquiryModal(true)}
                   className="rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
-                  style={{ aspectRatio: '160/600' }}
+                  style={{ aspectRatio: '300/600' }}
                 >
                   <div
                     className="absolute inset-0 bg-cover opacity-30"

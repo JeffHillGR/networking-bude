@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Calendar, CalendarPlus, MapPin, Heart, ExternalLink, Share2, User, Home, TrendingUp, X, Check } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
+import EventCalendar from './EventCalendar';
 import { supabase } from '../lib/supabase.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 
@@ -31,6 +32,7 @@ function EventDetail() {
   const [showInterestedList, setShowInterestedList] = useState(false);
   const [bottomBannerAd, setBottomBannerAd] = useState(null);
   const [showCalendarDropdown, setShowCalendarDropdown] = useState(false);
+  const [allEvents, setAllEvents] = useState([]);
 
   // Format date string to "Wednesday, December 18, 2025" format
   const formatEventDate = (dateString) => {
@@ -46,7 +48,7 @@ function EventDetail() {
     });
   };
 
-  // Generate calendar links for Add to Calendar feature
+  // Generate calendar links for Add to your calendar feature
   const generateCalendarLinks = (event) => {
     if (!event) return {};
 
@@ -154,6 +156,24 @@ END:VCALENDAR`;
     };
 
     loadBottomAd();
+  }, []);
+
+  // Load all events for the calendar
+  useEffect(() => {
+    const loadAllEvents = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select('id, title, date');
+
+        if (error) throw error;
+        setAllEvents(data || []);
+      } catch (error) {
+        console.error('Error loading events for calendar:', error);
+      }
+    };
+
+    loadAllEvents();
   }, []);
 
   // Track user engagement when viewing event details
@@ -816,7 +836,7 @@ END:VCALENDAR`;
                       <Heart className={`w-5 h-5 ${isFavorited ? 'fill-current' : ''}`} />
                       {/* Custom tooltip */}
                       <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-[#009900] text-white text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                        {isFavorited ? 'Not Interested' : 'Interested'}
+                        {isFavorited ? 'Not Interested' : "I'm Interested"}
                       </span>
                     </button>
                     <button
@@ -852,14 +872,14 @@ END:VCALENDAR`;
                         <CalendarPlus className="w-5 h-5" />
                         {/* Custom tooltip */}
                         <span className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-[#009900] text-white text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                          Add to Calendar
+                          Add to your calendar
                         </span>
                       </button>
                       {/* Calendar dropdown */}
                       {showCalendarDropdown && (
                         <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[180px]">
                           <div className="p-2">
-                            <p className="text-xs text-gray-500 font-medium px-3 py-1">Add to Calendar</p>
+                            <p className="text-xs text-gray-500 font-medium px-3 py-1">Add to your calendar</p>
                             <button
                               onClick={() => {
                                 const { googleUrl } = generateCalendarLinks(event);
@@ -1088,6 +1108,13 @@ END:VCALENDAR`;
                   )}
                 </div>
               </div>
+
+              {/* Event Calendar */}
+              <EventCalendar
+                events={allEvents.map(e => ({ date: e.date, title: e.title, id: e.id }))}
+                onDateClick={(events) => events.length === 1 && navigate(`/events/${events[0].id}`)}
+                currentEventId={eventId}
+              />
             </div>
           </div>
         </div>
