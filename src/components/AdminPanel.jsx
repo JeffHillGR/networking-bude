@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Upload, X, Link2, Eye, EyeOff, ChevronUp, ChevronDown } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
 import EventSlotsManager from './EventSlotsManager.jsx';
+import { REGIONS } from '../lib/regions.js';
 
 // Maximum file size for image uploads (1.5MB)
 const MAX_FILE_SIZE = 1.5 * 1024 * 1024; // 1.5MB in bytes
@@ -504,11 +505,22 @@ function AdminPanel() {
 
 function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }) {
 
-  // Hero Banner State for 3 slots
+  // Hero Banner Region Selection - persisted in localStorage
+  const [selectedBannerRegion, setSelectedBannerRegion] = useState(
+    localStorage.getItem('adminBannerRegion') || 'grand-rapids'
+  );
+
+  const handleBannerRegionChange = (region) => {
+    setSelectedBannerRegion(region);
+    localStorage.setItem('adminBannerRegion', region);
+  };
+
+  // Hero Banner State for 4 slots
   const [heroBanners, setHeroBanners] = useState({
-    slot1: { image_url: '', click_url: '', alt_text: '', target_zip: '', target_radius: '50', is_active: true },
-    slot2: { image_url: '', click_url: '', alt_text: '', target_zip: '', target_radius: '50', is_active: true },
-    slot3: { image_url: '', click_url: '', alt_text: '', target_zip: '', target_radius: '50', is_active: true }
+    slot1: { image_url: '', click_url: '', alt_text: '', target_zip: '', target_radius: '50', is_active: true, region_id: 'grand-rapids' },
+    slot2: { image_url: '', click_url: '', alt_text: '', target_zip: '', target_radius: '50', is_active: true, region_id: 'grand-rapids' },
+    slot3: { image_url: '', click_url: '', alt_text: '', target_zip: '', target_radius: '50', is_active: true, region_id: 'grand-rapids' },
+    slot4: { image_url: '', click_url: '', alt_text: '', target_zip: '', target_radius: '50', is_active: true, region_id: 'grand-rapids' }
   });
 
   const [uploadingBanner, setUploadingBanner] = useState(null);
@@ -732,13 +744,14 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
     });
   };
 
-  // Load existing hero banners from Supabase
+  // Load existing hero banners from Supabase (filtered by region)
   useEffect(() => {
     const loadHeroBanners = async () => {
       try {
         const { data, error } = await supabase
           .from('hero_banners')
           .select('*')
+          .eq('region_id', selectedBannerRegion)
           .order('slot_number');
 
         if (error && error.code !== 'PGRST116') {
@@ -746,21 +759,22 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
           return;
         }
 
-        if (data && data.length > 0) {
-          const bannersState = {
-            slot1: data.find(b => b.slot_number === 1) || heroBanners.slot1,
-            slot2: data.find(b => b.slot_number === 2) || heroBanners.slot2,
-            slot3: data.find(b => b.slot_number === 3) || heroBanners.slot3
-          };
-          setHeroBanners(bannersState);
-        }
+        // Reset to empty state for new region, then fill with existing data
+        const emptyBanner = { image_url: '', click_url: '', alt_text: '', target_zip: '', target_radius: '50', is_active: true, region_id: selectedBannerRegion };
+        const bannersState = {
+          slot1: data?.find(b => b.slot_number === 1) || { ...emptyBanner },
+          slot2: data?.find(b => b.slot_number === 2) || { ...emptyBanner },
+          slot3: data?.find(b => b.slot_number === 3) || { ...emptyBanner },
+          slot4: data?.find(b => b.slot_number === 4) || { ...emptyBanner }
+        };
+        setHeroBanners(bannersState);
       } catch (err) {
         console.error('Error loading hero banners:', err);
       }
     };
 
     loadHeroBanners();
-  }, []);
+  }, [selectedBannerRegion]);
 
   // Handle hero banner image upload to Supabase Storage
   const handleHeroBannerUpload = async (slotNumber, file) => {
@@ -856,6 +870,7 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
         .from('hero_banners')
         .upsert({
           slot_number: slotNumber,
+          region_id: selectedBannerRegion,
           image_url: banner.image_url,
           click_url: banner.click_url || null,
           alt_text: banner.alt_text || null,
@@ -863,12 +878,12 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
           target_radius: banner.target_radius || '50',
           is_active: true  // Always activate banner when saving
         }, {
-          onConflict: 'slot_number'
+          onConflict: 'slot_number,region_id'
         });
 
       if (error) throw error;
 
-      alert(`Hero Banner ${slotNumber} saved successfully! Refresh your dashboard to see it.`);
+      alert(`Hero Banner ${slotNumber} for ${REGIONS[selectedBannerRegion]?.name || selectedBannerRegion} saved! Refresh your dashboard to see it.`);
     } catch (error) {
       console.error('Error saving hero banner:', error);
       alert('Failed to save: ' + error.message);
@@ -880,9 +895,11 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
     const banner = heroBanners[slotKey];
     const isExpanded = expandedHeroBanner === slotNumber;
     const hasBanner = banner?.image_url && banner.image_url !== '';
+    const isSkylineSlot = slotNumber === 4;
+    const slotLabel = isSkylineSlot ? 'Regional Skyline Image' : `Hero Banner Slot ${slotNumber}`;
 
     return (
-      <div key={slotNumber} className="border-2 border-gray-300 rounded-lg p-4 bg-white">
+      <div key={slotNumber} className={`border-2 ${isSkylineSlot ? 'border-[#D0ED00] border-4' : 'border-gray-300'} rounded-lg p-4 bg-white`}>
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
@@ -893,7 +910,10 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
               {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
             </button>
             <div>
-              <h4 className="font-bold text-sm text-gray-900">Hero Banner Slot {slotNumber}</h4>
+              <h4 className="font-bold text-sm text-gray-900">
+                {slotLabel}
+                {isSkylineSlot && <span className="ml-2 text-xs bg-gradient-to-r from-[#009900] to-[#D0ED00] text-white px-2 py-0.5 rounded font-bold">🏙️ Cityscape</span>}
+              </h4>
               {hasBanner && !isExpanded && (
                 <p className="text-xs text-gray-600 mt-0.5">
                   {banner.alt_text || 'Banner uploaded'}
@@ -1003,14 +1023,37 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
       {/* Hero Banner Carousel - Accordion Style */}
       <div className="space-y-4">
+        {/* Region Selector for Hero Banners */}
+        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 rounded-lg p-4 mb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-bold text-sm text-purple-900 mb-1">📍 Region</h3>
+              <p className="text-xs text-purple-700">
+                Select the region to manage hero banners for
+              </p>
+            </div>
+            <select
+              value={selectedBannerRegion}
+              onChange={(e) => handleBannerRegionChange(e.target.value)}
+              className="px-4 py-2 border-2 border-purple-400 rounded-lg text-sm font-medium bg-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            >
+              {Object.entries(REGIONS).map(([id, config]) => (
+                <option key={id} value={id}>
+                  {config.displayName} {!config.isActive && '(Coming Soon)'}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-          <h3 className="font-semibold text-sm text-blue-900 mb-1">Hero Banner Carousel (Geotagged)</h3>
+          <h3 className="font-semibold text-sm text-blue-900 mb-1">Hero Banner Carousel - {REGIONS[selectedBannerRegion]?.name || selectedBannerRegion}</h3>
           <p className="text-xs text-blue-700">
-            Upload up to 3 banner images that will rotate on each dashboard page refresh. Optionally add geotagging to show location-specific banners.
+            Upload up to 4 banner images that will rotate on each dashboard page refresh. Recommended size: <strong>1200x300px</strong>. One slot can be your city's skyline!
           </p>
         </div>
 
-        {[1, 2, 3].map(slotNumber => renderHeroBannerSlot(slotNumber))}
+        {[1, 2, 3, 4].map(slotNumber => renderHeroBannerSlot(slotNumber))}
       </div>
 
       {/* Dashboard Bottom Ads */}

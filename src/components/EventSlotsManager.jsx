@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Upload, Trash2, ChevronDown, ChevronUp, ArrowDown, ArrowUp } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
+import { REGIONS, getOrganizationsForRegion, getScrapeUrlsForRegion } from '../lib/regions.js';
 
 function EventSlotsManager() {
   const [events, setEvents] = useState({});
@@ -13,29 +14,22 @@ function EventSlotsManager() {
   const [batchScraping, setBatchScraping] = useState(false);
   const [batchResults, setBatchResults] = useState(null);
 
-  const organizations = [
-    'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
-    'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo GR',
-    'Hello West Michigan', 'CARWM', 'Creative Mornings GR', 'Athena',
-    'Inforum', 'Start Garden', 'Other'
-  ];
+  // Region selection - persisted in localStorage
+  const [selectedRegion, setSelectedRegion] = useState(
+    localStorage.getItem('adminRegion') || 'grand-rapids'
+  );
 
-  // Organization event page URLs for batch scraping
-  // Add/update URLs as needed for each organization
-  const organizationEventPages = {
-    'GR Chamber of Commerce': 'https://www.grandrapids.org/events',
-    'Rotary Club': 'https://www.grandrapidsrotary.org/events',
-    'CREW': 'https://www.crewgrandrapids.org/events',
-    'GRYP': 'https://www.gryp.org/events',
-    'Economic Club of Grand Rapids': 'https://economicclubgr.org/events',
-    'Bamboo GR': 'https://bamboograndrapids.com/events',
-    'Hello West Michigan': 'https://hellowestmichigan.com/events',
-    'CARWM': 'https://carwm.org/events',
-    'Creative Mornings GR': 'https://creativemornings.com/cities/grr',
-    'Athena': 'https://athenawestmichigan.org/events',
-    'Inforum': 'https://inforummichigan.org/events',
-    'Start Garden': 'https://startgarden.com/events'
+  // Handle region change
+  const handleRegionChange = (region) => {
+    setSelectedRegion(region);
+    localStorage.setItem('adminRegion', region);
   };
+
+  // Get organizations for current region (dynamically)
+  const organizations = [...getOrganizationsForRegion(selectedRegion), 'Other'];
+
+  // Get scrape URLs for current region (dynamically)
+  const organizationEventPages = getScrapeUrlsForRegion(selectedRegion);
 
   const emptyEvent = {
     title: '',
@@ -54,16 +48,17 @@ function EventSlotsManager() {
     registration_url: ''
   };
 
-  // Load events from Supabase on mount
+  // Load events from Supabase on mount and when region changes
   useEffect(() => {
     loadEvents();
-  }, []);
+  }, [selectedRegion]);
 
   const loadEvents = async () => {
     try {
       const { data, error } = await supabase
         .from('events')
         .select('*')
+        .eq('region_id', selectedRegion)
         .order('slot_number', { ascending: true });
 
       if (error) throw error;
@@ -169,15 +164,17 @@ function EventSlotsManager() {
       const eventData = {
         ...event,
         slot_number: slotNumber,
-        is_featured: slotNumber <= 4 // Slots 1-4 are featured
+        is_featured: slotNumber <= 4, // Slots 1-4 are featured
+        region_id: selectedRegion
       };
 
       console.log('Checking if event exists...');
-      // Check if event exists
+      // Check if event exists (for this slot AND region)
       const { data: existing, error: checkError } = await supabase
         .from('events')
         .select('id')
         .eq('slot_number', slotNumber)
+        .eq('region_id', selectedRegion)
         .maybeSingle(); // Use maybeSingle instead of single to avoid error if not found
 
       if (checkError) {
@@ -235,7 +232,8 @@ function EventSlotsManager() {
       const { error } = await supabase
         .from('events')
         .delete()
-        .eq('slot_number', slotNumber);
+        .eq('slot_number', slotNumber)
+        .eq('region_id', selectedRegion);
 
       if (error) throw error;
 
@@ -281,7 +279,8 @@ function EventSlotsManager() {
         const { error: error1 } = await supabase
           .from('events')
           .update({ slot_number: tempSlot })
-          .eq('slot_number', slotNumber);
+          .eq('slot_number', slotNumber)
+          .eq('region_id', selectedRegion);
 
         if (error1) throw error1;
 
@@ -289,7 +288,8 @@ function EventSlotsManager() {
         const { error: error2 } = await supabase
           .from('events')
           .update({ slot_number: slotNumber, is_featured: slotNumber <= 4 })
-          .eq('slot_number', slotNumber - 1);
+          .eq('slot_number', slotNumber - 1)
+          .eq('region_id', selectedRegion);
 
         if (error2) throw error2;
 
@@ -297,7 +297,8 @@ function EventSlotsManager() {
         const { error: error3 } = await supabase
           .from('events')
           .update({ slot_number: slotNumber - 1, is_featured: (slotNumber - 1) <= 4 })
-          .eq('slot_number', tempSlot);
+          .eq('slot_number', tempSlot)
+          .eq('region_id', selectedRegion);
 
         if (error3) throw error3;
 
@@ -309,7 +310,8 @@ function EventSlotsManager() {
         const { error } = await supabase
           .from('events')
           .update({ slot_number: slotNumber - 1, is_featured: (slotNumber - 1) <= 4 })
-          .eq('slot_number', slotNumber);
+          .eq('slot_number', slotNumber)
+          .eq('region_id', selectedRegion);
 
         if (error) throw error;
       }
@@ -355,7 +357,8 @@ function EventSlotsManager() {
         const { error: error1 } = await supabase
           .from('events')
           .update({ slot_number: tempSlot })
-          .eq('slot_number', slotNumber);
+          .eq('slot_number', slotNumber)
+          .eq('region_id', selectedRegion);
 
         if (error1) throw error1;
 
@@ -363,7 +366,8 @@ function EventSlotsManager() {
         const { error: error2 } = await supabase
           .from('events')
           .update({ slot_number: slotNumber, is_featured: slotNumber <= 4 })
-          .eq('slot_number', slotNumber + 1);
+          .eq('slot_number', slotNumber + 1)
+          .eq('region_id', selectedRegion);
 
         if (error2) throw error2;
 
@@ -371,7 +375,8 @@ function EventSlotsManager() {
         const { error: error3 } = await supabase
           .from('events')
           .update({ slot_number: slotNumber + 1, is_featured: (slotNumber + 1) <= 4 })
-          .eq('slot_number', tempSlot);
+          .eq('slot_number', tempSlot)
+          .eq('region_id', selectedRegion);
 
         if (error3) throw error3;
 
@@ -383,7 +388,8 @@ function EventSlotsManager() {
         const { error } = await supabase
           .from('events')
           .update({ slot_number: slotNumber + 1, is_featured: (slotNumber + 1) <= 4 })
-          .eq('slot_number', slotNumber);
+          .eq('slot_number', slotNumber)
+          .eq('region_id', selectedRegion);
 
         if (error) throw error;
       }
@@ -1252,8 +1258,31 @@ function EventSlotsManager() {
 
   return (
     <div className="space-y-4">
+      {/* Region Selector */}
+      <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border-2 border-purple-300 rounded-lg p-4 mb-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-bold text-sm text-purple-900 mb-1">📍 Region</h3>
+            <p className="text-xs text-purple-700">
+              Select the region to manage events for
+            </p>
+          </div>
+          <select
+            value={selectedRegion}
+            onChange={(e) => handleRegionChange(e.target.value)}
+            className="px-4 py-2 border-2 border-purple-400 rounded-lg text-sm font-medium bg-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+          >
+            {Object.entries(REGIONS).map(([id, config]) => (
+              <option key={id} value={id}>
+                {config.displayName} {!config.isActive && '(Coming Soon)'}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-        <h3 className="font-semibold text-sm text-blue-900 mb-1">Events Page Listings (7 Slots)</h3>
+        <h3 className="font-semibold text-sm text-blue-900 mb-1">Events Page Listings (7 Slots) - {REGIONS[selectedRegion]?.name || selectedRegion}</h3>
         <p className="text-xs text-blue-700">
           Slots 1-4 are <strong>Featured Events</strong> (displayed in 2x2 grid). Slots 5-7 are standard events (displayed below).
           Empty slots won't appear on the public events page.

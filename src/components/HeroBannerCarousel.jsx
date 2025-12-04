@@ -6,6 +6,7 @@ function HeroBannerCarousel() {
   const [loading, setLoading] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [userRegion, setUserRegion] = useState('grand-rapids'); // Default to GR
 
   useEffect(() => {
     let cancelled = false;
@@ -17,47 +18,75 @@ function HeroBannerCarousel() {
       sessionStorage.setItem('pageLoaded', 'true');
     }
 
-    // Try to load cached banners immediately for instant display
-    const cachedBanners = sessionStorage.getItem('cachedHeroBanners');
-    let displayedFromCache = false;
-
-    if (cachedBanners) {
+    // First, get the user's region
+    const getUserRegion = async () => {
       try {
-        const banners = JSON.parse(cachedBanners);
-        if (banners && banners.length > 0) {
-          // Determine which banner to show
-          const hasRotatedThisSession = sessionStorage.getItem('bannerRotatedThisSession');
-          let bannerIndex;
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from('users')
+            .select('region')
+            .eq('id', user.id)
+            .single();
 
-          if (!hasRotatedThisSession) {
-            const lastShownIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
-            bannerIndex = (lastShownIndex + 1) % banners.length;
-            sessionStorage.setItem('lastHeroBannerIndex', bannerIndex.toString());
-            sessionStorage.setItem('bannerRotatedThisSession', 'true');
-          } else {
-            bannerIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
+          if (profile?.region) {
+            setUserRegion(profile.region);
+            return profile.region;
           }
-
-          const banner = banners[bannerIndex];
-
-          // Show cached banner immediately
-          setCurrentBanner(banner);
-          setImageLoaded(true);
-          setLoading(false);
-          setHasLoaded(true);
-          displayedFromCache = true;
         }
       } catch (e) {
-        console.error('Error parsing cached banners:', e);
+        console.warn('Could not get user region, using default');
       }
-    }
+      return 'grand-rapids'; // Default fallback
+    };
+
+    // Try to load cached banners immediately for instant display
+    const cachedBanners = sessionStorage.getItem('cachedHeroBanners');
+    const cachedRegion = sessionStorage.getItem('cachedBannerRegion');
+    let displayedFromCache = false;
 
     const fetchBanners = async () => {
+      const region = await getUserRegion();
+
+      // Only use cache if it matches user's region
+      if (cachedBanners && cachedRegion === region) {
+        try {
+          const banners = JSON.parse(cachedBanners);
+          if (banners && banners.length > 0) {
+            // Determine which banner to show
+            const hasRotatedThisSession = sessionStorage.getItem('bannerRotatedThisSession');
+            let bannerIndex;
+
+            if (!hasRotatedThisSession) {
+              const lastShownIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
+              bannerIndex = (lastShownIndex + 1) % banners.length;
+              sessionStorage.setItem('lastHeroBannerIndex', bannerIndex.toString());
+              sessionStorage.setItem('bannerRotatedThisSession', 'true');
+            } else {
+              bannerIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
+            }
+
+            const banner = banners[bannerIndex];
+
+            // Show cached banner immediately
+            setCurrentBanner(banner);
+            setImageLoaded(true);
+            setLoading(false);
+            setHasLoaded(true);
+            displayedFromCache = true;
+          }
+        } catch (e) {
+          console.error('Error parsing cached banners:', e);
+        }
+      }
+
       try {
+        // Fetch banners for user's region
         const { data: banners, error } = await supabase
           .from('hero_banners')
           .select('*')
           .eq('is_active', true)
+          .eq('region_id', region)
           .order('slot_number');
 
         if (error) throw error;
@@ -65,8 +94,9 @@ function HeroBannerCarousel() {
         if (cancelled) return; // Don't proceed if effect was cleaned up
 
         if (banners && banners.length > 0) {
-          // Cache the fresh banners for next time
+          // Cache the fresh banners for next time (with region)
           sessionStorage.setItem('cachedHeroBanners', JSON.stringify(banners));
+          sessionStorage.setItem('cachedBannerRegion', region);
 
           // Only update display if we didn't already show from cache
           if (!displayedFromCache) {

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { User, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import { detectRegion, getOrganizationsForRegion } from '../lib/regions.js';
 
 export default function BudEOnboarding() {
   const navigate = useNavigate();
@@ -151,17 +152,13 @@ export default function BudEOnboarding() {
     professionalInterestsOther: '',
     personalInterests: '',
     networkingGoals: '',
-    photo: ''
+    photo: '',
+    region: ''
   });
   const [photoFile, setPhotoFile] = useState(null);
 
-  const organizations = [
-    'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
-    'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo GR',
-    'Hello West Michigan', 'CARWM', 'Creative Mornings GR', 'Athena',
-    'Inforum', 'Start Garden', 'GRABB', 'WMPRSA', 'Crain\'s GR Business', 'AIGA - WM',
-    'West Michigan Hispanic Chamber of Commerce'
-  ];
+  // Get organizations based on detected region
+  const organizations = getOrganizationsForRegion(formData.region);
 
   const professionalInterestOptions = [
     'Technology', 'Marketing', 'Finance', 'Design', 'Sales', 'HR',
@@ -419,6 +416,7 @@ export default function BudEOnboarding() {
         industry: formData.industry || '',
         zip_code: formData.zipCode,
         location: formData.zipCode,
+        region: formData.region || 'grand-rapids',
         organizations_current: formData.organizations || [],
         organizations_other: formData.organizationsOther || '',
         organizations_interested: formData.organizationsToCheckOut || [],
@@ -806,7 +804,6 @@ export default function BudEOnboarding() {
             <div className="mt-8 text-gray-900">
               <p className="font-semibold">Jeff Hill</p>
               <p>Founder, The BudE System™</p>
-              <p>Grand Rapids, Michigan</p>
             </div>
           </div>
         </div>
@@ -973,9 +970,6 @@ export default function BudEOnboarding() {
         </button>
         <p className="text-gray-600 text-sm mt-2">
           Copyright The BudE System™
-        </p>
-        <p className="text-gray-600 text-sm">
-          Grand Rapids, Michigan
         </p>
       </div>
     </div>
@@ -1280,7 +1274,15 @@ export default function BudEOnboarding() {
                     value={formData.zipCode}
                     onChange={(e) => {
                       const value = e.target.value.replace(/\D/g, '').slice(0, 5);
-                      handleChange('zipCode', value);
+                      const region = detectRegion(value);
+                      setFormData(prev => ({
+                        ...prev,
+                        zipCode: value,
+                        region: region,
+                        // Reset org selections when region changes
+                        organizations: prev.region !== region ? [] : prev.organizations,
+                        organizationsToCheckOut: prev.region !== region ? [] : prev.organizationsToCheckOut
+                      }));
                     }}
                     maxLength={5}
                     placeholder="12345"
@@ -1325,70 +1327,7 @@ export default function BudEOnboarding() {
               </div>
             </div>
 
-            {/* Row 3: Organizations - Side by Side */}
-            <div className="bg-white rounded-lg p-4 shadow-md">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-bold mb-2 text-gray-900">Where You Can Find Me Networking Now</label>
-                  <div className="flex flex-wrap gap-2">
-                    {organizations.map(org => (
-                      <button
-                        key={org}
-                        onClick={() => toggleOrganization(org)}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                          formData.organizations.includes(org)
-                            ? 'bg-[#009900] text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
-                      >
-                        {org}
-                      </button>
-                    ))}
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Other organization"
-                    className="w-full mt-2 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                    value={formData.organizationsOther}
-                    onChange={(e) => handleChange('organizationsOther', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold mb-2 text-gray-900">Organizations I've Wanted to Check Out</label>
-                  <div className="flex flex-wrap gap-2">
-                    {organizations.map(org => (
-                      <button
-                        key={`checkout-${org}`}
-                        onClick={() => {
-                          setFormData(prev => ({
-                            ...prev,
-                            organizationsToCheckOut: prev.organizationsToCheckOut?.includes(org)
-                              ? prev.organizationsToCheckOut.filter(o => o !== org)
-                              : [...(prev.organizationsToCheckOut || []), org]
-                          }));
-                        }}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                          formData.organizationsToCheckOut?.includes(org)
-                            ? 'bg-[#009900] text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
-                      >
-                        {org}
-                      </button>
-                    ))}
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Other organization"
-                    className="w-full mt-2 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                    value={formData.organizationsToCheckOutOther}
-                    onChange={(e) => handleChange('organizationsToCheckOutOther', e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Row 4: Groups I belong to */}
+            {/* Row 3: Groups I belong to */}
             <div className="bg-white rounded-lg p-4 shadow-md">
               <div>
                 <label className="block text-sm font-bold mb-1 text-gray-900">Groups I belong to <span className="text-gray-500 font-normal">(optional)</span></label>
@@ -1396,10 +1335,40 @@ export default function BudEOnboarding() {
                   type="text"
                   name="groupsBelongTo"
                   className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
-                  placeholder="Leadership Grand Rapids, University Alumni, BNI, YNPN, Other, Suggest a Group"
+                  placeholder="Leadership programs, University Alumni, BNI, YNPN, etc."
                   value={formData.groupsBelongTo}
                   onChange={(e) => handleChange('groupsBelongTo', e.target.value)}
                 />
+              </div>
+            </div>
+
+            {/* Row 4: I'm looking to... */}
+            <div className="bg-white rounded-lg p-4 shadow-md">
+              <div>
+                <label className="block text-sm font-bold mb-1 text-gray-900">I'm looking to...</label>
+                <p className="text-gray-600 mb-2 text-xs">Select what best describes what you're looking for</p>
+                <select
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                  value={formData.lookingToAccomplish}
+                  onChange={(e) => handleChange('lookingToAccomplish', e.target.value)}
+                >
+                  <option value="">Select an option...</option>
+                  <option value="Launch a business">Launch a business</option>
+                  <option value="Find professional cohorts">Find professional cohorts</option>
+                  <option value="Find a collaborator for a project">Find a collaborator for a project</option>
+                  <option value="Fill vacant board positions">Fill vacant board positions</option>
+                  <option value="Join a board">Join a board</option>
+                  <option value="Find volunteers for my organization">Find volunteers for my organization</option>
+                  <option value="Volunteer more">Volunteer more</option>
+                  <option value="Check out educational events with someone">Check out educational events with someone</option>
+                  <option value="Make a connection in a specific organization (elaborate in Networking Goals)">Make a connection in a specific organization</option>
+                  <option value="Get out and network more">Get out and network more</option>
+                  <option value="Get out of my home office more">Get out of my home office more</option>
+                  <option value="Change career paths">Change career paths</option>
+                  <option value="Find a coach">Find a coach</option>
+                  <option value="Make a few new friends">Make a few new friends</option>
+                  <option value="Other (please elaborate in Networking Goals)">Other</option>
+                </select>
               </div>
             </div>
 
@@ -1535,6 +1504,82 @@ const renderStep2 = () => (
         </div>
 
         <div className="space-y-4">
+          {/* Organizations Section - filtered by region */}
+          {formData.region ? (
+            <div className="bg-white rounded-lg p-4 shadow-md">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h2 className="text-lg font-bold mb-2">Where You Can Find Me Networking Now</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {organizations.map(org => (
+                      <button
+                        key={org}
+                        type="button"
+                        onClick={() => toggleOrganization(org)}
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                          formData.organizations.includes(org)
+                            ? 'bg-[#009900] text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {org}
+                      </button>
+                    ))}
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Other organization"
+                    className="w-full mt-2 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                    value={formData.organizationsOther}
+                    onChange={(e) => handleChange('organizationsOther', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold mb-2">Organizations I've Wanted to Check Out</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {organizations.map(org => (
+                      <button
+                        key={`checkout-${org}`}
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            organizationsToCheckOut: prev.organizationsToCheckOut?.includes(org)
+                              ? prev.organizationsToCheckOut.filter(o => o !== org)
+                              : [...(prev.organizationsToCheckOut || []), org]
+                          }));
+                        }}
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                          formData.organizationsToCheckOut?.includes(org)
+                            ? 'bg-[#009900] text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {org}
+                      </button>
+                    ))}
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Other organization"
+                    className="w-full mt-2 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                    value={formData.organizationsToCheckOutOther}
+                    onChange={(e) => handleChange('organizationsToCheckOutOther', e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <p className="text-yellow-800 font-medium">
+                BudE is currently available in Grand Rapids, Detroit, and Chicago.
+              </p>
+              <p className="text-yellow-700 text-sm mt-1">
+                We're expanding soon! Go back and enter a zip code from one of our supported regions, or join our waitlist to be notified when we launch in your area.
+              </p>
+            </div>
+          )}
+
           <div>
             <h2 className="text-xl font-bold mb-2">Networking Goals <span className="text-red-500">*</span></h2>
             <textarea
@@ -1564,34 +1609,6 @@ const renderStep2 = () => (
               required
             />
             <p className="text-sm text-gray-500 mt-2">{formData.personalInterests.length}/500 characters</p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold mb-1.5">Bonus Question: I'm looking to...</h2>
-            <p className="text-gray-600 mb-2 text-sm">Select one option that best describes what you're looking for</p>
-            <select
-              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-              value={formData.lookingToAccomplish}
-              onChange={(e) => handleChange('lookingToAccomplish', e.target.value)}
-            >
-              <option value="">Select an option...</option>
-              <option value="Launch a business">Launch a business</option>
-              <option value="Find professional cohorts">Find professional cohorts</option>
-              <option value="Find a collaborator for a project">Find a collaborator for a project</option>
-              <option value="Fill vacant board positions">Fill vacant board positions</option>
-              <option value="Join a board">Join a board</option>
-              <option value="Find volunteers for my organization">Find volunteers for my organization</option>
-              <option value="Volunteer more">Volunteer more</option>
-              <option value="Check out educational events with someone">Check out educational events with someone</option>
-              <option value="Make a connection in a specific organization (elaborate in Networking Goals)">Make a connection in a specific organization (elaborate in Networking Goals)</option>
-              <option value="Get out and network more">Get out and network more</option>
-              <option value="Get out of my home office more">Get out of my home office more</option>
-              <option value="Change career paths">Change career paths</option>
-              <option value="Find a coach">Find a coach</option>
-              <option value="Make a few new friends">Make a few new friends</option>
-              <option value="Sell my products or services here to other users (you've come to the wrong place for that)">Sell my products or services here to other users (you've come to the wrong place for that)</option>
-              <option value="Other (please elaborate in Networking Goals)">Other (please elaborate in Networking Goals)</option>
-            </select>
           </div>
 
           <div>

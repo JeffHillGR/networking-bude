@@ -61,16 +61,15 @@ export const AuthProvider = ({ children }) => {
           ...userData
         });
 
-        // Insert user profile data
+        // Upsert user profile data (trigger may have created a minimal row)
         const { data: insertedData, error: profileError } = await supabase
           .from('users')
-          .insert([{
+          .upsert({
             id: authData.user.id,
             email: normalizedEmail,
             ...userData,
-            created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
-          }])
+          }, { onConflict: 'id' })
           .select();
 
         if (profileError) {

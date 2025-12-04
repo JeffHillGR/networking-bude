@@ -1167,7 +1167,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
                       value={profile.groupsBelongTo || ''}
                       onChange={(e) => setProfile({...profile, groupsBelongTo: e.target.value})}
                       className="w-full px-4 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-[#009900] focus:bg-white"
-                      placeholder="Leadership Grand Rapids, University Alumni, BNI, YNPN, Other/suggest a group"
+                      placeholder="Leadership programs, University Alumni, BNI, YNPN, etc."
                     />
                   </div>
 
