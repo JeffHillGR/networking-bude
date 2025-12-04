@@ -454,7 +454,7 @@ function Events({ onBackToDashboard }) {
                         )}
                       </div>
                       <div className="flex justify-end mt-auto pt-4">
-                        <span className="bg-[#D0ED00] text-black px-3 py-1 rounded-full font-medium flex items-center gap-1">
+                        <span className="text-[#8AA600] font-medium flex items-center gap-1 hover:text-[#6d8300]">
                           View Details
                           <ExternalLink className="h-4 w-4" />
                         </span>
@@ -547,7 +547,7 @@ function Events({ onBackToDashboard }) {
                               </span>
                             )}
                           </div>
-                          <span className="bg-[#D0ED00] text-black px-3 py-1 rounded-full font-medium text-sm flex items-center gap-1 flex-shrink-0">
+                          <span className="text-[#8AA600] font-medium text-sm flex items-center gap-1 flex-shrink-0 hover:text-[#6d8300]">
                             View Details
                             <ExternalLink className="h-4 w-4" />
                           </span>
