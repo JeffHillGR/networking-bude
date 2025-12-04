@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, Calendar, MapPin, Heart, ExternalLink, Share2, User, Home, TrendingUp, X, Check } from 'lucide-react';
+import { ArrowLeft, Calendar, CalendarPlus, MapPin, Heart, ExternalLink, Share2, User, Home, TrendingUp, X, Check } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
 import { supabase } from '../lib/supabase.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
@@ -30,6 +30,7 @@ function EventDetail() {
   const [interestedConnections, setInterestedConnections] = useState([]);
   const [showInterestedList, setShowInterestedList] = useState(false);
   const [bottomBannerAd, setBottomBannerAd] = useState(null);
+  const [showCalendarDropdown, setShowCalendarDropdown] = useState(false);
 
   // Format date string to "Wednesday, December 18, 2025" format
   const formatEventDate = (dateString) => {
@@ -43,6 +44,90 @@ function EventDetail() {
       day: 'numeric',
       year: 'numeric'
     });
+  };
+
+  // Generate calendar links for Add to Calendar feature
+  const generateCalendarLinks = (event) => {
+    if (!event) return {};
+
+    // Parse the date - handle ISO format (YYYY-MM-DD)
+    const eventDate = new Date(event.date + 'T00:00:00');
+
+    // Parse time (e.g., "7:30 PM" or "6:00 PM - 8:00 PM")
+    const parseTime = (timeStr, baseDate) => {
+      if (!timeStr) return { start: baseDate, end: new Date(baseDate.getTime() + 2 * 60 * 60 * 1000) };
+
+      const timeParts = timeStr.split(' - ');
+      const startTimeStr = timeParts[0].trim();
+      const endTimeStr = timeParts[1]?.trim() || null;
+
+      const parseTimeString = (str, date) => {
+        const match = str.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+        if (!match) return date;
+        let hours = parseInt(match[1]);
+        const minutes = parseInt(match[2]);
+        const isPM = match[3].toUpperCase() === 'PM';
+        if (isPM && hours !== 12) hours += 12;
+        if (!isPM && hours === 12) hours = 0;
+        const result = new Date(date);
+        result.setHours(hours, minutes, 0, 0);
+        return result;
+      };
+
+      const start = parseTimeString(startTimeStr, baseDate);
+      const end = endTimeStr
+        ? parseTimeString(endTimeStr, baseDate)
+        : new Date(start.getTime() + 2 * 60 * 60 * 1000); // Default 2 hours
+
+      return { start, end };
+    };
+
+    const { start, end } = parseTime(event.time, eventDate);
+
+    // Format for Google Calendar (YYYYMMDDTHHmmss)
+    const formatGoogleDate = (date) => {
+      return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    };
+
+    // Format for ICS file (YYYYMMDDTHHMMSS)
+    const formatICSDate = (date) => {
+      const pad = (n) => n.toString().padStart(2, '0');
+      return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}T${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
+    };
+
+    const title = encodeURIComponent(event.title);
+    const description = encodeURIComponent(event.short_description || event.description || '');
+    const location = encodeURIComponent(event.full_address || event.location_name || '');
+
+    // Google Calendar URL
+    const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${formatGoogleDate(start)}/${formatGoogleDate(end)}&details=${description}&location=${location}`;
+
+    // Outlook Web URL
+    const outlookUrl = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${title}&startdt=${start.toISOString()}&enddt=${end.toISOString()}&body=${description}&location=${location}`;
+
+    // ICS file content for Apple Calendar / other apps
+    const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:${formatICSDate(start)}
+DTEND:${formatICSDate(end)}
+SUMMARY:${event.title}
+DESCRIPTION:${event.short_description || event.description || ''}
+LOCATION:${event.full_address || event.location_name || ''}
+END:VEVENT
+END:VCALENDAR`;
+
+    return { googleUrl, outlookUrl, icsContent };
+  };
+
+  const downloadICS = (icsContent, filename) => {
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   // Load bottom banner ad from Supabase
@@ -759,6 +844,56 @@ function EventDetail() {
                         Share Event
                       </span>
                     </button>
+                    <div className="relative">
+                      <button
+                        onClick={() => setShowCalendarDropdown(!showCalendarDropdown)}
+                        className="p-2 rounded-full border border-gray-300 text-gray-600 hover:border-[#009900] hover:text-[#009900] group relative"
+                      >
+                        <CalendarPlus className="w-5 h-5" />
+                        {/* Custom tooltip */}
+                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-[#009900] text-white text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                          Add to Calendar
+                        </span>
+                      </button>
+                      {/* Calendar dropdown */}
+                      {showCalendarDropdown && (
+                        <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[180px]">
+                          <div className="p-2">
+                            <p className="text-xs text-gray-500 font-medium px-3 py-1">Add to Calendar</p>
+                            <button
+                              onClick={() => {
+                                const { googleUrl } = generateCalendarLinks(event);
+                                window.open(googleUrl, '_blank');
+                                setShowCalendarDropdown(false);
+                              }}
+                              className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded flex items-center gap-2"
+                            >
+                              <span>📅</span> Google Calendar
+                            </button>
+                            <button
+                              onClick={() => {
+                                const { icsContent } = generateCalendarLinks(event);
+                                downloadICS(icsContent, `${event.title.replace(/[^a-z0-9]/gi, '_')}.ics`);
+                                setShowCalendarDropdown(false);
+                              }}
+                              className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded flex items-center gap-2"
+                            >
+                              <span>🍎</span> Apple Calendar
+                            </button>
+                            <button
+                              onClick={() => {
+                                const { outlookUrl } = generateCalendarLinks(event);
+                                window.open(outlookUrl, '_blank');
+                                setShowCalendarDropdown(false);
+                              }}
+                              className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded flex items-center gap-2"
+                            >
+                              <span>📧</span> Outlook
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 

@@ -423,8 +423,8 @@ function Events({ onBackToDashboard }) {
                           {event.organizerName || 'Event Organizer'}
                         </span>
                       </div>
-                      <div className="space-y-2 text-sm text-gray-600 mb-4">
-                        <div className="flex items-center gap-2">
+                      <div className="space-y-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2" title="Click to view event details">
                           <Calendar className="h-4 w-4" />
                           <span>{formatEventDate(event.date)} • {event.time}</span>
                         </div>
@@ -432,47 +432,26 @@ function Events({ onBackToDashboard }) {
                           <MapPin className="h-4 w-4" />
                           <span>{event.location}</span>
                         </div>
-                        <div className="flex items-center gap-4">
-                          {eventInterestCounts[event.id] > 0 && (
-                            <div className="flex items-center gap-2">
-                              <Heart className="h-4 w-4 text-red-500" />
-                              <span className="text-gray-700 font-medium">
-                                {eventInterestCounts[event.id]} Interested
-                              </span>
-                            </div>
-                          )}
-                          {eventGoingCounts[event.id] > 0 && (
-                            <div className="flex items-center gap-2">
-                              <Check className="h-4 w-4 text-[#009900]" />
-                              <span className="text-[#009900] font-medium">
-                                {eventGoingCounts[event.id]} Going
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setShareEvent(event);
-                            setShowShareModal(true);
-                          }}
-                          className="text-gray-600 hover:text-[#009900] transition-colors"
-                          title="Share event"
-                        >
-                          <Share2 className="h-5 w-5" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/events/${event.id}`);
-                          }}
-                          className="text-[#009900] font-medium hover:text-[#007700] flex items-center gap-1"
-                        >
-                          View Details
-                          <ExternalLink className="h-4 w-4" />
-                        </button>
+                        {(eventInterestCounts[event.id] > 0 || eventGoingCounts[event.id] > 0) && (
+                          <div className="flex items-center gap-4 pt-2">
+                            {eventInterestCounts[event.id] > 0 && (
+                              <div className="flex items-center gap-1">
+                                <Heart className="h-4 w-4 text-red-500" />
+                                <span className="text-gray-700 font-medium">
+                                  {eventInterestCounts[event.id]} Interested
+                                </span>
+                              </div>
+                            )}
+                            {eventGoingCounts[event.id] > 0 && (
+                              <div className="flex items-center gap-1">
+                                <Check className="h-4 w-4 text-[#009900]" />
+                                <span className="text-[#009900] font-medium">
+                                  {eventGoingCounts[event.id]} Going
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -529,64 +508,41 @@ function Events({ onBackToDashboard }) {
                             )}
                           </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-8 gap-y-1 text-xs md:text-sm text-gray-600 mt-3 md:mt-4">
-                          <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs md:text-sm text-gray-600 mt-3">
+                          <div className="flex items-center gap-2" title="Click to view event details">
                             <Calendar className="h-4 w-4 flex-shrink-0" />
-                            <span className="truncate">{formatEventDate(event.date)}</span>
+                            <span>{formatEventDate(event.date)} • {event.time}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <MapPin className="h-4 w-4 flex-shrink-0" />
                             <span className="truncate">{event.location}</span>
                           </div>
-                          {eventInterestCounts[event.id] > 0 && (
-                            <div className="flex items-center gap-2">
-                              <Heart className="h-4 w-4 flex-shrink-0 text-red-500" />
-                              <span className="truncate text-gray-700 font-medium">
-                                {eventInterestCounts[event.id]} Interested
-                              </span>
-                            </div>
-                          )}
-                          {eventGoingCounts[event.id] > 0 && (
-                            <div className="flex items-center gap-2">
-                              <Check className="h-4 w-4 flex-shrink-0 text-[#009900]" />
-                              <span className="truncate text-[#009900] font-medium">
-                                {eventGoingCounts[event.id]} Going
-                              </span>
-                            </div>
-                          )}
                         </div>
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0 mt-3 md:mt-4">
-                          <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex items-center justify-between mt-3">
+                          <div className="flex items-center gap-3 flex-wrap">
                             <span className="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
                               {event.organizerName}
                             </span>
                             {event.price !== 'Free' && (
                               <span className="text-xs text-gray-600">{event.price}</span>
                             )}
+                            {eventInterestCounts[event.id] > 0 && (
+                              <span className="flex items-center gap-1 text-xs">
+                                <Heart className="h-3 w-3 text-red-500" />
+                                <span className="text-gray-700">{eventInterestCounts[event.id]} Interested</span>
+                              </span>
+                            )}
+                            {eventGoingCounts[event.id] > 0 && (
+                              <span className="flex items-center gap-1 text-xs">
+                                <Check className="h-3 w-3 text-[#009900]" />
+                                <span className="text-[#009900]">{eventGoingCounts[event.id]} Going</span>
+                              </span>
+                            )}
                           </div>
-                          <div className="flex items-center gap-3">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setShareEvent(event);
-                                setShowShareModal(true);
-                              }}
-                              className="text-gray-600 hover:text-[#009900] transition-colors"
-                              title="Share event"
-                            >
-                              <Share2 className="h-5 w-5" />
-                            </button>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                navigate(`/events/${event.id}`);
-                              }}
-                              className="flex items-center gap-2 text-[#009900] font-medium hover:text-[#007700] text-sm md:text-base whitespace-nowrap"
-                            >
-                              View Details
-                              <ExternalLink className="h-4 w-4" />
-                            </button>
-                          </div>
+                          <span className="text-[#009900] font-medium text-sm flex items-center gap-1">
+                            View Details
+                            <ExternalLink className="h-4 w-4" />
+                          </span>
                         </div>
                       </div>
                     </div>
