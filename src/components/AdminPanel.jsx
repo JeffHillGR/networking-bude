@@ -809,9 +809,9 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
         }
       }
 
-      // Upload new image
+      // Upload new image - include region in filename to avoid overwrites
       const fileExt = file.name.split('.').pop();
-      const fileName = `hero-banner-slot-${slotNumber}.${fileExt}`;
+      const fileName = `hero-banner-${selectedBannerRegion}-slot-${slotNumber}.${fileExt}`;
       const filePath = `hero-banners/${fileName}`;
 
       // Use upsert to overwrite if file exists
