@@ -486,7 +486,7 @@ function Events({ onBackToDashboard }) {
                       trackEngagement(); // Count viewing event as engagement
                       navigate(`/events/${event.id}`);
                     }}
-                    className={`bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer relative animate-fade-in min-h-[240px] md:h-[240px] ${event.isWildcard ? 'border-2 border-[#D0ED00]' : event.isTrending ? 'border-2 border-green-200' : 'border border-black'}`}
+                    className={`bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer relative animate-fade-in min-h-[240px] ${event.isWildcard ? 'border-2 border-[#D0ED00]' : event.isTrending ? 'border-2 border-green-200' : 'border border-black'}`}
                     style={{ animationDelay: `${index * 80}ms`, animationFillMode: 'backwards' }}
                   >
                     <div className="flex flex-col md:flex-row gap-4 md:gap-6 h-full">
