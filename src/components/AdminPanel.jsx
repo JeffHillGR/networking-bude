@@ -1783,7 +1783,7 @@ function ResourcesInsightsTab({ ads, handleImageUpload: handleAdImageUpload, han
                 className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 title="Move Up"
               >
-                <Upload className="w-4 h-4 rotate-180" />
+                <Upload className="w-4 h-4" />
               </button>
               <button
                 onClick={() => handleMoveDown(slotNumber)}
@@ -1791,7 +1791,7 @@ function ResourcesInsightsTab({ ads, handleImageUpload: handleAdImageUpload, han
                 className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 title="Move Down"
               >
-                <Upload className="w-4 h-4" />
+                <Upload className="w-4 h-4 rotate-180" />
               </button>
             </div>
           )}
