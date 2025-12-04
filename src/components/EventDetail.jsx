@@ -851,7 +851,7 @@ END:VCALENDAR`;
                       >
                         <CalendarPlus className="w-5 h-5" />
                         {/* Custom tooltip */}
-                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-[#009900] text-white text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                        <span className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-[#009900] text-white text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
                           Add to Calendar
                         </span>
                       </button>
