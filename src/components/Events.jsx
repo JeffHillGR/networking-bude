@@ -631,10 +631,13 @@ function Events({ onBackToDashboard }) {
           <div className="hidden lg:block w-[300px] flex-shrink-0 pl-6 pt-[54px] border-l border-gray-200">
             <div className="sticky top-24 space-y-6">
               {/* Event Calendar */}
-              <EventCalendar
-                events={allEvents.map(e => ({ date: e.date, title: e.title, id: e.id }))}
-                onDateClick={(events) => events.length === 1 && navigate(`/events/${events[0].id}`)}
-              />
+              <div className="mb-[100px]">
+                <EventCalendar
+                  events={allEvents.map(e => ({ date: e.date, title: e.title, id: e.id }))}
+                  onDateClick={(events) => events.length === 1 && navigate(`/events/${events[0].id}`)}
+                  compact
+                />
+              </div>
 
               {/* Sidebar Ad 1 */}
               {ads.eventsSidebar1?.image && ads.eventsSidebar1?.url ? (

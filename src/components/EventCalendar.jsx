@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-function EventCalendar({ events = [], onDateClick, currentEventId = null }) {
+function EventCalendar({ events = [], onDateClick, currentEventId = null, singleMonth = false, compact = false }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [hoveredDate, setHoveredDate] = useState(null);
 
@@ -62,7 +62,7 @@ function EventCalendar({ events = [], onDateClick, currentEventId = null }) {
 
     // Empty cells for days before the first day of the month
     for (let i = 0; i < firstDay; i++) {
-      days.push(<div key={`empty-${i}`} className="h-8" />);
+      days.push(<div key={`empty-${i}`} className={compact ? "h-7" : "h-8"} />);
     }
 
     // Days of the month
@@ -84,7 +84,7 @@ function EventCalendar({ events = [], onDateClick, currentEventId = null }) {
         >
           <div
             className={`
-              h-8 w-8 flex items-center justify-center text-sm rounded-full mx-auto
+              ${compact ? 'h-7 w-7 text-xs' : 'h-8 w-8 text-sm'} flex items-center justify-center rounded-full mx-auto
               ${isCurrentEvent ? 'bg-[#009900] text-white font-bold ring-2 ring-[#D0ED00] ring-offset-1 cursor-pointer' : ''}
               ${hasEvents && !isCurrentEvent ? 'bg-[#D0ED00] text-black font-bold cursor-pointer hover:bg-[#bfd400]' : ''}
               ${isToday && !hasEvents && !isCurrentEvent ? 'ring-2 ring-[#009900] ring-offset-1' : ''}
@@ -112,11 +112,11 @@ function EventCalendar({ events = [], onDateClick, currentEventId = null }) {
     }
 
     return (
-      <div className="mb-4">
-        <div className="text-center font-semibold text-gray-900 mb-2 text-sm">
+      <div className="mb-4 last:mb-0">
+        <div className={`text-center font-semibold text-gray-900 ${compact ? 'mb-1 text-xs' : 'mb-2 text-sm'}`}>
           {monthName}
         </div>
-        <div className="grid grid-cols-7 gap-1 text-center text-xs text-gray-500 mb-1">
+        <div className="grid grid-cols-7 gap-1 text-center text-gray-500 mb-1 text-xs">
           <div>S</div>
           <div>M</div>
           <div>T</div>
@@ -136,36 +136,36 @@ function EventCalendar({ events = [], onDateClick, currentEventId = null }) {
   const nextMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
-      <div className="flex items-center justify-between mb-4">
+    <div className={`bg-white rounded-lg shadow-sm ${compact ? 'p-3' : 'p-4'} border border-gray-200`}>
+      <div className={`flex items-center justify-between ${compact ? 'mb-2' : 'mb-4'}`}>
         <button
           onClick={prevMonth}
           className="p-1 hover:bg-gray-100 rounded-full transition-colors"
           aria-label="Previous month"
         >
-          <ChevronLeft className="w-5 h-5 text-gray-600" />
+          <ChevronLeft className={`${compact ? 'w-4 h-4' : 'w-5 h-5'} text-gray-600`} />
         </button>
-        <h3 className="text-sm font-bold text-gray-900">Upcoming Events</h3>
+        <h3 className={`${compact ? 'text-xs' : 'text-sm'} font-bold text-gray-900`}>Upcoming Events</h3>
         <button
           onClick={nextMonth}
           className="p-1 hover:bg-gray-100 rounded-full transition-colors"
           aria-label="Next month"
         >
-          <ChevronRight className="w-5 h-5 text-gray-600" />
+          <ChevronRight className={`${compact ? 'w-4 h-4' : 'w-5 h-5'} text-gray-600`} />
         </button>
       </div>
 
       {renderMonth(currentDate)}
-      {renderMonth(nextMonthDate)}
+      {!singleMonth && renderMonth(nextMonthDate)}
 
-      <div className="mt-3 pt-3 border-t border-gray-200 space-y-2">
+      <div className={`${compact ? 'mt-2 pt-2 space-y-1' : 'mt-3 pt-3 space-y-2'} border-t border-gray-200`}>
         <div className="flex items-center gap-2 text-xs text-gray-500">
-          <div className="w-4 h-4 rounded-full bg-[#D0ED00]" />
+          <div className="w-3 h-3 rounded-full bg-[#D0ED00]" />
           <span>Events scheduled</span>
         </div>
         {currentEventId && (
           <div className="flex items-center gap-2 text-xs text-gray-500">
-            <div className="w-4 h-4 rounded-full bg-[#009900] ring-2 ring-[#D0ED00] ring-offset-1" />
+            <div className="w-3 h-3 rounded-full bg-[#009900] ring-2 ring-[#D0ED00] ring-offset-1" />
             <span>This event</span>
           </div>
         )}
