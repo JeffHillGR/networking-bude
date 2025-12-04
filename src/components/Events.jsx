@@ -484,7 +484,7 @@ function Events({ onBackToDashboard }) {
                       <div className="w-full md:w-48 h-32 md:h-32 rounded-lg flex-shrink-0 bg-gray-50 flex items-center justify-center p-3">
                         <img src={event.image} alt={event.title} className="max-w-full max-h-full object-contain" />
                       </div>
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 min-w-0 flex flex-col">
                         {event.isWildcard && (
                           <div className="mb-2 p-2 bg-gradient-to-r from-green-50 to-lime-50 border-l-4 border-[#D0ED00] rounded">
                             <p className="text-xs md:text-sm text-gray-700 italic flex items-center gap-2">
@@ -526,7 +526,7 @@ function Events({ onBackToDashboard }) {
                             <span className="truncate">{event.location}</span>
                           </div>
                         </div>
-                        <div className="flex items-center justify-between mt-3">
+                        <div className="flex items-center justify-between mt-auto pt-3">
                           <div className="flex items-center gap-3 flex-wrap">
                             <span className="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
                               {event.organizerName}
@@ -547,7 +547,7 @@ function Events({ onBackToDashboard }) {
                               </span>
                             )}
                           </div>
-                          <span className="text-[#009900] font-medium text-sm flex items-center gap-1">
+                          <span className="text-[#009900] font-medium text-sm flex items-center gap-1 flex-shrink-0">
                             View Details
                             <ExternalLink className="h-4 w-4" />
                           </span>
