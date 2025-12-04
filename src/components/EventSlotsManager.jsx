@@ -269,18 +269,20 @@ function EventSlotsManager() {
       console.log('Moving up from slot', slotNumber);
 
       if (prevEvent) {
-        // Both slots have events - swap their slot_numbers using a temp value
-        console.log('Swapping two events');
+        // Both slots have events - swap using event IDs to avoid constraint issues
+        console.log('Swapping two events by ID');
 
-        // Use a temporary slot number to avoid unique constraint violation
-        const tempSlot = -1;
+        const currentEventId = currentEvent.id;
+        const prevEventId = prevEvent.id;
+
+        // Use a temporary slot number (99) to avoid unique constraint violation
+        const tempSlot = 99;
 
         // Step 1: Move current event to temp slot
         const { error: error1 } = await supabase
           .from('events')
           .update({ slot_number: tempSlot })
-          .eq('slot_number', slotNumber)
-          .eq('region_id', selectedRegion);
+          .eq('id', currentEventId);
 
         if (error1) throw error1;
 
@@ -288,8 +290,7 @@ function EventSlotsManager() {
         const { error: error2 } = await supabase
           .from('events')
           .update({ slot_number: slotNumber, is_featured: slotNumber <= 4 })
-          .eq('slot_number', slotNumber - 1)
-          .eq('region_id', selectedRegion);
+          .eq('id', prevEventId);
 
         if (error2) throw error2;
 
@@ -297,8 +298,7 @@ function EventSlotsManager() {
         const { error: error3 } = await supabase
           .from('events')
           .update({ slot_number: slotNumber - 1, is_featured: (slotNumber - 1) <= 4 })
-          .eq('slot_number', tempSlot)
-          .eq('region_id', selectedRegion);
+          .eq('id', currentEventId);
 
         if (error3) throw error3;
 
@@ -310,8 +310,7 @@ function EventSlotsManager() {
         const { error } = await supabase
           .from('events')
           .update({ slot_number: slotNumber - 1, is_featured: (slotNumber - 1) <= 4 })
-          .eq('slot_number', slotNumber)
-          .eq('region_id', selectedRegion);
+          .eq('id', currentEvent.id);
 
         if (error) throw error;
       }
@@ -347,18 +346,20 @@ function EventSlotsManager() {
       console.log('Moving down from slot', slotNumber);
 
       if (nextEvent) {
-        // Both slots have events - swap their slot_numbers using a temp value
-        console.log('Swapping two events');
+        // Both slots have events - swap using event IDs to avoid constraint issues
+        console.log('Swapping two events by ID');
 
-        // Use a temporary slot number to avoid unique constraint violation
-        const tempSlot = -1;
+        const currentEventId = currentEvent.id;
+        const nextEventId = nextEvent.id;
+
+        // Use a temporary slot number (99) to avoid unique constraint violation
+        const tempSlot = 99;
 
         // Step 1: Move current event to temp slot
         const { error: error1 } = await supabase
           .from('events')
           .update({ slot_number: tempSlot })
-          .eq('slot_number', slotNumber)
-          .eq('region_id', selectedRegion);
+          .eq('id', currentEventId);
 
         if (error1) throw error1;
 
@@ -366,8 +367,7 @@ function EventSlotsManager() {
         const { error: error2 } = await supabase
           .from('events')
           .update({ slot_number: slotNumber, is_featured: slotNumber <= 4 })
-          .eq('slot_number', slotNumber + 1)
-          .eq('region_id', selectedRegion);
+          .eq('id', nextEventId);
 
         if (error2) throw error2;
 
@@ -375,8 +375,7 @@ function EventSlotsManager() {
         const { error: error3 } = await supabase
           .from('events')
           .update({ slot_number: slotNumber + 1, is_featured: (slotNumber + 1) <= 4 })
-          .eq('slot_number', tempSlot)
-          .eq('region_id', selectedRegion);
+          .eq('id', currentEventId);
 
         if (error3) throw error3;
 
@@ -388,8 +387,7 @@ function EventSlotsManager() {
         const { error } = await supabase
           .from('events')
           .update({ slot_number: slotNumber + 1, is_featured: (slotNumber + 1) <= 4 })
-          .eq('slot_number', slotNumber)
-          .eq('region_id', selectedRegion);
+          .eq('id', currentEvent.id);
 
         if (error) throw error;
       }
