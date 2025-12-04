@@ -392,7 +392,7 @@ function Events({ onBackToDashboard }) {
                       trackEngagement(); // Count viewing event as engagement
                       navigate(`/events/${event.id}`);
                     }}
-                    className={`bg-white rounded-lg shadow-sm overflow-visible hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer animate-fade-in relative ${event.isWildcard ? 'border-2 border-[#D0ED00]' : 'border border-black'}`}
+                    className={`bg-white rounded-lg shadow-sm overflow-visible hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer animate-fade-in relative flex flex-col ${event.isWildcard ? 'border-2 border-[#D0ED00]' : 'border border-black'}`}
                     style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}
                   >
                     {event.isWildcard && (
@@ -408,7 +408,7 @@ function Events({ onBackToDashboard }) {
                         </div>
                       )}
                     </div>
-                    <div className="p-6">
+                    <div className="p-6 flex flex-col flex-1">
                       {event.isWildcard && (
                         <div className="mb-3 p-3 bg-gradient-to-r from-green-50 to-lime-50 border-l-4 border-[#D0ED00] rounded">
                           <p className="text-sm text-gray-700 italic">
@@ -452,12 +452,12 @@ function Events({ onBackToDashboard }) {
                             )}
                           </div>
                         )}
-                        <div className="flex justify-end mt-4">
-                          <span className="text-[#009900] font-medium flex items-center gap-1">
-                            View Details
-                            <ExternalLink className="h-4 w-4" />
-                          </span>
-                        </div>
+                      </div>
+                      <div className="flex justify-end mt-auto pt-4">
+                        <span className="text-[#009900] font-medium flex items-center gap-1">
+                          View Details
+                          <ExternalLink className="h-4 w-4" />
+                        </span>
                       </div>
                     </div>
                   </div>
