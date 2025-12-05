@@ -89,6 +89,8 @@ function HeroBannerCarousel() {
           .or(`region_id.eq.${region},region_id.is.null`)
           .order('slot_number');
 
+        console.log('🎯 Hero banners query result:', { region, banners, error });
+
         if (error) throw error;
 
         if (cancelled) return; // Don't proceed if effect was cleaned up
