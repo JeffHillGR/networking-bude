@@ -14,6 +14,13 @@ function EventSlotsManager() {
   const [batchScraping, setBatchScraping] = useState(false);
   const [batchResults, setBatchResults] = useState(null);
 
+  // Eventbrite search state
+  const [eventbriteModalOpen, setEventbriteModalOpen] = useState(false);
+  const [eventbriteSearching, setEventbriteSearching] = useState(false);
+  const [eventbriteResults, setEventbriteResults] = useState([]);
+  const [eventbriteSelected, setEventbriteSelected] = useState([]);
+  const [eventbriteError, setEventbriteError] = useState(null);
+
   // Region selection - persisted in localStorage
   const [selectedRegion, setSelectedRegion] = useState(
     localStorage.getItem('adminRegion') || 'grand-rapids'
@@ -671,6 +678,158 @@ function EventSlotsManager() {
     } finally {
       setBatchScraping(false);
     }
+  };
+
+  // Eventbrite API search
+  const searchEventbrite = async () => {
+    setEventbriteSearching(true);
+    setEventbriteError(null);
+    setEventbriteResults([]);
+    setEventbriteSelected([]);
+
+    const regionConfig = REGIONS[selectedRegion];
+    if (!regionConfig) {
+      setEventbriteError('Invalid region selected');
+      setEventbriteSearching(false);
+      return;
+    }
+
+    try {
+      // Use a CORS proxy to access Eventbrite's public search page
+      const proxyUrl = 'https://api.allorigins.win/raw?url=';
+      const eventbriteSearchUrl = `https://www.eventbrite.com/d/mi--${regionConfig.name.toLowerCase().replace(/\s+/g, '-')}/networking/`;
+
+      const response = await fetch(proxyUrl + encodeURIComponent(eventbriteSearchUrl));
+
+      if (!response.ok) {
+        throw new Error('Failed to search Eventbrite');
+      }
+
+      const html = await response.text();
+
+      // Parse the HTML to find event cards
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      // Look for JSON-LD data which contains structured event info
+      const jsonLdScripts = doc.querySelectorAll('script[type="application/ld+json"]');
+      const events = [];
+
+      jsonLdScripts.forEach(script => {
+        try {
+          const data = JSON.parse(script.textContent);
+          // Handle arrays of events
+          const items = Array.isArray(data) ? data : [data];
+          items.forEach(item => {
+            if (item['@type'] === 'Event' && item.name && item.startDate) {
+              const startDate = new Date(item.startDate);
+              const twoWeeksFromNow = new Date();
+              twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14);
+
+              // Only include future events within 2 weeks
+              if (startDate >= new Date() && startDate <= twoWeeksFromNow) {
+                events.push({
+                  id: item.url || Math.random().toString(36),
+                  title: item.name,
+                  description: item.description?.substring(0, 200) || '',
+                  date: startDate.toISOString().split('T')[0],
+                  time: startDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
+                  location: typeof item.location === 'string' ? item.location : item.location?.name || '',
+                  address: item.location?.address?.streetAddress || '',
+                  image: typeof item.image === 'string' ? item.image : item.image?.url || '',
+                  url: item.url || '',
+                  organizer: typeof item.organizer === 'string' ? item.organizer : item.organizer?.name || 'Eventbrite'
+                });
+              }
+            }
+          });
+        } catch (e) {
+          // Skip invalid JSON
+        }
+      });
+
+      // Also try to parse event links from the page
+      const eventLinks = doc.querySelectorAll('a[href*="/e/"]');
+      const seenUrls = new Set(events.map(e => e.url));
+
+      for (const link of eventLinks) {
+        const href = link.getAttribute('href');
+        if (href && !seenUrls.has(href) && href.includes('eventbrite.com/e/')) {
+          seenUrls.add(href);
+          // We could scrape individual events here but that would be slow
+          // For now just note we found additional events
+        }
+      }
+
+      if (events.length === 0) {
+        setEventbriteError(`No upcoming networking events found in ${regionConfig.name}. Try the individual URL scraper with specific Eventbrite event links.`);
+      } else {
+        setEventbriteResults(events);
+      }
+    } catch (error) {
+      console.error('Eventbrite search error:', error);
+      setEventbriteError('Failed to search Eventbrite. The site may be blocking requests. Try pasting individual Eventbrite event URLs in the slot scraper instead.');
+    } finally {
+      setEventbriteSearching(false);
+    }
+  };
+
+  // Toggle event selection in Eventbrite modal
+  const toggleEventbriteSelection = (eventId) => {
+    setEventbriteSelected(prev =>
+      prev.includes(eventId)
+        ? prev.filter(id => id !== eventId)
+        : [...prev, eventId]
+    );
+  };
+
+  // Fill empty slots with selected Eventbrite events
+  const fillSlotsWithEventbriteEvents = async () => {
+    const selectedEvents = eventbriteResults.filter(e => eventbriteSelected.includes(e.id));
+    if (selectedEvents.length === 0) {
+      alert('Please select at least one event');
+      return;
+    }
+
+    // Find empty slots
+    const emptySlots = [1, 2, 3, 4, 5, 6, 7].filter(slot => !events[slot]?.title);
+
+    if (emptySlots.length === 0) {
+      alert('No empty slots available. Delete some events first.');
+      return;
+    }
+
+    // Fill slots with selected events
+    const eventsToFill = selectedEvents.slice(0, emptySlots.length);
+
+    for (let i = 0; i < eventsToFill.length; i++) {
+      const event = eventsToFill[i];
+      const slotNumber = emptySlots[i];
+
+      setEvents(prev => ({
+        ...prev,
+        [slotNumber]: {
+          ...emptyEvent,
+          slot_number: slotNumber,
+          title: event.title,
+          short_description: event.description,
+          full_description: event.description,
+          date: event.date,
+          time: event.time,
+          location_name: event.location,
+          full_address: event.address,
+          image_url: event.image,
+          registration_url: event.url,
+          organization: 'Other',
+          organization_custom: event.organizer,
+          is_featured: slotNumber <= 4,
+          region_id: selectedRegion
+        }
+      }));
+    }
+
+    alert(`✓ Filled ${eventsToFill.length} slot(s) with Eventbrite events!\n\nRemember to review and save each slot.`);
+    setEventbriteModalOpen(false);
   };
 
   const handleScrapeUrl = async (slotNumber) => {
@@ -1334,8 +1493,132 @@ function EventSlotsManager() {
               'Auto-Fill 7 Events'
             )}
           </button>
+          <button
+            onClick={() => {
+              setEventbriteModalOpen(true);
+              searchEventbrite();
+            }}
+            disabled={eventbriteSearching}
+            className="px-4 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-bold text-sm hover:from-orange-600 hover:to-red-600 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed shadow-lg transition-all whitespace-nowrap"
+          >
+            {eventbriteSearching ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Searching...
+              </span>
+            ) : (
+              '🎫 Search Eventbrite'
+            )}
+          </button>
         </div>
       </div>
+
+      {/* Eventbrite Search Modal */}
+      {eventbriteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+            <div className="p-4 border-b bg-gradient-to-r from-orange-500 to-red-500 text-white flex justify-between items-center">
+              <h2 className="text-lg font-bold">🎫 Eventbrite Networking Events - {REGIONS[selectedRegion]?.name}</h2>
+              <button
+                onClick={() => setEventbriteModalOpen(false)}
+                className="text-white hover:text-gray-200 text-2xl leading-none"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4">
+              {eventbriteSearching ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <svg className="animate-spin h-8 w-8 text-orange-500 mb-4" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  <p className="text-gray-600">Searching Eventbrite for networking events...</p>
+                </div>
+              ) : eventbriteError ? (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+                  <p className="font-semibold mb-2">Search Error</p>
+                  <p className="text-sm">{eventbriteError}</p>
+                </div>
+              ) : eventbriteResults.length === 0 ? (
+                <div className="text-center py-12 text-gray-500">
+                  <p>No events found. Click "Search Eventbrite" to search again.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-600 mb-4">
+                    Found {eventbriteResults.length} networking event(s). Select events to add to empty slots:
+                  </p>
+                  {eventbriteResults.map(event => (
+                    <div
+                      key={event.id}
+                      onClick={() => toggleEventbriteSelection(event.id)}
+                      className={`p-3 border rounded-lg cursor-pointer transition-all ${
+                        eventbriteSelected.includes(event.id)
+                          ? 'border-orange-500 bg-orange-50'
+                          : 'border-gray-200 hover:border-orange-300'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <input
+                          type="checkbox"
+                          checked={eventbriteSelected.includes(event.id)}
+                          onChange={() => toggleEventbriteSelection(event.id)}
+                          className="mt-1 h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                        />
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900">{event.title}</h3>
+                          <p className="text-sm text-gray-600 mt-1">
+                            📅 {event.date} at {event.time}
+                          </p>
+                          {event.location && (
+                            <p className="text-sm text-gray-500">📍 {event.location}</p>
+                          )}
+                          {event.description && (
+                            <p className="text-xs text-gray-400 mt-1 line-clamp-2">{event.description}</p>
+                          )}
+                        </div>
+                        {event.image && (
+                          <img
+                            src={event.image}
+                            alt=""
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 border-t bg-gray-50 flex justify-between items-center">
+              <p className="text-sm text-gray-600">
+                {eventbriteSelected.length} event(s) selected
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setEventbriteModalOpen(false)}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={fillSlotsWithEventbriteEvents}
+                  disabled={eventbriteSelected.length === 0}
+                  className="px-4 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  Add to Slots
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {[1, 2, 3, 4, 5, 6, 7].map(slotNumber => renderEventSlot(slotNumber))}
     </div>
