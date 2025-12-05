@@ -15,6 +15,10 @@ function ResourcesInsights({ onBackToDashboard }) {
   const [showAdInquiryModal, setShowAdInquiryModal] = useState(false);
   const [adInquirySubmitted, setAdInquirySubmitted] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [showInsightModal, setShowInsightModal] = useState(false);
+  const [insightSubmitted, setInsightSubmitted] = useState(false);
+  const [submittingInsight, setSubmittingInsight] = useState(false);
+  const [insightUrl, setInsightUrl] = useState('');
 
   // Format phone number as user types: (XXX) XXX-XXXX
   const formatPhoneNumber = (value) => {
@@ -301,6 +305,17 @@ function ResourcesInsights({ onBackToDashboard }) {
                     </div>
                   </div>
                 )}
+
+                {/* Suggest An Insight Button */}
+                <div className="mt-12 flex justify-center">
+                  <button
+                    onClick={() => setShowInsightModal(true)}
+                    className="bg-[#D0ED00] text-black px-6 py-3 rounded-lg font-bold hover:bg-[#bfd400] transition-colors inline-flex items-center gap-2"
+                  >
+                    <span className="text-xl">+</span>
+                    Suggest an Insight
+                  </button>
+                </div>
 
                 {/* Bottom Banner Ad Section */}
                 {(() => {
@@ -706,6 +721,138 @@ function ResourcesInsights({ onBackToDashboard }) {
                       <button
                         type="button"
                         onClick={() => setShowAdInquiryModal(false)}
+                        className="px-6 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Suggest An Insight Modal */}
+      {showInsightModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => !insightSubmitted && setShowInsightModal(false)}>
+          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full max-h-[85vh] overflow-y-auto p-6 relative border-4 border-[#D0ED00]" onClick={(e) => e.stopPropagation()}>
+            {insightSubmitted ? (
+              // Success Message
+              <div className="text-center py-12">
+                <div className="mb-6">
+                  <svg className="w-20 h-20 mx-auto text-[#009900]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Thank You!</h2>
+                <p className="text-lg text-gray-600 mb-2">Your suggestion has been submitted successfully.</p>
+                <p className="text-gray-500">We'll take a look!</p>
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={() => setShowInsightModal(false)}
+                  className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                >
+                  ×
+                </button>
+                <div>
+                  <div className="mb-4">
+                    <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto">
+                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">Suggest an Insight</h3>
+                  <p className="text-gray-600 text-sm mb-4 text-center">
+                    Let us know if there's a book, podcast or article you'd like to share and we'll take a look!
+                  </p>
+                  <form
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      setSubmittingInsight(true);
+                      const formData = new FormData(e.target);
+
+                      try {
+                        const response = await fetch('/api/submitInsight', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            submitterName: formData.get('name'),
+                            submitterEmail: formData.get('email'),
+                            insightUrl: insightUrl
+                          })
+                        });
+
+                        if (!response.ok) {
+                          throw new Error('Failed to submit suggestion');
+                        }
+
+                        // Show success message in modal
+                        setInsightSubmitted(true);
+                        e.target.reset();
+                        setInsightUrl('');
+
+                        // Close modal after 3 seconds
+                        setTimeout(() => {
+                          setInsightSubmitted(false);
+                          setShowInsightModal(false);
+                        }, 3000);
+                      } catch (error) {
+                        console.error('Error:', error);
+                        alert('There was an error submitting your suggestion. Please try again.');
+                      } finally {
+                        setSubmittingInsight(false);
+                      }
+                    }}
+                    className="space-y-4"
+                  >
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Your Name *</label>
+                      <input
+                        type="text"
+                        name="name"
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Your Email *</label>
+                      <input
+                        type="email"
+                        name="email"
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Insight URL *</label>
+                      <input
+                        type="url"
+                        name="insightUrl"
+                        value={insightUrl}
+                        onChange={(e) => setInsightUrl(e.target.value)}
+                        required
+                        placeholder="https://..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                      />
+                    </div>
+                    <div className="flex gap-3 pt-2">
+                      <button
+                        type="submit"
+                        disabled={submittingInsight}
+                        className="flex-1 bg-[#009900] text-white py-3 rounded-lg font-medium hover:bg-[#007700] transition-colors border-2 border-[#D0ED00] disabled:opacity-50"
+                      >
+                        {submittingInsight ? 'Submitting...' : 'Submit Suggestion'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowInsightModal(false)}
                         className="px-6 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
                       >
                         Cancel
