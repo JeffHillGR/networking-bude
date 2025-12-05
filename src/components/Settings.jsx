@@ -756,9 +756,10 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
 
       setPhotoUrl(publicUrl);
 
-      // Save to localStorage immediately
+      // Save to localStorage immediately (both formats for compatibility)
       const updatedProfile = { ...profile, photoUrl: publicUrl };
       localStorage.setItem('settingsProfile', JSON.stringify(updatedProfile));
+      localStorage.setItem('userPhotoUrl', publicUrl); // For Sidebar to pick up
 
       showSuccess('Photo uploaded successfully!');
     } catch (error) {

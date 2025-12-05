@@ -35,12 +35,12 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
   // Fetch user data from Supabase on mount
   useEffect(() => {
     async function fetchUserData() {
-      if (user?.email) {
+      if (user?.id) {
         try {
           const { data, error } = await supabase
             .from('users')
             .select('first_name, last_name, title, photo')
-            .eq('email', user.email.toLowerCase())
+            .eq('id', user.id)
             .single();
 
           if (error) {
