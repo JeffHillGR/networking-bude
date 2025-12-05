@@ -27,7 +27,32 @@ export default async function handler(req, res) {
 
     if (error || !event) {
       console.error('Event not found:', { eventId, error });
-      return res.status(404).send('Event not found');
+      // Redirect to events page with a friendly message instead of 404
+      const eventsUrl = 'https://www.networkingbude.com/events';
+      const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event No Longer Available | Networking BudE</title>
+  <meta property="og:title" content="Check out upcoming events on Networking BudE">
+  <meta property="og:description" content="This event has ended. Browse our upcoming networking events!">
+  <meta property="og:image" content="https://www.networkingbude.com/BudE-Color-Logo-Rev.png">
+  <meta property="og:url" content="${eventsUrl}">
+  <script>window.location.replace('${eventsUrl}');</script>
+  <style>
+    body { font-family: -apple-system, sans-serif; text-align: center; padding: 50px; }
+    a { color: #009900; }
+  </style>
+</head>
+<body>
+  <h1>This event has ended</h1>
+  <p>Redirecting you to see upcoming events...</p>
+  <p><a href="${eventsUrl}">Click here if not redirected</a></p>
+</body>
+</html>`;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.status(200).send(html);
     }
 
     // Build static HTML with Open Graph tags
