@@ -158,13 +158,28 @@ END:VCALENDAR`;
     loadBottomAd();
   }, []);
 
-  // Load all events for the calendar
+  // Load all events for the calendar (filtered by user's region)
   useEffect(() => {
     const loadAllEvents = async () => {
       try {
+        // Get user's region
+        let userRegion = 'grand-rapids'; // default
+        if (user?.email) {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('region')
+            .eq('email', user.email)
+            .single();
+
+          if (userData?.region) {
+            userRegion = userData.region;
+          }
+        }
+
         const { data, error } = await supabase
           .from('events')
-          .select('id, title, date');
+          .select('id, title, date')
+          .eq('region_id', userRegion);
 
         if (error) throw error;
         setAllEvents(data || []);
@@ -174,7 +189,7 @@ END:VCALENDAR`;
     };
 
     loadAllEvents();
-  }, []);
+  }, [user]);
 
   // Track user engagement when viewing event details
   useEffect(() => {

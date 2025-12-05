@@ -28,6 +28,7 @@ function convertUserToAlgorithmFormat(user) {
     id: user.id,
     firstName: user.first_name || '',
     lastName: user.last_name || '',
+    region: user.region || 'grand-rapids', // Include region for filtering
     industry: user.industry || '',
     networkingGoals: user.networking_goals || '',
     orgsAttend: Array.isArray(user.organizations_current)
@@ -92,6 +93,9 @@ async function runMatchingAlgorithm() {
 
         const otherUser = algorithmUsers[j];
         const otherDbUser = users[j];
+
+        // Skip users in different regions - only match within same region
+        if (user.region !== otherUser.region) continue;
 
         // Use the REAL algorithm
         const result = calculateCompatibility(user, otherUser);

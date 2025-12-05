@@ -185,12 +185,13 @@ function EventSlotsManager() {
       console.log('Existing event:', existing);
 
       if (existing) {
-        // Update existing
-        console.log('Updating existing event...');
+        // Update existing - filter by ID to avoid cross-region issues
+        console.log('Updating existing event with ID:', existing.id);
+        const { id, ...updateData } = eventData; // Remove id from update payload
         const { error } = await supabase
           .from('events')
-          .update(eventData)
-          .eq('slot_number', slotNumber);
+          .update(updateData)
+          .eq('id', existing.id);
 
         if (error) {
           console.error('Update error:', error);
@@ -198,11 +199,12 @@ function EventSlotsManager() {
         }
         console.log('Update successful');
       } else {
-        // Insert new
+        // Insert new - remove any existing id to let DB generate one
         console.log('Inserting new event...');
+        const { id, ...insertData } = eventData; // Remove id from insert payload
         const { error } = await supabase
           .from('events')
-          .insert(eventData);
+          .insert(insertData);
 
         if (error) {
           console.error('Insert error:', error);

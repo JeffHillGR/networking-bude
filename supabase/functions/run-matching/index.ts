@@ -30,6 +30,7 @@ interface User {
   id: string;
   first_name: string;
   last_name: string;
+  region: string | null;
   industry: string | null;
   networking_goals: string | null;
   organizations_current: string[] | string | null;
@@ -44,6 +45,7 @@ interface AlgorithmUser {
   id: string;
   firstName: string;
   lastName: string;
+  region: string;
   industry: string;
   networkingGoals: string;
   orgsAttend: string;
@@ -59,6 +61,7 @@ function convertUserToAlgorithmFormat(user: User): AlgorithmUser {
     id: user.id,
     firstName: user.first_name || '',
     lastName: user.last_name || '',
+    region: user.region || 'grand-rapids',
     industry: user.industry || '',
     networkingGoals: user.networking_goals || '',
     orgsAttend: Array.isArray(user.organizations_current)
@@ -540,6 +543,10 @@ Deno.serve(async (req) => {
         const userB = algorithmUsers[j];
         const dbUserA = users[i];
         const dbUserB = users[j];
+
+        // Skip users in different regions - only match within same region
+        if (userA.region !== userB.region) continue;
+
         totalPairsEvaluated++;
 
         const result = calculateCompatibility(userA, userB);
@@ -627,6 +634,9 @@ Deno.serve(async (req) => {
 
         const candidateAlgoUser = algorithmUsers.find((u: AlgorithmUser) => u.id === candidateUser.id);
         if (!candidateAlgoUser) continue;
+
+        // Skip users in different regions for safety net too
+        if (unmatchedAlgoUser.region !== candidateAlgoUser.region) continue;
 
         const result = calculateCompatibility(unmatchedAlgoUser, candidateAlgoUser);
 

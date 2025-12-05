@@ -98,13 +98,31 @@ function Events({ onBackToDashboard }) {
     loadAds();
   }, []);
 
-  // Load events from Supabase
+  // Load events from Supabase (filtered by user's region)
   useEffect(() => {
     const loadEvents = async () => {
       try {
+        // Get current user's region
+        const { data: { user } } = await supabase.auth.getUser();
+        let userRegion = 'grand-rapids'; // default
+
+        if (user) {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('region')
+            .eq('email', user.email)
+            .single();
+
+          if (userData?.region) {
+            userRegion = userData.region;
+          }
+        }
+
+        // Load events filtered by user's region
         const { data, error } = await supabase
           .from('events')
           .select('*')
+          .eq('region_id', userRegion)
           .order('slot_number', { ascending: true });
 
         if (error) throw error;

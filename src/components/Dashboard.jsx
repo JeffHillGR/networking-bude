@@ -632,13 +632,29 @@ const getGreeting = () => {
     fetchConnections();
   }, [user, activeTab]); // Refetch when returning to dashboard tab
 
-  // Load events from Supabase
+  // Load events from Supabase (filtered by user's region)
   useEffect(() => {
     const loadEvents = async () => {
       try {
+        // Get user's region
+        let userRegion = 'grand-rapids'; // default
+        if (user?.email) {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('region')
+            .eq('email', user.email)
+            .single();
+
+          if (userData?.region) {
+            userRegion = userData.region;
+          }
+        }
+
+        // Load events filtered by region
         const { data, error } = await supabase
           .from('events')
           .select('*')
+          .eq('region_id', userRegion)
           .order('slot_number', { ascending: true });
 
         if (error) throw error;
@@ -671,7 +687,7 @@ const getGreeting = () => {
     };
 
     loadEvents();
-  }, []);
+  }, [user]);
 
   const navItems = [
     { id: 'dashboard', icon: Home, label: 'Dashboard' },
