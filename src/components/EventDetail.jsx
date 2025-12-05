@@ -737,13 +737,25 @@ END:VCALENDAR`;
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <button
-                  onClick={() => navigate('/events')}
+                  onClick={() => {
+                    if (!user) {
+                      setShowSignupPrompt(true);
+                    } else {
+                      navigate('/events');
+                    }
+                  }}
                   className="px-6 py-3 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors"
                 >
                   View Events
                 </button>
                 <button
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => {
+                    if (!user) {
+                      setShowSignupPrompt(true);
+                    } else {
+                      navigate('/dashboard');
+                    }
+                  }}
                   className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
                 >
                   Dashboard
