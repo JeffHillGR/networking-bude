@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { User, Shield, Bell, Lock, Upload, X, ArrowLeft, Calendar, CheckCircle, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { detectRegion } from '../lib/regions';
+import { detectRegion, getOrganizationsForRegion } from '../lib/regions';
 
 function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDashboard }) {
   const { user } = useAuth();
@@ -20,6 +20,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [saving, setSaving] = useState(false);
   const [photoUrl, setPhotoUrl] = useState(null);
+  const [userRegion, setUserRegion] = useState('grand-rapids'); // Default to GR
   const [feedbackData, setFeedbackData] = useState({
     name: '',
     email: '',
@@ -373,6 +374,11 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
         if (userData) {
           console.log('✅ Loaded profile from Supabase:', userData);
 
+          // Set user's region for organization dropdowns
+          if (userData.region) {
+            setUserRegion(userData.region);
+          }
+
           const loadedProfile = {
             fullName: userData.name || `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || 'User Name',
             email: userData.email || 'user@example.com',
@@ -437,12 +443,8 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
     'Startup', 'AI/ML', 'Blockchain', 'Sustainability', 'Leadership'
   ];
 
-  const availableOrganizations = [
-    'GR Chamber of Commerce', 'Rotary Club', 'CREW', 'GRYP',
-    'Economic Club of Grand Rapids', 'Create Great Leaders', 'Right Place', 'Bamboo GR',
-    'Hello West Michigan', 'CARWM', 'Creative Mornings GR', 'Athena',
-    'Inforum', 'Start Garden', 'GRABB', 'WMPRSA', 'Crain\'s GR Business'
-  ];
+  // Get organizations dynamically based on user's region
+  const availableOrganizations = getOrganizationsForRegion(userRegion);
 
   // Security state
   const [security, setSecurity] = useState({
