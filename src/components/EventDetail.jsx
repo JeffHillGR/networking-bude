@@ -256,7 +256,7 @@ END:VCALENDAR`;
                 .join('')
                 .slice(0, 2)
                 .toUpperCase() || 'EO',
-              description: data.organizer_description || 'Event organization details'
+              description: data.organizer_description || null
             },
             tags: data.tags ? data.tags.split(',').map(t => t.trim()) : [],
             registrationUrl: data.registration_url
@@ -1034,7 +1034,9 @@ END:VCALENDAR`;
                 </div>
                 <div className="flex-1">
                   <h4 className="font-bold text-gray-900 text-lg">{event.organizer.name}</h4>
-                  <p className="text-gray-600 text-sm mt-1">{event.organizer.description}</p>
+                  {event.organizer.description && (
+                    <p className="text-gray-600 text-sm mt-1">{event.organizer.description}</p>
+                  )}
                 </div>
               </div>
             </div>
