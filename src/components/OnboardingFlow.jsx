@@ -758,12 +758,20 @@ export default function BudEOnboarding() {
               After 25+ years of professional networking, the old way felt even more awkward post-Covid. Lots of small talk, not much substance.
             </p>
 
+            {/* Mobile: Hook appears first */}
+            <div className="md:hidden my-8">
+              <div className="text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                <p className="text-3xl font-bold text-black leading-tight">
+                  A networking wingperson for every event
+                </p>
+              </div>
+            </div>
+
             <div className="flex flex-col md:flex-row gap-8 items-center my-8">
-              <div className="md:w-1/2 text-left">
+              {/* Desktop: Hook on left */}
+              <div className="hidden md:block md:w-1/2">
                 <p className="text-4xl md:text-5xl font-bold text-black leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
                   A networking wingperson for every event
-                  <br /><br />
-
                 </p>
               </div>
               <div className="md:w-1/2">
@@ -774,30 +782,30 @@ export default function BudEOnboarding() {
                 <p className="mt-6">
                   When I started bringing friends and colleagues to events, networking became strategic and fun. We introduced each other to collaborators and clients, worked the room together, and made real connections that turned into opportunities.
                 </p>
+
+                <p className="mt-6">
+                  Now I have a crew of 6-7 intentional, community-focused pros who help each other grow. It's been game-changing.
+                </p>
               </div>
             </div>
 
-            <p>
-              Now I have a crew of 6-7 intentional, community-focused pros who help each other grow. It's been game-changing.
+            <p className="mt-6">
+              Maybe you already have this kind of network. Maybe you don't.
             </p>
 
-            <p>
-              Maybe you have this group of friends you network with already. Maybe you don't.
+            <p className="mt-6">
+              That's why I created The BudE System - to help you build the same kind of meaningful, wingperson-powered networking I've experienced.
             </p>
 
-            <p>
-              That's why I created The BudE System - a human-powered algorithm to help you build the same kind of meaningful, wingperson-powered networking I've experienced.
+            <p className="mt-6">
+              And if you're already a seasoned connector? Even better. There are people out there who could really use someone like you in their corner.
             </p>
 
-            <p>
-              And maybe you don't feel like you need a system like this. But perhaps there are people out there who could use a seasoned and successful super-connector like you. Think not so much about what you can get out of this app, but what you can give it.
+            <p className="mt-6">
+              Sometimes the best reason to join isn't what you'll get - it's what you can give.
             </p>
 
-            <p>
-              I sincerely hope you find real connections here.
-            </p>
-
-            <p className="font-semibold">
+            <p className="font-semibold mt-6">
               Have a meaningful week.
             </p>
 
@@ -809,29 +817,6 @@ export default function BudEOnboarding() {
         </div>
       </div>
 
-      {/* People Networking Images - Side by Side */}
-      <div className="bg-gray-50 flex justify-center pb-8 px-4 md:px-6">
-        <div className="grid grid-cols-2 gap-3 md:gap-4 max-w-3xl w-full">
-          <div className="w-full h-48 md:h-80 border border-black rounded-lg overflow-hidden">
-            <img
-              src="https://raw.githubusercontent.com/JeffHillGR/networking-bude/refs/heads/main/public/Two-People-Collaborating-BudeColors.png"
-              alt="People Collaborating"
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-          </div>
-          <div className="w-full h-48 md:h-80 bg-white border border-black rounded-lg flex items-center justify-center">
-            <div className="w-full h-full p-4 md:p-6 flex items-center justify-center">
-              <img
-                src="/People-networking-3.png"
-                alt="People Networking"
-                className="w-full h-full object-contain"
-                loading="lazy"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* How It Works Section */}
       <div id="how-it-works" className="bg-white px-6 py-12" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
@@ -888,7 +873,7 @@ export default function BudEOnboarding() {
               </div>
             </div>
 
-            <div>
+            <div className="mt-8">
               <p className="font-bold mb-2">All in one app.</p>
               <p>
                 That's The BudE System.
@@ -896,16 +881,6 @@ export default function BudEOnboarding() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Athena Image */}
-      <div className="bg-white flex justify-center pb-8 px-6">
-        <img
-          src="/Athena-2.jpg"
-          alt="Athena"
-          className="max-w-3xl w-full border border-black rounded-lg"
-          loading="lazy"
-        />
       </div>
 
       {/* How We Are Different Section */}

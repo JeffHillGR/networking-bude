@@ -50,7 +50,7 @@ function Events({ onBackToDashboard }) {
     return value;
   };
 
-  // Format date string to "Wednesday, December 18, 2025" format (desktop)
+  // Format date string to "Wednesday, December 18, 2025" format
   const formatEventDate = (dateString) => {
     if (!dateString) return '';
     // Handle ISO format (YYYY-MM-DD) from date picker
@@ -59,18 +59,6 @@ function Events({ onBackToDashboard }) {
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
       month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
-
-  // Format date string to "12/18/2025" format (mobile)
-  const formatShortDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString + 'T00:00:00');
-    if (isNaN(date.getTime())) return dateString;
-    return date.toLocaleDateString('en-US', {
-      month: 'numeric',
       day: 'numeric',
       year: 'numeric'
     });
@@ -439,8 +427,7 @@ function Events({ onBackToDashboard }) {
                       <div className="space-y-2 text-sm text-gray-600">
                         <div className="flex items-center gap-2" title="Click to view event details">
                           <Calendar className="h-4 w-4" />
-                          <span className="hidden md:inline">{formatEventDate(event.date)} • {event.time}</span>
-                          <span className="md:hidden">{formatShortDate(event.date)} • {event.time}</span>
+                          <span>{formatEventDate(event.date)} • {event.time}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <MapPin className="h-4 w-4" />
@@ -541,8 +528,7 @@ function Events({ onBackToDashboard }) {
                         <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs md:text-sm text-gray-600 mt-3">
                           <div className="flex items-center gap-2" title="Click to view event details">
                             <Calendar className="h-4 w-4 flex-shrink-0" />
-                            <span className="hidden md:inline">{formatEventDate(event.date)} • {event.time}</span>
-                            <span className="md:hidden">{formatShortDate(event.date)} • {event.time}</span>
+                            <span>{formatEventDate(event.date)} • {event.time}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <MapPin className="h-4 w-4 flex-shrink-0" />
