@@ -659,10 +659,11 @@ Deno.serve(async (req) => {
       if (bestMatch && bestMatch.score > 0) {
         console.log(`  🛡️ Safety net: ${unmatchedAlgoUser.firstName} → best match at ${bestMatch.score}%`);
 
-        // Create the safety net match (both directions)
+        // Create or update the safety net match (both directions)
+        // Use upsert to handle cases where the pair exists but was rejected/passed
         const { error: errorA } = await supabaseAdmin
           .from('connection_flow')
-          .insert({
+          .upsert({
             user_id: unmatchedUser.id,
             matched_user_id: bestMatch.userId,
             compatibility_score: bestMatch.score,
@@ -670,11 +671,13 @@ Deno.serve(async (req) => {
             status: 'recommended',
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
+          }, {
+            onConflict: 'user_id,matched_user_id'
           });
 
         const { error: errorB } = await supabaseAdmin
           .from('connection_flow')
-          .insert({
+          .upsert({
             user_id: bestMatch.userId,
             matched_user_id: unmatchedUser.id,
             compatibility_score: bestMatch.score,
@@ -682,6 +685,8 @@ Deno.serve(async (req) => {
             status: 'recommended',
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
+          }, {
+            onConflict: 'user_id,matched_user_id'
           });
 
         if (!errorA) safetyNetMatchesCreated++;
