@@ -704,36 +704,88 @@ END:VCALENDAR`;
     );
   }
 
-  // Show error if event not found
+  // Show error if event not found - with full layout
   if (!event) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center max-w-md px-4">
-          <div className="mb-6">
-            <svg className="w-20 h-20 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">That Event Has Passed</h2>
-          <p className="text-gray-600 mb-6">
-            But here's our events listings page with upcoming networking opportunities!
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <button
-              onClick={() => navigate('/events')}
-              className="px-6 py-3 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors"
-            >
-              View Events
-            </button>
-            <button
-              onClick={() => navigate('/dashboard')}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-            >
-              Dashboard
-            </button>
+      <>
+        {/* Top banner matching site header */}
+        <div className="bg-gradient-to-r from-[#D0ED00] via-[#009900] to-[#D0ED00] text-white px-4 py-1 text-center text-sm md:text-base relative z-20">
+          <span className="font-medium">
+            Welcome to Networking BudE
+          </span>
+        </div>
+
+        <div className="flex min-h-screen bg-gray-50">
+          <Sidebar activeTab="events" setActiveTab={(tab) => {
+            if (!user) {
+              setShowSignupPrompt(true);
+            } else {
+              navigate('/dashboard');
+            }
+          }} />
+
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center max-w-md px-4">
+              <div className="mb-6">
+                <svg className="w-20 h-20 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">That Event Has Passed</h2>
+              <p className="text-gray-600 mb-6">
+                But here's our events listings page with upcoming networking opportunities!
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <button
+                  onClick={() => navigate('/events')}
+                  className="px-6 py-3 bg-[#009900] text-white rounded-lg font-medium hover:bg-[#007700] transition-colors"
+                >
+                  View Events
+                </button>
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Dashboard
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+
+        {/* Signup Prompt Modal for Non-Authenticated Users */}
+        {showSignupPrompt && !user && (
+          <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl border-4 border-[#D0ED00]">
+              <div className="text-center">
+                <div className="mb-6">
+                  <div className="w-20 h-20 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto">
+                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-3">Create an Account for Full Access</h2>
+                <p className="text-gray-600 mb-6">
+                  It only takes 2 minutes to join our networking community and unlock all events and content!
+                </p>
+                <button
+                  onClick={() => window.location.href = '/'}
+                  className="w-full bg-[#009900] text-white py-3 rounded-lg font-bold hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] mb-3"
+                >
+                  Create Account
+                </button>
+                <button
+                  onClick={() => setShowSignupPrompt(false)}
+                  className="text-gray-500 text-sm hover:text-gray-700"
+                >
+                  Maybe later
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </>
     );
   }
 
