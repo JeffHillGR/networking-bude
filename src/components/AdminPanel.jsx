@@ -878,6 +878,16 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
     const regionDisplayName = selectedBannerRegion === 'universal' ? 'All Regions' : (REGIONS[selectedBannerRegion]?.name || selectedBannerRegion);
 
     try {
+      // For universal banners (NULL region_id), we need to delete first because
+      // SQL NULL != NULL means upsert onConflict won't match existing records
+      if (selectedBannerRegion === 'universal') {
+        await supabase
+          .from('hero_banners')
+          .delete()
+          .eq('slot_number', slotNumber)
+          .is('region_id', null);
+      }
+
       const { error } = await supabase
         .from('hero_banners')
         .upsert({
