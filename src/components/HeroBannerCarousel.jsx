@@ -81,12 +81,12 @@ function HeroBannerCarousel() {
       }
 
       try {
-        // Fetch banners for user's region
+        // Fetch banners for user's region (or universal banners with null region)
         const { data: banners, error } = await supabase
           .from('hero_banners')
           .select('*')
           .eq('is_active', true)
-          .eq('region_id', region)
+          .or(`region_id.eq.${region},region_id.is.null`)
           .order('slot_number');
 
         if (error) throw error;

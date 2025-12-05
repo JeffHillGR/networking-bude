@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { User, Shield, Bell, Lock, Upload, X, ArrowLeft, Calendar, CheckCircle, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { detectRegion } from '../lib/regions';
 
 function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDashboard }) {
   const { user } = useAuth();
@@ -565,6 +566,9 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
 
       // Update Supabase database
       if (user?.id) {
+        // Detect region from zip code
+        const detectedRegion = detectRegion(profile.zipCode);
+
         const updateData = {
           first_name: firstName,
           last_name: lastName,
@@ -573,6 +577,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
           company: profile.company,
           industry: profile.industry,
           zip_code: profile.zipCode || '',
+          region: detectedRegion || 'grand-rapids', // Default to grand-rapids if unknown
           organizations_current: profile.organizations || [],
           organizations_interested: profile.organizationsToCheckOut || [],
           organizations_other: profile.organizationsOther || '',
