@@ -748,11 +748,18 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
   useEffect(() => {
     const loadHeroBanners = async () => {
       try {
-        const { data, error } = await supabase
+        let query = supabase
           .from('hero_banners')
-          .select('*')
-          .eq('region_id', selectedBannerRegion)
-          .order('slot_number');
+          .select('*');
+
+        // Handle "universal" banners (null region_id) vs region-specific
+        if (selectedBannerRegion === 'universal') {
+          query = query.is('region_id', null);
+        } else {
+          query = query.eq('region_id', selectedBannerRegion);
+        }
+
+        const { data, error } = await query.order('slot_number');
 
         if (error && error.code !== 'PGRST116') {
           console.error('Error loading hero banners:', error);
@@ -760,7 +767,8 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
         }
 
         // Reset to empty state for new region, then fill with existing data
-        const emptyBanner = { image_url: '', click_url: '', alt_text: '', target_zip: '', target_radius: '50', is_active: true, region_id: selectedBannerRegion };
+        const regionValue = selectedBannerRegion === 'universal' ? null : selectedBannerRegion;
+        const emptyBanner = { image_url: '', click_url: '', alt_text: '', target_zip: '', target_radius: '50', is_active: true, region_id: regionValue };
         const bannersState = {
           slot1: data?.find(b => b.slot_number === 1) || { ...emptyBanner },
           slot2: data?.find(b => b.slot_number === 2) || { ...emptyBanner },
@@ -865,12 +873,16 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
       return;
     }
 
+    // Handle universal (null) vs region-specific
+    const regionValue = selectedBannerRegion === 'universal' ? null : selectedBannerRegion;
+    const regionDisplayName = selectedBannerRegion === 'universal' ? 'All Regions' : (REGIONS[selectedBannerRegion]?.name || selectedBannerRegion);
+
     try {
       const { error } = await supabase
         .from('hero_banners')
         .upsert({
           slot_number: slotNumber,
-          region_id: selectedBannerRegion,
+          region_id: regionValue,
           image_url: banner.image_url,
           click_url: banner.click_url || null,
           alt_text: banner.alt_text || null,
@@ -883,7 +895,7 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
 
       if (error) throw error;
 
-      alert(`Hero Banner ${slotNumber} for ${REGIONS[selectedBannerRegion]?.name || selectedBannerRegion} saved! Refresh your dashboard to see it.`);
+      alert(`Hero Banner ${slotNumber} for ${regionDisplayName} saved! Refresh your dashboard to see it.`);
     } catch (error) {
       console.error('Error saving hero banner:', error);
       alert('Failed to save: ' + error.message);
@@ -1037,6 +1049,7 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
               onChange={(e) => handleBannerRegionChange(e.target.value)}
               className="px-4 py-2 border-2 border-purple-400 rounded-lg text-sm font-medium bg-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
             >
+              <option value="universal">🌍 Universal (All Regions)</option>
               {Object.entries(REGIONS).map(([id, config]) => (
                 <option key={id} value={id}>
                   {config.displayName} {!config.isActive && '(Coming Soon)'}
@@ -1047,7 +1060,7 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
         </div>
 
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-          <h3 className="font-semibold text-sm text-blue-900 mb-1">Hero Banner Carousel - {REGIONS[selectedBannerRegion]?.name || selectedBannerRegion}</h3>
+          <h3 className="font-semibold text-sm text-blue-900 mb-1">Hero Banner Carousel - {selectedBannerRegion === 'universal' ? '🌍 Universal (All Regions)' : (REGIONS[selectedBannerRegion]?.name || selectedBannerRegion)}</h3>
           <p className="text-xs text-blue-700">
             Upload up to 4 banner images that will rotate on each dashboard page refresh. Recommended size: <strong>1200x300px</strong>. One slot can be your city's skyline!
           </p>

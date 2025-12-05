@@ -81,15 +81,30 @@ function HeroBannerCarousel() {
       }
 
       try {
-        // Fetch banners for user's region (or universal banners with null region)
-        const { data: banners, error } = await supabase
+        // Fetch banners in two queries since .or() with hyphenated strings can be problematic
+        // Query 1: Universal banners (null region_id)
+        const { data: universalBanners, error: universalError } = await supabase
           .from('hero_banners')
           .select('*')
           .eq('is_active', true)
-          .or(`region_id.eq.${region},region_id.is.null`)
+          .is('region_id', null)
           .order('slot_number');
 
-        console.log('🎯 Hero banners query result:', { region, banners, error });
+        // Query 2: Region-specific banners
+        const { data: regionBanners, error: regionError } = await supabase
+          .from('hero_banners')
+          .select('*')
+          .eq('is_active', true)
+          .eq('region_id', region)
+          .order('slot_number');
+
+        const error = universalError || regionError;
+
+        // Combine and sort by slot_number
+        const banners = [...(universalBanners || []), ...(regionBanners || [])]
+          .sort((a, b) => a.slot_number - b.slot_number);
+
+        console.log('🎯 Hero banners query result:', { region, bannerCount: banners?.length, universalCount: universalBanners?.length, regionCount: regionBanners?.length, banners });
 
         if (error) throw error;
 
