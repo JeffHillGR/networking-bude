@@ -291,6 +291,17 @@ function ResourcesInsights({ onBackToDashboard }) {
                   </div>
                 </div>
 
+                {/* Share a Suggestion Button */}
+                <div className="mb-12 flex justify-center">
+                  <button
+                    onClick={() => setShowInsightModal(true)}
+                    className="bg-[#D0ED00] text-black px-6 py-3 rounded-lg font-bold hover:bg-[#bfd400] transition-colors inline-flex items-center gap-2"
+                  >
+                    <span className="text-xl">+</span>
+                    Share a Suggestion
+                  </button>
+                </div>
+
                 {/* Archive Section */}
                 {archivedContent.length > 0 && (
                   <div className="border-t border-gray-300 pt-12">
@@ -305,17 +316,6 @@ function ResourcesInsights({ onBackToDashboard }) {
                     </div>
                   </div>
                 )}
-
-                {/* Suggest An Insight Button */}
-                <div className="mt-12 flex justify-center">
-                  <button
-                    onClick={() => setShowInsightModal(true)}
-                    className="bg-[#D0ED00] text-black px-6 py-3 rounded-lg font-bold hover:bg-[#bfd400] transition-colors inline-flex items-center gap-2"
-                  >
-                    <span className="text-xl">+</span>
-                    Suggest an Insight
-                  </button>
-                </div>
 
                 {/* Bottom Banner Ad Section */}
                 {(() => {
