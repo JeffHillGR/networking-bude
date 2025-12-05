@@ -8,6 +8,15 @@ function HeroBannerCarousel() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [userRegion, setUserRegion] = useState('grand-rapids'); // Default to GR
 
+  // Format region slug to display name (e.g., "grand-rapids" → "Grand Rapids")
+  const formatRegionName = (regionSlug) => {
+    if (!regionSlug) return '';
+    return regionSlug
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   useEffect(() => {
     let cancelled = false;
 
@@ -206,6 +215,13 @@ function HeroBannerCarousel() {
           className="w-full h-full object-cover"
         />
       )}
+      {/* Region indicator */}
+      <div
+        className="absolute bottom-2 right-7 text-white text-sm font-semibold drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+        style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
+      >
+        {formatRegionName(userRegion)}
+      </div>
     </div>
   );
 }
