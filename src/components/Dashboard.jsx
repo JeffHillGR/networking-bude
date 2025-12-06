@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Calendar, Heart, MessageCircle, User, Users, ExternalLink, Menu, X as XIcon, BookOpen, CreditCard } from 'lucide-react';
+import { Home, Calendar, Heart, MessageCircle, User, Users, ExternalLink, Menu, X as XIcon, BookOpen, CreditCard, Camera, ArrowRight } from 'lucide-react';
 import Sidebar from './Sidebar.jsx';
 import Events from './Events';
 import Connections from './Connections';
@@ -15,6 +15,8 @@ import AboutUs from './AboutUs';
 import FeedbackWidget from './FeedbackWidget';
 import NotificationBell from './NotificationBell.jsx';
 import HeroBannerCarousel from './HeroBannerCarousel.jsx';
+import EventMomentsWidget from './EventMomentsWidget.jsx';
+import EventMoments from './EventMoments.jsx';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -694,6 +696,7 @@ const getGreeting = () => {
     { id: 'connections', icon: Users, label: 'Connections' },
     { id: 'events', icon: Calendar, label: 'Events' },
     { id: 'resources', icon: BookOpen, label: 'Insights', isLink: true, href: '/resources-insights' },
+    { id: 'moments', icon: Camera, label: 'Moments' },
     { id: 'messages', icon: MessageCircle, label: 'Messages' }
   ];
 
@@ -820,16 +823,16 @@ const getGreeting = () => {
                     })
                   )}
                 </div>
-                {/* View All Button */}
+                {/* View All Link */}
                 <div className="mt-4 text-center">
                   <button
                     onClick={() => {
                       setActiveTab('connections');
                       window.scrollTo({ top: 0, behavior: 'instant' });
                     }}
-                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors md:min-w-[340px]"
+                    className="text-[#009900] font-semibold hover:text-[#007700] transition-colors inline-flex items-center gap-1"
                   >
-                    View All Recommended Connections
+                    View all connections <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -890,21 +893,22 @@ const getGreeting = () => {
                 ))
                   )}
               </div>
-                {/* View All Button */}
+                {/* View All Link */}
                 <div className="mt-4 text-center">
                   <button
                     onClick={() => setActiveTab('events')}
-                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors md:min-w-[340px]"
+                    className="text-[#009900] font-semibold hover:text-[#007700] transition-colors inline-flex items-center gap-1"
                   >
-                    View All Upcoming Events
+                    View all events <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Featured Content - Below Events and Connections */}
-            <div>
-              <div className="bg-white rounded-lg p-4 md:p-5 shadow-sm border border-gray-200">
+            {/* Insights & Event Moments - 2x2 Grid Below */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+              {/* Insights Widget */}
+              <div className="bg-white rounded-lg p-4 md:p-5 shadow-sm border border-gray-200 flex flex-col">
                 <div className="mb-2 text-center">
                   <div className="inline-block bg-white px-4 md:px-6 py-2 rounded-lg border-2 border-black md:min-w-[340px]">
                     <h3 className="font-bold text-black text-base md:text-lg">Insights</h3>
@@ -913,7 +917,7 @@ const getGreeting = () => {
                 </div>
 
                 {/* Featured Content - All 3 Cards */}
-                <div className="space-y-4">
+                <div className="space-y-4 flex-grow">
                   {featuredContent.map((content, index) => (
                     <div
                       key={index}
@@ -926,51 +930,39 @@ const getGreeting = () => {
                       className="flex flex-col md:flex-row items-start gap-4 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition-colors cursor-pointer"
                     >
                       {/* Thumbnail Image */}
-                      <img
-                        src={content.image}
-                        alt={content.title}
-                        className="w-32 h-32 md:w-36 md:h-36 rounded-lg object-cover flex-shrink-0 bg-white shadow-sm self-center md:self-start"
-                      />
+                      <div className="flex-shrink-0 self-center md:self-start">
+                        <img
+                          src={content.image}
+                          alt={content.title}
+                          className="w-28 h-28 md:w-32 md:h-32 rounded-lg object-cover bg-white shadow-sm"
+                        />
+                      </div>
 
                       {/* Content */}
                       <div className="flex-1 min-w-0 text-center md:text-left">
-                        <h4 className="font-bold text-gray-900 mb-2 text-lg leading-tight">{content.title}</h4>
+                        <h4 className="font-bold text-gray-900 mb-1 text-lg leading-tight line-clamp-2">{content.title}</h4>
                         {content.author && (
-                          <p className="text-xs text-gray-500 italic mb-2">By {content.author}</p>
+                          <p className="text-xs text-gray-500 italic mb-1">By {content.author}</p>
                         )}
-                        <p className="text-sm text-gray-600 mb-2 line-clamp-2 leading-relaxed">{content.description}</p>
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 items-center md:items-start">
-                          {content.tags && (
-                            <div className="flex gap-2 flex-wrap justify-center md:justify-start">
-                              {content.tags.split(',').slice(0, 2).map((tag, i) => (
-                                <span key={i} className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded">
-                                  {tag.trim()}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                          {content.sponsoredBy && (
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs text-gray-400">Sponsored by</span>
-                              <span className="text-xs font-medium text-gray-700">{content.sponsoredBy}</span>
-                            </div>
-                          )}
-                        </div>
+                        <p className="text-sm text-gray-600 line-clamp-2">{content.description}</p>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* View All Button */}
-                <div className="mt-4 text-center">
+                {/* View All Link */}
+                <div className="mt-auto pt-4 text-center">
                   <button
                     onClick={() => navigate('/resources-insights')}
-                    className="bg-[#009900] text-white font-bold py-2 px-6 rounded-lg border-2 border-[#D0ED00] hover:bg-[#007700] transition-colors md:min-w-[340px]"
+                    className="text-[#009900] font-semibold hover:text-[#007700] transition-colors inline-flex items-center gap-1"
                   >
-                    View All Insights
+                    View all insights <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
+
+              {/* Event Moments Widget */}
+              <EventMomentsWidget />
             </div>
 
             {/* Bottom Banner Ad - Rotating */}
@@ -1079,6 +1071,12 @@ const getGreeting = () => {
     setActiveTab('dashboard');
     window.scrollTo({ top: 0, behavior: 'instant' });
   }} />;
+
+  case 'moments':
+  return <EventMoments onBackToDashboard={() => {
+    setActiveTab('dashboard');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }} embedded={true} />;
 
   case 'settings':
   return <Settings onBackToDashboard={() => setActiveTab('dashboard')} />;

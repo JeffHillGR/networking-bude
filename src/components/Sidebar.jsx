@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Home, Calendar, Users, MessageCircle, User, CreditCard, Archive, Activity, BookOpen, Lightbulb, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, Calendar, Users, MessageCircle, User, CreditCard, Archive, Activity, BookOpen, Lightbulb, Camera, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { supabase } from '../lib/supabase.js';
 import NotificationBell from './NotificationBell.jsx';
@@ -301,6 +301,23 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
               >
                 <BookOpen className="w-5 h-5 flex-shrink-0" />
                 {!isCollapsed && <span className="font-medium text-sm">Insights</span>}
+              </button>
+
+              {/* Event Moments */}
+              <button
+                onClick={() => {
+                  trackEngagement();
+                  setActiveTab('moments');
+                }}
+                className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg font-medium transition-colors ${
+                  activeTab === 'moments'
+                    ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+                title={isCollapsed ? 'Moments' : undefined}
+              >
+                <Camera className="w-5 h-5 flex-shrink-0" />
+                {!isCollapsed && <span className="font-medium text-sm">Moments</span>}
               </button>
 
               {/* My Activity Section */}

@@ -49,6 +49,10 @@ function App() {
           element={<Navigate to="/dashboard" state={{ activeTab: 'resources' }} replace />}
         />
         <Route
+          path="/event-moments"
+          element={<Navigate to="/dashboard" state={{ activeTab: 'moments' }} replace />}
+        />
+        <Route
           path="/settings"
           element={user ? <Settings /> : <Navigate to="/" />}
         />

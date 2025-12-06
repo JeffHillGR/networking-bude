@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Upload, X, Link2, Eye, EyeOff, ChevronUp, ChevronDown } from 'lucide-react';
+import { Upload, X, Link2, Eye, EyeOff, ChevronUp, ChevronDown, Camera } from 'lucide-react';
 import { supabase } from '../lib/supabase.js';
 import EventSlotsManager from './EventSlotsManager.jsx';
 import { REGIONS } from '../lib/regions.js';
@@ -28,6 +28,7 @@ function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [unreviewedReportsCount, setUnreviewedReportsCount] = useState(0);
+  const [pendingSubmissionsCount, setPendingSubmissionsCount] = useState(0);
   const [ads, setAds] = useState({
     eventsSidebar1: null,
     eventsSidebar2: null,
@@ -445,6 +446,16 @@ function AdminPanel() {
               Insights
             </button>
             <button
+              onClick={() => setActiveTab('moments')}
+              className={`px-4 py-4 font-semibold border-b-2 transition-colors ${
+                activeTab === 'moments'
+                  ? 'border-green-600 text-green-600'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Event Moments
+            </button>
+            <button
               onClick={() => setActiveTab('moderation')}
               className={`px-4 py-4 font-semibold border-b-2 transition-colors relative ${
                 activeTab === 'moderation'
@@ -456,6 +467,21 @@ function AdminPanel() {
               {unreviewedReportsCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                   {unreviewedReportsCount > 9 ? '9+' : unreviewedReportsCount}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('submissions')}
+              className={`px-4 py-4 font-semibold border-b-2 transition-colors relative ${
+                activeTab === 'submissions'
+                  ? 'border-green-600 text-green-600'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Photo Submissions
+              {pendingSubmissionsCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {pendingSubmissionsCount > 9 ? '9+' : pendingSubmissionsCount}
                 </span>
               )}
             </button>
@@ -498,7 +524,712 @@ function AdminPanel() {
           />
         )}
         {activeTab === 'moderation' && <ModerationTab onReportReviewed={() => setUnreviewedReportsCount(prev => Math.max(0, prev - 1))} />}
+        {activeTab === 'moments' && <EventMomentsTab />}
+        {activeTab === 'submissions' && <PhotoSubmissionsTab onCountChange={setPendingSubmissionsCount} />}
       </div>
+    </div>
+  );
+}
+
+// Event Moments Admin Tab
+function EventMomentsTab() {
+  const [moments, setMoments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedRegion, setSelectedRegion] = useState(
+    localStorage.getItem('adminMomentsRegion') || 'grand-rapids'
+  );
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingMoment, setEditingMoment] = useState(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [showOtherOrg, setShowOtherOrg] = useState(false);
+  const [formData, setFormData] = useState({
+    event_name: '',
+    event_date: '',
+    description: '',
+    organization_name: '',
+    organization_url: '',
+    photo_credit: '',
+    photos: []
+  });
+
+  // Get organizations for the selected region with URLs from scrapeUrls
+  const regionOrganizations = REGIONS[selectedRegion]?.organizations || [];
+  const regionScrapeUrls = REGIONS[selectedRegion]?.scrapeUrls || {};
+
+  // Load moments for selected region
+  useEffect(() => {
+    loadMoments();
+  }, [selectedRegion]);
+
+  const loadMoments = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('event_moments')
+        .select(`
+          *,
+          event_moment_photos (
+            id,
+            image_url,
+            display_order
+          )
+        `)
+        .eq('region_id', selectedRegion)
+        .order('display_order', { ascending: true, nullsFirst: false })
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Fetch like counts
+      const momentsWithLikes = await Promise.all((data || []).map(async (moment) => {
+        const { count } = await supabase
+          .from('event_moment_likes')
+          .select('*', { count: 'exact', head: true })
+          .eq('event_moment_id', moment.id);
+        return { ...moment, likeCount: count || 0 };
+      }));
+
+      setMoments(momentsWithLikes);
+    } catch (error) {
+      console.error('Error loading moments:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const moveMoment = async (index, direction) => {
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= moments.length) return;
+
+    const currentMoment = moments[index];
+    const swapMoment = moments[newIndex];
+
+    try {
+      // Swap display_order values
+      const currentOrder = currentMoment.display_order ?? index;
+      const swapOrder = swapMoment.display_order ?? newIndex;
+
+      await Promise.all([
+        supabase
+          .from('event_moments')
+          .update({ display_order: swapOrder })
+          .eq('id', currentMoment.id),
+        supabase
+          .from('event_moments')
+          .update({ display_order: currentOrder })
+          .eq('id', swapMoment.id)
+      ]);
+
+      // Update local state
+      const newMoments = [...moments];
+      [newMoments[index], newMoments[newIndex]] = [newMoments[newIndex], newMoments[index]];
+      setMoments(newMoments);
+    } catch (error) {
+      console.error('Error reordering moments:', error);
+    }
+  };
+
+  const handleRegionChange = (region) => {
+    setSelectedRegion(region);
+    localStorage.setItem('adminMomentsRegion', region);
+  };
+
+  // Compress image using canvas - returns a Blob
+  const compressImage = (file, maxWidth = 1920, maxHeight = 1080, quality = 0.8) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      img.onload = () => {
+        let { width, height } = img;
+
+        // Calculate new dimensions maintaining aspect ratio
+        if (width > maxWidth || height > maxHeight) {
+          const ratio = Math.min(maxWidth / width, maxHeight / height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error('Canvas toBlob failed'));
+            }
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const handlePhotoUpload = async (files) => {
+    console.log('handlePhotoUpload called with files:', files);
+    if (!files || files.length === 0) {
+      console.log('No files provided');
+      return;
+    }
+
+    // Limit total photos to 5
+    const currentPhotoCount = formData.photos.length;
+    const remainingSlots = 5 - currentPhotoCount;
+    const filesToUpload = files.slice(0, remainingSlots);
+
+    if (files.length > remainingSlots) {
+      alert(`You can only add ${remainingSlots} more photo(s). Only the first ${remainingSlots} will be uploaded.`);
+    }
+
+    if (filesToUpload.length === 0) return;
+
+    setUploadingPhoto(true);
+    try {
+      const uploadedPhotos = [];
+
+      for (const file of filesToUpload) {
+        // Compress the image before uploading
+        console.log(`Compressing ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)...`);
+        let fileToUpload;
+        try {
+          const compressedBlob = await compressImage(file);
+          fileToUpload = compressedBlob;
+          console.log(`Compressed to ${(compressedBlob.size / 1024 / 1024).toFixed(2)}MB`);
+        } catch (compressError) {
+          console.warn('Compression failed, using original file:', compressError);
+          fileToUpload = file;
+        }
+
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}.jpg`;
+        const filePath = `${selectedRegion}/${fileName}`;
+
+        console.log('Uploading to path:', filePath);
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('event-moments')
+          .upload(filePath, fileToUpload, {
+            contentType: 'image/jpeg'
+          });
+
+        console.log('Upload result:', { uploadData, uploadError });
+
+        if (uploadError) {
+          console.error('Error uploading file:', file.name, uploadError);
+          continue; // Skip this file but continue with others
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('event-moments')
+          .getPublicUrl(filePath);
+
+        console.log('Public URL:', publicUrl);
+        uploadedPhotos.push(publicUrl);
+      }
+
+      if (uploadedPhotos.length > 0) {
+        setFormData(prev => ({
+          ...prev,
+          photos: [
+            ...prev.photos,
+            ...uploadedPhotos.map((url, index) => ({
+              image_url: url,
+              display_order: prev.photos.length + index + 1
+            }))
+          ]
+        }));
+        alert(`Successfully uploaded ${uploadedPhotos.length} photo(s)!`);
+      }
+    } catch (error) {
+      console.error('Error uploading photos:', error);
+      alert('Failed to upload photos: ' + error.message);
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  const movePhoto = (index, direction) => {
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= formData.photos.length) return;
+
+    setFormData(prev => {
+      const newPhotos = [...prev.photos];
+      [newPhotos[index], newPhotos[newIndex]] = [newPhotos[newIndex], newPhotos[index]];
+      // Update display_order for all photos
+      return {
+        ...prev,
+        photos: newPhotos.map((p, i) => ({ ...p, display_order: i + 1 }))
+      };
+    });
+  };
+
+  const removePhoto = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      photos: prev.photos.filter((_, i) => i !== index).map((p, i) => ({ ...p, display_order: i + 1 }))
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (formData.photos.length === 0) {
+      alert('Please add at least one photo');
+      return;
+    }
+
+    try {
+      if (editingMoment) {
+        // Update existing moment
+        const { error: momentError } = await supabase
+          .from('event_moments')
+          .update({
+            event_name: formData.event_name,
+            event_date: formData.event_date,
+            description: formData.description || null,
+            organization_name: formData.organization_name || null,
+            organization_url: formData.organization_url || null,
+            photo_credit: formData.photo_credit || null
+          })
+          .eq('id', editingMoment.id);
+
+        if (momentError) throw momentError;
+
+        // Delete existing photos and re-add
+        await supabase
+          .from('event_moment_photos')
+          .delete()
+          .eq('event_moment_id', editingMoment.id);
+
+        // Add new photos
+        const photosToInsert = formData.photos.map(photo => ({
+          event_moment_id: editingMoment.id,
+          image_url: photo.image_url,
+          display_order: photo.display_order
+        }));
+
+        const { error: photosError } = await supabase
+          .from('event_moment_photos')
+          .insert(photosToInsert);
+
+        if (photosError) throw photosError;
+
+        alert('Event moment updated successfully!');
+      } else {
+        // Create new moment
+        const { data: newMoment, error: momentError } = await supabase
+          .from('event_moments')
+          .insert({
+            event_name: formData.event_name,
+            event_date: formData.event_date,
+            description: formData.description || null,
+            organization_name: formData.organization_name || null,
+            organization_url: formData.organization_url || null,
+            photo_credit: formData.photo_credit || null,
+            region_id: selectedRegion,
+            is_active: true
+          })
+          .select()
+          .single();
+
+        if (momentError) throw momentError;
+
+        // Add photos
+        const photosToInsert = formData.photos.map(photo => ({
+          event_moment_id: newMoment.id,
+          image_url: photo.image_url,
+          display_order: photo.display_order
+        }));
+
+        const { error: photosError } = await supabase
+          .from('event_moment_photos')
+          .insert(photosToInsert);
+
+        if (photosError) throw photosError;
+
+        alert('Event moment created successfully!');
+      }
+
+      // Reset form and reload
+      setFormData({ event_name: '', event_date: '', description: '', organization_name: '', organization_url: '', photo_credit: '', photos: [] });
+      setShowAddForm(false);
+      setEditingMoment(null);
+      loadMoments();
+    } catch (error) {
+      console.error('Error saving moment:', error);
+      alert('Failed to save: ' + error.message);
+    }
+  };
+
+  const handleEdit = (moment) => {
+    setEditingMoment(moment);
+    // Check if organization is in the predefined list or is "Other"
+    const isKnownOrg = !moment.organization_name || regionOrganizations.includes(moment.organization_name);
+    setShowOtherOrg(!isKnownOrg);
+    setFormData({
+      event_name: moment.event_name,
+      event_date: moment.event_date,
+      description: moment.description || '',
+      organization_name: moment.organization_name || '',
+      organization_url: moment.organization_url || '',
+      photo_credit: moment.photo_credit || '',
+      photos: moment.event_moment_photos?.sort((a, b) => a.display_order - b.display_order) || []
+    });
+    setShowAddForm(true);
+  };
+
+  const handleDelete = async (momentId) => {
+    if (!confirm('Are you sure you want to delete this event moment?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('event_moments')
+        .delete()
+        .eq('id', momentId);
+
+      if (error) throw error;
+      loadMoments();
+    } catch (error) {
+      console.error('Error deleting moment:', error);
+      alert('Failed to delete: ' + error.message);
+    }
+  };
+
+  const toggleActive = async (moment) => {
+    try {
+      const { error } = await supabase
+        .from('event_moments')
+        .update({ is_active: !moment.is_active })
+        .eq('id', moment.id);
+
+      if (error) throw error;
+      loadMoments();
+    } catch (error) {
+      console.error('Error toggling active:', error);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header with Region Selector */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Event Moments</h2>
+          <p className="text-gray-600">Manage photo albums from networking events</p>
+        </div>
+        <div className="flex items-center gap-4">
+          <select
+            value={selectedRegion}
+            onChange={(e) => handleRegionChange(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+          >
+            {Object.entries(REGIONS).map(([key, region]) => (
+              <option key={key} value={key}>{region.name}</option>
+            ))}
+          </select>
+          <button
+            onClick={() => {
+              setShowAddForm(true);
+              setEditingMoment(null);
+              setFormData({ event_name: '', event_date: '', description: '', organization_name: '', organization_url: '', photo_credit: '', photos: [] });
+            }}
+            className="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 flex items-center gap-2"
+          >
+            <Camera className="w-5 h-5" />
+            Add Event Moment
+          </button>
+        </div>
+      </div>
+
+      {/* Add/Edit Form */}
+      {showAddForm && (
+        <div className="bg-white rounded-lg border-2 border-[#D0ED00] p-6">
+          <h3 className="text-lg font-bold mb-4">{editingMoment ? 'Edit Event Moment' : 'Add New Event Moment'}</h3>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Event Name *</label>
+                <input
+                  type="text"
+                  value={formData.event_name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, event_name: e.target.value }))}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  placeholder="GR Tech Meetup"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Event Date *</label>
+                <input
+                  type="text"
+                  value={formData.event_date}
+                  onChange={(e) => setFormData(prev => ({ ...prev, event_date: e.target.value }))}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  placeholder="December 2025"
+                />
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description / Recap</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  placeholder="Quick recap of the event, impressions, who you saw..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Organization</label>
+                <select
+                  value={showOtherOrg ? 'Other' : (regionOrganizations.includes(formData.organization_name) ? formData.organization_name : '')}
+                  onChange={(e) => {
+                    const selected = e.target.value;
+                    if (selected === 'Other') {
+                      setShowOtherOrg(true);
+                      setFormData(prev => ({ ...prev, organization_name: '', organization_url: '' }));
+                    } else if (selected === '') {
+                      setShowOtherOrg(false);
+                      setFormData(prev => ({ ...prev, organization_name: '', organization_url: '' }));
+                    } else {
+                      setShowOtherOrg(false);
+                      setFormData(prev => ({ ...prev, organization_name: selected }));
+                    }
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                >
+                  <option value="">None (Optional)</option>
+                  {regionOrganizations.map(orgName => (
+                    <option key={orgName} value={orgName}>{orgName}</option>
+                  ))}
+                  <option value="Other">Other...</option>
+                </select>
+                {showOtherOrg && (
+                  <input
+                    type="text"
+                    value={formData.organization_name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, organization_name: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg mt-2"
+                    placeholder="Enter organization name"
+                  />
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Organization URL {showOtherOrg && '(Optional)'}</label>
+                <input
+                  type="url"
+                  value={formData.organization_url}
+                  onChange={(e) => setFormData(prev => ({ ...prev, organization_url: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  placeholder="https://..."
+                />
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Photo Credit</label>
+                <input
+                  type="text"
+                  value={formData.photo_credit}
+                  onChange={(e) => setFormData(prev => ({ ...prev, photo_credit: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  placeholder="Photographer name (optional)"
+                />
+              </div>
+            </div>
+
+            {/* Photo Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Photos (up to 5)</label>
+              <div className="flex flex-wrap gap-3">
+                {formData.photos.map((photo, index) => (
+                  <div key={index} className="relative">
+                    <div className="w-24 h-24 relative">
+                      <img src={photo.image_url} alt={`Photo ${index + 1}`} className="w-full h-full object-cover rounded-lg" />
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(index)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
+                      >
+                        ×
+                      </button>
+                      {index === 0 ? (
+                        <span className="absolute bottom-1 left-1 bg-green-600 text-white text-xs px-1 rounded">Lead</span>
+                      ) : (
+                        <span className="absolute bottom-1 left-1 bg-black/70 text-white text-xs px-1 rounded">{index + 1}</span>
+                      )}
+                    </div>
+                    {/* Reorder buttons */}
+                    <div className="flex justify-center gap-1 mt-1">
+                      <button
+                        type="button"
+                        onClick={() => movePhoto(index, -1)}
+                        disabled={index === 0}
+                        className={`p-1 rounded ${index === 0 ? 'text-gray-300' : 'text-gray-500 hover:bg-gray-100'}`}
+                        title="Move left"
+                      >
+                        <ChevronUp className="w-4 h-4 rotate-[-90deg]" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => movePhoto(index, 1)}
+                        disabled={index === formData.photos.length - 1}
+                        className={`p-1 rounded ${index === formData.photos.length - 1 ? 'text-gray-300' : 'text-gray-500 hover:bg-gray-100'}`}
+                        title="Move right"
+                      >
+                        <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {formData.photos.length < 5 && (
+                  <label className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-gray-400">
+                    {uploadingPhoto ? (
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
+                    ) : (
+                      <>
+                        <Upload className="w-6 h-6 text-gray-400" />
+                        <span className="text-xs text-gray-500 mt-1">Add</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => handlePhotoUpload(Array.from(e.target.files))}
+                      disabled={uploadingPhoto}
+                    />
+                  </label>
+                )}
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <button
+                type="submit"
+                className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700"
+              >
+                {editingMoment ? 'Update Moment' : 'Create Moment'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAddForm(false);
+                  setEditingMoment(null);
+                }}
+                className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Moments List */}
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading moments...</p>
+        </div>
+      ) : moments.length === 0 ? (
+        <div className="text-center py-12 bg-gray-50 rounded-lg">
+          <Camera className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+          <p className="text-gray-500">No event moments for this region yet.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {moments.map((moment, index) => (
+            <div key={moment.id} className={`bg-white rounded-lg border-2 p-4 ${moment.is_active ? 'border-gray-200' : 'border-red-200 bg-red-50'}`}>
+              <div className="flex items-start gap-4">
+                {/* Reorder buttons */}
+                <div className="flex flex-col gap-1">
+                  <button
+                    onClick={() => moveMoment(index, -1)}
+                    disabled={index === 0}
+                    className={`p-1 rounded ${index === 0 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-100'}`}
+                    title="Move up"
+                  >
+                    <ChevronUp className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => moveMoment(index, 1)}
+                    disabled={index === moments.length - 1}
+                    className={`p-1 rounded ${index === moments.length - 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-100'}`}
+                    title="Move down"
+                  >
+                    <ChevronDown className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Thumbnail */}
+                <div className="flex gap-1 flex-shrink-0">
+                  {moment.event_moment_photos?.slice(0, 3).map((photo, idx) => (
+                    <img
+                      key={photo.id}
+                      src={photo.image_url}
+                      alt=""
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                  ))}
+                  {(moment.event_moment_photos?.length || 0) > 3 && (
+                    <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-sm text-gray-600">
+                      +{moment.event_moment_photos.length - 3}
+                    </div>
+                  )}
+                </div>
+
+                {/* Details */}
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-bold text-gray-900">{moment.event_name}</h4>
+                  <p className="text-sm text-gray-500">{moment.event_date}</p>
+                  {moment.organization_name && (
+                    <p className="text-sm text-gray-600">By {moment.organization_name}</p>
+                  )}
+                  <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                    <span>❤️ {moment.likeCount} likes</span>
+                    <span>📷 {moment.event_moment_photos?.length || 0} photos</span>
+                    {!moment.is_active && <span className="text-red-600 font-medium">Hidden</span>}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => toggleActive(moment)}
+                    className={`p-2 rounded-lg ${moment.is_active ? 'text-gray-500 hover:bg-gray-100' : 'text-green-600 hover:bg-green-50'}`}
+                    title={moment.is_active ? 'Hide' : 'Show'}
+                  >
+                    {moment.is_active ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                  <button
+                    onClick={() => handleEdit(moment)}
+                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                    title="Edit"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => handleDelete(moment.id)}
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                    title="Delete"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -2437,6 +3168,620 @@ function InlineAdEditor({ title, slot, ad, onImageUpload, onUrlChange, onTagsCha
       >
         Save Ad
       </button>
+    </div>
+  );
+}
+
+// Photo Submissions Tab - Review user-submitted photos
+function PhotoSubmissionsTab({ onCountChange }) {
+  const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('pending'); // pending, approved, rejected, all
+  const [selectedSubmission, setSelectedSubmission] = useState(null);
+  const [eventMoments, setEventMoments] = useState([]);
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [approveAction, setApproveAction] = useState('existing'); // existing or new
+  const [selectedMomentId, setSelectedMomentId] = useState('');
+  const [newMomentData, setNewMomentData] = useState({
+    event_name: '',
+    event_date: '',
+    description: '',
+    organization_name: '',
+    organization_url: ''
+  });
+  const [saving, setSaving] = useState(false);
+
+  // Fetch submissions
+  useEffect(() => {
+    fetchSubmissions();
+    fetchEventMoments();
+  }, [filter]);
+
+  const fetchEventMoments = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('event_moments')
+        .select('id, event_name, event_date')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      setEventMoments(data || []);
+    } catch (error) {
+      console.error('Error fetching event moments:', error);
+    }
+  };
+
+  // Update pending count on mount and when submissions change
+  useEffect(() => {
+    const fetchPendingCount = async () => {
+      const { count } = await supabase
+        .from('user_photo_submissions')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pending');
+      onCountChange?.(count || 0);
+    };
+    fetchPendingCount();
+  }, [submissions, onCountChange]);
+
+  const fetchSubmissions = async () => {
+    setLoading(true);
+    try {
+      let query = supabase
+        .from('user_photo_submissions')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (filter !== 'all') {
+        query = query.eq('status', filter);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      setSubmissions(data || []);
+    } catch (error) {
+      console.error('Error fetching submissions:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateStatus = async (id, status) => {
+    try {
+      const { error } = await supabase
+        .from('user_photo_submissions')
+        .update({
+          status,
+          reviewed_at: new Date().toISOString()
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+      fetchSubmissions();
+      setSelectedSubmission(null);
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('Failed to update status');
+    }
+  };
+
+  const openApproveModal = (submission) => {
+    setSelectedSubmission(submission);
+    setShowApproveModal(true);
+    setApproveAction('existing');
+    setSelectedMomentId('');
+    setNewMomentData({
+      event_name: submission.event_name || '',
+      event_date: submission.event_date || '',
+      description: '',
+      organization_name: '',
+      organization_url: ''
+    });
+  };
+
+  const handleApproveAndAdd = async () => {
+    if (!selectedSubmission) return;
+    setSaving(true);
+
+    try {
+      if (approveAction === 'existing' && selectedMomentId) {
+        // Add photos to existing event moment
+        const photoUrls = selectedSubmission.photo_urls || [];
+
+        // Get current max display_order for this moment
+        const { data: existingPhotos } = await supabase
+          .from('event_moment_photos')
+          .select('display_order')
+          .eq('event_moment_id', selectedMomentId)
+          .order('display_order', { ascending: false })
+          .limit(1);
+
+        let nextOrder = (existingPhotos?.[0]?.display_order || 0) + 1;
+
+        // Insert each photo
+        for (const url of photoUrls) {
+          const { error: photoError } = await supabase
+            .from('event_moment_photos')
+            .insert({
+              event_moment_id: selectedMomentId,
+              image_url: url,
+              display_order: nextOrder++
+            });
+          if (photoError) throw photoError;
+        }
+
+        // Mark submission as approved
+        await updateStatus(selectedSubmission.id, 'approved');
+        alert(`Added ${photoUrls.length} photo(s) to the event moment!`);
+
+      } else if (approveAction === 'new') {
+        // Create new event moment with photos
+        const { data: newMoment, error: momentError } = await supabase
+          .from('event_moments')
+          .insert({
+            event_name: newMomentData.event_name,
+            event_date: newMomentData.event_date,
+            description: newMomentData.description,
+            organization_name: newMomentData.organization_name || null,
+            organization_url: newMomentData.organization_url || null,
+            is_active: true,
+            region_id: 'grand-rapids'
+          })
+          .select()
+          .single();
+
+        if (momentError) throw momentError;
+
+        // Add photos to the new moment
+        const photoUrls = selectedSubmission.photo_urls || [];
+        for (let i = 0; i < photoUrls.length; i++) {
+          const { error: photoError } = await supabase
+            .from('event_moment_photos')
+            .insert({
+              event_moment_id: newMoment.id,
+              image_url: photoUrls[i],
+              display_order: i + 1
+            });
+          if (photoError) throw photoError;
+        }
+
+        // Mark submission as approved
+        await updateStatus(selectedSubmission.id, 'approved');
+
+        // Refresh event moments list
+        fetchEventMoments();
+        alert(`Created new event moment "${newMomentData.event_name}" with ${photoUrls.length} photo(s)!`);
+      }
+
+      setShowApproveModal(false);
+      setSelectedSubmission(null);
+    } catch (error) {
+      console.error('Error approving submission:', error);
+      alert('Failed to approve and add photos: ' + error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleReject = async (submission) => {
+    if (!confirm('Reject this submission? The photos will be permanently deleted.')) return;
+
+    try {
+      // Delete photos from storage
+      const photoUrls = submission.photo_urls || [];
+      for (const url of photoUrls) {
+        // Extract the file path from the URL
+        // URL format: https://xxx.supabase.co/storage/v1/object/public/user-submitted-event-photos/userId/filename
+        const match = url.match(/user-submitted-event-photos\/(.+)$/);
+        if (match) {
+          const filePath = match[1];
+          await supabase.storage
+            .from('user-submitted-event-photos')
+            .remove([filePath]);
+        }
+      }
+
+      // Delete the submission record entirely
+      const { error } = await supabase
+        .from('user_photo_submissions')
+        .delete()
+        .eq('id', submission.id);
+
+      if (error) throw error;
+
+      fetchSubmissions();
+      setSelectedSubmission(null);
+      alert('Submission rejected and photos deleted.');
+    } catch (error) {
+      console.error('Error rejecting submission:', error);
+      alert('Failed to reject submission: ' + error.message);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-900">Photo Submissions</h2>
+        <div className="flex gap-2">
+          {['pending', 'approved', 'rejected', 'all'].map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-4 py-2 rounded-lg font-medium text-sm capitalize ${
+                filter === f
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {submissions.length === 0 ? (
+        <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+          <Camera className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+          <p className="text-gray-500">No {filter === 'all' ? '' : filter} submissions found</p>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {submissions.map((submission) => (
+            <div
+              key={submission.id}
+              className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow"
+            >
+              <div className="flex gap-4">
+                {/* Photo previews */}
+                <div className="flex gap-2 flex-shrink-0">
+                  {submission.photo_urls?.length > 0 ? (
+                    submission.photo_urls.slice(0, 3).map((url, idx) => (
+                      <img
+                        key={idx}
+                        src={url}
+                        alt={`Submission ${idx + 1}`}
+                        className="w-20 h-20 object-cover rounded-lg cursor-pointer hover:opacity-80"
+                        onClick={() => setSelectedSubmission(submission)}
+                      />
+                    ))
+                  ) : (
+                    <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <Camera className="w-8 h-8 text-gray-300" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Details */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <h3 className="font-semibold text-gray-900">{submission.event_name}</h3>
+                      <p className="text-sm text-gray-500">{submission.event_date}</p>
+                    </div>
+                    <span
+                      className={`px-2 py-1 rounded text-xs font-medium ${
+                        submission.status === 'pending'
+                          ? 'bg-orange-100 text-orange-700'
+                          : submission.status === 'approved'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-red-100 text-red-700'
+                      }`}
+                    >
+                      {submission.status}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-1">
+                    <span className="font-medium">From:</span> {submission.submitter_name} ({submission.submitter_email})
+                  </p>
+                  {submission.notes && (
+                    <p className="text-sm text-gray-500 italic">"{submission.notes}"</p>
+                  )}
+                  <p className="text-xs text-gray-400 mt-2">
+                    Submitted {formatDate(submission.created_at)}
+                  </p>
+                </div>
+
+                {/* Actions */}
+                {submission.status === 'pending' && (
+                  <div className="flex flex-col gap-2 flex-shrink-0">
+                    <button
+                      onClick={() => openApproveModal(submission)}
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleReject(submission)}
+                      className="px-4 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Photo Detail Modal */}
+      {selectedSubmission && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedSubmission(null)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">{selectedSubmission.event_name}</h3>
+                  <p className="text-gray-500">{selectedSubmission.event_date}</p>
+                </div>
+                <button
+                  onClick={() => setSelectedSubmission(null)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="mb-4">
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Submitted by:</span> {selectedSubmission.submitter_name} ({selectedSubmission.submitter_email})
+                </p>
+                {selectedSubmission.notes && (
+                  <p className="text-sm text-gray-500 mt-1 italic">Notes: "{selectedSubmission.notes}"</p>
+                )}
+              </div>
+
+              {/* Photos Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                {selectedSubmission.photo_urls?.map((url, idx) => (
+                  <a
+                    key={idx}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <img
+                      src={url}
+                      alt={`Photo ${idx + 1}`}
+                      className="w-full h-48 object-cover rounded-lg hover:opacity-80 transition-opacity"
+                    />
+                  </a>
+                ))}
+              </div>
+
+              {/* Copy URLs for Event Moments */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                <p className="text-sm font-medium text-gray-700 mb-2">Photo URLs (copy for Event Moments):</p>
+                <div className="space-y-1">
+                  {selectedSubmission.photo_urls?.map((url, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={url}
+                        readOnly
+                        className="flex-1 text-xs bg-white border border-gray-200 rounded px-2 py-1"
+                      />
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(url);
+                          alert('URL copied!');
+                        }}
+                        className="text-xs text-green-600 hover:text-green-700 font-medium"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Actions */}
+              {selectedSubmission.status === 'pending' && (
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => openApproveModal(selectedSubmission)}
+                    className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700"
+                  >
+                    Approve & Add to Event Moments
+                  </button>
+                  <button
+                    onClick={() => handleReject(selectedSubmission)}
+                    className="flex-1 px-4 py-3 bg-red-100 text-red-700 rounded-lg font-medium hover:bg-red-200"
+                  >
+                    Reject & Delete
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Approve Modal - Choose where to add photos */}
+      {showApproveModal && selectedSubmission && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowApproveModal(false)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <h3 className="text-xl font-bold text-gray-900">Add Photos to Event Moments</h3>
+                <button
+                  onClick={() => setShowApproveModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Photo Preview */}
+              <div className="flex gap-2 mb-4">
+                {selectedSubmission.photo_urls?.slice(0, 3).map((url, idx) => (
+                  <img
+                    key={idx}
+                    src={url}
+                    alt={`Photo ${idx + 1}`}
+                    className="w-16 h-16 object-cover rounded-lg"
+                  />
+                ))}
+                <div className="text-sm text-gray-500 self-center ml-2">
+                  {selectedSubmission.photo_urls?.length} photo(s) from "{selectedSubmission.event_name}"
+                </div>
+              </div>
+
+              {/* Action Selection */}
+              <div className="space-y-3 mb-4">
+                <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    name="approveAction"
+                    value="existing"
+                    checked={approveAction === 'existing'}
+                    onChange={() => setApproveAction('existing')}
+                    className="w-4 h-4 text-green-600"
+                  />
+                  <div>
+                    <p className="font-medium text-gray-900">Add to existing Event Moment</p>
+                    <p className="text-sm text-gray-500">Choose an existing event to add these photos to</p>
+                  </div>
+                </label>
+                <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    name="approveAction"
+                    value="new"
+                    checked={approveAction === 'new'}
+                    onChange={() => setApproveAction('new')}
+                    className="w-4 h-4 text-green-600"
+                  />
+                  <div>
+                    <p className="font-medium text-gray-900">Create new Event Moment</p>
+                    <p className="text-sm text-gray-500">Create a new event with these photos</p>
+                  </div>
+                </label>
+              </div>
+
+              {/* Existing Moment Dropdown */}
+              {approveAction === 'existing' && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Select Event Moment</label>
+                  <select
+                    value={selectedMomentId}
+                    onChange={(e) => setSelectedMomentId(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  >
+                    <option value="">-- Select an event --</option>
+                    {eventMoments.map((moment) => (
+                      <option key={moment.id} value={moment.id}>
+                        {moment.event_name} ({moment.event_date})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* New Moment Form */}
+              {approveAction === 'new' && (
+                <div className="space-y-3 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Event Name *</label>
+                    <input
+                      type="text"
+                      value={newMomentData.event_name}
+                      onChange={(e) => setNewMomentData({ ...newMomentData, event_name: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Event Date *</label>
+                    <input
+                      type="text"
+                      value={newMomentData.event_date}
+                      onChange={(e) => setNewMomentData({ ...newMomentData, event_date: e.target.value })}
+                      placeholder="e.g., December 2024"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea
+                      value={newMomentData.description}
+                      onChange={(e) => setNewMomentData({ ...newMomentData, description: e.target.value })}
+                      rows={2}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Organization Name</label>
+                      <input
+                        type="text"
+                        value={newMomentData.organization_name}
+                        onChange={(e) => setNewMomentData({ ...newMomentData, organization_name: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Organization URL</label>
+                      <input
+                        type="url"
+                        value={newMomentData.organization_url}
+                        onChange={(e) => setNewMomentData({ ...newMomentData, organization_url: e.target.value })}
+                        placeholder="https://..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={handleApproveAndAdd}
+                  disabled={saving || (approveAction === 'existing' && !selectedMomentId) || (approveAction === 'new' && !newMomentData.event_name)}
+                  className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {saving ? 'Saving...' : approveAction === 'existing' ? 'Add to Event Moment' : 'Create Event Moment'}
+                </button>
+                <button
+                  onClick={() => setShowApproveModal(false)}
+                  className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
