@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/share/moment/:momentId",
+      "destination": "/api/share/moment/[momentId]"
+    },
+    {
       "source": "/api/share/:eventId",
       "destination": "/api/share/[eventId]"
     },
