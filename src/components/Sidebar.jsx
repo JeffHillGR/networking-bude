@@ -231,8 +231,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
   const navItems = [
     { id: 'dashboard', icon: Home, label: 'Dashboard' },
     { id: 'connections', icon: Users, label: 'Connections' },
-    { id: 'events', icon: Calendar, label: 'Events' },
-    { id: 'messages', icon: MessageCircle, label: 'Messages' }
+    { id: 'events', icon: Calendar, label: 'Events' }
   ];
 
   return (
@@ -318,6 +317,23 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
               >
                 <Camera className="w-5 h-5 flex-shrink-0" />
                 {!isCollapsed && <span className="font-medium text-sm">Moments</span>}
+              </button>
+
+              {/* Messages */}
+              <button
+                onClick={() => {
+                  trackEngagement();
+                  setActiveTab('messages');
+                }}
+                className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg font-medium transition-colors ${
+                  activeTab === 'messages'
+                    ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+                title={isCollapsed ? 'Messages' : undefined}
+              >
+                <MessageCircle className="w-5 h-5 flex-shrink-0" />
+                {!isCollapsed && <span className="font-medium text-sm">Messages</span>}
               </button>
 
               {/* My Activity Section */}
