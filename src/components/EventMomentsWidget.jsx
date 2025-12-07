@@ -151,19 +151,7 @@ function EventMomentsWidget() {
               <p className="text-xs text-gray-500 italic mb-1">{moment.event_date}</p>
               {moment.organization_name && (
                 <p className="text-xs text-gray-600 mb-1">
-                  Hosted by {moment.organization_url ? (
-                    <a
-                      href={moment.organization_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#009900] hover:underline"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {moment.organization_name}
-                    </a>
-                  ) : (
-                    moment.organization_name
-                  )}
+                  Hosted by {moment.organization_name}
                 </p>
               )}
               {moment.description && (
