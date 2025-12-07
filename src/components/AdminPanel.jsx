@@ -456,21 +456,6 @@ function AdminPanel() {
               Event Moments
             </button>
             <button
-              onClick={() => setActiveTab('moderation')}
-              className={`px-4 py-4 font-semibold border-b-2 transition-colors relative ${
-                activeTab === 'moderation'
-                  ? 'border-green-600 text-green-600'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Moderation
-              {unreviewedReportsCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  {unreviewedReportsCount > 9 ? '9+' : unreviewedReportsCount}
-                </span>
-              )}
-            </button>
-            <button
               onClick={() => setActiveTab('submissions')}
               className={`px-4 py-4 font-semibold border-b-2 transition-colors relative ${
                 activeTab === 'submissions'
@@ -482,6 +467,21 @@ function AdminPanel() {
               {pendingSubmissionsCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                   {pendingSubmissionsCount > 9 ? '9+' : pendingSubmissionsCount}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('moderation')}
+              className={`px-4 py-4 font-semibold border-b-2 transition-colors relative ${
+                activeTab === 'moderation'
+                  ? 'border-green-600 text-green-600'
+                  : 'border-transparent text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Moderation
+              {unreviewedReportsCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {unreviewedReportsCount > 9 ? '9+' : unreviewedReportsCount}
                 </span>
               )}
             </button>
@@ -3176,7 +3176,7 @@ function InlineAdEditor({ title, slot, ad, onImageUpload, onUrlChange, onTagsCha
 function PhotoSubmissionsTab({ onCountChange }) {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('pending'); // pending, approved, rejected, all
+  const [filter, setFilter] = useState('pending'); // pending, approved, all
   const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [eventMoments, setEventMoments] = useState([]);
   const [showApproveModal, setShowApproveModal] = useState(false);
@@ -3419,7 +3419,7 @@ function PhotoSubmissionsTab({ onCountChange }) {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Photo Submissions</h2>
         <div className="flex gap-2">
-          {['pending', 'approved', 'rejected', 'all'].map((f) => (
+          {['pending', 'approved', 'all'].map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}

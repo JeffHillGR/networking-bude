@@ -73,5 +73,16 @@ CREATE POLICY "Admins can update submissions"
     )
   );
 
+-- Admins can delete submissions
+CREATE POLICY "Admins can delete submissions"
+  ON public.user_photo_submissions
+  FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.users
+      WHERE id = auth.uid() AND is_admin = true
+    )
+  );
+
 -- 5. Create storage bucket for user submissions (run this in Supabase dashboard or via API)
 -- INSERT INTO storage.buckets (id, name, public) VALUES ('user-submissions', 'user-submissions', true);

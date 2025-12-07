@@ -16,6 +16,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
   const [userLikes, setUserLikes] = useState({});
   const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [showPhotoRequestModal, setShowPhotoRequestModal] = useState(false);
   const [photoRequestSubmitted, setPhotoRequestSubmitted] = useState(false);
   const [submittingRequest, setSubmittingRequest] = useState(false);
@@ -822,35 +823,119 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
 
       {/* Share Modal */}
       {showShareModal && selectedMoment && (
-        <div
-          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-          onClick={() => setShowShareModal(false)}
-        >
-          <div
-            className="bg-white rounded-lg shadow-2xl max-w-sm w-full p-6"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Share this moment</h3>
-            <p className="text-gray-600 text-sm mb-4">
-              Share "{selectedMoment.event_name}" with your network
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  setShowShareModal(false);
-                }}
-                className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-              >
-                Copy Link
-              </button>
-              <button
-                onClick={() => setShowShareModal(false)}
-                className="px-4 text-gray-500 hover:text-gray-700"
-              >
-                Cancel
-              </button>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 relative">
+            <button
+              onClick={() => {
+                setShowShareModal(false);
+                setLinkCopied(false);
+              }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Share2 className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Share Event Moment</h3>
+              <p className="text-sm text-gray-600">{selectedMoment.event_name}</p>
             </div>
+
+            {/* Link Display with Copy Button */}
+            <div className="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex-1 overflow-hidden">
+                  <p className="text-sm text-gray-500 mb-1">Share Link:</p>
+                  <p className="text-sm font-mono text-gray-900 truncate">{`https://www.networkingbude.com/api/share/moment/${selectedMoment.id}`}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    try {
+                      const shareUrl = `https://www.networkingbude.com/api/share/moment/${selectedMoment.id}`;
+                      if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(shareUrl).then(() => {
+                          setLinkCopied(true);
+                          setTimeout(() => setLinkCopied(false), 2000);
+                        }).catch(() => {
+                          prompt('Copy this link:', shareUrl);
+                        });
+                      } else {
+                        prompt('Copy this link:', shareUrl);
+                      }
+                    } catch (err) {
+                      const shareUrl = `https://www.networkingbude.com/api/share/moment/${selectedMoment.id}`;
+                      prompt('Copy this link:', shareUrl);
+                    }
+                  }}
+                  className="flex-shrink-0 bg-[#009900] text-white px-4 py-2 rounded-lg hover:bg-[#007700] transition-colors border-[3px] border-[#D0ED00] flex items-center gap-2"
+                >
+                  {linkCopied ? (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Share Options */}
+            <div className="space-y-2 mb-4">
+              <p className="text-sm font-medium text-gray-700 mb-2">Share to:</p>
+              <div className="grid grid-cols-2 gap-2">
+                <a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://www.networkingbude.com/api/share/moment/${selectedMoment.id}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#0077B5] text-white rounded-lg hover:bg-[#006399] transition-colors text-sm"
+                >
+                  LinkedIn
+                </a>
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://www.networkingbude.com/api/share/moment/${selectedMoment.id}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#145dbf] transition-colors text-sm"
+                >
+                  Facebook
+                </a>
+                <a
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`https://www.networkingbude.com/api/share/moment/${selectedMoment.id}`)}&text=${encodeURIComponent('Check out this event moment: ' + selectedMoment.event_name)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm"
+                >
+                  X
+                </a>
+                <a
+                  href={`mailto:?subject=${encodeURIComponent('Check out this event moment: ' + selectedMoment.event_name)}&body=${encodeURIComponent('I thought you might enjoy these photos from this event:\n\n' + selectedMoment.event_name + '\n\n' + `https://www.networkingbude.com/api/share/moment/${selectedMoment.id}`)}`}
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
+                >
+                  Email
+                </a>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setShowShareModal(false);
+                setLinkCopied(false);
+              }}
+              className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
