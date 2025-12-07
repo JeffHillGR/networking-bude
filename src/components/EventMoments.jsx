@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Camera, Heart, X, ChevronLeft, ChevronRight, Share2, MessageCircle, Smile, Flag, Trash2, Send, Upload, Image } from 'lucide-react';
 import EmojiPicker from 'emoji-picker-react';
+import imageCompression from 'browser-image-compression';
 import Sidebar from './Sidebar';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -991,17 +992,39 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
 
                       // Upload photos to Supabase storage if any
                       if (selectedPhotos.length > 0) {
-                        setUploadProgress('Uploading photos...');
+                        setUploadProgress('Compressing photos...');
+
+                        // Compression options
+                        const compressionOptions = {
+                          maxSizeMB: 0.5, // Max 500KB per image
+                          maxWidthOrHeight: 1920, // Max dimension
+                          useWebWorker: true,
+                          fileType: 'image/jpeg'
+                        };
+
                         for (let i = 0; i < selectedPhotos.length; i++) {
                           const file = selectedPhotos[i];
-                          const fileExt = file.name.split('.').pop();
-                          const fileName = `${user.id}/${Date.now()}-${i}.${fileExt}`;
 
+                          // Compress the image
+                          setUploadProgress(`Compressing photo ${i + 1} of ${selectedPhotos.length}...`);
+                          let compressedFile;
+                          try {
+                            compressedFile = await imageCompression(file, compressionOptions);
+                            console.log(`Compressed ${file.name}: ${(file.size / 1024).toFixed(0)}KB → ${(compressedFile.size / 1024).toFixed(0)}KB`);
+                          } catch (compressError) {
+                            console.warn('Compression failed, using original:', compressError);
+                            compressedFile = file;
+                          }
+
+                          const fileName = `${user.id}/${Date.now()}-${i}.jpg`;
+
+                          setUploadProgress(`Uploading photo ${i + 1} of ${selectedPhotos.length}...`);
                           const { data: uploadData, error: uploadError } = await supabase.storage
                             .from('user-submitted-event-photos')
-                            .upload(fileName, file, {
+                            .upload(fileName, compressedFile, {
                               cacheControl: '3600',
-                              upsert: false
+                              upsert: false,
+                              contentType: 'image/jpeg'
                             });
 
                           if (uploadError) {
@@ -1015,7 +1038,6 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
                             .getPublicUrl(fileName);
 
                           photoUrls.push(publicUrl);
-                          setUploadProgress(`Uploaded ${i + 1} of ${selectedPhotos.length} photos...`);
                         }
                       }
 
