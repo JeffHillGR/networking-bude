@@ -884,9 +884,8 @@ const getGreeting = () => {
                         </div>
                       </div>
                       <div className="space-y-0.5 text-xs text-gray-600">
-                        <p className="font-semibold text-gray-700 truncate">{event.organizerName || 'Event Organizer'}</p>
-                        <p>{formatEventDate(event.date)} • {event.time}</p>
-                        <p className="truncate">{event.fullAddress || event.location}</p>
+                        <p>{formatEventDate(event.date)}</p>
+                        <p className="truncate">{event.location}</p>
                       </div>
                     </div>
                   </div>

@@ -217,8 +217,8 @@ function HeroBannerCarousel() {
       )}
       {/* Region indicator */}
       <div
-        className="absolute bottom-2 right-7 text-white text-xl font-semibold drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] border-b-2 border-white pb-0.5"
-        style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
+        className="absolute bottom-2 right-7 text-white text-xl font-semibold drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
+        style={{ fontFamily: "'IBM Plex Sans', sans-serif", textDecoration: 'underline', textUnderlineOffset: '2px' }}
       >
         {formatRegionName(userRegion)}
       </div>
