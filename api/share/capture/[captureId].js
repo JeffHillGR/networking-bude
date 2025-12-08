@@ -35,7 +35,7 @@ export default async function handler(req, res) {
     if (error || !moment) {
       console.error('Event capture not found:', { captureId, error });
       // Redirect to event captures page with a friendly message
-      const momentsUrl = 'https://www.networkingbude.com/event-captures';
+      const capturesUrl = 'https://www.networkingbude.com/event-captures';
       const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,8 +45,8 @@ export default async function handler(req, res) {
   <meta property="og:title" content="Check out Event Captures on Networking BudE">
   <meta property="og:description" content="Browse photos from networking events in your community!">
   <meta property="og:image" content="https://www.networkingbude.com/BudE-Color-Logo-Rev.png">
-  <meta property="og:url" content="${momentsUrl}">
-  <script>window.location.replace('${momentsUrl}');</script>
+  <meta property="og:url" content="${capturesUrl}">
+  <script>window.location.replace('${capturesUrl}');</script>
   <style>
     body { font-family: -apple-system, sans-serif; text-align: center; padding: 50px; }
     a { color: #009900; }
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
 <body>
   <h1>This event capture is no longer available</h1>
   <p>Redirecting you to Event Captures...</p>
-  <p><a href="${momentsUrl}">Click here if not redirected</a></p>
+  <p><a href="${capturesUrl}">Click here if not redirected</a></p>
 </body>
 </html>`;
       res.setHeader('Content-Type', 'text/html; charset=utf-8');

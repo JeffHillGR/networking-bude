@@ -7,11 +7,11 @@ import { useAuth } from '../contexts/AuthContext';
 function EventCapturesWidget() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [moments, setMoments] = useState([]);
+  const [captures, setCaptures] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMoments = async () => {
+    const fetchCaptures = async () => {
       try {
         // Get user's region
         let userRegion = 'grand-rapids';
@@ -26,7 +26,7 @@ function EventCapturesWidget() {
           }
         }
 
-        // Fetch the 3 most recent active moments for user's region
+        // Fetch the 3 most recent active captures for user's region
         const { data, error } = await supabase
           .from('event_captures')
           .select(`
@@ -45,17 +45,17 @@ function EventCapturesWidget() {
 
         if (error) throw error;
 
-        // Fetch like counts for each moment
-        const momentsWithLikes = await Promise.all((data || []).map(async (moment) => {
+        // Fetch like counts for each capture
+        const capturesWithLikes = await Promise.all((data || []).map(async (capture) => {
           const { count } = await supabase
             .from('event_capture_likes')
             .select('*', { count: 'exact', head: true })
-            .eq('event_capture_id', moment.id);
+            .eq('event_capture_id', capture.id);
 
-          return { ...moment, likeCount: count || 0 };
+          return { ...capture, likeCount: count || 0 };
         }));
 
-        setMoments(momentsWithLikes);
+        setCaptures(capturesWithLikes);
       } catch (error) {
         console.error('Error fetching event captures:', error);
       } finally {
@@ -63,12 +63,12 @@ function EventCapturesWidget() {
       }
     };
 
-    fetchMoments();
+    fetchCaptures();
   }, [user]);
 
-  // Get the first photo from a moment for the thumbnail
-  const getThumbnail = (moment) => {
-    const photos = moment.event_capture_photos || [];
+  // Get the first photo from a capture for the thumbnail
+  const getThumbnail = (capture) => {
+    const photos = capture.event_capture_photos || [];
     const sortedPhotos = photos.sort((a, b) => a.display_order - b.display_order);
     return sortedPhotos[0]?.image_url || '/placeholder-event.jpg';
   };
@@ -94,19 +94,19 @@ function EventCapturesWidget() {
     );
   }
 
-  // Show empty state if no moments (to maintain grid layout)
-  if (moments.length === 0) {
+  // Show empty state if no captures (to maintain grid layout)
+  if (captures.length === 0) {
     return (
       <div className="bg-white rounded-lg p-4 md:p-5 shadow-sm border border-gray-200">
         <div className="mb-2 text-center">
           <div className="inline-block bg-white px-4 md:px-6 py-2 rounded-lg border-2 border-black md:min-w-[340px]">
             <h3 className="font-bold text-black text-base md:text-lg">Event Captures</h3>
           </div>
-          <p className="text-xs text-gray-500 mt-0.5">The BudE community in pictures</p>
+          <p className="text-xs text-gray-500 mt-0.5">The BudE community out on the town</p>
         </div>
         <div className="py-12 text-center">
           <Camera className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">Event moments coming soon!</p>
+          <p className="text-gray-500 text-sm">Event captures coming soon!</p>
         </div>
       </div>
     );
@@ -118,44 +118,44 @@ function EventCapturesWidget() {
         <div className="inline-block bg-white px-4 md:px-6 py-2 rounded-lg border-2 border-black md:min-w-[340px]">
           <h3 className="font-bold text-black text-base md:text-lg">Event Captures</h3>
         </div>
-        <p className="text-xs text-gray-500 mt-0.5">The BudE community in pictures</p>
+        <p className="text-xs text-gray-500 mt-0.5">The BudE community out on the town</p>
       </div>
 
       {/* Event Captures Cards */}
       <div className="space-y-4 flex-grow">
-        {moments.map((moment) => (
+        {captures.map((capture) => (
           <div
-            key={moment.id}
+            key={capture.id}
             onClick={() => navigate('/event-captures')}
             className="flex flex-col md:flex-row items-start gap-4 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition-colors cursor-pointer"
           >
             {/* Thumbnail Image */}
             <div className="relative flex-shrink-0 self-center md:self-start">
               <img
-                src={getThumbnail(moment)}
-                alt={moment.event_name}
+                src={getThumbnail(capture)}
+                alt={capture.event_name}
                 className="w-28 h-28 md:w-32 md:h-32 rounded-lg object-cover bg-white shadow-sm"
               />
               {/* Photo count badge */}
-              {(moment.event_capture_photos?.length || 0) > 1 && (
+              {(capture.event_capture_photos?.length || 0) > 1 && (
                 <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
                   <Camera className="w-3 h-3" />
-                  {moment.event_capture_photos.length}
+                  {capture.event_capture_photos.length}
                 </div>
               )}
             </div>
 
             {/* Content */}
             <div className="flex-1 min-w-0 text-center md:text-left">
-              <h4 className="font-bold text-gray-900 mb-1 text-lg leading-tight line-clamp-2">{moment.event_name}</h4>
-              <p className="text-xs text-gray-500 italic mb-1">{moment.event_date}</p>
-              {moment.organization_name && (
+              <h4 className="font-bold text-gray-900 mb-1 text-lg leading-tight line-clamp-2">{capture.event_name}</h4>
+              <p className="text-xs text-gray-500 italic mb-1">{capture.event_date}</p>
+              {capture.organization_name && (
                 <p className="text-xs text-gray-600 mb-1">
-                  Hosted by {moment.organization_name}
+                  Hosted by {capture.organization_name}
                 </p>
               )}
-              {moment.description && (
-                <p className="text-sm text-gray-600 line-clamp-2">{moment.description}</p>
+              {capture.description && (
+                <p className="text-sm text-gray-600 line-clamp-2">{capture.description}</p>
               )}
             </div>
           </div>

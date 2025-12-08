@@ -11,8 +11,8 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('captures');
-  const [moments, setMoments] = useState([]);
-  const [archivedMoments, setArchivedMoments] = useState([]);
+  const [captures, setCaptures] = useState([]);
+  const [archivedCaptures, setArchivedCaptures] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userLikes, setUserLikes] = useState({});
   const [showPhotoModal, setShowPhotoModal] = useState(false);
@@ -23,21 +23,21 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
   const [submittingRequest, setSubmittingRequest] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState([]);
   const [uploadProgress, setUploadProgress] = useState('');
-  const [selectedMoment, setSelectedMoment] = useState(null);
+  const [selectedCapture, setSelectedCapture] = useState(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [showContactModal, setShowContactModal] = useState(false);
 
   // Comments state
-  const [comments, setComments] = useState({}); // { momentId: [comments] }
-  const [commentInput, setCommentInput] = useState({}); // { momentId: 'text' }
-  const [showEmojiPicker, setShowEmojiPicker] = useState(null); // momentId or null
+  const [comments, setComments] = useState({}); // { captureId: [comments] }
+  const [commentInput, setCommentInput] = useState({}); // { captureId: 'text' }
+  const [showEmojiPicker, setShowEmojiPicker] = useState(null); // captureId or null
   const [commentLikes, setCommentLikes] = useState({}); // { commentId: count }
   const [userCommentLikes, setUserCommentLikes] = useState({}); // { commentId: true }
-  const [submittingComment, setSubmittingComment] = useState(null); // momentId
-  const [expandedComments, setExpandedComments] = useState({}); // { momentId: true }
+  const [submittingComment, setSubmittingComment] = useState(null); // captureId
+  const [expandedComments, setExpandedComments] = useState({}); // { captureId: true }
 
   useEffect(() => {
-    const fetchMoments = async () => {
+    const fetchCaptures = async () => {
       try {
         // Get user's region
         let userRegion = 'grand-rapids';
@@ -52,7 +52,7 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
           }
         }
 
-        // Fetch all active moments for user's region
+        // Fetch all active captures for user's region
         const { data, error } = await supabase
           .from('event_captures')
           .select(`
@@ -70,33 +70,33 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
 
         if (error) throw error;
 
-        // Fetch like counts for each moment
-        const momentsWithLikes = await Promise.all((data || []).map(async (moment) => {
+        // Fetch like counts for each capture
+        const capturesWithLikes = await Promise.all((data || []).map(async (capture) => {
           const { count } = await supabase
             .from('event_capture_likes')
             .select('*', { count: 'exact', head: true })
-            .eq('event_capture_id', moment.id);
+            .eq('event_capture_id', capture.id);
 
-          return { ...moment, likeCount: count || 0 };
+          return { ...capture, likeCount: count || 0 };
         }));
 
         // Split into recent (first 3) and archived (4-7), max 7 total
-        const limitedMoments = momentsWithLikes.slice(0, 7);
-        const recent = limitedMoments.slice(0, 3);
-        const archived = limitedMoments.slice(3, 7);
+        const limitedCaptures = capturesWithLikes.slice(0, 7);
+        const recent = limitedCaptures.slice(0, 3);
+        const archived = limitedCaptures.slice(3, 7);
 
-        setMoments(recent);
-        setArchivedMoments(archived);
+        setCaptures(recent);
+        setArchivedCaptures(archived);
 
         // Fetch user's likes
         if (user) {
-          const allMomentIds = momentsWithLikes.map(m => m.id);
-          if (allMomentIds.length > 0) {
+          const allCaptureIds = capturesWithLikes.map(c => c.id);
+          if (allCaptureIds.length > 0) {
             const { data: likes } = await supabase
               .from('event_capture_likes')
               .select('event_capture_id')
               .eq('user_id', user.id)
-              .in('event_capture_id', allMomentIds);
+              .in('event_capture_id', allCaptureIds);
 
             const likesMap = {};
             likes?.forEach(like => {
@@ -112,46 +112,46 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
       }
     };
 
-    fetchMoments();
+    fetchCaptures();
   }, [user]);
 
-  const handleLike = async (e, momentId) => {
+  const handleLike = async (e, captureId) => {
     e.stopPropagation();
     if (!user) return;
 
-    const isLiked = userLikes[momentId];
+    const isLiked = userLikes[captureId];
 
     try {
       if (isLiked) {
         await supabase
           .from('event_capture_likes')
           .delete()
-          .eq('event_capture_id', momentId)
+          .eq('event_capture_id', captureId)
           .eq('user_id', user.id);
       } else {
         await supabase
           .from('event_capture_likes')
-          .insert({ event_capture_id: momentId, user_id: user.id });
+          .insert({ event_capture_id: captureId, user_id: user.id });
       }
 
       // Update local state
-      setUserLikes(prev => ({ ...prev, [momentId]: !isLiked }));
+      setUserLikes(prev => ({ ...prev, [captureId]: !isLiked }));
 
-      // Update both recent and archived moments
-      const updateMoments = (prev) => prev.map(m =>
-        m.id === momentId
+      // Update both recent and archived captures
+      const updateCaptures = (prev) => prev.map(m =>
+        m.id === captureId
           ? { ...m, likeCount: isLiked ? m.likeCount - 1 : m.likeCount + 1 }
           : m
       );
-      setMoments(updateMoments);
-      setArchivedMoments(updateMoments);
+      setCaptures(updateCaptures);
+      setArchivedCaptures(updateCaptures);
     } catch (error) {
       console.error('Error toggling like:', error);
     }
   };
 
-  // Fetch comments for a moment
-  const fetchComments = async (momentId) => {
+  // Fetch comments for a capture
+  const fetchComments = async (captureId) => {
     if (!user) return;
 
     try {
@@ -168,12 +168,12 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
             photo
           )
         `)
-        .eq('event_capture_id', momentId)
+        .eq('event_capture_id', captureId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
 
-      setComments(prev => ({ ...prev, [momentId]: data || [] }));
+      setComments(prev => ({ ...prev, [captureId]: data || [] }));
 
       // Fetch like counts for comments
       if (data && data.length > 0) {
@@ -209,17 +209,17 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
   };
 
   // Post a comment
-  const handlePostComment = async (momentId) => {
-    if (!user || !commentInput[momentId]?.trim()) return;
+  const handlePostComment = async (captureId) => {
+    if (!user || !commentInput[captureId]?.trim()) return;
 
-    setSubmittingComment(momentId);
+    setSubmittingComment(captureId);
     try {
       const { data, error } = await supabase
         .from('event_capture_comments')
         .insert({
-          event_capture_id: momentId,
+          event_capture_id: captureId,
           user_id: user.id,
-          content: commentInput[momentId].trim()
+          content: commentInput[captureId].trim()
         })
         .select(`
           id,
@@ -239,9 +239,9 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
       // Add new comment to state
       setComments(prev => ({
         ...prev,
-        [momentId]: [...(prev[momentId] || []), data]
+        [captureId]: [...(prev[captureId] || []), data]
       }));
-      setCommentInput(prev => ({ ...prev, [momentId]: '' }));
+      setCommentInput(prev => ({ ...prev, [captureId]: '' }));
       setCommentLikes(prev => ({ ...prev, [data.id]: 0 }));
     } catch (error) {
       console.error('Error posting comment:', error);
@@ -280,7 +280,7 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
   };
 
   // Delete own comment
-  const handleDeleteComment = async (commentId, momentId) => {
+  const handleDeleteComment = async (commentId, captureId) => {
     if (!user) return;
 
     try {
@@ -292,7 +292,7 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
 
       setComments(prev => ({
         ...prev,
-        [momentId]: (prev[momentId] || []).filter(c => c.id !== commentId)
+        [captureId]: (prev[captureId] || []).filter(c => c.id !== commentId)
       }));
     } catch (error) {
       console.error('Error deleting comment:', error);
@@ -319,31 +319,31 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
   };
 
   // Toggle comments visibility
-  const toggleComments = (momentId) => {
-    const isExpanding = !expandedComments[momentId];
-    setExpandedComments(prev => ({ ...prev, [momentId]: isExpanding }));
+  const toggleComments = (captureId) => {
+    const isExpanding = !expandedComments[captureId];
+    setExpandedComments(prev => ({ ...prev, [captureId]: isExpanding }));
 
     // Fetch comments if expanding and not already loaded
-    if (isExpanding && !comments[momentId]) {
-      fetchComments(momentId);
+    if (isExpanding && !comments[captureId]) {
+      fetchComments(captureId);
     }
   };
 
-  const openLightbox = (moment, photoIndex = 0) => {
-    setSelectedMoment(moment);
+  const openLightbox = (capture, photoIndex = 0) => {
+    setSelectedCapture(capture);
     setSelectedPhotoIndex(photoIndex);
     setShowPhotoModal(true);
   };
 
   const closeLightbox = () => {
     setShowPhotoModal(false);
-    setSelectedMoment(null);
+    setSelectedCapture(null);
     setSelectedPhotoIndex(0);
   };
 
   const navigatePhoto = (direction) => {
-    if (!selectedMoment) return;
-    const photos = selectedMoment.event_capture_photos.sort((a, b) => a.display_order - b.display_order);
+    if (!selectedCapture) return;
+    const photos = selectedCapture.event_capture_photos.sort((a, b) => a.display_order - b.display_order);
     const newIndex = selectedPhotoIndex + direction;
     if (newIndex >= 0 && newIndex < photos.length) {
       setSelectedPhotoIndex(newIndex);
@@ -351,8 +351,8 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
   };
 
   // LinkedIn-style photo collage layout
-  const renderPhotoCollage = (moment) => {
-    const photos = (moment.event_capture_photos || []).sort((a, b) => a.display_order - b.display_order);
+  const renderPhotoCollage = (capture) => {
+    const photos = (capture.event_capture_photos || []).sort((a, b) => a.display_order - b.display_order);
     if (photos.length === 0) return null;
 
     const photoCount = photos.length;
@@ -362,11 +362,11 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
       return (
         <div
           className="w-full h-56 rounded-lg overflow-hidden cursor-pointer border-2 border-gray-200"
-          onClick={() => openLightbox(moment, 0)}
+          onClick={() => openLightbox(capture, 0)}
         >
           <img
             src={photos[0].image_url}
-            alt={moment.event_name}
+            alt={capture.event_name}
             className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
           />
         </div>
@@ -379,21 +379,21 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
         <div className="grid grid-cols-3 gap-1 h-64 rounded-lg overflow-hidden border-2 border-gray-200">
           <div
             className="col-span-2 cursor-pointer overflow-hidden"
-            onClick={() => openLightbox(moment, 0)}
+            onClick={() => openLightbox(capture, 0)}
           >
             <img
               src={photos[0].image_url}
-              alt={`${moment.event_name} 1`}
+              alt={`${capture.event_name} 1`}
               className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
             />
           </div>
           <div
             className="cursor-pointer overflow-hidden"
-            onClick={() => openLightbox(moment, 1)}
+            onClick={() => openLightbox(capture, 1)}
           >
             <img
               src={photos[1].image_url}
-              alt={`${moment.event_name} 2`}
+              alt={`${capture.event_name} 2`}
               className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
             />
           </div>
@@ -407,11 +407,11 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
         <div className="grid grid-cols-3 gap-1 h-72 rounded-lg overflow-hidden border-2 border-gray-200">
           <div
             className="col-span-2 row-span-2 cursor-pointer overflow-hidden"
-            onClick={() => openLightbox(moment, 0)}
+            onClick={() => openLightbox(capture, 0)}
           >
             <img
               src={photos[0].image_url}
-              alt={`${moment.event_name} 1`}
+              alt={`${capture.event_name} 1`}
               className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
             />
           </div>
@@ -419,11 +419,11 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
             <div
               key={photo.id}
               className="cursor-pointer overflow-hidden"
-              onClick={() => openLightbox(moment, idx + 1)}
+              onClick={() => openLightbox(capture, idx + 1)}
             >
               <img
                 src={photo.image_url}
-                alt={`${moment.event_name} ${idx + 2}`}
+                alt={`${capture.event_name} ${idx + 2}`}
                 className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -440,11 +440,11 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
             <div
               key={photo.id}
               className="cursor-pointer overflow-hidden"
-              onClick={() => openLightbox(moment, idx)}
+              onClick={() => openLightbox(capture, idx)}
             >
               <img
                 src={photo.image_url}
-                alt={`${moment.event_name} ${idx + 1}`}
+                alt={`${capture.event_name} ${idx + 1}`}
                 className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -458,11 +458,11 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
       <div className="grid grid-cols-3 gap-1 h-72 rounded-lg overflow-hidden border-2 border-gray-200">
         <div
           className="col-span-2 row-span-2 cursor-pointer overflow-hidden"
-          onClick={() => openLightbox(moment, 0)}
+          onClick={() => openLightbox(capture, 0)}
         >
           <img
             src={photos[0].image_url}
-            alt={`${moment.event_name} 1`}
+            alt={`${capture.event_name} 1`}
             className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
           />
         </div>
@@ -470,11 +470,11 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
           <div
             key={photo.id}
             className="cursor-pointer overflow-hidden relative"
-            onClick={() => openLightbox(moment, idx + 1)}
+            onClick={() => openLightbox(capture, idx + 1)}
           >
             <img
               src={photo.image_url}
-              alt={`${moment.event_name} ${idx + 2}`}
+              alt={`${capture.event_name} ${idx + 2}`}
               className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
             />
             {/* Show +X overlay on last visible photo if there are more */}
@@ -489,42 +489,42 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
     );
   };
 
-  const renderMomentCard = (moment) => (
+  const renderCaptureCard = (capture) => (
     <div
-      key={moment.id}
+      key={capture.id}
       className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
     >
       {/* Photo Collage */}
-      {renderPhotoCollage(moment)}
+      {renderPhotoCollage(capture)}
 
       {/* Content */}
       <div className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h3 className="font-bold text-lg text-gray-900">{moment.event_name}</h3>
-            <p className="text-sm text-gray-500">{moment.event_date}</p>
-            {moment.organization_name && (
+            <h3 className="font-bold text-lg text-gray-900">{capture.event_name}</h3>
+            <p className="text-sm text-gray-500">{capture.event_date}</p>
+            {capture.organization_name && (
               <p className="text-sm text-gray-600 mt-1">
                 Hosted by{' '}
-                {moment.organization_url ? (
+                {capture.organization_url ? (
                   <a
-                    href={moment.organization_url}
+                    href={capture.organization_url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[#009900] hover:underline"
                   >
-                    {moment.organization_name}
+                    {capture.organization_name}
                   </a>
                 ) : (
-                  moment.organization_name
+                  capture.organization_name
                 )}
               </p>
             )}
-            {moment.description && (
-              <p className="text-sm text-gray-700 mt-2">{moment.description}</p>
+            {capture.description && (
+              <p className="text-sm text-gray-700 mt-2">{capture.description}</p>
             )}
-            {moment.photo_credit && (
-              <p className="text-xs text-gray-400 mt-1 italic">Photo: {moment.photo_credit}</p>
+            {capture.photo_credit && (
+              <p className="text-xs text-gray-400 mt-1 italic">Photo: {capture.photo_credit}</p>
             )}
           </div>
         </div>
@@ -532,32 +532,32 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
         {/* Actions */}
         <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-100">
           <button
-            onClick={(e) => handleLike(e, moment.id)}
+            onClick={(e) => handleLike(e, capture.id)}
             className={`flex items-center gap-1 text-sm font-medium ${
-              userLikes[moment.id]
+              userLikes[capture.id]
                 ? 'text-red-500'
                 : 'text-gray-500 hover:text-red-400'
             } transition-colors`}
           >
-            <Heart className={`w-5 h-5 ${userLikes[moment.id] ? 'fill-current' : ''}`} />
-            <span>{moment.likeCount} {moment.likeCount === 1 ? 'Like' : 'Likes'}</span>
+            <Heart className={`w-5 h-5 ${userLikes[capture.id] ? 'fill-current' : ''}`} />
+            <span>{capture.likeCount} {capture.likeCount === 1 ? 'Like' : 'Likes'}</span>
           </button>
           {user && (
             <button
-              onClick={() => toggleComments(moment.id)}
+              onClick={() => toggleComments(capture.id)}
               className={`flex items-center gap-1 text-sm font-medium ${
-                expandedComments[moment.id]
+                expandedComments[capture.id]
                   ? 'text-[#009900]'
                   : 'text-gray-500 hover:text-[#009900]'
               } transition-colors`}
             >
               <MessageCircle className="w-5 h-5" />
-              <span>Comments{comments[moment.id]?.length > 0 ? ` (${comments[moment.id].length})` : ''}</span>
+              <span>Comments{comments[capture.id]?.length > 0 ? ` (${comments[capture.id].length})` : ''}</span>
             </button>
           )}
           <button
             onClick={() => {
-              setSelectedMoment(moment);
+              setSelectedCapture(capture);
               setShowShareModal(true);
             }}
             className="flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-[#009900] transition-colors"
@@ -568,39 +568,39 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
         </div>
 
         {/* Comments Section */}
-        {user && expandedComments[moment.id] && (
+        {user && expandedComments[capture.id] && (
           <div className="mt-4 pt-4 border-t border-gray-100">
             {/* Comment Input */}
             <div className="flex gap-2 mb-4">
               <div className="flex-1 relative">
                 <input
                   type="text"
-                  value={commentInput[moment.id] || ''}
-                  onChange={(e) => setCommentInput(prev => ({ ...prev, [moment.id]: e.target.value }))}
+                  value={commentInput[capture.id] || ''}
+                  onChange={(e) => setCommentInput(prev => ({ ...prev, [capture.id]: e.target.value }))}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
-                      handlePostComment(moment.id);
+                      handlePostComment(capture.id);
                     }
                   }}
                   placeholder="Add a comment..."
                   className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#009900] focus:border-transparent"
-                  disabled={submittingComment === moment.id}
+                  disabled={submittingComment === capture.id}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowEmojiPicker(showEmojiPicker === moment.id ? null : moment.id)}
+                  onClick={() => setShowEmojiPicker(showEmojiPicker === capture.id ? null : capture.id)}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full"
                 >
                   <Smile className="w-5 h-5 text-gray-400" />
                 </button>
-                {showEmojiPicker === moment.id && (
+                {showEmojiPicker === capture.id && (
                   <div className="absolute bottom-12 right-0 z-50">
                     <EmojiPicker
                       onEmojiClick={(emojiData) => {
                         setCommentInput(prev => ({
                           ...prev,
-                          [moment.id]: (prev[moment.id] || '') + emojiData.emoji
+                          [capture.id]: (prev[capture.id] || '') + emojiData.emoji
                         }));
                         setShowEmojiPicker(null);
                       }}
@@ -611,8 +611,8 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
                 )}
               </div>
               <button
-                onClick={() => handlePostComment(moment.id)}
-                disabled={!commentInput[moment.id]?.trim() || submittingComment === moment.id}
+                onClick={() => handlePostComment(capture.id)}
+                disabled={!commentInput[capture.id]?.trim() || submittingComment === capture.id}
                 className="px-3 py-2 bg-[#009900] text-white rounded-lg hover:bg-[#007700] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Send className="w-4 h-4" />
@@ -621,10 +621,10 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
 
             {/* Comments List */}
             <div className="space-y-3 max-h-80 overflow-y-auto">
-              {(comments[moment.id] || []).length === 0 ? (
+              {(comments[capture.id] || []).length === 0 ? (
                 <p className="text-sm text-gray-500 text-center py-4">No comments yet. Be the first!</p>
               ) : (
-                (comments[moment.id] || []).map((comment) => (
+                (comments[capture.id] || []).map((comment) => (
                   <div key={comment.id} className="flex gap-2 group">
                     {/* Avatar */}
                     {comment.users?.photo ? (
@@ -666,7 +666,7 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
                         </button>
                         {comment.user_id === user.id ? (
                           <button
-                            onClick={() => handleDeleteComment(comment.id, moment.id)}
+                            onClick={() => handleDeleteComment(comment.id, capture.id)}
                             className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <Trash2 className="w-3 h-3" />
@@ -706,7 +706,7 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
         </button>
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Event Captures</h1>
-          <p className="text-gray-600 mt-1">Photos from our networking community</p>
+          <p className="text-gray-600 mt-1">The BudE community out on the town</p>
         </div>
       </div>
 
@@ -718,8 +718,8 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
         </div>
       )}
 
-      {/* No moments */}
-      {!loading && moments.length === 0 && archivedMoments.length === 0 && (
+      {/* No captures */}
+      {!loading && captures.length === 0 && archivedCaptures.length === 0 && (
         <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200">
           <Camera className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-gray-700 mb-2">No Event Captures Yet</h3>
@@ -733,15 +733,15 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
         </div>
       )}
 
-      {/* Recent Moments */}
-      {!loading && moments.length > 0 && (
+      {/* Recent Captures */}
+      {!loading && captures.length > 0 && (
         <div className="space-y-6 mb-8">
-          {moments.map(renderMomentCard)}
+          {captures.map(renderCaptureCard)}
         </div>
       )}
 
       {/* Share Your Photos CTA */}
-      {!loading && moments.length > 0 && (
+      {!loading && captures.length > 0 && (
         <div className="text-center mb-12">
           <button
             onClick={() => setShowPhotoRequestModal(true)}
@@ -754,14 +754,14 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
       )}
 
       {/* More Captures */}
-      {!loading && archivedMoments.length > 0 && (
+      {!loading && archivedCaptures.length > 0 && (
         <div className="border-t border-gray-300 pt-12">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">More Captures</h2>
             <p className="text-gray-600">Earlier event highlights</p>
           </div>
           <div className="space-y-6">
-            {archivedMoments.map(renderMomentCard)}
+            {archivedCaptures.map(renderCaptureCard)}
           </div>
         </div>
       )}
@@ -772,7 +772,7 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
   const modals = (
     <>
       {/* Lightbox Modal */}
-      {showPhotoModal && selectedMoment && (
+      {showPhotoModal && selectedCapture && (
         <div
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center"
           onClick={closeLightbox}
@@ -793,7 +793,7 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
                 <ChevronLeft className="w-10 h-10" />
               </button>
             )}
-            {selectedMoment.event_capture_photos && selectedPhotoIndex < selectedMoment.event_capture_photos.length - 1 && (
+            {selectedCapture.event_capture_photos && selectedPhotoIndex < selectedCapture.event_capture_photos.length - 1 && (
               <button
                 onClick={() => navigatePhoto(1)}
                 className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 text-white hover:text-gray-300 p-2"
@@ -803,19 +803,19 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
             )}
 
             <img
-              src={selectedMoment.event_capture_photos?.sort((a, b) => a.display_order - b.display_order)[selectedPhotoIndex]?.image_url}
-              alt={selectedMoment.event_name}
+              src={selectedCapture.event_capture_photos?.sort((a, b) => a.display_order - b.display_order)[selectedPhotoIndex]?.image_url}
+              alt={selectedCapture.event_name}
               className="max-w-full max-h-[85vh] mx-auto object-contain rounded-lg"
             />
 
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 rounded-b-lg">
-              <h3 className="text-white font-bold text-lg">{selectedMoment.event_name}</h3>
-              <p className="text-gray-300 text-sm">{selectedMoment.event_date}</p>
-              {selectedMoment.photo_credit && (
-                <p className="text-gray-400 text-xs mt-1">Photo: {selectedMoment.photo_credit}</p>
+              <h3 className="text-white font-bold text-lg">{selectedCapture.event_name}</h3>
+              <p className="text-gray-300 text-sm">{selectedCapture.event_date}</p>
+              {selectedCapture.photo_credit && (
+                <p className="text-gray-400 text-xs mt-1">Photo: {selectedCapture.photo_credit}</p>
               )}
               <p className="text-gray-400 text-xs mt-2">
-                {selectedPhotoIndex + 1} of {selectedMoment.event_capture_photos?.length || 1}
+                {selectedPhotoIndex + 1} of {selectedCapture.event_capture_photos?.length || 1}
               </p>
             </div>
           </div>
@@ -823,9 +823,15 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
       )}
 
       {/* Share Modal */}
-      {showShareModal && selectedMoment && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6 relative">
+      {showShareModal && selectedCapture && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => {
+            setShowShareModal(false);
+            setLinkCopied(false);
+          }}
+        >
+          <div className="bg-white rounded-lg max-w-md w-full p-6 relative" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => {
                 setShowShareModal(false);
@@ -841,7 +847,7 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
                 <Share2 className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Share Event Capture</h3>
-              <p className="text-sm text-gray-600">{selectedMoment.event_name}</p>
+              <p className="text-sm text-gray-600">{selectedCapture.event_name}</p>
             </div>
 
             {/* Link Display with Copy Button */}
@@ -849,12 +855,12 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1 overflow-hidden">
                   <p className="text-sm text-gray-500 mb-1">Share Link:</p>
-                  <p className="text-sm font-mono text-gray-900 truncate">{`https://www.networkingbude.com/api/share/capture/${selectedMoment.id}`}</p>
+                  <p className="text-sm font-mono text-gray-900 truncate">{`https://www.networkingbude.com/api/share/capture/${selectedCapture.id}`}</p>
                 </div>
                 <button
                   onClick={() => {
                     try {
-                      const shareUrl = `https://www.networkingbude.com/api/share/capture/${selectedMoment.id}`;
+                      const shareUrl = `https://www.networkingbude.com/api/share/capture/${selectedCapture.id}`;
                       if (navigator.clipboard && navigator.clipboard.writeText) {
                         navigator.clipboard.writeText(shareUrl).then(() => {
                           setLinkCopied(true);
@@ -866,7 +872,7 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
                         prompt('Copy this link:', shareUrl);
                       }
                     } catch (err) {
-                      const shareUrl = `https://www.networkingbude.com/api/share/capture/${selectedMoment.id}`;
+                      const shareUrl = `https://www.networkingbude.com/api/share/capture/${selectedCapture.id}`;
                       prompt('Copy this link:', shareUrl);
                     }
                   }}
@@ -896,7 +902,7 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
               <p className="text-sm font-medium text-gray-700 mb-2">Share to:</p>
               <div className="grid grid-cols-2 gap-2">
                 <a
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://www.networkingbude.com/api/share/capture/${selectedMoment.id}`)}`}
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://www.networkingbude.com/api/share/capture/${selectedCapture.id}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-[#0077B5] text-white rounded-lg hover:bg-[#006399] transition-colors text-sm"
@@ -904,7 +910,7 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
                   LinkedIn
                 </a>
                 <a
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://www.networkingbude.com/api/share/capture/${selectedMoment.id}`)}`}
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://www.networkingbude.com/api/share/capture/${selectedCapture.id}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#145dbf] transition-colors text-sm"
@@ -912,7 +918,7 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
                   Facebook
                 </a>
                 <a
-                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`https://www.networkingbude.com/api/share/capture/${selectedMoment.id}`)}&text=${encodeURIComponent('Check out this event capture: ' + selectedMoment.event_name)}`}
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`https://www.networkingbude.com/api/share/capture/${selectedCapture.id}`)}&text=${encodeURIComponent('Check out this event capture: ' + selectedCapture.event_name)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm"
@@ -920,7 +926,7 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
                   X
                 </a>
                 <a
-                  href={`mailto:?subject=${encodeURIComponent('Check out this event capture: ' + selectedMoment.event_name)}&body=${encodeURIComponent('I thought you might enjoy these photos from this event:\n\n' + selectedMoment.event_name + '\n\n' + `https://www.networkingbude.com/api/share/capture/${selectedMoment.id}`)}`}
+                  href={`mailto:?subject=${encodeURIComponent('Check out this event capture: ' + selectedCapture.event_name)}&body=${encodeURIComponent('I thought you might enjoy these photos from this event:\n\n' + selectedCapture.event_name + '\n\n' + `https://www.networkingbude.com/api/share/capture/${selectedCapture.id}`)}`}
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
                 >
                   Email
