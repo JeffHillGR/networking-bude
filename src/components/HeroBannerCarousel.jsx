@@ -1,6 +1,16 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
+// Preload an image and return a promise
+const preloadImage = (src) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(src);
+    img.onerror = reject;
+    img.src = src;
+  });
+};
+
 function HeroBannerCarousel() {
   const [currentBanner, setCurrentBanner] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -77,12 +87,19 @@ function HeroBannerCarousel() {
 
             const banner = banners[bannerIndex];
 
-            // Show cached banner immediately
-            setCurrentBanner(banner);
-            setImageLoaded(true);
-            setLoading(false);
-            setHasLoaded(true);
-            displayedFromCache = true;
+            // Preload the image before showing
+            try {
+              await preloadImage(banner.image_url);
+              if (!cancelled) {
+                setCurrentBanner(banner);
+                setImageLoaded(true);
+                setLoading(false);
+                setHasLoaded(true);
+                displayedFromCache = true;
+              }
+            } catch (e) {
+              console.warn('Failed to preload cached banner image:', e);
+            }
           }
         } catch (e) {
           console.error('Error parsing cached banners:', e);
@@ -144,12 +161,21 @@ function HeroBannerCarousel() {
 
             const banner = banners[bannerIndex];
 
-            // Show banner
-            if (!cancelled) {
-              setCurrentBanner(banner);
-              setImageLoaded(true);
-              setLoading(false);
-              setHasLoaded(true);
+            // Preload the image before showing
+            try {
+              await preloadImage(banner.image_url);
+              if (!cancelled) {
+                setCurrentBanner(banner);
+                setImageLoaded(true);
+                setLoading(false);
+                setHasLoaded(true);
+              }
+            } catch (e) {
+              console.warn('Failed to preload banner image:', e);
+              if (!cancelled) {
+                setLoading(false);
+                setHasLoaded(true);
+              }
             }
           }
         } else {
@@ -184,6 +210,13 @@ function HeroBannerCarousel() {
             <p className="text-gray-600 mt-3 text-sm">Loading...</p>
           </div>
         </div>
+        {/* Region indicator - show even while loading */}
+        <div
+          className="absolute bottom-2 right-7 text-gray-600 text-xl font-semibold"
+          style={{ fontFamily: "'IBM Plex Sans', sans-serif", textDecoration: 'underline', textUnderlineOffset: '2px' }}
+        >
+          {formatRegionName(userRegion)}
+        </div>
       </div>
     );
   }
@@ -206,6 +239,8 @@ function HeroBannerCarousel() {
             src={currentBanner.image_url}
             alt={currentBanner.alt_text || 'Hero Banner'}
             className="w-full h-full object-cover"
+            loading="eager"
+            fetchpriority="high"
           />
         </a>
       ) : (
@@ -213,6 +248,8 @@ function HeroBannerCarousel() {
           src={currentBanner.image_url}
           alt={currentBanner.alt_text || 'Hero Banner'}
           className="w-full h-full object-cover"
+          loading="eager"
+          fetchpriority="high"
         />
       )}
       {/* Region indicator */}
