@@ -115,8 +115,8 @@ function EventCapturesWidget() {
   return (
     <div className="bg-white rounded-lg p-4 md:p-5 shadow-sm border border-gray-200 flex flex-col">
       <div className="mb-2 text-center">
-        <div className="inline-block bg-white px-4 md:px-6 py-2 rounded-lg border-2 border-black md:min-w-[340px]">
-          <h3 className="font-bold text-black text-base md:text-lg">Event Captures</h3>
+        <div className="inline-block bg-[#009900] md:bg-white px-4 md:px-6 py-2 rounded-lg border-2 border-[#D0ED00] md:border-black md:min-w-[340px]">
+          <h3 className="font-bold text-white md:text-black text-base md:text-lg">Event Captures</h3>
         </div>
         <p className="text-xs text-gray-500 mt-0.5">The BudE community out on the town</p>
       </div>
