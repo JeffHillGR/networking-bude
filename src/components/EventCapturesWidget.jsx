@@ -4,7 +4,7 @@ import { Camera, ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
-function EventMomentsWidget() {
+function EventCapturesWidget() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [moments, setMoments] = useState([]);
@@ -28,10 +28,10 @@ function EventMomentsWidget() {
 
         // Fetch the 3 most recent active moments for user's region
         const { data, error } = await supabase
-          .from('event_moments')
+          .from('event_captures')
           .select(`
             *,
-            event_moment_photos (
+            event_capture_photos (
               id,
               image_url,
               display_order
@@ -48,16 +48,16 @@ function EventMomentsWidget() {
         // Fetch like counts for each moment
         const momentsWithLikes = await Promise.all((data || []).map(async (moment) => {
           const { count } = await supabase
-            .from('event_moment_likes')
+            .from('event_capture_likes')
             .select('*', { count: 'exact', head: true })
-            .eq('event_moment_id', moment.id);
+            .eq('event_capture_id', moment.id);
 
           return { ...moment, likeCount: count || 0 };
         }));
 
         setMoments(momentsWithLikes);
       } catch (error) {
-        console.error('Error fetching event moments:', error);
+        console.error('Error fetching event captures:', error);
       } finally {
         setLoading(false);
       }
@@ -68,7 +68,7 @@ function EventMomentsWidget() {
 
   // Get the first photo from a moment for the thumbnail
   const getThumbnail = (moment) => {
-    const photos = moment.event_moment_photos || [];
+    const photos = moment.event_capture_photos || [];
     const sortedPhotos = photos.sort((a, b) => a.display_order - b.display_order);
     return sortedPhotos[0]?.image_url || '/placeholder-event.jpg';
   };
@@ -100,7 +100,7 @@ function EventMomentsWidget() {
       <div className="bg-white rounded-lg p-4 md:p-5 shadow-sm border border-gray-200">
         <div className="mb-2 text-center">
           <div className="inline-block bg-white px-4 md:px-6 py-2 rounded-lg border-2 border-black md:min-w-[340px]">
-            <h3 className="font-bold text-black text-base md:text-lg">Event Moments</h3>
+            <h3 className="font-bold text-black text-base md:text-lg">Event Captures</h3>
           </div>
           <p className="text-xs text-gray-500 mt-0.5">The BudE community in pictures</p>
         </div>
@@ -116,17 +116,17 @@ function EventMomentsWidget() {
     <div className="bg-white rounded-lg p-4 md:p-5 shadow-sm border border-gray-200 flex flex-col">
       <div className="mb-2 text-center">
         <div className="inline-block bg-white px-4 md:px-6 py-2 rounded-lg border-2 border-black md:min-w-[340px]">
-          <h3 className="font-bold text-black text-base md:text-lg">Event Moments</h3>
+          <h3 className="font-bold text-black text-base md:text-lg">Event Captures</h3>
         </div>
         <p className="text-xs text-gray-500 mt-0.5">The BudE community in pictures</p>
       </div>
 
-      {/* Event Moments Cards */}
+      {/* Event Captures Cards */}
       <div className="space-y-4 flex-grow">
         {moments.map((moment) => (
           <div
             key={moment.id}
-            onClick={() => navigate('/event-moments')}
+            onClick={() => navigate('/event-captures')}
             className="flex flex-col md:flex-row items-start gap-4 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition-colors cursor-pointer"
           >
             {/* Thumbnail Image */}
@@ -137,10 +137,10 @@ function EventMomentsWidget() {
                 className="w-28 h-28 md:w-32 md:h-32 rounded-lg object-cover bg-white shadow-sm"
               />
               {/* Photo count badge */}
-              {(moment.event_moment_photos?.length || 0) > 1 && (
+              {(moment.event_capture_photos?.length || 0) > 1 && (
                 <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
                   <Camera className="w-3 h-3" />
-                  {moment.event_moment_photos.length}
+                  {moment.event_capture_photos.length}
                 </div>
               )}
             </div>
@@ -165,14 +165,14 @@ function EventMomentsWidget() {
       {/* View All Link */}
       <div className="mt-auto pt-4 text-center">
         <button
-          onClick={() => navigate('/event-moments')}
+          onClick={() => navigate('/event-captures')}
           className="text-[#009900] font-semibold hover:text-[#007700] transition-colors inline-flex items-center gap-1"
         >
-          View all moments <ArrowRight className="w-4 h-4" />
+          View all captures <ArrowRight className="w-4 h-4" />
         </button>
       </div>
     </div>
   );
 }
 
-export default EventMomentsWidget;
+export default EventCapturesWidget;

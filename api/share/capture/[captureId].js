@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 export default async function handler(req, res) {
-  const { momentId } = req.query;
+  const { captureId } = req.query;
 
   try {
     // Check for environment variables
@@ -18,31 +18,31 @@ export default async function handler(req, res) {
       process.env.VITE_SUPABASE_ANON_KEY
     );
 
-    // Fetch event moment from Supabase with photos
+    // Fetch event capture from Supabase with photos
     const { data: moment, error } = await supabase
-      .from('event_moments')
+      .from('event_captures')
       .select(`
         *,
-        event_moment_photos (
+        event_capture_photos (
           id,
           image_url,
           display_order
         )
       `)
-      .eq('id', momentId)
+      .eq('id', captureId)
       .single();
 
     if (error || !moment) {
-      console.error('Event moment not found:', { momentId, error });
-      // Redirect to event moments page with a friendly message
-      const momentsUrl = 'https://www.networkingbude.com/event-moments';
+      console.error('Event capture not found:', { captureId, error });
+      // Redirect to event captures page with a friendly message
+      const momentsUrl = 'https://www.networkingbude.com/event-captures';
       const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event Moment Not Found | Networking BudE</title>
-  <meta property="og:title" content="Check out Event Moments on Networking BudE">
+  <title>Event Capture Not Found | Networking BudE</title>
+  <meta property="og:title" content="Check out Event Captures on Networking BudE">
   <meta property="og:description" content="Browse photos from networking events in your community!">
   <meta property="og:image" content="https://www.networkingbude.com/BudE-Color-Logo-Rev.png">
   <meta property="og:url" content="${momentsUrl}">
@@ -53,8 +53,8 @@ export default async function handler(req, res) {
   </style>
 </head>
 <body>
-  <h1>This event moment is no longer available</h1>
-  <p>Redirecting you to Event Moments...</p>
+  <h1>This event capture is no longer available</h1>
+  <p>Redirecting you to Event Captures...</p>
   <p><a href="${momentsUrl}">Click here if not redirected</a></p>
 </body>
 </html>`;
@@ -63,11 +63,11 @@ export default async function handler(req, res) {
     }
 
     // Build static HTML with Open Graph tags
-    const momentUrl = `https://www.networkingbude.com/event-moments`;
-    const shareUrl = `https://www.networkingbude.com/api/share/moment/${momentId}`;
+    const momentUrl = `https://www.networkingbude.com/event-captures`;
+    const shareUrl = `https://www.networkingbude.com/api/share/capture/${captureId}`;
 
     // Get the first photo for the image, or use fallback
-    const photos = moment.event_moment_photos || [];
+    const photos = moment.event_capture_photos || [];
     const sortedPhotos = photos.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
     const imageUrl = sortedPhotos[0]?.image_url || 'https://www.networkingbude.com/BudE-Color-Logo-Rev.png';
 
@@ -98,8 +98,8 @@ export default async function handler(req, res) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Primary Meta Tags -->
-  <title>${safeEventName} | Event Moments | Networking BudE</title>
-  <meta name="title" content="${safeEventName} - Event Moments">
+  <title>${safeEventName} | Event Captures | Networking BudE</title>
+  <meta name="title" content="${safeEventName} - Event Captures">
   <meta name="description" content="${ogDescription.substring(0, 200)}">
 
   <!-- Open Graph / Facebook -->
@@ -217,8 +217,8 @@ export default async function handler(req, res) {
     ${moment.organization_name ? `<p class="organization">Hosted by ${sanitize(moment.organization_name)}</p>` : ''}
     ${photoText ? `<span class="photo-count">${photoText}</span>` : ''}
     ${moment.description ? `<p>${safeDescription.substring(0, 200)}${safeDescription.length > 200 ? '...' : ''}</p>` : ''}
-    <a href="${momentUrl}">View Event Moments</a>
-    <p class="redirect-message">Redirecting you to Event Moments...</p>
+    <a href="${momentUrl}">View Event Captures</a>
+    <p class="redirect-message">Redirecting you to Event Captures...</p>
   </div>
 </body>
 </html>`;

@@ -7,10 +7,10 @@ import Sidebar from './Sidebar';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
-function EventMoments({ onBackToDashboard, embedded = false }) {
+function EventCaptures({ onBackToDashboard, embedded = false }) {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('moments');
+  const [activeTab, setActiveTab] = useState('captures');
   const [moments, setMoments] = useState([]);
   const [archivedMoments, setArchivedMoments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,10 +54,10 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
 
         // Fetch all active moments for user's region
         const { data, error } = await supabase
-          .from('event_moments')
+          .from('event_captures')
           .select(`
             *,
-            event_moment_photos (
+            event_capture_photos (
               id,
               image_url,
               display_order
@@ -73,9 +73,9 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
         // Fetch like counts for each moment
         const momentsWithLikes = await Promise.all((data || []).map(async (moment) => {
           const { count } = await supabase
-            .from('event_moment_likes')
+            .from('event_capture_likes')
             .select('*', { count: 'exact', head: true })
-            .eq('event_moment_id', moment.id);
+            .eq('event_capture_id', moment.id);
 
           return { ...moment, likeCount: count || 0 };
         }));
@@ -93,20 +93,20 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
           const allMomentIds = momentsWithLikes.map(m => m.id);
           if (allMomentIds.length > 0) {
             const { data: likes } = await supabase
-              .from('event_moment_likes')
-              .select('event_moment_id')
+              .from('event_capture_likes')
+              .select('event_capture_id')
               .eq('user_id', user.id)
-              .in('event_moment_id', allMomentIds);
+              .in('event_capture_id', allMomentIds);
 
             const likesMap = {};
             likes?.forEach(like => {
-              likesMap[like.event_moment_id] = true;
+              likesMap[like.event_capture_id] = true;
             });
             setUserLikes(likesMap);
           }
         }
       } catch (error) {
-        console.error('Error fetching event moments:', error);
+        console.error('Error fetching event captures:', error);
       } finally {
         setLoading(false);
       }
@@ -124,14 +124,14 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
     try {
       if (isLiked) {
         await supabase
-          .from('event_moment_likes')
+          .from('event_capture_likes')
           .delete()
-          .eq('event_moment_id', momentId)
+          .eq('event_capture_id', momentId)
           .eq('user_id', user.id);
       } else {
         await supabase
-          .from('event_moment_likes')
-          .insert({ event_moment_id: momentId, user_id: user.id });
+          .from('event_capture_likes')
+          .insert({ event_capture_id: momentId, user_id: user.id });
       }
 
       // Update local state
@@ -156,19 +156,19 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
 
     try {
       const { data, error } = await supabase
-        .from('event_moment_comments')
+        .from('event_capture_comments')
         .select(`
           id,
           content,
           created_at,
           user_id,
-          users!event_moment_comments_user_id_fkey (
+          users!event_capture_comments_user_id_fkey (
             first_name,
             last_name,
             photo
           )
         `)
-        .eq('event_moment_id', momentId)
+        .eq('event_capture_id', momentId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
@@ -183,7 +183,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
         const likeCounts = {};
         for (const commentId of commentIds) {
           const { count } = await supabase
-            .from('event_moment_comment_likes')
+            .from('event_capture_comment_likes')
             .select('*', { count: 'exact', head: true })
             .eq('comment_id', commentId);
           likeCounts[commentId] = count || 0;
@@ -192,7 +192,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
 
         // Get user's likes
         const { data: userLikesData } = await supabase
-          .from('event_moment_comment_likes')
+          .from('event_capture_comment_likes')
           .select('comment_id')
           .eq('user_id', user.id)
           .in('comment_id', commentIds);
@@ -215,9 +215,9 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
     setSubmittingComment(momentId);
     try {
       const { data, error } = await supabase
-        .from('event_moment_comments')
+        .from('event_capture_comments')
         .insert({
-          event_moment_id: momentId,
+          event_capture_id: momentId,
           user_id: user.id,
           content: commentInput[momentId].trim()
         })
@@ -226,7 +226,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
           content,
           created_at,
           user_id,
-          users!event_moment_comments_user_id_fkey (
+          users!event_capture_comments_user_id_fkey (
             first_name,
             last_name,
             photo
@@ -259,13 +259,13 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
     try {
       if (isLiked) {
         await supabase
-          .from('event_moment_comment_likes')
+          .from('event_capture_comment_likes')
           .delete()
           .eq('comment_id', commentId)
           .eq('user_id', user.id);
       } else {
         await supabase
-          .from('event_moment_comment_likes')
+          .from('event_capture_comment_likes')
           .insert({ comment_id: commentId, user_id: user.id });
       }
 
@@ -285,7 +285,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
 
     try {
       await supabase
-        .from('event_moment_comments')
+        .from('event_capture_comments')
         .delete()
         .eq('id', commentId)
         .eq('user_id', user.id);
@@ -305,7 +305,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
 
     try {
       await supabase
-        .from('event_moment_comment_reports')
+        .from('event_capture_comment_reports')
         .insert({
           comment_id: commentId,
           reported_by: user.id,
@@ -343,7 +343,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
 
   const navigatePhoto = (direction) => {
     if (!selectedMoment) return;
-    const photos = selectedMoment.event_moment_photos.sort((a, b) => a.display_order - b.display_order);
+    const photos = selectedMoment.event_capture_photos.sort((a, b) => a.display_order - b.display_order);
     const newIndex = selectedPhotoIndex + direction;
     if (newIndex >= 0 && newIndex < photos.length) {
       setSelectedPhotoIndex(newIndex);
@@ -352,7 +352,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
 
   // LinkedIn-style photo collage layout
   const renderPhotoCollage = (moment) => {
-    const photos = (moment.event_moment_photos || []).sort((a, b) => a.display_order - b.display_order);
+    const photos = (moment.event_capture_photos || []).sort((a, b) => a.display_order - b.display_order);
     if (photos.length === 0) return null;
 
     const photoCount = photos.length;
@@ -705,7 +705,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
           Back to Dashboard
         </button>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Event Moments</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Event Captures</h1>
           <p className="text-gray-600 mt-1">Photos from our networking community</p>
         </div>
       </div>
@@ -714,7 +714,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
       {loading && (
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#009900] mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading event moments...</p>
+          <p className="mt-4 text-gray-600">Loading event captures...</p>
         </div>
       )}
 
@@ -722,7 +722,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
       {!loading && moments.length === 0 && archivedMoments.length === 0 && (
         <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-200">
           <Camera className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">No Event Moments Yet</h3>
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">No Event Captures Yet</h3>
           <p className="text-gray-500 mb-4">Be the first to share photos from a networking event!</p>
           <button
             onClick={() => setShowPhotoRequestModal(true)}
@@ -753,11 +753,11 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
         </div>
       )}
 
-      {/* More Moments */}
+      {/* More Captures */}
       {!loading && archivedMoments.length > 0 && (
         <div className="border-t border-gray-300 pt-12">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">More Moments</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">More Captures</h2>
             <p className="text-gray-600">Earlier event highlights</p>
           </div>
           <div className="space-y-6">
@@ -793,7 +793,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
                 <ChevronLeft className="w-10 h-10" />
               </button>
             )}
-            {selectedMoment.event_moment_photos && selectedPhotoIndex < selectedMoment.event_moment_photos.length - 1 && (
+            {selectedMoment.event_capture_photos && selectedPhotoIndex < selectedMoment.event_capture_photos.length - 1 && (
               <button
                 onClick={() => navigatePhoto(1)}
                 className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 text-white hover:text-gray-300 p-2"
@@ -803,7 +803,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
             )}
 
             <img
-              src={selectedMoment.event_moment_photos?.sort((a, b) => a.display_order - b.display_order)[selectedPhotoIndex]?.image_url}
+              src={selectedMoment.event_capture_photos?.sort((a, b) => a.display_order - b.display_order)[selectedPhotoIndex]?.image_url}
               alt={selectedMoment.event_name}
               className="max-w-full max-h-[85vh] mx-auto object-contain rounded-lg"
             />
@@ -815,7 +815,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
                 <p className="text-gray-400 text-xs mt-1">Photo: {selectedMoment.photo_credit}</p>
               )}
               <p className="text-gray-400 text-xs mt-2">
-                {selectedPhotoIndex + 1} of {selectedMoment.event_moment_photos?.length || 1}
+                {selectedPhotoIndex + 1} of {selectedMoment.event_capture_photos?.length || 1}
               </p>
             </div>
           </div>
@@ -840,7 +840,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
               <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-lime-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Share2 className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Share Event Moment</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Share Event Capture</h3>
               <p className="text-sm text-gray-600">{selectedMoment.event_name}</p>
             </div>
 
@@ -849,12 +849,12 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1 overflow-hidden">
                   <p className="text-sm text-gray-500 mb-1">Share Link:</p>
-                  <p className="text-sm font-mono text-gray-900 truncate">{`https://www.networkingbude.com/api/share/moment/${selectedMoment.id}`}</p>
+                  <p className="text-sm font-mono text-gray-900 truncate">{`https://www.networkingbude.com/api/share/capture/${selectedMoment.id}`}</p>
                 </div>
                 <button
                   onClick={() => {
                     try {
-                      const shareUrl = `https://www.networkingbude.com/api/share/moment/${selectedMoment.id}`;
+                      const shareUrl = `https://www.networkingbude.com/api/share/capture/${selectedMoment.id}`;
                       if (navigator.clipboard && navigator.clipboard.writeText) {
                         navigator.clipboard.writeText(shareUrl).then(() => {
                           setLinkCopied(true);
@@ -866,7 +866,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
                         prompt('Copy this link:', shareUrl);
                       }
                     } catch (err) {
-                      const shareUrl = `https://www.networkingbude.com/api/share/moment/${selectedMoment.id}`;
+                      const shareUrl = `https://www.networkingbude.com/api/share/capture/${selectedMoment.id}`;
                       prompt('Copy this link:', shareUrl);
                     }
                   }}
@@ -896,7 +896,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
               <p className="text-sm font-medium text-gray-700 mb-2">Share to:</p>
               <div className="grid grid-cols-2 gap-2">
                 <a
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://www.networkingbude.com/api/share/moment/${selectedMoment.id}`)}`}
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://www.networkingbude.com/api/share/capture/${selectedMoment.id}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-[#0077B5] text-white rounded-lg hover:bg-[#006399] transition-colors text-sm"
@@ -904,7 +904,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
                   LinkedIn
                 </a>
                 <a
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://www.networkingbude.com/api/share/moment/${selectedMoment.id}`)}`}
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://www.networkingbude.com/api/share/capture/${selectedMoment.id}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-[#1877F2] text-white rounded-lg hover:bg-[#145dbf] transition-colors text-sm"
@@ -912,7 +912,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
                   Facebook
                 </a>
                 <a
-                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`https://www.networkingbude.com/api/share/moment/${selectedMoment.id}`)}&text=${encodeURIComponent('Check out this event moment: ' + selectedMoment.event_name)}`}
+                  href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`https://www.networkingbude.com/api/share/capture/${selectedMoment.id}`)}&text=${encodeURIComponent('Check out this event capture: ' + selectedMoment.event_name)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors text-sm"
@@ -920,7 +920,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
                   X
                 </a>
                 <a
-                  href={`mailto:?subject=${encodeURIComponent('Check out this event moment: ' + selectedMoment.event_name)}&body=${encodeURIComponent('I thought you might enjoy these photos from this event:\n\n' + selectedMoment.event_name + '\n\n' + `https://www.networkingbude.com/api/share/moment/${selectedMoment.id}`)}`}
+                  href={`mailto:?subject=${encodeURIComponent('Check out this event capture: ' + selectedMoment.event_name)}&body=${encodeURIComponent('I thought you might enjoy these photos from this event:\n\n' + selectedMoment.event_name + '\n\n' + `https://www.networkingbude.com/api/share/capture/${selectedMoment.id}`)}`}
                   className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
                 >
                   Email
@@ -1273,7 +1273,7 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
 
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar
-          activeTab="moments"
+          activeTab="captures"
           setActiveTab={(tab) => {
             if (tab === 'dashboard') navigate('/dashboard');
             else if (tab === 'events') navigate('/events');
@@ -1295,4 +1295,4 @@ function EventMoments({ onBackToDashboard, embedded = false }) {
   );
 }
 
-export default EventMoments;
+export default EventCaptures;

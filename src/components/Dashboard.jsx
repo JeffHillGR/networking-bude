@@ -15,8 +15,8 @@ import AboutUs from './AboutUs';
 import FeedbackWidget from './FeedbackWidget';
 import NotificationBell from './NotificationBell.jsx';
 import HeroBannerCarousel from './HeroBannerCarousel.jsx';
-import EventMomentsWidget from './EventMomentsWidget.jsx';
-import EventMoments from './EventMoments.jsx';
+import EventCapturesWidget from './EventCapturesWidget.jsx';
+import EventCaptures from './EventCaptures.jsx';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -696,7 +696,7 @@ const getGreeting = () => {
     { id: 'connections', icon: Users, label: 'Connections' },
     { id: 'events', icon: Calendar, label: 'Events' },
     { id: 'resources', icon: BookOpen, label: 'Insights', isLink: true, href: '/resources-insights' },
-    { id: 'moments', icon: Camera, label: 'Moments' },
+    { id: 'captures', icon: Camera, label: 'Captures' },
     { id: 'messages', icon: MessageCircle, label: 'Messages' }
   ];
 
@@ -904,7 +904,7 @@ const getGreeting = () => {
               </div>
             </div>
 
-            {/* Insights & Event Moments - 2x2 Grid Below */}
+            {/* Insights & Event Captures - 2x2 Grid Below */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
               {/* Insights Widget */}
               <div className="bg-white rounded-lg p-4 md:p-5 shadow-sm border border-gray-200 flex flex-col">
@@ -960,8 +960,8 @@ const getGreeting = () => {
                 </div>
               </div>
 
-              {/* Event Moments Widget */}
-              <EventMomentsWidget />
+              {/* Event Captures Widget */}
+              <EventCapturesWidget />
             </div>
 
             {/* Bottom Banner Ad - Rotating */}
@@ -1071,8 +1071,8 @@ const getGreeting = () => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }} />;
 
-  case 'moments':
-  return <EventMoments onBackToDashboard={() => {
+  case 'captures':
+  return <EventCaptures onBackToDashboard={() => {
     setActiveTab('dashboard');
     window.scrollTo({ top: 0, behavior: 'instant' });
   }} embedded={true} />;

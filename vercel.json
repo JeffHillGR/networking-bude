@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/api/share/moment/:momentId",
-      "destination": "/api/share/moment/[momentId]"
+      "source": "/api/share/capture/:captureId",
+      "destination": "/api/share/capture/[captureId]"
     },
     {
       "source": "/api/share/:eventId",

@@ -80,10 +80,10 @@ export default async function handler(req, res) {
 
     console.log('📊 Preparing to append photo request to Google Sheet');
 
-    // Append the data to the Google Sheet (Event_Moment_Suggestions tab)
+    // Append the data to the Google Sheet (Event_Capture_Suggestions tab)
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'Event_Moment_Suggestions!A:G',
+      range: 'Event_Capture_Suggestions!A:G',
       valueInputOption: 'USER_ENTERED',
       insertDataOption: 'INSERT_ROWS',
       resource: {

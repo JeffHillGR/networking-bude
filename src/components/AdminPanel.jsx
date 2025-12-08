@@ -446,14 +446,14 @@ function AdminPanel() {
               Insights
             </button>
             <button
-              onClick={() => setActiveTab('moments')}
+              onClick={() => setActiveTab('captures')}
               className={`px-4 py-4 font-semibold border-b-2 transition-colors ${
-                activeTab === 'moments'
+                activeTab === 'captures'
                   ? 'border-green-600 text-green-600'
                   : 'border-transparent text-gray-600 hover:text-gray-900'
               }`}
             >
-              Event Moments
+              Event Captures
             </button>
             <button
               onClick={() => setActiveTab('submissions')}
@@ -524,15 +524,15 @@ function AdminPanel() {
           />
         )}
         {activeTab === 'moderation' && <ModerationTab onReportReviewed={() => setUnreviewedReportsCount(prev => Math.max(0, prev - 1))} />}
-        {activeTab === 'moments' && <EventMomentsTab />}
+        {activeTab === 'captures' && <EventCapturesTab />}
         {activeTab === 'submissions' && <PhotoSubmissionsTab onCountChange={setPendingSubmissionsCount} />}
       </div>
     </div>
   );
 }
 
-// Event Moments Admin Tab
-function EventMomentsTab() {
+// Event Captures Admin Tab
+function EventCapturesTab() {
   const [moments, setMoments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRegion, setSelectedRegion] = useState(
@@ -565,10 +565,10 @@ function EventMomentsTab() {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('event_moments')
+        .from('event_captures')
         .select(`
           *,
-          event_moment_photos (
+          event_capture_photos (
             id,
             image_url,
             display_order
@@ -583,9 +583,9 @@ function EventMomentsTab() {
       // Fetch like counts
       const momentsWithLikes = await Promise.all((data || []).map(async (moment) => {
         const { count } = await supabase
-          .from('event_moment_likes')
+          .from('event_capture_likes')
           .select('*', { count: 'exact', head: true })
-          .eq('event_moment_id', moment.id);
+          .eq('event_capture_id', moment.id);
         return { ...moment, likeCount: count || 0 };
       }));
 
@@ -611,11 +611,11 @@ function EventMomentsTab() {
 
       await Promise.all([
         supabase
-          .from('event_moments')
+          .from('event_captures')
           .update({ display_order: swapOrder })
           .eq('id', currentMoment.id),
         supabase
-          .from('event_moments')
+          .from('event_captures')
           .update({ display_order: currentOrder })
           .eq('id', swapMoment.id)
       ]);
@@ -714,7 +714,7 @@ function EventMomentsTab() {
         console.log('Uploading to path:', filePath);
 
         const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('event-moments')
+          .from('event-captures')
           .upload(filePath, fileToUpload, {
             contentType: 'image/jpeg'
           });
@@ -727,7 +727,7 @@ function EventMomentsTab() {
         }
 
         const { data: { publicUrl } } = supabase.storage
-          .from('event-moments')
+          .from('event-captures')
           .getPublicUrl(filePath);
 
         console.log('Public URL:', publicUrl);
@@ -789,7 +789,7 @@ function EventMomentsTab() {
       if (editingMoment) {
         // Update existing moment
         const { error: momentError } = await supabase
-          .from('event_moments')
+          .from('event_captures')
           .update({
             event_name: formData.event_name,
             event_date: formData.event_date,
@@ -804,28 +804,28 @@ function EventMomentsTab() {
 
         // Delete existing photos and re-add
         await supabase
-          .from('event_moment_photos')
+          .from('event_capture_photos')
           .delete()
-          .eq('event_moment_id', editingMoment.id);
+          .eq('event_capture_id', editingMoment.id);
 
         // Add new photos
         const photosToInsert = formData.photos.map(photo => ({
-          event_moment_id: editingMoment.id,
+          event_capture_id: editingMoment.id,
           image_url: photo.image_url,
           display_order: photo.display_order
         }));
 
         const { error: photosError } = await supabase
-          .from('event_moment_photos')
+          .from('event_capture_photos')
           .insert(photosToInsert);
 
         if (photosError) throw photosError;
 
-        alert('Event moment updated successfully!');
+        alert('Event capture updated successfully!');
       } else {
         // Create new moment
         const { data: newMoment, error: momentError } = await supabase
-          .from('event_moments')
+          .from('event_captures')
           .insert({
             event_name: formData.event_name,
             event_date: formData.event_date,
@@ -843,18 +843,18 @@ function EventMomentsTab() {
 
         // Add photos
         const photosToInsert = formData.photos.map(photo => ({
-          event_moment_id: newMoment.id,
+          event_capture_id: newMoment.id,
           image_url: photo.image_url,
           display_order: photo.display_order
         }));
 
         const { error: photosError } = await supabase
-          .from('event_moment_photos')
+          .from('event_capture_photos')
           .insert(photosToInsert);
 
         if (photosError) throw photosError;
 
-        alert('Event moment created successfully!');
+        alert('Event capture created successfully!');
       }
 
       // Reset form and reload
@@ -880,17 +880,17 @@ function EventMomentsTab() {
       organization_name: moment.organization_name || '',
       organization_url: moment.organization_url || '',
       photo_credit: moment.photo_credit || '',
-      photos: moment.event_moment_photos?.sort((a, b) => a.display_order - b.display_order) || []
+      photos: moment.event_capture_photos?.sort((a, b) => a.display_order - b.display_order) || []
     });
     setShowAddForm(true);
   };
 
   const handleDelete = async (momentId) => {
-    if (!confirm('Are you sure you want to delete this event moment?')) return;
+    if (!confirm('Are you sure you want to delete this event capture?')) return;
 
     try {
       const { error } = await supabase
-        .from('event_moments')
+        .from('event_captures')
         .delete()
         .eq('id', momentId);
 
@@ -905,7 +905,7 @@ function EventMomentsTab() {
   const toggleActive = async (moment) => {
     try {
       const { error } = await supabase
-        .from('event_moments')
+        .from('event_captures')
         .update({ is_active: !moment.is_active })
         .eq('id', moment.id);
 
@@ -921,7 +921,7 @@ function EventMomentsTab() {
       {/* Header with Region Selector */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Event Moments</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Event Captures</h2>
           <p className="text-gray-600">Manage photo albums from networking events</p>
         </div>
         <div className="flex items-center gap-4">
@@ -943,7 +943,7 @@ function EventMomentsTab() {
             className="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 flex items-center gap-2"
           >
             <Camera className="w-5 h-5" />
-            Add Event Moment
+            Add Event Photos
           </button>
         </div>
       </div>
@@ -951,7 +951,7 @@ function EventMomentsTab() {
       {/* Add/Edit Form */}
       {showAddForm && (
         <div className="bg-white rounded-lg border-2 border-[#D0ED00] p-6">
-          <h3 className="text-lg font-bold mb-4">{editingMoment ? 'Edit Event Moment' : 'Add New Event Moment'}</h3>
+          <h3 className="text-lg font-bold mb-4">{editingMoment ? 'Edit Event Capture' : 'Add New Event Capture'}</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -1115,7 +1115,7 @@ function EventMomentsTab() {
                 type="submit"
                 className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700"
               >
-                {editingMoment ? 'Update Moment' : 'Create Moment'}
+                {editingMoment ? 'Update Capture' : 'Create Capture'}
               </button>
               <button
                 type="button"
@@ -1132,16 +1132,16 @@ function EventMomentsTab() {
         </div>
       )}
 
-      {/* Moments List */}
+      {/* Captures List */}
       {loading ? (
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading moments...</p>
+          <p className="mt-4 text-gray-600">Loading captures...</p>
         </div>
       ) : moments.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <Camera className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">No event moments for this region yet.</p>
+          <p className="text-gray-500">No event captures for this region yet.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -1170,7 +1170,7 @@ function EventMomentsTab() {
 
                 {/* Thumbnail */}
                 <div className="flex gap-1 flex-shrink-0">
-                  {moment.event_moment_photos?.slice(0, 3).map((photo, idx) => (
+                  {moment.event_capture_photos?.slice(0, 3).map((photo, idx) => (
                     <img
                       key={photo.id}
                       src={photo.image_url}
@@ -1178,9 +1178,9 @@ function EventMomentsTab() {
                       className="w-16 h-16 object-cover rounded"
                     />
                   ))}
-                  {(moment.event_moment_photos?.length || 0) > 3 && (
+                  {(moment.event_capture_photos?.length || 0) > 3 && (
                     <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-sm text-gray-600">
-                      +{moment.event_moment_photos.length - 3}
+                      +{moment.event_capture_photos.length - 3}
                     </div>
                   )}
                 </div>
@@ -1194,7 +1194,7 @@ function EventMomentsTab() {
                   )}
                   <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
                     <span>❤️ {moment.likeCount} likes</span>
-                    <span>📷 {moment.event_moment_photos?.length || 0} photos</span>
+                    <span>📷 {moment.event_capture_photos?.length || 0} photos</span>
                     {!moment.is_active && <span className="text-red-600 font-medium">Hidden</span>}
                   </div>
                 </div>
@@ -3200,13 +3200,13 @@ function PhotoSubmissionsTab({ onCountChange }) {
   const fetchEventMoments = async () => {
     try {
       const { data, error } = await supabase
-        .from('event_moments')
+        .from('event_captures')
         .select('id, event_name, event_date')
         .order('created_at', { ascending: false });
       if (error) throw error;
       setEventMoments(data || []);
     } catch (error) {
-      console.error('Error fetching event moments:', error);
+      console.error('Error fetching event captures:', error);
     }
   };
 
@@ -3283,14 +3283,14 @@ function PhotoSubmissionsTab({ onCountChange }) {
 
     try {
       if (approveAction === 'existing' && selectedMomentId) {
-        // Add photos to existing event moment
+        // Add photos to existing event capture
         const photoUrls = selectedSubmission.photo_urls || [];
 
         // Get current max display_order for this moment
         const { data: existingPhotos } = await supabase
-          .from('event_moment_photos')
+          .from('event_capture_photos')
           .select('display_order')
-          .eq('event_moment_id', selectedMomentId)
+          .eq('event_capture_id', selectedMomentId)
           .order('display_order', { ascending: false })
           .limit(1);
 
@@ -3299,9 +3299,9 @@ function PhotoSubmissionsTab({ onCountChange }) {
         // Insert each photo
         for (const url of photoUrls) {
           const { error: photoError } = await supabase
-            .from('event_moment_photos')
+            .from('event_capture_photos')
             .insert({
-              event_moment_id: selectedMomentId,
+              event_capture_id: selectedMomentId,
               image_url: url,
               display_order: nextOrder++
             });
@@ -3310,12 +3310,12 @@ function PhotoSubmissionsTab({ onCountChange }) {
 
         // Mark submission as approved
         await updateStatus(selectedSubmission.id, 'approved');
-        alert(`Added ${photoUrls.length} photo(s) to the event moment!`);
+        alert(`Added ${photoUrls.length} photo(s) to the event capture!`);
 
       } else if (approveAction === 'new') {
-        // Create new event moment with photos
+        // Create new event capture with photos
         const { data: newMoment, error: momentError } = await supabase
-          .from('event_moments')
+          .from('event_captures')
           .insert({
             event_name: newMomentData.event_name,
             event_date: newMomentData.event_date,
@@ -3334,9 +3334,9 @@ function PhotoSubmissionsTab({ onCountChange }) {
         const photoUrls = selectedSubmission.photo_urls || [];
         for (let i = 0; i < photoUrls.length; i++) {
           const { error: photoError } = await supabase
-            .from('event_moment_photos')
+            .from('event_capture_photos')
             .insert({
-              event_moment_id: newMoment.id,
+              event_capture_id: newMoment.id,
               image_url: photoUrls[i],
               display_order: i + 1
             });
@@ -3346,9 +3346,9 @@ function PhotoSubmissionsTab({ onCountChange }) {
         // Mark submission as approved
         await updateStatus(selectedSubmission.id, 'approved');
 
-        // Refresh event moments list
+        // Refresh event captures list
         fetchEventMoments();
-        alert(`Created new event moment "${newMomentData.event_name}" with ${photoUrls.length} photo(s)!`);
+        alert(`Created new event capture "${newMomentData.event_name}" with ${photoUrls.length} photo(s)!`);
       }
 
       setShowApproveModal(false);
@@ -3572,9 +3572,9 @@ function PhotoSubmissionsTab({ onCountChange }) {
                 ))}
               </div>
 
-              {/* Copy URLs for Event Moments */}
+              {/* Copy URLs for Event Captures */}
               <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Photo URLs (copy for Event Moments):</p>
+                <p className="text-sm font-medium text-gray-700 mb-2">Photo URLs (copy for Event Captures):</p>
                 <div className="space-y-1">
                   {selectedSubmission.photo_urls?.map((url, idx) => (
                     <div key={idx} className="flex items-center gap-2">
@@ -3605,7 +3605,7 @@ function PhotoSubmissionsTab({ onCountChange }) {
                     onClick={() => openApproveModal(selectedSubmission)}
                     className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700"
                   >
-                    Approve & Add to Event Moments
+                    Approve & Add to Event Captures
                   </button>
                   <button
                     onClick={() => handleReject(selectedSubmission)}
@@ -3632,7 +3632,7 @@ function PhotoSubmissionsTab({ onCountChange }) {
           >
             <div className="p-6">
               <div className="flex items-start justify-between mb-4">
-                <h3 className="text-xl font-bold text-gray-900">Add Photos to Event Moments</h3>
+                <h3 className="text-xl font-bold text-gray-900">Add Photos to Event Captures</h3>
                 <button
                   onClick={() => setShowApproveModal(false)}
                   className="text-gray-400 hover:text-gray-600"
@@ -3668,7 +3668,7 @@ function PhotoSubmissionsTab({ onCountChange }) {
                     className="w-4 h-4 text-green-600"
                   />
                   <div>
-                    <p className="font-medium text-gray-900">Add to existing Event Moment</p>
+                    <p className="font-medium text-gray-900">Add to existing event</p>
                     <p className="text-sm text-gray-500">Choose an existing event to add these photos to</p>
                   </div>
                 </label>
@@ -3682,16 +3682,16 @@ function PhotoSubmissionsTab({ onCountChange }) {
                     className="w-4 h-4 text-green-600"
                   />
                   <div>
-                    <p className="font-medium text-gray-900">Create new Event Moment</p>
+                    <p className="font-medium text-gray-900">Add a new event</p>
                     <p className="text-sm text-gray-500">Create a new event with these photos</p>
                   </div>
                 </label>
               </div>
 
-              {/* Existing Moment Dropdown */}
+              {/* Existing Capture Dropdown */}
               {approveAction === 'existing' && (
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Select Event Moment</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Select event</label>
                   <select
                     value={selectedMomentId}
                     onChange={(e) => setSelectedMomentId(e.target.value)}
@@ -3707,7 +3707,7 @@ function PhotoSubmissionsTab({ onCountChange }) {
                 </div>
               )}
 
-              {/* New Moment Form */}
+              {/* New Capture Form */}
               {approveAction === 'new' && (
                 <div className="space-y-3 mb-4">
                   <div>
@@ -3769,7 +3769,7 @@ function PhotoSubmissionsTab({ onCountChange }) {
                   disabled={saving || (approveAction === 'existing' && !selectedMomentId) || (approveAction === 'new' && !newMomentData.event_name)}
                   className="flex-1 px-4 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {saving ? 'Saving...' : approveAction === 'existing' ? 'Add to Event Moment' : 'Create Event Moment'}
+                  {saving ? 'Saving...' : approveAction === 'existing' ? 'Add to Event' : 'Create Event'}
                 </button>
                 <button
                   onClick={() => setShowApproveModal(false)}

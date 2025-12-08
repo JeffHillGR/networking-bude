@@ -302,21 +302,21 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
                 {!isCollapsed && <span className="font-medium text-sm">Insights</span>}
               </button>
 
-              {/* Event Moments */}
+              {/* Event Captures */}
               <button
                 onClick={() => {
                   trackEngagement();
-                  setActiveTab('moments');
+                  setActiveTab('captures');
                 }}
                 className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'} px-3 py-2 rounded-lg font-medium transition-colors ${
-                  activeTab === 'moments'
+                  activeTab === 'captures'
                     ? 'bg-[#009900] text-white border-[3px] border-[#D0ED00]'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
-                title={isCollapsed ? 'Moments' : undefined}
+                title={isCollapsed ? 'Captures' : undefined}
               >
                 <Camera className="w-5 h-5 flex-shrink-0" />
-                {!isCollapsed && <span className="font-medium text-sm">Moments</span>}
+                {!isCollapsed && <span className="font-medium text-sm">Captures</span>}
               </button>
 
               {/* Messages */}
