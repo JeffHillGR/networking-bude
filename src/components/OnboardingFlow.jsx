@@ -590,10 +590,10 @@ export default function BudEOnboarding() {
               <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
-                    Traditional networking
+                    Traditional networking leaving you frustrated?
                   </h1>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
-                    leaving you frustrated?
+                    Not finding the best events to go to?
                   </h1>
                 </div>
               </div>
@@ -737,6 +737,113 @@ export default function BudEOnboarding() {
         </div>
       </div>
 
+      {/* How It Works Section */}
+      <div id="how-it-works" className="bg-gray-50 px-6 py-12" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+        <div className="max-w-3xl mx-auto">
+          {/* How It Works Title */}
+          <div className="text-center mb-8">
+            <h2 className="text-4xl font-bold text-black">How It Works</h2>
+          </div>
+
+          <div className="text-gray-700 space-y-6 leading-relaxed text-lg">
+            <div>
+              <p className="font-bold mb-2">You create your profile</p>
+              <p>
+                Tell us your professional interests, the organizations you're part of (or want to explore), your hobbies, and most importantly your networking goals.
+              </p>
+            </div>
+
+            {/* Mobile: Hook appears first */}
+            <div className="md:hidden mb-8">
+              <div className="text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                <p className="text-3xl font-bold text-black leading-tight mb-3">
+                  Those 3 easy steps
+                </p>
+                <p className="text-2xl font-bold text-black leading-relaxed">
+                  Create your profile<br/>
+                  Start connecting<br/>
+                  Go to events together
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-8 items-center my-8">
+              <div className="md:w-1/2">
+                <p className="font-bold mb-2">We take the wheel</p>
+                <ul className="space-y-2">
+                  <li>We suggest compatible connections.</li>
+                  <li>We show you weekly events worth checking out (and yes, you'll be surprised how much more effective they are with a BudE).</li>
+                  <li>We tell you who in your selected network is interested in each event and who's actually going!</li>
+                  <li>We give you Insights to elevate your networking game and support your professional growth.</li>
+                </ul>
+              </div>
+              {/* Desktop: Hook on right */}
+              <div className="hidden md:block md:w-1/2 text-right">
+                <div style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                  <p className="text-4xl md:text-5xl font-bold text-black leading-tight mb-4">
+                    Those 3 easy steps
+                  </p>
+                  <p className="text-3xl md:text-4xl font-bold text-black leading-relaxed">
+                    Create your profile<br/>
+                    Start connecting<br/>
+                    Go to events together
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <p className="font-bold mb-2">All in one app.</p>
+              <p>
+                That's The BudE System.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* How We Are Different Section */}
+      <div className="bg-white px-6 py-12" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+        <div className="max-w-3xl mx-auto">
+          {/* How We Are Different Title */}
+          <div className="text-center mb-8">
+            <h2 className="text-4xl font-bold text-black">How We Are Different</h2>
+          </div>
+
+          <div className="text-gray-700 space-y-6 leading-relaxed text-lg">
+            <div className="flex flex-col md:flex-row gap-8 items-center my-8">
+              {/* Desktop: Hook on left */}
+              <div className="hidden md:block md:w-1/2 text-left">
+                <p className="text-4xl md:text-5xl font-bold text-black leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+                  You support their goals; they support yours
+                </p>
+              </div>
+              <div className="md:w-1/2">
+                <p>
+                  We suggest connections based on your goals and interests. Not on "who you know." What other social networking apps ask you that?
+                </p>
+                <p className="mt-4">
+                  This isn't a numbers game. Strive for a great group of 5 - 7 connections.
+                </p>
+                <p className="mt-4">
+                  We show you events and who in your group is going.
+                </p>
+                <p className="mt-4">
+                  We make this a place where you can feel comfortable reaching out to build community.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile: Hook appears at bottom */}
+          <div className="md:hidden mt-8 mb-6">
+            <p className="text-4xl font-bold text-black leading-tight text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+              You support their goals; they support yours
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* About Section */}
       <div className="bg-gray-50 px-6 py-12" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
         <div className="max-w-3xl mx-auto">
@@ -813,114 +920,6 @@ export default function BudEOnboarding() {
               <p className="font-semibold">Jeff Hill</p>
               <p>Founder, The BudE System™</p>
             </div>
-          </div>
-        </div>
-      </div>
-
-
-      {/* How It Works Section */}
-      <div id="how-it-works" className="bg-white px-6 py-12" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
-        <div className="max-w-3xl mx-auto">
-          {/* How It Works Title */}
-          <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold text-black">How It Works</h2>
-          </div>
-
-          <div className="text-gray-700 space-y-6 leading-relaxed text-lg">
-            <div>
-              <p className="font-bold mb-2">You create your profile</p>
-              <p>
-                Tell us your professional interests, the organizations you're part of (or want to explore), your hobbies, and most importantly your networking goals.
-              </p>
-            </div>
-
-            {/* Mobile: Hook appears first */}
-            <div className="md:hidden mb-8">
-              <div className="text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-                <p className="text-3xl font-bold text-black leading-tight mb-3">
-                  Those 3 easy steps
-                </p>
-                <p className="text-2xl font-bold text-black leading-relaxed">
-                  Create your profile<br/>
-                  Start connecting<br/>
-                  Go to events together
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-col md:flex-row gap-8 items-center my-8">
-              <div className="md:w-1/2">
-                <p className="font-bold mb-2">We take the wheel</p>
-                <ul className="space-y-2">
-                  <li>We suggest compatible connections.</li>
-                  <li>We show you weekly events worth checking out (and yes, you'll be surprised how much more effective they are with a BudE).</li>
-                  <li>We tell you who in your selected network is interested in each event and who's actually going!</li>
-                  <li>We give you Insights to elevate your networking game and support your professional growth.</li>
-                </ul>
-              </div>
-              {/* Desktop: Hook on right */}
-              <div className="hidden md:block md:w-1/2 text-right">
-                <div style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-                  <p className="text-4xl md:text-5xl font-bold text-black leading-tight mb-4">
-                    Those 3 easy steps
-                  </p>
-                  <p className="text-3xl md:text-4xl font-bold text-black leading-relaxed">
-                    Create your profile<br/>
-                    Start connecting<br/>
-                    Go to events together
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8">
-              <p className="font-bold mb-2">All in one app.</p>
-              <p>
-                That's The BudE System.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* How We Are Different Section */}
-      <div className="bg-gray-50 px-6 py-12" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
-        <div className="max-w-3xl mx-auto">
-          {/* How We Are Different Title */}
-          <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold text-black">How We Are Different</h2>
-          </div>
-
-          <div className="text-gray-700 space-y-6 leading-relaxed text-lg">
-            <div className="flex flex-col md:flex-row gap-8 items-center my-8">
-              {/* Desktop: Hook on left */}
-              <div className="hidden md:block md:w-1/2 text-left">
-                <p className="text-4xl md:text-5xl font-bold text-black leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-                  You support their goals; they support yours
-                </p>
-              </div>
-              <div className="md:w-1/2">
-                <p>
-                  We suggest connections based on your goals and interests. Not on "who you know." What other social networking apps ask you that?
-                </p>
-                <p className="mt-4">
-                  This isn't a numbers game. Strive for a great group of 5 - 7 connections.
-                </p>
-                <p className="mt-4">
-                  We show you events and who in your group is going.
-                </p>
-                <p className="mt-4">
-                  We make this a place where you can feel comfortable reaching out to build community.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile: Hook appears at bottom */}
-          <div className="md:hidden mt-8 mb-6">
-            <p className="text-4xl font-bold text-black leading-tight text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-              You support their goals; they support yours
-            </p>
           </div>
 
           {/* Join Now Button */}
