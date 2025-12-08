@@ -549,6 +549,7 @@ function EventCapturesTab() {
     organization_name: '',
     organization_url: '',
     photo_credit: '',
+    submitted_by: '',
     photos: []
   });
 
@@ -796,7 +797,8 @@ function EventCapturesTab() {
             description: formData.description || null,
             organization_name: formData.organization_name || null,
             organization_url: formData.organization_url || null,
-            photo_credit: formData.photo_credit || null
+            photo_credit: formData.photo_credit || null,
+            submitted_by: formData.submitted_by || null
           })
           .eq('id', editingCapture.id);
 
@@ -833,6 +835,7 @@ function EventCapturesTab() {
             organization_name: formData.organization_name || null,
             organization_url: formData.organization_url || null,
             photo_credit: formData.photo_credit || null,
+            submitted_by: formData.submitted_by || null,
             region_id: selectedRegion,
             is_active: true
           })
@@ -858,7 +861,7 @@ function EventCapturesTab() {
       }
 
       // Reset form and reload
-      setFormData({ event_name: '', event_date: '', description: '', organization_name: '', organization_url: '', photo_credit: '', photos: [] });
+      setFormData({ event_name: '', event_date: '', description: '', organization_name: '', organization_url: '', photo_credit: '', submitted_by: '', photos: [] });
       setShowAddForm(false);
       setEditingCapture(null);
       loadCaptures();
@@ -880,6 +883,7 @@ function EventCapturesTab() {
       organization_name: capture.organization_name || '',
       organization_url: capture.organization_url || '',
       photo_credit: capture.photo_credit || '',
+      submitted_by: capture.submitted_by || '',
       photos: capture.event_capture_photos?.sort((a, b) => a.display_order - b.display_order) || []
     });
     setShowAddForm(true);
@@ -938,7 +942,7 @@ function EventCapturesTab() {
             onClick={() => {
               setShowAddForm(true);
               setEditingCapture(null);
-              setFormData({ event_name: '', event_date: '', description: '', organization_name: '', organization_url: '', photo_credit: '', photos: [] });
+              setFormData({ event_name: '', event_date: '', description: '', organization_name: '', organization_url: '', photo_credit: '', submitted_by: '', photos: [] });
             }}
             className="bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 flex items-center gap-2"
           >
@@ -1039,6 +1043,16 @@ function EventCapturesTab() {
                   onChange={(e) => setFormData(prev => ({ ...prev, photo_credit: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   placeholder="Photographer name (optional)"
+                />
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Submitted By</label>
+                <input
+                  type="text"
+                  value={formData.submitted_by}
+                  onChange={(e) => setFormData(prev => ({ ...prev, submitted_by: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  placeholder="e.g., Jeff H. (first name + last initial)"
                 />
               </div>
             </div>

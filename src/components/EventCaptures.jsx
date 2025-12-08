@@ -841,6 +841,9 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 rounded-b-lg">
               <h3 className="text-white font-bold text-lg">{selectedCapture.event_name}</h3>
               <p className="text-gray-300 text-sm">{selectedCapture.event_date}</p>
+              {selectedCapture.submitted_by && (
+                <p className="text-gray-300 text-sm mt-1">Submitted by {selectedCapture.submitted_by}</p>
+              )}
               {selectedCapture.photo_credit && (
                 <p className="text-gray-400 text-xs mt-1">Photo: {selectedCapture.photo_credit}</p>
               )}

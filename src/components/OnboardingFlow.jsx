@@ -590,7 +590,7 @@ export default function BudEOnboarding() {
               <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
-                    Traditional networking leaving you frustrated?
+                    Traditional networking not working?
                   </h1>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
                     Not finding the best events to go to?
