@@ -824,17 +824,17 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
             {selectedPhotoIndex > 0 && (
               <button
                 onClick={() => navigatePhoto(-1)}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 p-2 bg-black/50 rounded-full z-10"
+                className="absolute left-2 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 p-1.5 bg-black/40 rounded-full z-10"
               >
-                <ChevronLeft className="w-10 h-10" />
+                <ChevronLeft className="w-6 h-6" />
               </button>
             )}
             {selectedCapture.event_capture_photos && selectedPhotoIndex < selectedCapture.event_capture_photos.length - 1 && (
               <button
                 onClick={() => navigatePhoto(1)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 p-2 bg-black/50 rounded-full z-10"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 p-1.5 bg-black/40 rounded-full z-10"
               >
-                <ChevronRight className="w-10 h-10" />
+                <ChevronRight className="w-6 h-6" />
               </button>
             )}
 
