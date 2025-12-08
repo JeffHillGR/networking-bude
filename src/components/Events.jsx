@@ -508,7 +508,7 @@ function Events({ onBackToDashboard }) {
                     style={{ animationDelay: `${index * 80}ms`, animationFillMode: 'backwards' }}
                   >
                     <div className="flex flex-col md:flex-row gap-4 md:gap-6 h-full">
-                      <div className="w-full md:w-48 h-32 md:h-32 rounded-lg flex-shrink-0 bg-gray-50 flex items-center justify-center p-3">
+                      <div className="w-full md:w-72 h-48 md:h-48 rounded-lg flex-shrink-0 bg-gray-50 flex items-center justify-center p-4">
                         <img src={event.image} alt={event.title} className="max-w-full max-h-full object-contain" />
                       </div>
                       <div className="flex-1 min-w-0 flex flex-col">
