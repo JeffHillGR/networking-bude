@@ -92,17 +92,21 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
         if (user) {
           const allCaptureIds = capturesWithLikes.map(c => c.id);
           if (allCaptureIds.length > 0) {
-            const { data: likes } = await supabase
+            const { data: likes, error: likesError } = await supabase
               .from('event_capture_likes')
               .select('event_capture_id')
               .eq('user_id', user.id)
               .in('event_capture_id', allCaptureIds);
 
-            const likesMap = {};
-            likes?.forEach(like => {
-              likesMap[like.event_capture_id] = true;
-            });
-            setUserLikes(likesMap);
+            if (likesError) {
+              console.error('Error fetching user likes:', likesError);
+            } else {
+              const likesMap = {};
+              likes?.forEach(like => {
+                likesMap[like.event_capture_id] = true;
+              });
+              setUserLikes(likesMap);
+            }
           }
         }
       } catch (error) {
@@ -123,15 +127,17 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
 
     try {
       if (isLiked) {
-        await supabase
+        const { error } = await supabase
           .from('event_capture_likes')
           .delete()
           .eq('event_capture_id', captureId)
           .eq('user_id', user.id);
+        if (error) throw error;
       } else {
-        await supabase
+        const { error } = await supabase
           .from('event_capture_likes')
           .insert({ event_capture_id: captureId, user_id: user.id });
+        if (error) throw error;
       }
 
       // Update local state
