@@ -317,68 +317,40 @@ function ResourcesInsights({ onBackToDashboard }) {
                   </div>
                 )}
 
-                {/* Bottom Banner Ad Section */}
-                {(() => {
-                  if (bottomBannerAd?.image) {
-                    // If ad has URL, link to it. Otherwise, trigger inquiry modal
-                    if (bottomBannerAd.url) {
-                      return (
-                        <div className="mt-12 flex justify-center">
-                          <a
-                            href={bottomBannerAd.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block"
-                          >
-                            <img
-                              src={bottomBannerAd.image}
-                              alt="Sponsored"
-                              className="w-full max-w-[728px] h-auto rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
-                              style={{ aspectRatio: '728/160' }}
-                            />
-                          </a>
-                        </div>
-                      );
-                    } else {
-                      return (
-                        <div className="mt-12 flex justify-center">
-                          <div
-                            onClick={() => setShowAdInquiryModal(true)}
-                            className="block cursor-pointer"
-                          >
-                            <img
-                              src={bottomBannerAd.image}
-                              alt="Sponsored"
-                              className="w-full max-w-[728px] h-auto rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
-                              style={{ aspectRatio: '728/160' }}
-                            />
-                          </div>
-                        </div>
-                      );
-                    }
-                  }
-
-                  // Show placeholder if no ad
-                  return (
+                {/* Bottom Banner Ad Section - Only show when ad exists */}
+                {bottomBannerAd?.image && (
+                  bottomBannerAd.url ? (
+                    <div className="mt-12 flex justify-center">
+                      <a
+                        href={bottomBannerAd.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block"
+                      >
+                        <img
+                          src={bottomBannerAd.image}
+                          alt="Sponsored"
+                          className="w-full max-w-[728px] h-auto rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+                          style={{ aspectRatio: '728/160' }}
+                        />
+                      </a>
+                    </div>
+                  ) : (
                     <div className="mt-12 flex justify-center">
                       <div
                         onClick={() => setShowAdInquiryModal(true)}
-                        className="w-full max-w-[728px] rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
-                        style={{ aspectRatio: '728/160' }}
+                        className="block cursor-pointer"
                       >
-                        <div
-                          className="absolute inset-0 bg-cover opacity-30"
-                          style={{
-                            backgroundImage: 'url(My-phone-blurry-tall-2.jpg)',
-                            backgroundPosition: 'center 90%'
-                          }}
+                        <img
+                          src={bottomBannerAd.image}
+                          alt="Sponsored"
+                          className="w-full max-w-[728px] h-auto rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+                          style={{ aspectRatio: '728/160' }}
                         />
-                        <div className="text-center relative z-10">
-                        </div>
                       </div>
                     </div>
-                  );
-                })()}
+                  )
+                )}
               </>
             )}
       </div>

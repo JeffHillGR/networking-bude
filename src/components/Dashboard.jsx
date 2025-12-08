@@ -12,7 +12,6 @@ import TermsPage from './TermsPage';
 import PrivacyPage from './PrivacyPage';
 import ArchivePage from './ArchivePage';
 import AboutUs from './AboutUs';
-import FeedbackWidget from './FeedbackWidget';
 import NotificationBell from './NotificationBell.jsx';
 import HeroBannerCarousel from './HeroBannerCarousel.jsx';
 import EventCapturesWidget from './EventCapturesWidget.jsx';
@@ -964,27 +963,9 @@ const getGreeting = () => {
               <EventCapturesWidget />
             </div>
 
-            {/* Bottom Banner Ad - Rotating */}
-            <div className="mt-6 mb-4">
-              {availableBottomBannerAds.length === 0 ? (
-                // No ads available - show inquiry prompt
-                <div
-                  onClick={() => setShowAdInquiryModal(true)}
-                  className="rounded-lg p-8 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
-                  style={{ height: '180px' }}
-                >
-                  <div
-                    className="absolute inset-0 bg-cover opacity-30"
-                    style={{
-                      backgroundImage: 'url(My-phone-blurry-tall-2.jpg)',
-                      backgroundPosition: 'center 90%'
-                    }}
-                  />
-                  <div className="text-center relative z-10">
-                  </div>
-                </div>
-              ) : (
-                // Display current ad with rotation
+            {/* Bottom Banner Ad - Rotating - Only show when ads exist */}
+            {availableBottomBannerAds.length > 0 && (
+              <div className="mt-6 mb-4">
                 <a
                   href={availableBottomBannerAds[currentBottomAdIndex].url}
                   target="_blank"
@@ -998,8 +979,8 @@ const getGreeting = () => {
                     style={{ maxHeight: '180px' }}
                   />
                 </a>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Footer Section */}
             <div className="mt-8 pt-6 border-t border-gray-200">
@@ -1768,13 +1749,6 @@ default:
         </div>
       )}
 
-      {/* Floating Feedback Widget */}
-      <FeedbackWidget
-        onOpenFeedback={() => {
-          // Open feedback modal directly without changing active tab
-          setShowFeedbackModal(true);
-        }}
-      />
     </div>
   );
 }

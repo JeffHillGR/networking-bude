@@ -597,52 +597,38 @@ function Events({ onBackToDashboard }) {
               </button>
             </div>
 
-            {/* Bottom Banner Ad - Hidden on mobile due to space constraints */}
-            <div className="hidden md:block mt-8 md:mt-12 pb-4">
-              {ads.eventsBottom?.image && ads.eventsBottom?.url ? (
-                <a
-                  href={ads.eventsBottom.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block"
-                >
-                  <img
-                    src={ads.eventsBottom.image}
-                    alt="Advertisement"
-                    className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                    style={{ aspectRatio: '728/160' }}
-                  />
-                </a>
-              ) : ads.eventsBottom?.image ? (
-                <div
-                  onClick={() => setShowAdInquiryModal(true)}
-                  className="block cursor-pointer"
-                >
-                  <img
-                    src={ads.eventsBottom.image}
-                    alt="Advertisement"
-                    className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                    style={{ aspectRatio: '728/160' }}
-                  />
-                </div>
-              ) : (
-                <div
-                  onClick={() => setShowAdInquiryModal(true)}
-                  className="rounded-lg p-6 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
-                  style={{ aspectRatio: '728/160' }}
-                >
+            {/* Bottom Banner Ad - Hidden on mobile, only show when ad exists */}
+            {ads.eventsBottom?.image && (
+              <div className="hidden md:block mt-8 md:mt-12 pb-4">
+                {ads.eventsBottom?.url ? (
+                  <a
+                    href={ads.eventsBottom.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <img
+                      src={ads.eventsBottom.image}
+                      alt="Advertisement"
+                      className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                      style={{ aspectRatio: '728/160' }}
+                    />
+                  </a>
+                ) : (
                   <div
-                    className="absolute inset-0 bg-cover opacity-30"
-                    style={{
-                      backgroundImage: 'url(My-phone-blurry-tall-2.jpg)',
-                      backgroundPosition: 'center'
-                    }}
-                  />
-                  <div className="text-center relative z-10">
+                    onClick={() => setShowAdInquiryModal(true)}
+                    className="block cursor-pointer"
+                  >
+                    <img
+                      src={ads.eventsBottom.image}
+                      alt="Advertisement"
+                      className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                      style={{ aspectRatio: '728/160' }}
+                    />
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Sidebar with Calendar and Ads */}
@@ -657,94 +643,66 @@ function Events({ onBackToDashboard }) {
                 />
               </div>
 
-              {/* Sidebar Ad 1 */}
-              {ads.eventsSidebar1?.image && ads.eventsSidebar1?.url ? (
-                <a
-                  href={ads.eventsSidebar1.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block"
-                >
-                  <img
-                    src={ads.eventsSidebar1.image}
-                    alt="Advertisement"
-                    className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                    style={{ aspectRatio: '300/600' }}
-                  />
-                </a>
-              ) : ads.eventsSidebar1?.image ? (
-                <div
-                  onClick={() => setShowAdInquiryModal(true)}
-                  className="block cursor-pointer"
-                >
-                  <img
-                    src={ads.eventsSidebar1.image}
-                    alt="Advertisement"
-                    className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                    style={{ aspectRatio: '300/600' }}
-                  />
-                </div>
-              ) : (
-                <div
-                  onClick={() => setShowAdInquiryModal(true)}
-                  className="rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
-                  style={{ aspectRatio: '300/600' }}
-                >
+              {/* Sidebar Ad 1 - Only show when ad exists */}
+              {ads.eventsSidebar1?.image && (
+                ads.eventsSidebar1?.url ? (
+                  <a
+                    href={ads.eventsSidebar1.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <img
+                      src={ads.eventsSidebar1.image}
+                      alt="Advertisement"
+                      className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                      style={{ aspectRatio: '300/600' }}
+                    />
+                  </a>
+                ) : (
                   <div
-                    className="absolute inset-0 bg-cover opacity-30"
-                    style={{
-                      backgroundImage: 'url(My-phone-blurry-tall-2.jpg)',
-                      backgroundPosition: 'center'
-                    }}
-                  />
-                  <div className="text-center relative z-10">
+                    onClick={() => setShowAdInquiryModal(true)}
+                    className="block cursor-pointer"
+                  >
+                    <img
+                      src={ads.eventsSidebar1.image}
+                      alt="Advertisement"
+                      className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                      style={{ aspectRatio: '300/600' }}
+                    />
                   </div>
-                </div>
+                )
               )}
 
-              {/* Sidebar Ad 2 */}
-              {ads.eventsSidebar2?.image && ads.eventsSidebar2?.url ? (
-                <a
-                  href={ads.eventsSidebar2.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block"
-                >
-                  <img
-                    src={ads.eventsSidebar2.image}
-                    alt="Advertisement"
-                    className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                    style={{ aspectRatio: '300/600' }}
-                  />
-                </a>
-              ) : ads.eventsSidebar2?.image ? (
-                <div
-                  onClick={() => setShowAdInquiryModal(true)}
-                  className="block cursor-pointer"
-                >
-                  <img
-                    src={ads.eventsSidebar2.image}
-                    alt="Advertisement"
-                    className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                    style={{ aspectRatio: '300/600' }}
-                  />
-                </div>
-              ) : (
-                <div
-                  onClick={() => setShowAdInquiryModal(true)}
-                  className="rounded-lg p-4 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-[#D0ED00] transition-all cursor-pointer hover:shadow-md relative overflow-hidden"
-                  style={{ aspectRatio: '300/600' }}
-                >
+              {/* Sidebar Ad 2 - Only show when ad exists */}
+              {ads.eventsSidebar2?.image && (
+                ads.eventsSidebar2?.url ? (
+                  <a
+                    href={ads.eventsSidebar2.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <img
+                      src={ads.eventsSidebar2.image}
+                      alt="Advertisement"
+                      className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                      style={{ aspectRatio: '300/600' }}
+                    />
+                  </a>
+                ) : (
                   <div
-                    className="absolute inset-0 bg-cover opacity-30"
-                    style={{
-                      backgroundImage: 'url(My-phone-blurry-tall-2.jpg)',
-                      backgroundPosition: 'center'
-                    }}
-                  />
-                  <div className="text-center relative z-10">
+                    onClick={() => setShowAdInquiryModal(true)}
+                    className="block cursor-pointer"
+                  >
+                    <img
+                      src={ads.eventsSidebar2.image}
+                      alt="Advertisement"
+                      className="w-full rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                      style={{ aspectRatio: '300/600' }}
+                    />
                   </div>
-                </div>
+                )
               )}
             </div>
           </div>

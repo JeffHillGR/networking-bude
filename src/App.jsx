@@ -12,6 +12,7 @@ import ConfirmEmailChange from './components/ConfirmEmailChange.jsx';
 import CancelEmailChange from './components/CancelEmailChange.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
 import TestimonialForm from './components/TestimonialForm.jsx';
+import FeedbackWidget from './components/FeedbackWidget.jsx';
 
 function App() {
   const { user } = useAuth();
@@ -62,6 +63,7 @@ function App() {
           element={<TestimonialForm />}
         />
       </Routes>
+        <FeedbackWidget />
       </BrowserRouter>
     </HelmetProvider>
   );
