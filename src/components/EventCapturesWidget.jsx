@@ -127,14 +127,14 @@ function EventCapturesWidget() {
           <div
             key={capture.id}
             onClick={() => navigate('/event-captures')}
-            className="flex flex-col md:flex-row items-start gap-4 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition-colors cursor-pointer"
+            className="flex flex-row items-start gap-3 md:gap-4 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition-colors cursor-pointer"
           >
             {/* Thumbnail Image */}
-            <div className="relative flex-shrink-0 self-center md:self-start">
+            <div className="relative flex-shrink-0">
               <img
                 src={getThumbnail(capture)}
                 alt={capture.event_name}
-                className="w-28 h-28 md:w-32 md:h-32 rounded-lg object-cover bg-white shadow-sm"
+                className="w-20 h-20 md:w-32 md:h-32 rounded-lg object-cover bg-white shadow-sm"
               />
               {/* Photo count badge */}
               {(capture.event_capture_photos?.length || 0) > 1 && (
@@ -146,7 +146,7 @@ function EventCapturesWidget() {
             </div>
 
             {/* Content */}
-            <div className="flex-1 min-w-0 text-center md:text-left">
+            <div className="flex-1 min-w-0 text-left">
               <h4 className="font-bold text-gray-900 mb-1 text-lg leading-tight line-clamp-2">{capture.event_name}</h4>
               <p className="text-xs text-gray-500 italic mb-1">{capture.event_date}</p>
               {capture.organization_name && (

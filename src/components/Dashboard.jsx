@@ -925,19 +925,19 @@ const getGreeting = () => {
                         localStorage.setItem('userEngagementCount', (currentCount + 1).toString());
                         navigate('/resources-insights');
                       }}
-                      className="flex flex-col md:flex-row items-start gap-4 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition-colors cursor-pointer"
+                      className="flex flex-row items-start gap-3 md:gap-4 hover:bg-gray-50 p-2 md:p-3 rounded-lg transition-colors cursor-pointer"
                     >
                       {/* Thumbnail Image */}
-                      <div className="flex-shrink-0 self-center md:self-start">
+                      <div className="flex-shrink-0">
                         <img
                           src={content.image}
                           alt={content.title}
-                          className="w-28 h-28 md:w-32 md:h-32 rounded-lg object-cover bg-white shadow-sm"
+                          className="w-20 h-20 md:w-32 md:h-32 rounded-lg object-cover bg-white shadow-sm"
                         />
                       </div>
 
                       {/* Content */}
-                      <div className="flex-1 min-w-0 text-center md:text-left">
+                      <div className="flex-1 min-w-0 text-left">
                         <h4 className="font-bold text-gray-900 mb-1 text-lg leading-tight line-clamp-2">{content.title}</h4>
                         {content.author && (
                           <p className="text-xs text-gray-500 italic mb-1">By {content.author}</p>
