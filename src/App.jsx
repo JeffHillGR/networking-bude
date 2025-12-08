@@ -11,6 +11,7 @@ import ResetPassword from './components/ResetPassword.jsx';
 import ConfirmEmailChange from './components/ConfirmEmailChange.jsx';
 import CancelEmailChange from './components/CancelEmailChange.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
+import TestimonialForm from './components/TestimonialForm.jsx';
 
 function App() {
   const { user } = useAuth();
@@ -55,6 +56,10 @@ function App() {
         <Route
           path="/settings"
           element={user ? <Settings /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/testimonial"
+          element={<TestimonialForm />}
         />
       </Routes>
       </BrowserRouter>
