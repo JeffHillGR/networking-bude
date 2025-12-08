@@ -1129,13 +1129,13 @@ function EventCapturesTab() {
                 type="submit"
                 className="bg-green-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-700"
               >
-                {editingMoment ? 'Update Capture' : 'Create Capture'}
+                {editingCapture ? 'Update Capture' : 'Create Capture'}
               </button>
               <button
                 type="button"
                 onClick={() => {
                   setShowAddForm(false);
-                  setEditingMoment(null);
+                  setEditingCapture(null);
                 }}
                 className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
               >
