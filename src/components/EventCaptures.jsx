@@ -790,11 +790,41 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
             <X className="w-8 h-8" />
           </button>
 
-          <div className="relative max-w-5xl max-h-[90vh] w-full mx-4" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="relative max-w-5xl max-h-[90vh] w-full mx-4"
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => {
+              const touch = e.touches[0];
+              e.currentTarget.dataset.touchStartX = touch.clientX;
+            }}
+            onTouchEnd={(e) => {
+              const touchStartX = parseFloat(e.currentTarget.dataset.touchStartX || '0');
+              const touchEndX = e.changedTouches[0].clientX;
+              const diff = touchStartX - touchEndX;
+
+              // Swipe threshold of 50px
+              if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                  // Swipe left - next photo
+                  navigatePhoto(1);
+                } else {
+                  // Swipe right - previous photo
+                  navigatePhoto(-1);
+                }
+              }
+            }}
+          >
+            <img
+              src={selectedCapture.event_capture_photos?.sort((a, b) => a.display_order - b.display_order)[selectedPhotoIndex]?.image_url}
+              alt={selectedCapture.event_name}
+              className="max-w-full max-h-[85vh] mx-auto object-contain rounded-lg"
+            />
+
+            {/* Navigation arrows - positioned on the photo */}
             {selectedPhotoIndex > 0 && (
               <button
                 onClick={() => navigatePhoto(-1)}
-                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 text-white hover:text-gray-300 p-2"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 p-2 bg-black/50 rounded-full z-10"
               >
                 <ChevronLeft className="w-10 h-10" />
               </button>
@@ -802,17 +832,11 @@ function EventCaptures({ onBackToDashboard, embedded = false }) {
             {selectedCapture.event_capture_photos && selectedPhotoIndex < selectedCapture.event_capture_photos.length - 1 && (
               <button
                 onClick={() => navigatePhoto(1)}
-                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 text-white hover:text-gray-300 p-2"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 p-2 bg-black/50 rounded-full z-10"
               >
                 <ChevronRight className="w-10 h-10" />
               </button>
             )}
-
-            <img
-              src={selectedCapture.event_capture_photos?.sort((a, b) => a.display_order - b.display_order)[selectedPhotoIndex]?.image_url}
-              alt={selectedCapture.event_name}
-              className="max-w-full max-h-[85vh] mx-auto object-contain rounded-lg"
-            />
 
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 rounded-b-lg">
               <h3 className="text-white font-bold text-lg">{selectedCapture.event_name}</h3>
