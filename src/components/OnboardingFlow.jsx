@@ -961,7 +961,7 @@ export default function BudEOnboarding() {
           In 3 easy steps
         </p>
         <p className="text-lg text-gray-600 mt-10 italic text-right" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-          "A Networking app that helps me find events I need to attend and a BudE I can go with. Check it out."
+          "A networking app irl that helps me find events I need to attend and a BudE I can go with. Check it out."
           <br />
           <span className="not-italic font-semibold">— CJ Devries</span>
         </p>
