@@ -1821,7 +1821,8 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
           </p>
         </div>
 
-        {[1, 2, 3, 4].map(slotNumber => renderHeroBannerSlot(slotNumber))}
+        {/* Show regional skyline slot (4) first, then universal slots (1, 2, 3) */}
+        {[4, 1, 2, 3].map(slotNumber => renderHeroBannerSlot(slotNumber))}
       </div>
 
       {/* Dashboard Bottom Ads */}
