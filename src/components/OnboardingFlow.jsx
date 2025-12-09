@@ -954,11 +954,16 @@ export default function BudEOnboarding() {
   <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
     <div className="max-w-4xl w-full flex flex-col md:flex-row items-center gap-6 md:gap-8">
       {/* Hook Statement - Left Side */}
-      <div className="hidden md:flex md:w-1/2 items-center justify-end pr-4">
-        <p className="text-4xl lg:text-5xl font-bold text-black leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+      <div className="hidden md:flex md:w-1/2 flex-col items-end justify-center pr-4">
+        <p className="text-4xl lg:text-5xl font-bold text-black leading-tight text-right" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
           A networking wingperson for every event
           <br /><br />
           In 3 easy steps
+        </p>
+        <p className="text-base text-gray-600 mt-6 italic text-right" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+          "A Networking app that helps me find events I need to attend and a BudE I can go with. Check it out."
+          <br />
+          <span className="not-italic font-semibold">— CJ Devries</span>
         </p>
       </div>
 
