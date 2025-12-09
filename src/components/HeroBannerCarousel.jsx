@@ -77,8 +77,14 @@ function HeroBannerCarousel() {
             let bannerIndex;
 
             if (!hasRotatedThisSession) {
-              const lastShownIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
-              bannerIndex = (lastShownIndex + 1) % banners.length;
+              const storedIndex = sessionStorage.getItem('lastHeroBannerIndex');
+              if (storedIndex === null) {
+                // Brand new visitor - start at first banner
+                bannerIndex = 0;
+              } else {
+                // Returning visitor - rotate to next
+                bannerIndex = (parseInt(storedIndex) + 1) % banners.length;
+              }
               sessionStorage.setItem('lastHeroBannerIndex', bannerIndex.toString());
               sessionStorage.setItem('bannerRotatedThisSession', 'true');
             } else {
@@ -149,9 +155,14 @@ function HeroBannerCarousel() {
 
             let bannerIndex;
             if (!hasRotatedThisSession) {
-              // First mount after page load - rotate to next banner
-              const lastShownIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
-              bannerIndex = (lastShownIndex + 1) % banners.length;
+              const storedIndex = sessionStorage.getItem('lastHeroBannerIndex');
+              if (storedIndex === null) {
+                // Brand new visitor - start at first banner
+                bannerIndex = 0;
+              } else {
+                // Returning visitor - rotate to next
+                bannerIndex = (parseInt(storedIndex) + 1) % banners.length;
+              }
               sessionStorage.setItem('lastHeroBannerIndex', bannerIndex.toString());
               sessionStorage.setItem('bannerRotatedThisSession', 'true');
             } else {
