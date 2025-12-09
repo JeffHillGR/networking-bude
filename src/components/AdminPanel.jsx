@@ -1776,7 +1776,7 @@ function DashboardSetupTab({ ads, handleImageUpload, handleUrlChange, removeAd }
               onClick={() => saveHeroBanner(slotNumber)}
               className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 font-medium"
             >
-              Save Banner {slotNumber}
+              Save {isSkylineSlot ? 'Skyline' : `Banner ${slotNumber}`}
             </button>
           </div>
         )}
