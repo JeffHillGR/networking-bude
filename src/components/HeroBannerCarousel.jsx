@@ -132,8 +132,9 @@ function HeroBannerCarousel() {
 
         const error = universalError || regionError;
 
-        // Combine and sort by slot_number
+        // Combine, filter out any without images, and sort by slot_number
         const banners = [...(universalBanners || []), ...(regionBanners || [])]
+          .filter(b => b.image_url) // Only include banners that have an image
           .sort((a, b) => a.slot_number - b.slot_number);
 
         console.log('🎯 Hero banners query result:', { region, bannerCount: banners?.length, universalCount: universalBanners?.length, regionCount: regionBanners?.length, banners });
