@@ -36,16 +36,12 @@ export default function BudEOnboarding() {
   const carouselRef = useRef(null);
 
   const desktopBanners = [
-    '/Landing-Page-Banner-1.png',
-    '/Landing-Page-Banner-2.png',
     '/Landing-Page-Banner-3.png',
     '/Landing-Page-Banner-4.png',
     '/Landing-Page-Banner-5.png'
   ];
 
   const mobileBanners = [
-    '/Landing-Page-Mobile-1.png',
-    '/Landing-Page-Mobile-2.png',
     '/Landing-Page-Mobile-3.png',
     '/Landing-Page-Mobile-4.png',
     '/Landing-Page-Mobile-5.png'
@@ -78,25 +74,12 @@ export default function BudEOnboarding() {
     if (!showLandingHero || isHovering) return;
 
     const timer = setInterval(() => {
-      setHeroImageIndex(prev => (prev + 1) % 5); // Cycle 0 -> 1 -> 2 -> 3 -> 4 -> 0
+      setHeroImageIndex(prev => (prev + 1) % 3); // Cycle 0 -> 1 -> 2 -> 0
     }, 8000);
 
     return () => clearInterval(timer);
   }, [showLandingHero, isHovering]);
 
-  // Change to image 2 when user starts scrolling
-  useEffect(() => {
-    if (!showLandingHero) return;
-
-    const handleScroll = () => {
-      if (heroImageIndex === 0 && window.scrollY > 10) {
-        setHeroImageIndex(1);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [showLandingHero, heroImageIndex]);
 
   // TODO: Re-enable after adding login functionality
   // Redirect already logged-in users to dashboard (but not during signup process)
@@ -590,34 +573,6 @@ export default function BudEOnboarding() {
               <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
-                    Traditional networking not working?
-                  </h1>
-                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
-                    Not finding the best events to go to?
-                  </h1>
-                </div>
-              </div>
-            )}
-
-            {/* Text Overlay for Banner 2 */}
-            {heroImageIndex === 1 && (
-              <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
-                <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
-                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
-                    Adding to that drawer
-                  </h1>
-                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
-                    full of lonely business cards?
-                  </h1>
-                </div>
-              </div>
-            )}
-
-            {/* Text Overlay for Banner 3 */}
-            {heroImageIndex === 2 && (
-              <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
-                <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
-                  <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
                     Other social networking sites
                   </h1>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
@@ -627,8 +582,8 @@ export default function BudEOnboarding() {
               </div>
             )}
 
-            {/* Text Overlay for Banner 4 */}
-            {heroImageIndex === 3 && (
+            {/* Text Overlay for Banner 2 */}
+            {heroImageIndex === 1 && (
               <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
                 <div className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg pointer-events-auto" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
                   <h1 className="text-xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
@@ -641,8 +596,8 @@ export default function BudEOnboarding() {
               </div>
             )}
 
-            {/* Text Overlay for Banner 5 */}
-            {heroImageIndex === 4 && (
+            {/* Text Overlay for Banner 3 */}
+            {heroImageIndex === 2 && (
               <div className="absolute inset-0 flex items-start pt-[359px] md:pt-56 lg:pt-72 px-8 md:px-16 lg:px-24 pointer-events-none">
                 <div
                   className="text-left bg-white/40 backdrop-blur-sm px-3 py-2 md:px-6 md:py-4 rounded-lg cursor-pointer hover:bg-white/50 transition-all pointer-events-auto"
@@ -693,7 +648,7 @@ export default function BudEOnboarding() {
 
             {/* Navigation arrows - bottom corners */}
             <button
-              onClick={() => setHeroImageIndex((prev) => (prev === 0 ? 4 : prev - 1))}
+              onClick={() => setHeroImageIndex((prev) => (prev === 0 ? 2 : prev - 1))}
               className="absolute bottom-2 md:bottom-[18%] left-[2%] z-20 p-4 rounded-full bg-white/90 hover:bg-white active:bg-white active:scale-95 shadow-lg hover:shadow-xl transition-all duration-150 group touch-manipulation"
               aria-label="Previous slide"
             >
@@ -703,7 +658,7 @@ export default function BudEOnboarding() {
             </button>
 
             <button
-              onClick={() => setHeroImageIndex((prev) => (prev === 4 ? 0 : prev + 1))}
+              onClick={() => setHeroImageIndex((prev) => (prev === 2 ? 0 : prev + 1))}
               className="absolute bottom-2 md:bottom-[18%] right-[2%] z-20 p-4 rounded-full bg-white/90 hover:bg-white active:bg-white active:scale-95 shadow-lg hover:shadow-xl transition-all duration-150 group touch-manipulation"
               aria-label="Next slide"
             >
@@ -869,7 +824,7 @@ export default function BudEOnboarding() {
             <div className="md:hidden my-8">
               <div className="text-center" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
                 <p className="text-3xl font-bold text-black leading-tight">
-                  A networking wingperson for every event
+                  Don't keep adding to that drawer full of lonely business cards
                 </p>
               </div>
             </div>
@@ -878,7 +833,7 @@ export default function BudEOnboarding() {
               {/* Desktop: Hook on left */}
               <div className="hidden md:block md:w-1/2">
                 <p className="text-4xl md:text-5xl font-bold text-black leading-tight" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-                  A networking wingperson for every event
+                  Don't keep adding to that drawer full of lonely business cards
                 </p>
               </div>
               <div className="md:w-1/2">
@@ -956,9 +911,7 @@ export default function BudEOnboarding() {
       {/* Hook Statement - Left Side */}
       <div className="hidden md:flex md:w-1/2 flex-col items-end justify-center pr-4">
         <p className="text-4xl lg:text-5xl font-bold text-black leading-tight text-right" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
-          A networking wingperson for every event
-          <br /><br />
-          In 3 easy steps
+          Don't keep adding to that drawer full of lonely business cards
         </p>
         <p className="text-lg text-gray-600 mt-10 italic text-right" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
           "A networking app irl that helps me find events I need to attend and a BudE I can go with. <span className="whitespace-nowrap">Check it out."</span>
