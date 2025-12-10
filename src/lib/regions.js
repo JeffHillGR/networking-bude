@@ -54,7 +54,8 @@ export const REGIONS = {
       'WMPRSA',
       "Crain's GR Business",
       'AIGA - WM',
-      'West Michigan Hispanic Chamber of Commerce'
+      'West Michigan Hispanic Chamber of Commerce',
+      'YPO - WM'
     ],
 
     scrapeUrls: {
