@@ -63,7 +63,7 @@ function App() {
           element={<TestimonialForm />}
         />
       </Routes>
-        <FeedbackWidget />
+        {user && <FeedbackWidget />}
       </BrowserRouter>
     </HelmetProvider>
   );

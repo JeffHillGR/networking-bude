@@ -91,20 +91,27 @@ function HeroBannerCarousel() {
               bannerIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
             }
 
-            const banner = banners[bannerIndex];
+            // Try to find a working banner, starting from the selected index
+            let foundWorkingBanner = false;
+            for (let i = 0; i < banners.length && !foundWorkingBanner; i++) {
+              const tryIndex = (bannerIndex + i) % banners.length;
+              const banner = banners[tryIndex];
 
-            // Preload the image before showing
-            try {
-              await preloadImage(banner.image_url);
-              if (!cancelled) {
-                setCurrentBanner(banner);
-                setImageLoaded(true);
-                setLoading(false);
-                setHasLoaded(true);
-                displayedFromCache = true;
+              try {
+                await preloadImage(banner.image_url);
+                if (!cancelled) {
+                  setCurrentBanner(banner);
+                  setImageLoaded(true);
+                  setLoading(false);
+                  setHasLoaded(true);
+                  displayedFromCache = true;
+                  foundWorkingBanner = true;
+                  // Update stored index to the working banner
+                  sessionStorage.setItem('lastHeroBannerIndex', tryIndex.toString());
+                }
+              } catch (e) {
+                console.warn(`Failed to preload cached banner image at index ${tryIndex}:`, e);
               }
-            } catch (e) {
-              console.warn('Failed to preload cached banner image:', e);
             }
           }
         } catch (e) {
@@ -171,23 +178,32 @@ function HeroBannerCarousel() {
               bannerIndex = parseInt(sessionStorage.getItem('lastHeroBannerIndex') || '0');
             }
 
-            const banner = banners[bannerIndex];
+            // Try to find a working banner, starting from the selected index
+            let foundWorkingBanner = false;
+            for (let i = 0; i < banners.length && !foundWorkingBanner; i++) {
+              const tryIndex = (bannerIndex + i) % banners.length;
+              const banner = banners[tryIndex];
 
-            // Preload the image before showing
-            try {
-              await preloadImage(banner.image_url);
-              if (!cancelled) {
-                setCurrentBanner(banner);
-                setImageLoaded(true);
-                setLoading(false);
-                setHasLoaded(true);
+              try {
+                await preloadImage(banner.image_url);
+                if (!cancelled) {
+                  setCurrentBanner(banner);
+                  setImageLoaded(true);
+                  setLoading(false);
+                  setHasLoaded(true);
+                  foundWorkingBanner = true;
+                  // Update stored index to the working banner
+                  sessionStorage.setItem('lastHeroBannerIndex', tryIndex.toString());
+                }
+              } catch (e) {
+                console.warn(`Failed to preload banner image at index ${tryIndex}:`, e);
               }
-            } catch (e) {
-              console.warn('Failed to preload banner image:', e);
-              if (!cancelled) {
-                setLoading(false);
-                setHasLoaded(true);
-              }
+            }
+
+            // If no banners worked, just stop loading
+            if (!foundWorkingBanner && !cancelled) {
+              setLoading(false);
+              setHasLoaded(true);
             }
           }
         } else {
