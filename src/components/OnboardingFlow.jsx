@@ -684,8 +684,8 @@ export default function BudEOnboarding() {
         <div className="flex md:hidden justify-center py-4 bg-white">
           <button
             onClick={() => setShowLandingHero(false)}
-            className="bg-gray-200 text-[#009900] font-bold text-sm md:text-lg px-6 py-2 md:px-10 md:py-3 rounded-full hover:bg-gray-300 active:bg-gray-300 active:scale-95 transition-all duration-150 border-2 border-[#D0ED00] shadow-xl touch-manipulation"
-            style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
+            className="bg-[#009900] text-white font-bold text-sm px-6 py-2 rounded-full hover:bg-[#007700] active:bg-[#007700] active:scale-95 transition-all duration-150 border-2 border-[#D0ED00] touch-manipulation"
+            style={{ fontFamily: "'IBM Plex Sans', sans-serif", boxShadow: '0 8px 20px rgba(0, 0, 0, 0.25)' }}
           >
             Check It Out
           </button>
