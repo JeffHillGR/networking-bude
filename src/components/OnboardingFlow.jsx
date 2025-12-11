@@ -541,7 +541,7 @@ export default function BudEOnboarding() {
           ref={carouselRef}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
-          className="flex-1 relative overflow-hidden"
+          className="flex-1 relative overflow-visible"
         >
           {/* Image container with stacked images for fade effect */}
           <div className="absolute inset-0 w-full h-full">
@@ -667,12 +667,12 @@ export default function BudEOnboarding() {
               </svg>
             </button>
 
-            {/* Check It Out button - inside picture frame for desktop only */}
-            <div className="hidden md:flex absolute bottom-4 md:bottom-6 left-0 right-0 z-10 justify-center">
+            {/* Check It Out button - straddles bottom edge for desktop only */}
+            <div className="hidden md:flex absolute -bottom-4 md:-bottom-6 left-0 right-0 z-30 justify-center">
               <button
                 onClick={() => setShowLandingHero(false)}
-                className="bg-gray-200 text-[#009900] font-bold text-sm md:text-lg px-6 py-2 md:px-10 md:py-3 rounded-full hover:bg-gray-300 active:bg-gray-300 active:scale-95 transition-all duration-150 border-2 border-[#D0ED00] shadow-xl touch-manipulation"
-                style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
+                className="bg-[#009900] text-white font-bold text-sm md:text-lg px-6 py-2 md:px-10 md:py-3 rounded-full hover:bg-[#007700] active:bg-[#007700] active:scale-95 transition-all duration-150 border-2 border-[#D0ED00] touch-manipulation"
+                style={{ fontFamily: "'IBM Plex Sans', sans-serif", boxShadow: '0 8px 20px rgba(0, 0, 0, 0.25)' }}
               >
                 Check It Out
               </button>
