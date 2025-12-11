@@ -32,10 +32,15 @@ function NotificationBell({ onNavigate, showDropdown, setShowDropdown, size = 's
 
   // Load notifications from database
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      console.log('🔔 NotificationBell: No user, skipping load');
+      return;
+    }
 
     const loadNotifications = async () => {
       try {
+        console.log('🔔 NotificationBell: Loading for user email:', user.email);
+
         const { data: userData, error: userError } = await supabase
           .from('users')
           .select('id')
@@ -43,9 +48,11 @@ function NotificationBell({ onNavigate, showDropdown, setShowDropdown, size = 's
           .single();
 
         if (userError) {
-          console.error('Error finding user:', userError);
+          console.error('🔔 NotificationBell: Error finding user:', userError);
           return;
         }
+
+        console.log('🔔 NotificationBell: Found user ID:', userData.id);
 
         const { data, error } = await supabase
           .from('notifications')
@@ -54,13 +61,16 @@ function NotificationBell({ onNavigate, showDropdown, setShowDropdown, size = 's
           .order('created_at', { ascending: false })
           .limit(4);
 
+        console.log('🔔 NotificationBell: Query result:', { data, error, count: data?.length });
+
         if (error) throw error;
 
         setNotifications(data || []);
         setUnreadCount(data?.filter(n => !n.is_read).length || 0);
+        console.log('🔔 NotificationBell: Unread count:', data?.filter(n => !n.is_read).length || 0);
         setLoading(false);
       } catch (error) {
-        console.error('Error loading notifications:', error);
+        console.error('🔔 NotificationBell: Error loading notifications:', error);
         setLoading(false);
       }
     };

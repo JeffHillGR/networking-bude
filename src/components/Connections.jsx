@@ -18,6 +18,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
   const [showMondayBanner, setShowMondayBanner] = useState(false);
   const [connectionLikedEvents, setConnectionLikedEvents] = useState({});
   const [connectionGoingEvents, setConnectionGoingEvents] = useState({});
+  const [connectionEventPhotos, setConnectionEventPhotos] = useState({});
   const [sessionDecisionCount, setSessionDecisionCount] = useState(0); // Track decisions THIS session (max 10)
   const [hasAnyMatchesInDB, setHasAnyMatchesInDB] = useState(true); // Did DB return ANY rows at all?
 
@@ -371,9 +372,9 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
 
         // Fetch "going" events for all connections in bulk
         const goingEventsMap = {};
+        const connectionUserIds = allConnections.map(c => c.userId);
         if (allConnections.length > 0) {
           try {
-            const connectionUserIds = allConnections.map(c => c.userId);
             const { data: attendeesData } = await supabase
               .from('event_attendees')
               .select(`
@@ -419,6 +420,31 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
         }
 
         setConnectionGoingEvents(goingEventsMap);
+
+        // Load event photos for all connections
+        if (connectionUserIds.length > 0) {
+          try {
+            const { data: photosData } = await supabase
+              .from('user_event_photos')
+              .select('*')
+              .in('user_id', connectionUserIds)
+              .order('created_at', { ascending: false });
+
+            // Group photos by user (limit 3 per user)
+            const photosMap = {};
+            (photosData || []).forEach(photo => {
+              if (!photosMap[photo.user_id]) {
+                photosMap[photo.user_id] = [];
+              }
+              if (photosMap[photo.user_id].length < 3) {
+                photosMap[photo.user_id].push(photo);
+              }
+            });
+            setConnectionEventPhotos(photosMap);
+          } catch (error) {
+            console.error('Error loading event photos:', error);
+          }
+        }
 
         // Only show recommended (perhaps are hidden for 1 week)
         // Cap recommendations at 10 per session
@@ -1242,7 +1268,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                   {/* Going Events */}
                   {connectionGoingEvents[currentCard.userId]?.length > 0 && (
                     <div className="pt-4 border-t border-gray-200">
-                      <p className="text-sm font-semibold text-gray-700 mb-2">📅 Events you're going to:</p>
+                      <p className="text-sm font-semibold text-gray-700 mb-2">Events I'm going to:</p>
                       <div className="space-y-2">
                         {connectionGoingEvents[currentCard.userId].map((event, idx) => (
                           <div key={idx} className="flex items-center gap-3 p-2 bg-gray-50 rounded">
@@ -1257,6 +1283,25 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                               <p className="text-sm font-medium text-gray-900 truncate">{event.title}</p>
                               <p className="text-xs text-gray-500">{formatEventDate(event.date)}</p>
                             </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Event Photos */}
+                  {connectionEventPhotos[currentCard.userId]?.length > 0 && (
+                    <div className="pt-4 border-t border-gray-200">
+                      <p className="text-sm font-semibold text-gray-700 mb-2">Event Photos:</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {connectionEventPhotos[currentCard.userId].map((photo) => (
+                          <div key={photo.id} className="aspect-square rounded-lg overflow-hidden">
+                            <img
+                              src={photo.image_url}
+                              alt={photo.caption || 'Event photo'}
+                              title={photo.caption || ''}
+                              className="w-full h-full object-cover"
+                            />
                           </div>
                         ))}
                       </div>
@@ -1650,7 +1695,7 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                 {/* Going Events */}
                 {connectionGoingEvents[selectedConnection.userId]?.length > 0 && (
                   <div className="pt-4 border-t border-gray-200">
-                    <p className="text-sm font-semibold text-gray-700 mb-2">📅 Events you're going to:</p>
+                    <p className="text-sm font-semibold text-gray-700 mb-2">Events I'm going to:</p>
                     <div className="space-y-2">
                       {connectionGoingEvents[selectedConnection.userId].map((event, idx) => (
                         <div key={idx} className="flex items-center gap-3 p-2 bg-gray-50 rounded">
@@ -1665,6 +1710,25 @@ function Connections({ onBackToDashboard, onNavigateToSettings, onNavigateToMess
                             <p className="text-sm font-medium text-gray-900 truncate">{event.title}</p>
                             <p className="text-xs text-gray-500">{formatEventDate(event.date)}</p>
                           </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Event Photos */}
+                {connectionEventPhotos[selectedConnection.userId]?.length > 0 && (
+                  <div className="pt-4 border-t border-gray-200">
+                    <p className="text-sm font-semibold text-gray-700 mb-2">Event Photos:</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {connectionEventPhotos[selectedConnection.userId].map((photo) => (
+                        <div key={photo.id} className="aspect-square rounded-lg overflow-hidden">
+                          <img
+                            src={photo.image_url}
+                            alt={photo.caption || 'Event photo'}
+                            title={photo.caption || ''}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                       ))}
                     </div>

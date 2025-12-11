@@ -39,6 +39,11 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
   const [goingEvents, setGoingEvents] = useState([]);
   const [interestedEvents, setInterestedEvents] = useState([]);
   const [showPrivacyTerms, setShowPrivacyTerms] = useState(false);
+  const [eventPhotos, setEventPhotos] = useState([]);
+  const [uploadingEventPhoto, setUploadingEventPhoto] = useState(false);
+  const [newPhotoCaption, setNewPhotoCaption] = useState('');
+  const [editingPhotoId, setEditingPhotoId] = useState(null);
+  const [editingCaption, setEditingCaption] = useState('');
 
   // Load profile data from localStorage on mount
   const loadProfileFromStorage = () => {
@@ -347,6 +352,32 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
     }
 
     loadNotificationPreferences();
+  }, [user]);
+
+  // Load event photos
+  useEffect(() => {
+    async function loadEventPhotos() {
+      if (!user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('user_event_photos')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error loading event photos:', error);
+          return;
+        }
+
+        setEventPhotos(data || []);
+      } catch (error) {
+        console.error('Error loading event photos:', error);
+      }
+    }
+
+    loadEventPhotos();
   }, [user]);
 
   // Load profile from Supabase if localStorage is empty
@@ -701,13 +732,13 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
     // Validate file type
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!validTypes.includes(file.type)) {
-      alert('Please upload a valid image file (JPG, PNG, or WebP)');
+      showError('File type not supported. Please upload a JPG, PNG, or WebP image.');
       return;
     }
 
     // Validate file size (10MB max for original - will be compressed)
     if (file.size > 10 * 1024 * 1024) {
-      alert('Image must be less than 10MB');
+      showError('Image must be less than 10MB. Please choose a smaller file.');
       return;
     }
 
@@ -767,6 +798,142 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
       alert('Failed to upload photo. Please try again with a smaller image.');
     } finally {
       setUploadingPhoto(false);
+    }
+  };
+
+  // Event photo upload handler
+  const handleEventPhotoUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      showError('File type not supported. Please upload a JPG, PNG, or WebP image.');
+      return;
+    }
+
+    // Validate file size (10MB max)
+    if (file.size > 10 * 1024 * 1024) {
+      showError('Image must be less than 10MB. Please choose a smaller file.');
+      return;
+    }
+
+    if (!user?.id) {
+      showError('You must be logged in to upload photos.');
+      return;
+    }
+
+    // Limit to 3 photos
+    if (eventPhotos.length >= 3) {
+      showError('Limit 3 photos. Delete one to upload a new photo.');
+      return;
+    }
+
+    setUploadingEventPhoto(true);
+
+    try {
+      // Compress image (larger than profile - 800x800 max)
+      const compressedFile = await compressImage(file, 800, 800, 0.85);
+
+      // Generate unique filename
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+      const filePath = `${user.id}/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('user-event-photos')
+        .upload(filePath, compressedFile, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('user-event-photos')
+        .getPublicUrl(filePath);
+
+      // Insert into database
+      const { data: newPhoto, error: dbError } = await supabase
+        .from('user_event_photos')
+        .insert({
+          user_id: user.id,
+          image_url: publicUrl,
+          caption: newPhotoCaption || null
+        })
+        .select()
+        .single();
+
+      if (dbError) throw dbError;
+
+      // Update local state
+      setEventPhotos(prev => [newPhoto, ...prev]);
+      setNewPhotoCaption('');
+      showSuccess('Event photo uploaded!');
+
+      // Reset file input
+      event.target.value = '';
+    } catch (error) {
+      console.error('Error uploading event photo:', error);
+      showError('Failed to upload photo. Please try again.');
+    } finally {
+      setUploadingEventPhoto(false);
+    }
+  };
+
+  // Delete event photo
+  const handleDeleteEventPhoto = async (photo) => {
+    if (!confirm('Delete this photo?')) return;
+
+    try {
+      // Extract file path from URL
+      const urlParts = photo.image_url.split('/user-event-photos/');
+      if (urlParts.length > 1) {
+        const filePath = urlParts[1];
+        await supabase.storage
+          .from('user-event-photos')
+          .remove([filePath]);
+      }
+
+      // Delete from database
+      const { error } = await supabase
+        .from('user_event_photos')
+        .delete()
+        .eq('id', photo.id);
+
+      if (error) throw error;
+
+      // Update local state
+      setEventPhotos(prev => prev.filter(p => p.id !== photo.id));
+      showSuccess('Photo deleted.');
+    } catch (error) {
+      console.error('Error deleting event photo:', error);
+      showError('Failed to delete photo.');
+    }
+  };
+
+  // Update event photo caption
+  const handleUpdateCaption = async (photoId) => {
+    try {
+      const { error } = await supabase
+        .from('user_event_photos')
+        .update({ caption: editingCaption })
+        .eq('id', photoId);
+
+      if (error) throw error;
+
+      // Update local state
+      setEventPhotos(prev => prev.map(p =>
+        p.id === photoId ? { ...p, caption: editingCaption } : p
+      ));
+      setEditingPhotoId(null);
+      setEditingCaption('');
+      showSuccess('Caption updated.');
+    } catch (error) {
+      console.error('Error updating caption:', error);
+      showError('Failed to update caption.');
     }
   };
 
@@ -1332,6 +1499,109 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
                   ))}
                 </div>
               </div>
+            </div>
+
+            {/* Event Photos Section */}
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <h3 className="font-bold text-gray-900 mb-2">My Event Photos</h3>
+              <p className="text-sm text-gray-600 mb-4">Share photos from events you've attended. These will appear on your profile.</p>
+
+              {/* Upload Section */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                <div className="flex flex-col gap-3">
+                  <input
+                    type="text"
+                    value={newPhotoCaption}
+                    onChange={(e) => setNewPhotoCaption(e.target.value)}
+                    placeholder="Add a caption (optional)"
+                    className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#009900] focus:border-transparent"
+                    maxLength={200}
+                  />
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="file"
+                      id="event-photo-upload"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      onChange={handleEventPhotoUpload}
+                      className="hidden"
+                    />
+                    <label
+                      htmlFor="event-photo-upload"
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium cursor-pointer transition-colors ${
+                        uploadingEventPhoto
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : 'bg-[#009900] text-white hover:bg-[#007700]'
+                      }`}
+                    >
+                      <Upload className="w-4 h-4" />
+                      {uploadingEventPhoto ? 'Uploading...' : 'Upload Photo'}
+                    </label>
+                    <span className="text-xs text-gray-500">JPG, PNG, or WebP • Limit 3 ({eventPhotos.length}/3)</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Photo Grid */}
+              {eventPhotos.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {eventPhotos.map((photo) => (
+                    <div key={photo.id} className="relative group">
+                      <div className="aspect-square rounded-lg overflow-hidden border border-gray-200">
+                        <img
+                          src={photo.image_url}
+                          alt={photo.caption || 'Event photo'}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      {/* Delete button */}
+                      <button
+                        onClick={() => handleDeleteEventPhoto(photo)}
+                        className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                        title="Delete photo"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                      {/* Caption */}
+                      <div className="mt-2">
+                        {editingPhotoId === photo.id ? (
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={editingCaption}
+                              onChange={(e) => setEditingCaption(e.target.value)}
+                              className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
+                              maxLength={200}
+                              autoFocus
+                            />
+                            <button
+                              onClick={() => handleUpdateCaption(photo.id)}
+                              className="px-2 py-1 text-xs bg-[#009900] text-white rounded hover:bg-[#007700]"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={() => { setEditingPhotoId(null); setEditingCaption(''); }}
+                              className="px-2 py-1 text-xs bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <p
+                            onClick={() => { setEditingPhotoId(photo.id); setEditingCaption(photo.caption || ''); }}
+                            className="text-sm text-gray-600 cursor-pointer hover:text-gray-900 truncate"
+                            title="Click to edit caption"
+                          >
+                            {photo.caption || <span className="text-gray-400 italic">Add caption...</span>}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 text-center py-8">No event photos yet. Upload your first one!</p>
+              )}
             </div>
 
             {/* Spacer for fixed button */}
