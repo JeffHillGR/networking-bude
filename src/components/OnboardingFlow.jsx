@@ -481,10 +481,11 @@ export default function BudEOnboarding() {
         console.error('⚠️ Matching algorithm failed (non-critical):', err);
       });
 
-      // Navigate to dashboard after 4 seconds
+      // User will click "Agree" button to navigate to dashboard
+      // Fallback: auto-navigate after 15 seconds if they don't click
       setTimeout(() => {
         navigate('/dashboard');
-      }, 4000);
+      }, 15000);
     } catch (error) {
       console.error('Error creating user:', error);
 
@@ -1643,9 +1644,18 @@ const renderStep2 = () => (
               </svg>
             </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">Success!</h2>
-            <p className="text-gray-600">
+            <p className="text-gray-600 mb-4">
               Now let's find some connections and events for you
             </p>
+            <p className="text-gray-500 text-sm text-left border-t pt-4 mt-4">
+              Terms of Service can be found in your profile section, but the two main things we ask: no selling directly to other BudE users, and this is not a dating app. Please don't use it for either. Thank you and enjoy!<br/><span className="font-semibold">— The BudE Team</span>
+            </p>
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="w-full mt-6 bg-[#009900] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#007700] transition-colors border-2 border-[#D0ED00]"
+            >
+              Agree
+            </button>
           </div>
         </div>
       )}

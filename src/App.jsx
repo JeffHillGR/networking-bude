@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { useAuth } from './contexts/AuthContext.jsx';
 import Dashboard from './components/Dashboard.jsx';
@@ -14,14 +14,16 @@ import ScrollToTop from './components/ScrollToTop.jsx';
 import TestimonialForm from './components/TestimonialForm.jsx';
 import FeedbackWidget from './components/FeedbackWidget.jsx';
 
-function App() {
+// Inner component that can use useLocation (must be inside BrowserRouter)
+function AppRoutes() {
   const { user } = useAuth();
+  const location = useLocation();
+  const isOnboardingPage = location.pathname === '/';
 
   return (
-    <HelmetProvider>
-      <BrowserRouter>
-        <ScrollToTop />
-        <Routes>
+    <>
+      <ScrollToTop />
+      <Routes>
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/confirm-email-change" element={<ConfirmEmailChange />} />
@@ -63,7 +65,16 @@ function App() {
           element={<TestimonialForm />}
         />
       </Routes>
-        {user && <FeedbackWidget />}
+      {user && !isOnboardingPage && <FeedbackWidget />}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <HelmetProvider>
+      <BrowserRouter>
+        <AppRoutes />
       </BrowserRouter>
     </HelmetProvider>
   );
