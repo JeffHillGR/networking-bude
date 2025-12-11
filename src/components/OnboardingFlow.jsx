@@ -898,7 +898,7 @@ export default function BudEOnboarding() {
           Contact Us
         </button>
         <p className="text-gray-600 text-sm mt-2">
-          Copyright The BudE System™
+          Copyright The BudE System
         </p>
       </div>
     </div>
