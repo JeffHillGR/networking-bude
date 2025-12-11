@@ -786,6 +786,9 @@ export default function BudEOnboarding() {
                 <p className="mt-4">
                   We make this a place where you can feel comfortable reaching out to build community.
                 </p>
+                <p className="mt-4">
+                  No pressure to build your network. No pressure to connect. Go at your own pace.
+                </p>
               </div>
             </div>
           </div>
