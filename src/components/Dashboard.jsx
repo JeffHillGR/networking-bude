@@ -885,6 +885,9 @@ const getGreeting = () => {
                       <div className="space-y-0.5 text-xs text-gray-600">
                         <p>{formatEventDate(event.date)}</p>
                         <p className="truncate">{event.location}</p>
+                        {event.organizerName && (
+                          <p className="truncate">Hosted by {event.organizerName}</p>
+                        )}
                       </div>
                     </div>
                   </div>
