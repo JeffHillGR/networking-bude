@@ -2137,7 +2137,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
 
                 <section>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">7. Intellectual Property</h3>
-                  <p>The service and its original content, features, and functionality are owned by The BudE System™ and are protected by international copyright, trademark, and other intellectual property laws.</p>
+                  <p>The service and its original content, features, and functionality are owned by The BudE System and are protected by international copyright, trademark, and other intellectual property laws.</p>
                 </section>
 
                 <section>
@@ -2162,7 +2162,7 @@ function Settings({ autoOpenFeedback = false, initialTab = 'profile', onBackToDa
               </div>
 
               <div className="mt-8 pt-6 border-t border-gray-200">
-                <p className="text-xs text-gray-500">© 2025 The BudE System™. All rights reserved.</p>
+                <p className="text-xs text-gray-500">© 2025 The BudE System. All rights reserved.</p>
               </div>
             </div>
           </div>

@@ -116,7 +116,7 @@ export default async function handler(req, res) {
             </p>
           </div>
           <div class="footer">
-            © 2025 The BudE System™ | <a href="https://www.networkingbude.com">networkingbude.com</a>
+            © 2025 The BudE System | <a href="https://www.networkingbude.com">networkingbude.com</a>
           </div>
         </body>
       </html>
@@ -175,7 +175,7 @@ export default async function handler(req, res) {
             </p>
           </div>
           <div class="footer">
-            © 2025 The BudE System™ | <a href="https://www.networkingbude.com">networkingbude.com</a>
+            © 2025 The BudE System | <a href="https://www.networkingbude.com">networkingbude.com</a>
           </div>
         </body>
       </html>

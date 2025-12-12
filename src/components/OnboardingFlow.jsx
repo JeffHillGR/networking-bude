@@ -813,7 +813,7 @@ export default function BudEOnboarding() {
 
           <div className="text-gray-700 space-y-6 leading-relaxed text-lg">
             <p className="font-semibold">
-              Welcome to Networking BudE by The BudE System™
+              Welcome to Networking BudE by The BudE System
             </p>
 
             <p>
@@ -877,7 +877,7 @@ export default function BudEOnboarding() {
 
             <div className="mt-8 text-gray-900">
               <p className="font-semibold">Jeff Hill</p>
-              <p>Founder, The BudE System™</p>
+              <p>Founder, The BudE System</p>
             </div>
           </div>
 
@@ -1059,7 +1059,7 @@ export default function BudEOnboarding() {
 
         {/* Branding */}
         <p className="text-center text-xs text-gray-500 mt-8">
-          Networking BudE by The BudE System™
+          Networking BudE by The BudE System
         </p>
       </div>
     </div>
@@ -1363,7 +1363,7 @@ export default function BudEOnboarding() {
 
           {/* Mobile Branding - Only visible on mobile */}
           <p className="md:hidden text-center text-xs text-gray-600 mt-6 pb-4">
-            Networking BudE by The BudE System™
+            Networking BudE by The BudE System
           </p>
         </div>
       </div>
@@ -1621,7 +1621,7 @@ const renderStep2 = () => (
 
         {/* Mobile Branding - Only visible on mobile */}
         <p className="md:hidden text-center text-xs text-gray-600 mt-6 pb-4">
-          Networking BudE by The BudE System™
+          Networking BudE by The BudE System
         </p>
       </div>
     </div>

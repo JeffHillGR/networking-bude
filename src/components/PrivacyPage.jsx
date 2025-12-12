@@ -101,7 +101,7 @@ function PrivacyPage() {
         </div>
 
         <div className="mt-8 pt-6 border-t border-gray-200">
-          <p className="text-sm text-gray-500">© 2025 The BudE System™. All rights reserved.</p>
+          <p className="text-sm text-gray-500">© 2025 The BudE System. All rights reserved.</p>
         </div>
       </div>
       </div>

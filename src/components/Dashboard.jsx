@@ -985,7 +985,7 @@ const getGreeting = () => {
             {/* Footer Section */}
             <div className="mt-8 pt-6 border-t border-gray-200">
               <div className="text-center space-y-2">
-                <p className="text-lg font-bold text-gray-900">The BudE System™</p>
+                <p className="text-lg font-bold text-gray-900">The BudE System</p>
                 <p className="text-xs text-gray-500 mt-4">© 2025</p>
                 <button
                   onClick={() => {
@@ -1578,7 +1578,7 @@ default:
               </>
             )}
             <div className="mt-4 pt-3 border-t border-gray-200">
-              <p className="text-xs text-gray-500 text-center">Networking BudE by The BudE System™</p>
+              <p className="text-xs text-gray-500 text-center">Networking BudE by The BudE System</p>
             </div>
           </div>
         </div>

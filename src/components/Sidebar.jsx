@@ -555,7 +555,7 @@ function Sidebar({ activeTab, setActiveTab, onContactUsClick, onNotificationNavi
             </div>
           )}
 
-          {!isCollapsed && <p className="text-xs text-gray-900 text-center">© 2025 The BudE System™</p>}
+          {!isCollapsed && <p className="text-xs text-gray-900 text-center">© 2025 The BudE System</p>}
         </div>
       </div>
     </aside>
