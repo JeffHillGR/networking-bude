@@ -724,6 +724,7 @@ function EventCapturesTab() {
 
         if (uploadError) {
           console.error('Error uploading file:', file.name, uploadError);
+          alert(`Upload failed: ${uploadError.message}`);
           continue; // Skip this file but continue with others
         }
 
@@ -747,6 +748,8 @@ function EventCapturesTab() {
           ]
         }));
         alert(`Successfully uploaded ${uploadedPhotos.length} photo(s)!`);
+      } else {
+        alert('No photos were uploaded. Check that the event-captures storage bucket exists and has proper permissions in Supabase.');
       }
     } catch (error) {
       console.error('Error uploading photos:', error);
