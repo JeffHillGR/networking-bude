@@ -758,6 +758,16 @@ export default function BudEOnboarding() {
         </div>
       </div>
 
+      {/* Testimonial Section */}
+      <div className="bg-gray-100 px-6 py-10" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
+        <div className="max-w-2xl mx-auto text-center">
+          <p className="text-lg text-gray-700 italic leading-relaxed">
+            "BudE is such a cool idea, and it helped me meet some awesome people in Grand Rapids. Thanks for creating such a great app, Jeff Hill!"
+          </p>
+          <p className="mt-4 text-gray-900 font-semibold">— BudE Member Cassidy Beach</p>
+        </div>
+      </div>
+
       {/* How We Are Different Section */}
       <div className="bg-white px-6 py-12" style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}>
         <div className="max-w-3xl mx-auto">
