@@ -172,7 +172,7 @@ function scoreNetworkingGoals(goals1, goals2) {
     'purpose', 'relationship', 'connecting', 'collaboration', 'shared', 'share',
     'uplifting', 'community', 'partnership', 'partnerships', 'real', 'genuine',
     'authentic', 'meaningful', 'serve', 'support', 'uplift', 'disingenuous',
-    'organic', 'conversations', 'conversation'
+    'organic', 'conversations', 'conversation', 'love', 'impact', 'impactful'
   ];
   const sharedPhilosophy = budePhilosophyKeywords.filter(kw =>
     text1.includes(kw) && text2.includes(kw)
